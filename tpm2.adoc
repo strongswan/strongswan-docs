@@ -22,7 +22,8 @@ When using the latest *strongswan-5.9.1* version with a *Linux 5.4* kernel or ne
 In order to test if we can connect to the TPM 2.0 device, we list all persistent keys stored in the Non-Volatile (NV) RAM:
 
 ----
-tpm2_getcap handles-persistent
+$ tpm2_getcap handles-persistent
+
 - 0x81000001
 - 0x81000002
 - 0x81010001
@@ -33,17 +34,17 @@ https://github.com/tpm2-software/tpm2-tools/tree/5.0/man[here].
 The access to the `*/dev/tpmrm0*` TPM resource manager device requires `*root*` rights on most Linux platforms.
 But e.g. with Ubuntu, adding the user to the `*tss*` group enables direct access to the TPM device:
 
- sudo usermod -a -G tss <username>
+ $ sudo usermod -a -G tss <username>
 
 === Enable the strongSwan tpm Plugin
 
 The strongSwan libtpmtss `*tpm*` plugin and the TSS2 interface are enabled and built with the following options
 
- ./configure --enable-tss-tss2 --enable-tpm  ...
+ $ ./configure --enable-tss-tss2 --enable-tpm  ...
 
 With the strongSwan xref:pki#[`pki`] tool we can now list the persistent key stored under the handle `*0x81010001*`
 
- pki --print --type priv --keyid 0x81010001 --debug 2
+ $ pki --print --type priv --keyid 0x81010001 --debug 2
 
 With debug level 2 some basic information on the TPM device is shown.
 A second generation Intel firmware TPM running on the Intel Management Engine is employed.
@@ -96,13 +97,14 @@ command derives a 2048 bit RSA Endorsement Key (EK) in a deterministic way from 
 _Endorsement Primary Seed_ *unique* to each TPM device and makes the key persistent
 in the non-volatile memory of the TPM under the object handle `*0x81010002*`
 
- tpm2_createek -G rsa -c 0x81010002
+ $ tpm2_createek -G rsa -c 0x81010002
 
 Using the https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_getcap.1.md[`tpm2_getcap`]
 command we can check that the newly derived Endorsement Key has been persisted in the NV RAM
 
 ----
-tpm2_getcap handles-persistent
+$ tpm2_getcap handles-persistent
+
 - 0x81000001
 - 0x81000002
 - 0x81010001
@@ -112,7 +114,8 @@ tpm2_getcap handles-persistent
 Listing the key properties shows that the 2048 bit Endorsement Key already exists under the handle `*0x81010001*` analyzed in the previous section
 
 ----
-pki --print --type priv --keyid 0x81010002
+$ pki --print --type priv --keyid 0x81010002
+
 TPM 2.0 via TSS2 v2 available
 signature algorithm is NULL with ERROR hash
   privkey:   RSA 2048 bits
@@ -126,7 +129,8 @@ We therefore delete the duplicate key with the following
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command
 
 ----
-tpm2_evictcontrol -c 0x81010002
+$ tpm2_evictcontrol -c 0x81010002
+
 persistent-handle: 0x81010002
 action: evicted
 ----
@@ -134,7 +138,8 @@ action: evicted
 The key removal can be verified with
 
 ----
-tpm2_getcap handles-persistent
+$ tpm2_getcap handles-persistent
+
 - 0x81000001
 - 0x81000002
 - 0x81010001
@@ -148,13 +153,14 @@ command we derive a 256 bit ECC Endorsement Key (EK) in a deterministic way from
 _Endorsement Primary Seed_ *unique* to each TPM device and make the key persistent
 in the non-volatile memory of the TPM under the object handle `*0x81010002*`:
 
- tpm2_createek -G ecc -c 0x81010002 -u ek_ecc.pub
+ $ tpm2_createek -G ecc -c 0x81010002 -u ek_ecc.pub
 
 Optionally we saved the public key in a TPM 2.0 proprietary format in the file
 `*ek_ecc.pub*`. The fingerprint of the ECC EK private key can be directly displayed with the command
 
 ----
-pki --print --type priv --keyid 0x81010002
+$ pki --print --type priv --keyid 0x81010002
+
 TPM 2.0 via TSS2 v2 available
 signature algorithm is NULL with ERROR hash
   privkey:   ECDSA 256 bits
@@ -170,13 +176,14 @@ Endorsement Key certificates issued for Intel firmware TPMs can be automatically
 downloaded from an Intel web server using the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_getekcertificate.1.md[`tpm2_getcertificate`] command:
 
- tpm2_getekcertificate -o ek_ecc.crt -u ek_ecc.pub
+ $ tpm2_getekcertificate -o ek_ecc.crt -u ek_ecc.pub
 
 For successful retrieval the public key `*ek_ecc.pub*` in the TPM 2.0 proprietary format is required.
 Using the xref:pki#[`pki`] tool we can list the downloaded EK certificate belonging to the ECC key:
 
 ----
-pki --print --type x509 --in ek_ecc.crt
+$ pki --print --type x509 --in ek_ecc.crt
+
   subject:  ""
   issuer:   "C=US, ST=CA, L=Santa Clara, O=Intel Corporation, OU=TPM EK intermediate for CNL_EPID_POST_B1LP_PROD_2 pid:9, CN=www.intel.com"
   validity:  not before Sep 04 02:00:00 2019, ok
@@ -199,16 +206,17 @@ in the TPM 2.0 proprietary format using the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_readpublic.1.md[`tpm2_readpublic`]
 command because we forgot to do this in the first place:
 
- tpm2_readpublic -Q -c 0x81010001 -o ek_rsa.pub
+ $ tpm2_readpublic -Q -c 0x81010001 -o ek_rsa.pub
 
 Now we can retrieve the RSA EK certificate, too:
 
- tpm2_getekcertificate -o ek_rsa.crt -u ek_rsa.pub
+ $ tpm2_getekcertificate -o ek_rsa.crt -u ek_rsa.pub
 
 and view the contents with
 
 ----
-pki --print --type x509 --in ek_rsa.crt
+$ pki --print --type x509 --in ek_rsa.crt
+
   subject:  ""
   issuer:   "C=US, ST=CA, L=Santa Clara, O=Intel Corporation, OU=TPM EK intermediate for CNL_EPID_POST_B1LP_PROD_2 pid:9, CN=www.intel.com"
   validity:  not before Sep 04 02:00:00 2019, ok
@@ -235,7 +243,8 @@ Most hardware TPMs are shipped with their Endorsement Key Certificates stored in
 E.g. on an STMicroelectronics TPM device the following data objects are stored in an NV index:
 
 ----
-tpm2_getcap handles-nv-index
+$ tpm2_getcap handles-nv-index
+
 - 0x1410001
 - 0x1410002
 - 0x1410004
@@ -254,7 +263,8 @@ Using the https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvreadpu
 command we can look for large data objects which are prime candidates for X.509 certificates:
 
 ----
-tpm2_nvreadpublic
+$ tpm2_nvreadpublic
+
   ...
 0x1c00002:
   name: 000b5c112bd5f410d0abe96a50e94ff721a005c32567e4b1112ab0a8fb7e0289b7f2
@@ -291,7 +301,8 @@ tpm2_nvreadpublic
 We can use xref:pki#[`pki`] to directly list the properties of the EK certificates:
 
 ----
-pki --print --type x509 --keyid 0x01c00002
+$ pki --print --type x509 --keyid 0x01c00002
+
 TPM 2.0 via TSS2 v2 available
 loaded certificate from TPM NV index 0x01c00002
   subject:  ""
@@ -308,7 +319,8 @@ loaded certificate from TPM NV index 0x01c00002
 ----
 
 ----
-pki --print --type x509 --keyid 0x01c0000a
+$ pki --print --type x509 --keyid 0x01c0000a
+
 TPM 2.0 via TSS2 v2 available
 loaded certificate from TPM NV index 0x01c0000a
   subject:  ""
@@ -327,12 +339,13 @@ loaded certificate from TPM NV index 0x01c0000a
 or we can first retrieve the binary certificate blob from the NV RAM using the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvread.1.md[`tpm2_nvread`] command:
 
- tpm2_nvread 0x01c00012 -C o -o ek_ecc384.crt
+ $ tpm2_nvread 0x01c00012 -C o -o ek_ecc384.crt
 
 and then list the properties of the EK certificate file:
 
 ----
-pki --print --type x509 --in ek_ecc384.crt 
+$ pki --print --type x509 --in ek_ecc384.crt 
+
   subject:  ""
   issuer:   "C=CH, O=STMicroelectronics NV, CN=STM TPM ECC384 Intermediate CA 01"
   validity:  not before Feb 08 01:00:00 2020, ok
@@ -362,13 +375,14 @@ TPM 2.0 - PCR banks: SHA1 SHA256
 A 2048 bit RSA Attestation Key (AK) bound to the RSA EK with handle `*0x81010001*` can be created with the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_createak.1.md[`tpm2_createak`] command:
 
- tpm2_createak -C 0x81010001 -G rsa -g sha256 -s rsassa -c ak_rsa.ctx -u ak_rsa.pub -n ak_rsa.name
+ $ tpm2_createak -C 0x81010001 -G rsa -g sha256 -s rsassa -c ak_rsa.ctx -u ak_rsa.pub -n ak_rsa.name
 
 and made persistent under the handle `*0x81010003*` with the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
 
 ----
-tpm2_evictcontrol -C o -c ak_rsa.ctx 0x81010003
+$ tpm2_evictcontrol -C o -c ak_rsa.ctx 0x81010003
+
 persistent-handle: 0x81010003
 action: persisted
 ----
@@ -376,7 +390,8 @@ action: persisted
 The properties of the RSA AK which is a signing key can be displayed with the command
 
 ----
-pki --print --type priv --keyid 0x81010003
+$ pki --print --type priv --keyid 0x81010003
+
 TPM 2.0 via TSS2 v2 available
 signature algorithm is RSASSA with SHA256 hash
   privkey:   RSA 2048 bits
@@ -389,13 +404,14 @@ signature algorithm is RSASSA with SHA256 hash
 A 256 bit ECC Attestation Key (AK) bound to the ECC EK with handle `*0x81010002*` can be created with the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_createak.1.md[`tpm2_createak`] command:
 
- tpm2_createak -C 0x81010002 -G ecc -g sha256 -s ecdsa -c ak_ecc.ctx -u ak_ecc.pub -n ak_ecc.name
+ $ tpm2_createak -C 0x81010002 -G ecc -g sha256 -s ecdsa -c ak_ecc.ctx -u ak_ecc.pub -n ak_ecc.name
 
 and made persistent under the handle `*0x81010004*` with the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
 
 ----
-tpm2_evictcontrol -C o -c ak_ecc.ctx 0x81010004
+$ tpm2_evictcontrol -C o -c ak_ecc.ctx 0x81010004
+
 persistent-handle: 0x81010004
 action: persisted
 ----
@@ -403,7 +419,8 @@ action: persisted
 The properties of the ECC AK which is a signing key can be displayed with the command
 
 ----
-pki --print --type priv --keyid 0x81010004
+$ pki --print --type priv --keyid 0x81010004
+
 TPM 2.0 via TSS2 v2 available
 signature algorithm is ECDSA with SHA256 hash
   privkey:   ECDSA 256 bits
@@ -420,7 +437,8 @@ self-signed by the TPM 2.0 private key and containing the corresponding public
 key as well as the desired end entity identity: 
 
 ----
-pki --req --type priv --keyid 0x81010003 --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san edu.strongsec.com --outform pem > ak_rsa_req.pem
+$ pki --req --type priv --keyid 0x81010003 --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san edu.strongsec.com --outform pem > ak_rsa_req.pem
+
 TPM 2.0 via TSS2 v2 available
 signature algorithm is RSASSA with SHA256 hash
 Smartcard PIN: <return>
@@ -430,7 +448,8 @@ Since we didn't configure a password when creating the AK, just press <return>
 when prompted for the PIN. With *openssl* we can verify the contents of the generated certificate request:
 
 ----
-openssl req -in ak_rsa_req.pem -noout -text
+$ openssl req -in ak_rsa_req.pem -noout -text
+
 Certificate Request:
     Data:
         Version: 1 (0x0)
@@ -485,7 +504,8 @@ Certificate Request:
 We repeat the same for the ECC Attestation Key:
 
 ----
-pki --req --type priv --keyid 0x81010004 --dn "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com" --san edu.strongsec.com --outform pem > ak_ecc_req.pem
+$ pki --req --type priv --keyid 0x81010004 --dn "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com" --san edu.strongsec.com --outform pem > ak_ecc_req.pem
+
 TPM 2.0 via TSS2 v2 available
 signature algorithm is ECDSA with SHA256 hash
 Smartcard PIN: <return>
@@ -494,7 +514,8 @@ Smartcard PIN: <return>
 and verify that the certificate request has been self-signed by the ECC AK private-key:
 
 ----
-openssl req -in ak_ecc_req.pem -noout -text
+$ openssl req -in ak_ecc_req.pem -noout -text
+
 Certificate Request:
     Data:
         Version: 1 (0x0)
@@ -529,16 +550,17 @@ X.509 end entity certificates have to be signed by an in-house or official exter
 __Certification Authority__ (CA). In our example we are using the *strongSec 2016 Root CA*
 which was generated in 2016 with the xref:pki#[`pki`] command
 
- pki --gen --type rsa --size 4096 --outform pem > cakey.pem
+ $ pki --gen --type rsa --size 4096 --outform pem > cakey.pem
 
 creating a 4096 bit RSA key pair and then creating a self-signed CA certificate with a lifetime of 10 years
 
- pki --self --ca --type rsa --in cakey.pem --dn="C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA" --lifetime 3652 --outform pem > cacert.pem
+ $ pki --self --ca --type rsa --in cakey.pem --dn="C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA" --lifetime 3652 --outform pem > cacert.pem
 
 as the following listing shows:
 
 ----
-pki --print --type x509 --in cacert.pem 
+$ pki --print --type x509 --in cacert.pem 
+
   subject:  "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   validity:  not before Sep 02 10:25:01 2016, ok
@@ -556,12 +578,13 @@ pki --print --type x509 --in cacert.pem
 The PKCS#10 certificate request exported from the TPM is used to generate an
 RSA Attestation Key certificate signed by the Root CA:
 
- pki --issue --cacert cacert.pem --cakey cakey.pem -type pkcs10 --in ak_rsa_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_rsa_cert.der
+ $ pki --issue --cacert cacert.pem --cakey cakey.pem -type pkcs10 --in ak_rsa_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_rsa_cert.der
 
 having the following content
 
 ----
-pki --print --type x509 --in ak_rsa_cert.der 
+$ pki --print --type x509 --in ak_rsa_cert.der 
+
   subject:  "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   validity:  not before Dec 23 15:26:22 2020, ok
@@ -582,12 +605,13 @@ pki --print --type x509 --in ak_rsa_cert.der
 The second PKCS#10 certificate request exported from the TPM is used to generate
 an ECC Attestation Key certificate signed by the Root CA:
 
- pki --issue --cacert cacert.pem --cakey cakey.pem -type pkcs10 --in ak_ecc_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_ecc_cert.der
+ $ pki --issue --cacert cacert.pem --cakey cakey.pem -type pkcs10 --in ak_ecc_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_ecc_cert.der
 
 having the following content
 
 ----
-pki --print --type x509 --in ak_ecc_cert.der 
+$ pki --print --type x509 --in ak_ecc_cert.der 
+
   subject:  "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   validity:  not before Dec 23 15:27:40 2020, ok
@@ -613,7 +637,8 @@ machine or user credentials.As with smartcards the needed amount of memory must
 be reserved first so we check the size of the X.509 ECC certificate
 
 ----
-ls -l ak_ecc_cert.der 
+$ ls -l ak_ecc_cert.der 
+
 -rw-rw-r-- 1 andi andi 1001 Dez 23 15:31 ak_ecc_cert.der
 ----
 
@@ -622,14 +647,15 @@ command allocates a memory location with a size of 1001 bytes that can be access
 via the handle `*0x01800004*` which is also called the NV index
 
 ----
-tpm2_nvdefine 0x01800004 -C o -s 1001 -a 0x2000A
+$ tpm2_nvdefine 0x01800004 -C o -s 1001 -a 0x2000A
+
 nv-index: 0x1800004
 ----
 
 Then we write the certificate file to the NV RAM destination using the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvwrite.1.md[`tpm2_nvwrite`] command:
 
- tpm2_nvwrite 0x01800004 -C o -i ak_ecc_cert.der
+ $ tpm2_nvwrite 0x01800004 -C o -i ak_ecc_cert.der
 
 === Removing Certificates from NV RAM
 
@@ -637,26 +663,28 @@ First we store the RSA AK certificate in the NV RAM under the handle `*0x0180003
 again by first determining the size of the object to be persisted:
 
 ----
-ls -l ak_rsa_cert.der 
+$ ls -l ak_rsa_cert.der 
+
 -rw-rw-r-- 1 andi andi 1204 Dez 23 15:30 ak_rsa_cert.der
 ----
 
 allocating space for it
 
 ----
-tpm2_nvdefine 0x01800003 -C o -s 1204 -a 0x2000A
+$ tpm2_nvdefine 0x01800003 -C o -s 1204 -a 0x2000A
+
 nv-index: 0x1800003
 ----
 
 and finally storing the certificate
 
- tpm2_nvwrite 0x01800003 -C o -i ak_rsa_cert.der
+ $ tpm2_nvwrite 0x01800003 -C o -i ak_rsa_cert.der
 
 We decide to use the RSA AK certificate externally, though. Thus we release the
 memory assigned to NV index `*0x01800003*` via the
 https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvundefine.1.md[`tpm2_nvundefine`] command:
 
- tpm2_nvundefine 0x01800003 -C o
+ $ tpm2_nvundefine 0x01800003 -C o
 
 == Using TPM 2.0 Keys with strongSwan
 
@@ -711,7 +739,7 @@ connections {
 
 The *strongSwan* IKEv2 `*charon*` daemon is started via `*systemd*`:
 
- sudo systemctl start strongswan
+ $ sudo systemctl start strongswan
 
 ----
 Jan 04 15:18:38 edu systemd[1]: Starting strongSwan IPsec IKEv1/IKEv2 daemon using swanctl...
@@ -767,9 +795,9 @@ Jan 04 15:18:38 edu systemd[1]: Started strongSwan IPsec IKEv1/IKEv2 daemon usin
 
 The xref:swanctl#[`swanctl`] command allows to list the loaded connection definitions
 
- swanctl --list-conns
-
 ----
+$ swanctl --list-conns
+
 host: IKEv2, no reauthentication, rekeying every 14400s
   local:  %any
   remote: 10.10.1.43
@@ -785,7 +813,7 @@ host: IKEv2, no reauthentication, rekeying every 14400s
 
 The loaded certificates can also be displayed
 
- swanctl --list-certs
+ $ swanctl --list-certs
 
 You can clearly see that the connection between the AK certificates and their
 matching AK private key has been established (..., has private key)
@@ -841,7 +869,7 @@ List of X.509 CA Certificates
 
 Next we initiate the "host" connection
 
- swanctl --initiate --child host
+ $ swanctl --initiate --child host
 
 ----
 [IKE] initiating IKE_SA host[1] to 10.10.1.43
@@ -855,7 +883,7 @@ Next we initiate the "host" connection
 ----
 
 The ECC AK private key stored in the TPM 2.0 is used to generate an
-*ECDSA_WITH_SHA256_DER* signature which is sent in the AUTH payload of the
+`*ECDSA_WITH_SHA256_DER*` signature which is sent in the AUTH payload of the
 IKE_AUTH request. The matching client certificate is sent int the CERT payload.
 
 ----
@@ -908,9 +936,9 @@ initiate completed successfully
 
 The established IKE and CHILD SAs can be displayed
 
- swanctl --list-sas
-
 ----
+$ swanctl --list-sas
+
 host: #1, ESTABLISHED, IKEv2, 4ef1452bda258a1b_i* a8508d872adadc84_r
   local  'edu.strongsec.com' @ 10.10.1.33[4500]
   remote 'mijas.strongsec.com' @ 10.10.1.43[4500]
@@ -928,7 +956,7 @@ host: #1, ESTABLISHED, IKEv2, 4ef1452bda258a1b_i* a8508d872adadc84_r
 
 The IKE and CHILD SAs are terminated
 
- swanctl --terminate --ike host
+ $ swanctl --terminate --ike host
 
 ----
 [IKE] deleting IKE_SA host[1] between 10.10.1.33[edu.strongsec.com]...10.10.1.43[mijas.strongsec.com]
@@ -940,3 +968,8 @@ The IKE and CHILD SAs are terminated
 [IKE] IKE_SA deleted
 terminate completed successfully
 ----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

@@ -1,4 +1,5 @@
 = pki
+:prewrap!:
 
 == Synopsis
 
@@ -32,19 +33,24 @@ You can also extract raw public keys from private keys, certificate requests
 and certificates and compute two kinds of SHA1-based key IDs.
 
 * xref:pkiGen#[`pki --gen`]
-* xref:pkiSelf.adoc#[`pki --self`]
-* xref:pkiIssue[`pki --issue`]
-* xref:pkiSignCrl[`pki --signcrl`]
-* xref:pkiReq[`pki --req`]
-* xref:pkiAcert[`pki --acert`]
-* xref:pkiPkcs7[`pki --pkcs7`]
-* xref:pkiPkcs12[`pki --pkcs12`]
-* xref:pkiKeyid[`pki --keyid`]
-* xref:pkiPrint[`pki --print`]
-* xref:pkiDn[`pki --dn`]
-* xref:pkiPub[`pki --pub`]
-* xref:pkiVerify[`pki --verify`]
+* xref:pkiSelf#[`pki --self`]
+* xref:pkiIssue#[`pki --issue`]
+* xref:pkiSignCrl#[`pki --signcrl`]
+* xref:pkiReq#[`pki --req`]
+* xref:pkiAcert#[`pki --acert`]
+* xref:pkiPkcs7#[`pki --pkcs7`]
+* xref:pkiPkcs12#[`pki --pkcs12`]
+* xref:pkiKeyid#[`pki --keyid`]
+* xref:pkiPrint#[`pki --print`]
+* xref:pkiDn#[`pki --dn`]
+* xref:pkiPub#[`pki --pub`]
+* xref:pkiVerify#[`pki --verify`]
 
 == How-To's
 
 * Set up a xref:simpleCA[simple CA] and issue peer certificates.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
