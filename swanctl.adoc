@@ -1,0 +1,66 @@
+= swanctl
+:prewrap!:
+
+`*swanctl*` a command line utility to configure, control and monitor the IKE
+`*charon*` daemon using the xref:vici#[`*vici*`] interface.
+
+
+== Synopsis
+
+----
+swanctl --initiate         (-i)  initiate a connection
+        --terminate        (-t)  terminate a connection
+        --rekey            (-R)  rekey an IKE or CHILD_SA
+        --uninstall        (-u)  uninstall a trap or shunt policy
+        --install          (-p)  install a trap or shunt policy
+        --redirect         (-d)  redirect an IKE_SA
+        --list-sas         (-l)  list currently active IKE_SAs
+        --list-pols        (-P)  list currently installed policies
+        --list-conns       (-L)  list loaded configurations
+        --list-authorities (-B)  list loaded certification authorities information
+        --list-certs       (-x)  list stored certificates
+        --list-pools       (-A)  list loaded pool configurations
+        --list-algs        (-g)  list loaded algorithms and their implementation
+        --load-all         (-q)  (re-)load credentials, pools authorities and connections
+        --load-authorities (-b)  (re-)load certification authorities information
+        --load-conns       (-c)  (re-)load connection configuration
+        --load-creds       (-s)  (re-)load credentials
+        --load-pools       (-a)  (re-)load pool configuration
+        --log              (-T)  trace logging output
+        --flush-certs      (-f)  flush cached certificates
+        --reload-settings  (-r)  reload strongswan.conf(5) configuration
+        --stats            (-S)  show daemon infos and statistics
+        --counters         (-C)  list or reset IKE event counters
+        --version          (-v)  show version information
+        --help             (-h)  show usage information
+----
+
+Each subcommand has additional options. Pass `*--help*` to a subcommand to get
+additional information.
+
+
+== swanctl.conf
+
+The `*swanctl --load*` commands read connections, secrets and IP address pools
+from xref:swanctlConf#[`*swanctl.conf*`], located in the
+xref:swanctlDirectory#[swanctl configuration directory], usually _/etc/swanctl_.
+
+Since version:5.7.0 the loaded file may be specified for each command explicitly
+via @--file@ argument (e.g. to use separate files for connections and credentials),
+and since version:5.7.2 the default directory for the file and
+[[swanctlDirectory|the credentials]] may be set via @SWANCTL_DIR@ environment variable.
+
+== Credential directories
+
+The @--load-creds@ command also reads file based credentials, such as private keys
+and certificates, from a set of pre-defined sub-directories of the
+[[swanctlDirectory|swanctl configuration directory]].
+
+Since version:5.7.2 the [[swanctlDirectory|credential directories]] are accessed
+relative to the actually loaded [[swanctl.conf]] file (see above) and the default
+directory may be changed at runtime via @SWANCTL_DIR@ environment variable.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

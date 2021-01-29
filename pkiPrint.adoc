@@ -1,0 +1,103 @@
+= pki --print
+:prewrap!:
+
+== Synopsis
+
+----
+  pki --print [--in file|--keyid hex] [--type x509|crl|ac|pub|priv|rsa|ecdsa|ed25519|ed448]
+
+      --help     (-h)  show usage information
+      --in       (-i)  input file, default: stdin
+      --keyid    (-x)  smartcard or TPM object handle
+      --type     (-t)  type of credential, default: x509
+      --debug    (-v)  set debug level, default: 1
+      --options  (-+)  read command line options from file
+----
+
+== Description
+
+Print credentials in a human readable form.
+
+== Examples
+
+* Print a X.509 CA certificate:
+
+----
+$ pki --print --in strongswanCert.pem
+
+  subject:  "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  issuer:   "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  validity:  not before Jan 06 10:45:25 2021, ok
+             not after  Jan 07 10:45:25 2031, ok (expires in 3629 days)
+  serial:    3e:9e:42:fe:27:8e:5b:bd
+  flags:     CA CRLSign self-signed 
+  pathlen:   1
+  subjkeyId: 20:d0:f6:72:42:0b:37:4c:b0:12:23:8e:51:f1:f6:0f:7a:a5:b7:e0
+  pubkey:    RSA 3072 bits
+  keyid:     96:84:66:a2:a0:91:99:96:c2:10:1d:ca:dc:b8:33:c2:c3:72:34:86
+  subjkey:   20:d0:f6:72:42:0b:37:4c:b0:12:23:8e:51:f1:f6:0f:7a:a5:b7:e0
+----
+
+* Print an RSA private key:
+
+----
+$ pki --print --type rsa --in strongswanKey.pem
+ 
+  privkey:   RSA 3072 bits
+  keyid:     96:84:66:a2:a0:91:99:96:c2:10:1d:ca:dc:b8:33:c2:c3:72:34:86
+  subjkey:   20:d0:f6:72:42:0b:37:4c:b0:12:23:8e:51:f1:f6:0f:7a:a5:b7:e0
+----
+  
+* Print a CRL:
+
+----
+$ pki --print --type crl --in strongswan.crl
+
+  issuer:   "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  update:    this on Jan 08 10:45:29 2021, ok
+             next on Jan 23 10:45:29 2021, expired (6 days ago)
+  serial:    02
+  authKeyId: 20:d0:f6:72:42:0b:37:4c:b0:12:23:8e:51:f1:f6:0f:7a:a5:b7:e0
+  2 revoked certificates:
+    0a: Jan 08 10:45:29 2021, ca compromise
+    08: Jan 08 10:45:28 2021, key compromise
+----
+
+* Print an X.509 certificate stored under a handle in the NV-RAM of a TPM 2.0:
+
+----
+$ pki --print --type x509 --keyid 0x01800003
+
+TPM 2.0 via TSS2 v2 available
+loaded certificate from TPM NV index 0x01800003
+  subject:  "C=CH, O=strongSec GmbH, CN=mijas.strongsec.com"
+  issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  validity:  not before Dec 23 21:12:33 2020, ok
+             not after  Dec 23 21:12:33 2025, ok (expires in 1789 days)
+  serial:    2f:7e:da:aa:98:4e:5a:93
+  altNames:  mijas.strongsec.com
+  flags:     
+  CRL URIs:  http://www.strongsec.com/ca/strongsec.crl
+  authkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
+  subjkeyId: b4:05:b9:62:32:f6:87:7e:a7:1c:38:b3:20:57:37:b4:37:83:ca:ff
+  pubkey:    ECDSA 256 bits
+  keyid:     73:2c:76:9e:8d:1b:2e:fe:f8:b6:4d:5a:e8:3f:84:d1:29:73:3f:dd
+  subjkey:   b4:05:b9:62:32:f6:87:7e:a7:1c:38:b3:20:57:37:b4:37:83:ca:ff
+----
+
+* Print the ECDSA private key stored under a handle in the NV-RAM of a TPM 2.0:
+
+----
+$ pki --print --type priv --keyid 0x81010003
+
+TPM 2.0 via TSS2 v2 available
+signature algorithm is ECDSA with SHA256 hash
+  privkey:   ECDSA 256 bits
+  keyid:     73:2c:76:9e:8d:1b:2e:fe:f8:b6:4d:5a:e8:3f:84:d1:29:73:3f:dd
+  subjkey:   b4:05:b9:62:32:f6:87:7e:a7:1c:38:b3:20:57:37:b4:37:83:ca:ff
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
