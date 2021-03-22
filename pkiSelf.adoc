@@ -1,0 +1,69 @@
+= pki --self
+:prewrap!:
+
+== Synopsis
+
+----
+pki --self [--in file|--keyid hex] [--type rsa|ecdsa|ed25519|ed448|bliss|priv]
+            --dn distinguished-name [--san subjectAltName]+
+           [--lifetime days] [--not-before datetime] [--not-after datetime] [--dateform form]
+           [--serial hex] [--ca] [--pathlen len] [--addrblock addr|subnet|range]+
+           [--ocsp uri]+ [--flag serverAuth|clientAuth|crlSign|ocspSigning]+
+           [--nc-permitted name] [--nc-excluded name]
+           [--policy-map issuer-oid:subject-oid]
+           [--policy-explicit len] [--policy-inhibit len] [--policy-any len]
+           [--cert-policy oid [--cps-uri uri] [--user-notice text]]+
+           [--digest md5|sha1|sha224|sha256|sha384|sha512] [--rsa-padding pkcs1|pss]
+           [--outform der|pem]
+
+    --help            (-h)  show usage information
+    --in              (-i)  private key input file, default: stdin
+    --keyid           (-x)  smartcard or TPM private key object handle
+    --type            (-t)  type of input key, default: priv
+    --dn              (-d)  subject and issuer distinguished name
+    --san             (-a)  subjectAltName to include in certificate
+    --lifetime        (-l)  days the certificate is valid, default: 1095
+    --not-before      (-F)  absolute time when the validity of the certificate begins
+    --not-after       (-T)  absolute time when the validity of the certificate ends
+    --dateform        (-D)  strptime(3) format for the --not-before and --not-after options, default: %d.%m.%y %T
+    --serial          (-s)  serial number in hex, default: random
+    --ca              (-b)  include CA basicConstraint, default: no
+    --pathlen         (-p)  set path length constraint
+    --addrblock       (-B)  RFC 3779 addrBlock to include
+    --nc-permitted    (-n)  add permitted NameConstraint
+    --nc-excluded     (-N)  add excluded NameConstraint
+    --cert-policy     (-P)  certificatePolicy OID to include
+    --cps-uri         (-C)  Certification Practice statement URI for certificatePolicy
+    --user-notice     (-U)  user notice for certificatePolicy
+    --policy-mapping  (-M)  policyMapping from issuer to subject OID
+    --policy-explicit (-E)  requireExplicitPolicy constraint
+    --policy-inhibit  (-H)  inhibitPolicyMapping constraint
+    --policy-any      (-A)  inhibitAnyPolicy constraint
+    --flag            (-e)  include extendedKeyUsage flag
+    --ocsp            (-o)  OCSP AuthorityInfoAccess URI to include
+    --digest          (-g)  digest for signature creation, default: key-specific
+    --rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
+    --outform         (-f)  encoding of generated cert, default: der
+    --debug           (-v)  set debug level, default: 1
+    --options         (-+)  read command line options from file----
+----
+
+== Description
+
+The `*pki --self*` command generates a self-signed X.509 certificate.
+
+== Examples
+
+* Generate a self-signed end-entity certificate in DER format
+----
+pki --self --in myKey.der --dn "C=CH, O=strongSwan, CN=moon.strongswan.org" > myCert.der
+----
+* Generate a self-signed CA root certificate in PEM format
+----
+pki --self --in myCaKey.der --ca --dn "C=CH, O=strongSwan, CN=Root CA" --outform pem > myCaCert.pem
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

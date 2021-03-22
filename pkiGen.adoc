@@ -1,0 +1,46 @@
+= pki --gen
+:prewrap!:
+
+== Synopsis
+
+----
+pki --gen [--type rsa|ecdsa|ed25519|ed448] [--size bits] [--safe-primes]
+          [--shares n] [--threshold l] [--outform der|pem]
+
+    --help        (-h)  show usage information
+    --type        (-t)  type of key, default: rsa
+    --size        (-s)  keylength in bits, default: rsa 2048, ecdsa 384, ed25519 256, ed448 456
+    --safe-primes (-p)  generate rsa safe primes
+    --shares      (-n)  number of private rsa key shares
+    --threshold   (-l)  minimum number of participating rsa key shares
+    --outform     (-f)  encoding of generated private key, default: der
+    --debug       (-v)  set debug level, default: 1
+    --options     (-+)  read command line options from file----
+----
+
+== Description
+
+The `*pki --gen*` command generates a random RSA, ECDSA or EdDSA private key.
+
+The `--safe-primes`, `--shares` and `--threshold` parameters are RSA key options
+but are implemented by the `*gmp*` plugin, only.
+
+== Examples
+
+* Generate a 3072 bit RSA private key in DER format
+----
+pki --gen --size 3072 > myKey.der
+----
+* Generate a 256 bit ECDSA private key in PEM format
+----
+pki --gen --type ecdsa --size 256 --outform pem > myKey.pem
+----
+* Generate an EdDSA 25519 private key in DER format
+----
+pki --gen --type ed25519 > myKey.der
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

@@ -1,0 +1,77 @@
+= pki --issue
+:prewrap!:
+
+== Synopsis
+
+----
+pki --issue [--in file] [--type pub|pkcs10|priv|rsa|ecdsa|ed25519|ed448] --cakey file|--cakeyid hex
+             --cacert file [--dn subject-dn] [--san subjectAltName]+
+            [--lifetime days] [--not-before datetime] [--not-after datetime] [--dateform form]
+            [--serial hex] [--ca] [--pathlen len] [--addrblock addr|subnet|range]+
+            [--flag serverAuth|clientAuth|crlSign|ocspSigning]+
+            [--crl uri [--crlissuer i]]+ [--ocsp uri]+ [--nc-permitted name]
+            [--nc-excluded name] [--policy-map issuer-oid:subject-oid]
+            [--policy-explicit len] [--policy-inhibit len] [--policy-any len]
+            [--cert-policy oid [--cps-uri uri] [--user-notice text]]+
+            [--digest md5|sha1|sha224|sha256|sha384|sha512] [--rsa-padding pkcs1|pss]
+            [--outform der|pem]
+
+    --help            (-h)  show usage information
+    --in              (-i)  key/request file to issue, default: stdin
+    --type            (-t)  type of input, default: pub
+    --cacert          (-c)  CA certificate file
+    --cakey           (-k)  CA private key file
+    --cakeyid         (-x)  smartcard or TPM CA private key object handle
+    --dn              (-d)  distinguished name to include as subject
+    --san             (-a)  subjectAltName to include in certificate
+    --lifetime        (-l)  days the certificate is valid, default: 1095
+    --not-before      (-F)  absolute time when the validity of the certificate begins
+    --not-after       (-T)  absolute time when the validity of the certificate ends
+    --dateform        (-D)  strptime(3) format for the --not-before and --not-after options, default: %d.%m.%y %T
+    --serial          (-s)  serial number in hex, default: random
+    --ca              (-b)  include CA basicConstraint, default: no
+    --pathlen         (-p)  set path length constraint
+    --addrblock       (-B)  RFC 3779 addrBlock to include
+    --nc-permitted    (-n)  add permitted NameConstraint
+    --nc-excluded     (-N)  add excluded NameConstraint
+    --cert-policy     (-P)  certificatePolicy OID to include
+    --cps-uri         (-C)  Certification Practice statement URI for certificatePolicy
+    --user-notice     (-U)  user notice for certificatePolicy
+    --policy-mapping  (-M)  policyMapping from issuer to subject OID
+    --policy-explicit (-E)  requireExplicitPolicy constraint
+    --policy-inhibit  (-H)  inhibitPolicyMapping constraint
+    --policy-any      (-A)  inhibitAnyPolicy constraint
+    --flag            (-e)  include extendedKeyUsage flag
+    --crl             (-u)  CRL distribution point URI to include
+    --crlissuer       (-I)  CRL Issuer for CRL at distribution point
+    --ocsp            (-o)  OCSP AuthorityInfoAccess URI to include
+    --digest          (-g)  digest for signature creation, default: key-specific
+    --rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
+    --outform         (-f)  encoding of generated cert, default: der
+    --debug           (-v)  set debug level, default: 1
+    --options         (-+)  read command line options from file----
+----
+
+== Description
+
+The `*pki --issue*` command generates an X.509 certificate signed with a CA's
+private key.
+
+The generic type `priv` can be used to load any support private key type.
+
+== Examples
+
+* Create an `options` file to save repetitive typing work
+----
+cat > pki.opt
+--cacert caCert.der --cakey caKey.der --digest sha256 --flag serverAuth --lifetime 1460
+----
+* Issue an X.509 certificate based on a PKCS #10 certificate request
+----
+pki --issue --options pki.opt --serial 01 --type pkcs10 --in myReq.der > myCert.der
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
