@@ -4,7 +4,7 @@
 == Synopsis
 
 ----
-pki --self [--in file|--keyid hex] [--type rsa|ecdsa|ed25519|ed448|bliss|priv]
+pki --self [--in file|--keyid hex] [--type rsa|ecdsa|ed25519|ed448|priv]
             --dn distinguished-name [--san subjectAltName]+
            [--lifetime days] [--not-before datetime] [--not-after datetime] [--dateform form]
            [--serial hex] [--ca] [--pathlen len] [--addrblock addr|subnet|range]+
@@ -13,8 +13,8 @@ pki --self [--in file|--keyid hex] [--type rsa|ecdsa|ed25519|ed448|bliss|priv]
            [--policy-map issuer-oid:subject-oid]
            [--policy-explicit len] [--policy-inhibit len] [--policy-any len]
            [--cert-policy oid [--cps-uri uri] [--user-notice text]]+
-           [--digest md5|sha1|sha224|sha256|sha384|sha512] [--rsa-padding pkcs1|pss]
-           [--outform der|pem]
+           [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
+           [--rsa-padding pkcs1|pss] [--outform der|pem]
 
     --help            (-h)  show usage information
     --in              (-i)  private key input file, default: stdin
