@@ -1,4 +1,4 @@
-= pki --gen
+= pki --req
 :prewrap!:
 
 == Synopsis
@@ -9,23 +9,29 @@ pki --req [--in file|--keyid hex] [--type rsa|ecdsa|priv] --dn distinguished-nam
           [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
           [--rsa-padding pkcs1|pss] [--outform der|pem]
 
-    --help        (-h)  show usage information
-    --in          (-i)  private key input file, default: stdin
-    --keyid       (-x)  smartcard or TPM private key object handle
-    --type        (-t)  type of input key, default: priv
-    --dn          (-d)  subject distinguished name
-    --san         (-a)  subjectAltName to include in cert request
-    --password    (-p)  challengePassword to include in cert request
-    --digest      (-g)  digest for signature creation, default: key-specific
-    --rsa-padding (-R)  padding for RSA signatures, default: pkcs1
-    --outform     (-f)  encoding of generated request, default: der
-    --debug       (-v)  set debug level, default: 1
-    --options     (-+)  read command line options from file----
+pki --req --help
 ----
 
 == Description
 
-The `*pki --gen*` command generates a PKCS#10 certificate request.
+This xref:pki#[`*pki*`] subcommand generates a PKCS#10 certificate request.
+
+== Options
+
+----
+--in          (-i)  private key input file, default: stdin
+--keyid       (-x)  smartcard or TPM private key object handle
+--type        (-t)  type of input key, default: priv
+--dn          (-d)  subject distinguished name
+--san         (-a)  subjectAltName to include in cert request
+--password    (-p)  challengePassword to include in cert request
+--digest      (-g)  digest for signature creation, default: key-specific
+--rsa-padding (-R)  padding for RSA signatures, default: pkcs1
+--outform     (-f)  encoding of generated request, default: der
+--debug       (-v)  set debug level, default: 1
+--options     (-+)  read command line options from file----
+--help        (-h)  show usage information
+----
 
 == Examples
 

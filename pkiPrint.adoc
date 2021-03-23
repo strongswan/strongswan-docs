@@ -4,19 +4,25 @@
 == Synopsis
 
 ----
-  pki --print [--in file|--keyid hex] [--type x509|crl|ac|pub|priv|rsa|ecdsa|ed25519|ed448]
+pki --print [--in file|--keyid hex] [--type x509|crl|ac|pub|priv|rsa|ecdsa|ed25519|ed448]
 
-      --help     (-h)  show usage information
-      --in       (-i)  input file, default: stdin
-      --keyid    (-x)  smartcard or TPM object handle
-      --type     (-t)  type of credential, default: x509
-      --debug    (-v)  set debug level, default: 1
-      --options  (-+)  read command line options from file
+pki --print --help
 ----
 
 == Description
 
-Print credentials in a human readable form.
+This xref:pki#[`*pki*`] subcommand prints credentials in a human readable form.
+
+== Options
+
+----
+--in       (-i)  input file, default: stdin
+--keyid    (-x)  smartcard or TPM object handle
+--type     (-t)  type of credential, default: x509
+--help     (-h)  show usage information
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+----
 
 == Examples
 

@@ -4,26 +4,32 @@
 == Synopsis
 
 ----
-pki --gen [--type rsa|ecdsa|ed25519|ed448] [--size bits] [--safe-primes]
-          [--shares n] [--threshold l] [--outform der|pem]
+pki --gen [--type rsa|ecdsa|ed25519|ed448] [--size bits] [--outform der|pem]
+          [--safe-primes] [--shares n] [--threshold l]
 
-    --help        (-h)  show usage information
-    --type        (-t)  type of key, default: rsa
-    --size        (-s)  keylength in bits, default: rsa 2048, ecdsa 384, ed25519 256, ed448 456
-    --safe-primes (-p)  generate rsa safe primes
-    --shares      (-n)  number of private rsa key shares
-    --threshold   (-l)  minimum number of participating rsa key shares
-    --outform     (-f)  encoding of generated private key, default: der
-    --debug       (-v)  set debug level, default: 1
-    --options     (-+)  read command line options from file----
+pki --gen --help
 ----
 
 == Description
 
-The `*pki --gen*` command generates a random RSA, ECDSA or EdDSA private key.
+This xref:pki#[`*pki*`] subcommand generates a random RSA, ECDSA or EdDSA private key.
+
+== Options
+
+----
+--type        (-t)  type of key, default: rsa
+--size        (-s)  keylength in bits, default: rsa 2048, ecdsa 384, ed25519 256, ed448 456
+--safe-primes (-p)  generate rsa safe primes
+--shares      (-n)  number of private rsa key shares
+--threshold   (-l)  minimum number of participating rsa key shares
+--outform     (-f)  encoding of generated private key, default: der
+--debug       (-v)  set debug level, default: 1
+--options     (-+)  read command line options from file----
+--help        (-h)  show usage information
+----
 
 The `--safe-primes`, `--shares` and `--threshold` parameters are RSA key options
-but are implemented by the `*gmp*` plugin, only.
+used for threshold cryptography. They are implemented by the `*gmp*` plugin, only.
 
 == Examples
 

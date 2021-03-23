@@ -30,6 +30,8 @@ private key of a CA and containing subjectAltNames, CRL distribution points and
 URIs of OCSP servers. You can also extract raw public keys from private keys,
 certificate requests and certificates and compute two kinds of SHA1-based key IDs.
 
+== Subcommands
+
 * xref:pkiGen#[`pki --gen`]
 * xref:pkiSelf#[`pki --self`]
 * xref:pkiIssue#[`pki --issue`]
