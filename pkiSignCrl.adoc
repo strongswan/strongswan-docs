@@ -1,0 +1,55 @@
+= pki --signcrl
+:prewrap!:
+
+== Synopsis
+
+----
+pki --signcrl --cacert file --cakey file|--cakeyid hex [--lifetime days]
+              [--not-before datetime] [--not-after datetime] [--dateform form]
+              [[--reason key-compromise|ca-compromise|affiliation-changed|superseded|cessation-of-operation|certificate-hold]
+              [--date timestamp] --cert file|--serial hex]*
+              [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
+              [--rsa-padding pkcs1|pss] [--outform der|pem]
+
+    --help        (-h)  show usage information
+    --cacert      (-c)  CA certificate file
+    --cakey       (-k)  CA private key file
+    --cakeyid     (-x)  smartcard or TPM CA private key object handle
+    --lifetime    (-l)  days the CRL gets a nextUpdate, default: 15
+    --not-before  (-F)  absolute time when the validity of the CRL begins
+    --not-after   (-T)  absolute time when the validity of the CRL ends
+    --dateform    (-D)  strptime(3) format for the --not-before and --not-after options, default: %d.%m.%y %T
+    --lastcrl     (-a)  CRL of lastUpdate to copy revocations from
+    --basecrl     (-b)  base CRL to create a delta CRL for
+    --crluri      (-u)  freshest delta CRL URI to include
+    --cert        (-z)  certificate file to revoke
+    --serial      (-s)  hex encoded certificate serial number to revoke
+    --reason      (-r)  reason for certificate revocation
+    --date        (-d)  revocation date as unix timestamp, default: now
+    --digest      (-g)  digest for signature creation, default: key-specific
+    --rsa-padding (-R)  padding for RSA signatures, default: pkcs1
+    --outform     (-f)  encoding of generated crl, default: der
+    --debug       (-v)  set debug level, default: 1
+    --options     (-+)  read command line options from file
+----
+
+== Description
+
+The `*pki --signcrl*` command generates an X.509 certificate revocation list (CRL)
+signed by a CA private key.
+
+== Examples
+
+* Revoke a certificate
+----
+pki --signcrl --cacert caCert.der --cakey caKey.der --reason superseded --cert peerCert.der > crl.der
+----
+* Update an existing CRL with two new revocations, using the certificates serial, but no reason
+----
+pki --signcrl --cacert caCert.der --cakey caKey.der --lastcrl crl1.der --serial 0123 --serial 0345 > crl2.der
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
