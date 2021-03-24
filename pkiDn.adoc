@@ -1,0 +1,59 @@
+= pki --dn
+:prewrap!:
+
+== Synopsis
+
+----
+pki --dn [--in file] [--format config|hex|base64|bin]
+            
+pki --dn --help
+----
+
+== Description
+
+Extract the ASN.1-encoded subject `DistinguishedName` (`DN`) of an X.509 certificate
+and export it in different formats. This may be useful when the strongSwan
+identity parser is unable to produce the correct binary encoding from a string.
+
+== Options
+
+----
+--in       (-i)  input file, default: stdin
+--format   (-f)  output format, default: config
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Print the first line of a X.509 certificate listing
+----
+$ pki --print --in myCert.der | head -1
+subject:  "C=CH, O=strongSwan, CN=Server"
+----
+* Extract this subject `DN` in different formats:
+----
+$ pki --dn --in myCert.der
+"asn1dn:#3033310b300906035504061302434831133011060355040a130a7374726f6e675377616e310f300d06035504031306536572766572" 
+----
+----
+$ pki --dn --in myCert.der --format hex
+3033310b300906035504061302434831133011060355040a130a7374726f6e675377616e310f300d06035504031306536572766572
+----
+----
+$ pki --dn --in myCert.der --format base64
+MDMxCzAJBgNVBAYTAkNIMRMwEQYDVQQKEwpzdHJvbmdTd2FuMQ8wDQYDVQQDEwZTZXJ2ZXI=
+----
+----
+$ pki --dn --in myCert.der --format bin | xxd
+0000000: 3033 310b 3009 0603 5504 0613 0243 4831  031.0...U....CH1
+0000010: 1330 1106 0355 040a 130a 7374 726f 6e67  .0...U....strong
+0000020: 5377 616e 310f 300d 0603 5504 0313 0653  Swan1.0...U....S
+0000030: 6572 7665 72                             erver
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

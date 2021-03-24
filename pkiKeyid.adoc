@@ -1,0 +1,48 @@
+= pki --keyid
+:prewrap!:
+
+== Synopsis
+
+----
+pki --keyid [--in file|--keyid hex] [--type priv|rsa|ecdsa|pub|pkcs10|x509]
+            [--id all|spk|spki] [--format pretty|hex|base64|bin]
+            
+pki --keyid --help
+----
+
+== Description
+
+This xref:pki#[`*pki*`] subcommand computes and displays public key identifiers.
+Currently these are
+
+* `spk`  for `subjkey` i.e. the SHA-1 hash of `subjectPublicKey` and
+   
+* `spki` for `keyid`   i.e. the SHA-1 hash of `subjectPublicKeyInfo`.
+
+== Options
+
+----
+--in       (-i)  input file, default: stdin
+--keyid    (-x)  smartcard or TPM private key object handle
+--type     (-t)  type of key, default: priv
+--id       (-I)  type of identifier, default: all
+--format   (-f)  output format, default: pretty
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--help     (-h)  show usage information
+----
+
+== Example
+
+----
+pki --keyid --type priv --in myKey.der 
+subjkey (SHA-1 of subjectPublicKey):
+             5f:36:bd:33:57:51:f4:1d:8e:66:be:b4:04:92:e1:60:93:4a:32:f1
+keyid (SHA-1 of subjectPublicKeyInfo):
+             4a:ea:13:89:12:dc:96:b4:35:79:14:00:ee:d6:59:4d:f3:6b:63:bd
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

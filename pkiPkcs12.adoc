@@ -1,0 +1,31 @@
+= pki --pkcs12
+:prewrap!:
+
+== Synopsis
+
+----
+pki --pkcs12 --export index|--list [--in file] [--outform der|pem]
+
+pki --pkcs12 --help
+----
+
+== Description
+
+This xref:pki#[`*pki*`] subcommand handles PKCS#12 containers.
+
+== Options
+
+----
+--in              (-i)  input file, default: stdin
+--list            (-l)  list certificates and keys
+--export          (-e)  export the credential with the given index
+--outform         (-f)  encoding of extracted credentials, default: der
+--debug           (-v)  set debug level, default: 1
+--options         (-+)  read command line options from file----
+--help            (-h)  show usage information
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

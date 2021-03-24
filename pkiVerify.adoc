@@ -1,0 +1,43 @@
+= pki --verify
+:prewrap!:
+
+== Synopsis
+
+----
+pki --verify [--in file] [--cacert file] [--crl file] [--online]
+
+pki --verify --help
+----
+
+== Description
+
+This xref:pki#[`*pki*`] subcommand verifies and status the signature of an
+X.509 certificate.
+
+
+== Options
+
+----
+--in       (-i)  X.509 certificate to verify, default: stdin
+--cacert   (-c)  CA certificate for trustchain verification
+--crl      (-l)  CRL for trustchain verification
+--online   (-o)  enable online CRL/OCSP revocation checking
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--help     (-h)  show usage information
+----
+
+== Exit Status
+
+The exit status is
+
+ * `0` if the certificate has been verified successfully,
+ * `1` if the certificate is untrusted,
+ * `2` if the certificate's lifetimes are invalid, and
+ * `3` if the certificate has been verified successfully but the online
+       revocation check indicated that it has been revoked.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

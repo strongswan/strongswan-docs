@@ -1,0 +1,52 @@
+= pki --pub
+:prewrap!:
+
+== Synopsis
+
+----
+pki --pub [--in file|--keyid hex] [--type rsa|ecdsa|priv|pub|pkcs10|x509]
+          [--outform der|pem|dnskey|sshkey]
+
+pki --pub --help
+----
+
+== Description
+
+This xref:pki#[`*pki*`] subcommand extracts the public key from a private key,
+a PKCS#10 certificate request or an X.509 certificate.
+
+== Options
+
+----
+--in       (-i)  input file, default: stdin
+--keyid    (-x)  smartcard or TPM private key object handle
+--type     (-t)  type of credential, default: priv
+--outform  (-f)  encoding of extracted public key, default: der
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Extract the public key from an RSA private key
+----
+pki --pub --in myKey.der > myPub.der
+----
+* Extract the public key from an ECDSA private key
+----
+pki --pub --in myKey.der --type ecdsa  > myPub.der
+----
+* Extract the public key from a PKCS#10 certificate request
+----
+pki --pub --in myReq.der --type pkcs10  > myPub.der
+----
+* Extract the public key from an X.509 certificate
+----
+pki --pub --in myCert.der --type x509  > myPub.der----
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

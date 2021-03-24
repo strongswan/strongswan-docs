@@ -1,0 +1,36 @@
+= pki --pkcs7
+:prewrap!:
+
+== Synopsis
+
+----
+pki --pkcs7 --sign|--verify|--encrypt|--decrypt|--show
+            [--in file] [--cert file]+ [--key file]
+            
+pki --pkcs7 --help
+----
+
+== Description
+
+This xref:pki#[`*pki*`] subcommand offers PKCS#7 wrap/unwrap functions.
+
+== Options
+
+----
+--sign            (-s)  create PKCS#7 signed-data
+--verify          (-u)  verify PKCS#7 signed-data
+--encrypt         (-e)  create PKCS#7 enveloped-data
+--decrypt         (-d)  decrypt PKCS#7 enveloped-data
+--show            (-p)  show info about PKCS#7, print certificates
+--in              (-i)  input file, default: stdin
+--key             (-k)  path to private key for sign/decrypt
+--cert            (-c)  path to certificate for sign/verify/encrypt
+--debug           (-v)  set debug level, default: 1
+--options         (-+)  read command line options from file----
+--help            (-h)  show usage information
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

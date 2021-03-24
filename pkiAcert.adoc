@@ -1,0 +1,58 @@
+= pki --acert
+:prewrap!:
+
+== Synopsis
+
+----
+pki --acert [--in file] [--group membership] --issuerkey file|--issuerkeyid hex
+             --issuercert file [--lifetime hours] [--not-before datetime]
+            [--not-after datetime] [--dateform form] [--serial hex]
+            [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
+            [--rsa-padding pkcs1|pss] [--outform der|pem]
+
+pki --acert --help
+----
+
+== Description
+
+This xref:pki#[`*pki*`] subcommand issues an X.509 attribute certificate linked to
+a holder certificate.
+
+== Options
+
+----
+--in              (-i)  holder certificate to issue an attribute certificate for, default: stdin
+--group           (-m)  group membership the AC shall certify (included as string), may be repeated
+--issuerkey       (-k)  issuer private key
+--issuerkeyid     (-x)  smartcard or TPM issuer private key object handle
+--issuercert      (-c)  issuer certificate
+--lifetime        (-l)  hours the certificate is valid, default: 24
+--not-before      (-F)  absolute time when the validity of the AC begins
+--not-after       (-T)  absolute time when the validity of the AC ends
+--dateform        (-D)  strptime(3) format for the --not-before and --not-after options, default: %d.%m.%y %T
+--serial          (-s)  serial number in hex, default: random
+--digest          (-g)  digest to use for signature creation, default: key-specific
+--rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
+--outform         (-f)  encoding of generated cert, default: der
+--debug           (-v)  set debug level, default: 1
+--options         (-+)  read command line options from file----
+--help            (-h)  show usage information
+----
+
+== Examples
+
+* Create an options file to save repetitive typing
+----
+cat > acert.opt
+--issuercert aacert.der --issuerkey aakey.der
+--digest sha256 --lifetime 4
+----
+* Issue an attribute certificate based on a holder certificate and the options above
+----
+pki --acert --options acert.opt --in holder.der --group sales --group finance > ac.der
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
