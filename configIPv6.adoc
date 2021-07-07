@@ -1,0 +1,60 @@
+= IPv6 Configuration Examples
+:toc: left
+
+:TESTS: https://www.strongswan.org/testing/testresults
+
+== Site-to-Site
+
+[cols="4,1,2"]
+|===
+|IPv6 in IPv6 tunnel mode
+|{TESTS}/ipv6/net2net-ikev1[IKEv1]
+|{TESTS}/ipv6/net2net-ikev2[IKEv2]
+
+|IPv4 in IPv6 tunnel mode
+|{TESTS}/ipv6/net2net-ip4-in-ip6-ikev1[IKEv1]
+|{TESTS}/ipv6/net2net-ip4-in-ip6-ikev2[IKEv2]
+
+|IPv6 in IPv4 tunnel mode
+|{TESTS}/ipv6/net2net-ip6-in-ip4-ikev1[IKEv1]
+|{TESTS}/ipv6/net2net-ip6-in-ip4-ikev2[IKEv2]
+|===
+
+== Host-to-Host
+
+[cols="4,1,2"]
+|===
+|IPv6 tunnel mode
+|{TESTS}/ipv6/host2host-ikev1[IKEv1]
+|{TESTS}/ipv6/host2host-ikev2[IKEv2]
+
+|IPv6 transport mode
+|{TESTS}/ipv6/transport-ikev1[IKEv1]
+|{TESTS}/ipv6/transport-ikev2[IKEv2]
+|===
+
+== Remote Access
+
+[cols="4,1,2"]
+|===
+|RSA authentication with X.509 certificates
+|{TESTS}/ipv6/rw-ikev1[IKEv1]
+|{TESTS}/ipv6/rw-ikev2[IKEv2]
+
+|PSK authentication with pre-shared keys
+|{TESTS}/ipv6/rw-psk-ikev1[IKEv1]
+|{TESTS}/ipv6/rw-psk-ikev2[IKEv2]
+
+|IPv6 in IPv4 tunnel mode with virtual IP
+|{TESTS}/ipv6/rw-ip6-in-ip4-ikev1[IKEv1]
+|{TESTS}/ipv6/rw-ip6-in-ip4-ikev2[IKEv2]
+|===
+
+== Complete List
+
+* {TESTS}/ipv6[All IPv6 test scenarios]
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

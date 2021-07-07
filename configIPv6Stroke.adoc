@@ -1,0 +1,60 @@
+= IPv6 Legacy Configuration Examples
+:toc: left
+
+:TESTS: https://www.strongswan.org/testing/testresults
+
+== Site-to-Site
+
+[cols="4,1,2"]
+|===
+|IPv6 in IPv6 tunnel mode
+|{TESTS}/ipv6-stroke/net2net-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/net2net-ikev2[IKEv2]
+
+|IPv4 in IPv6 tunnel mode
+|{TESTS}/ipv6-stroke/net2net-ip4-in-ip6-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/net2net-ip4-in-ip6-ikev2[IKEv2]
+
+|IPv6 in IPv4 tunnel mode
+|{TESTS}/ipv6-stroke/net2net-ip6-in-ip4-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/net2net-ip6-in-ip4-ikev2[IKEv2]
+|===
+
+== Host-to-Host
+
+[cols="4,1,2"]
+|===
+|IPv6 tunnel mode
+|{TESTS}/ipv6-stroke/host2host-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/host2host-ikev2[IKEv2]
+
+|IPv6 transport mode
+|{TESTS}/ipv6-stroke/transport-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/transport-ikev2[IKEv2]
+|===
+
+== Remote Access
+
+[cols="4,1,2"]
+|===
+|RSA authentication with X.509 certificates
+|{TESTS}/ipv6-stroke/rw-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/rw-ikev2[IKEv2]
+
+|PSK authentication with pre-shared keys
+|{TESTS}/ipv6-stroke/rw-psk-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/rw-psk-ikev2[IKEv2]
+
+|IPv6 in IPv4 tunnel mode with virtual IP
+|{TESTS}/ipv6-stroke/rw-ip6-in-ip4-ikev1[IKEv1]
+|{TESTS}/ipv6-stroke/rw-ip6-in-ip4-ikev2[IKEv2]
+|===
+
+== Complete List
+
+* {TESTS}/ipv6-stroke[All IPv6 legacy test scenarios]
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

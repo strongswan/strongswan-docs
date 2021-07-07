@@ -1,5 +1,28 @@
 = strongSwan Documentation
 
+== Configuration Examples
+
+=== Modern vici-based Scenarios
+
+:VICI: https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/vici/README.md
+
+These scenarios use the modern {VICI}[Versatile IKE Control Interface] (VICI) as
+implemented by the `*vici*` plugin and the xref:swanctl#[`*swanctl*`] command line tool.
+
+* xref:configQuickstart#[`*Quickstart*`] examples
+* xref:configIKEv2#[`*IKEv2*`] examples
+* xref:configIKEv1#[`*IKEv1*`] examples
+* xref:configIPv6#[`*IPv6*`] examples
+
+=== Legacy stroke-based Scenarios
+
+These scenarios use the deprecated `*stroke*` interface as implemented by the
+`*stroke*` plugin and the `*ipsec*` command line tool.
+
+* xref:configIKEv2Stroke#[`*IKEv2*`] examples
+* xref:configIKEv1Stroke#[`*IKEv1*`] examples
+* xref:configIPv6Stroke#[`*IPv6*`] examples
+
 == Platform Security
 
 * xref:tpm2#[Using TPM 2.0 keys with strongSwan]

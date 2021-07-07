@@ -1,0 +1,160 @@
+= IKEv2 Legacy Configuration Examples
+:toc: left
+
+:TESTS: https://www.strongswan.org/testing/testresults
+
+== Remote Access
+
+[cols="4,1,1,1"]
+|===
+|RSA authentication with X.509 certificates
+|{TESTS}/ikev2-stroke/rw-cert[IPv4]
+|{TESTS}/ipv6-stroke/rw-ikev2[IPv6]
+|{TESTS}/ikev2-stroke/nat-rw[NAT]
+
+|PSK authentication with pre-shared keys (IP)
+|{TESTS}/ikev2-stroke/rw-psk-ipv4[IPv4]
+|{TESTS}/ipv6-stroke/rw-psk-ikev2[IPv6]
+|{TESTS}/ikev2-stroke/nat-rw-psk[NAT]
+
+|PSK authentication with pre-shared keys (FQDN)
+|{TESTS}/ikev2-stroke/rw-psk-fqdn[IPv4]
+|
+|
+
+|EAP_AKA authentication
+|{TESTS}/ikev2-stroke/rw-eap-aka-rsa[IPv4]
+|
+|
+
+|EAP_AKA authentication with EAP identity
+|{TESTS}/ikev2-stroke/rw-eap-aka-id-rsa[IPv4]
+|
+|
+
+|EAP_SIM authentication
+|{TESTS}/ikev2-stroke/rw-eap-sim-rsa[IPv4]
+|
+|{TESTS}/ikev2-stroke/rw-eap-sim-radius[RADIUS]
+
+
+|EAP_SIM authentication with EAP identity
+|
+|
+|{TESTS}/ikev2-stroke/rw-eap-sim-id-radius[RADIUS]
+
+|EAP_SIM only authentication
+|
+|
+|{TESTS}/ikev2-stroke/rw-eap-sim-only-radius[RADIUS]
+
+|EAP_MSCHAPv2 authentication with EAP identity
+|{TESTS}/ikev2-stroke/rw-eap-mschapv2-id-rsa[IPv4]
+|
+|
+
+|EAP_MD5 authentication
+|{TESTS}/ikev2-stroke/rw-eap-md5-rsa[IPv4]
+|
+|{TESTS}/ikev2-stroke/rw-eap-md5-radius[RADIUS]
+
+
+|EAP_MD5 authentication with EAP identity
+|{TESTS}/ikev2-stroke/rw-eap-md5-id-rsa[IPv4]
+|
+|{TESTS}/ikev2-stroke/rw-eap-md5-id-radius[RADIUS]
+
+|EAP_TLS authentication
+|{TESTS}/ikev2-stroke/rw-eap-tls-only[IPv4]
+|
+|{TESTS}/ikev2-stroke/rw-eap-tls-radius[RADIUS]
+
+|EAP_TTLS with EAP_MD5 client authentication
+|{TESTS}/ikev2-stroke/rw-eap-ttls-only[IPv4]
+|
+|{TESTS}/ikev2-stroke/rw-eap-ttls-radius[RADIUS]
+
+|EAP_PEAP with EAP_MD5 client authentication
+|{TESTS}/ikev2-stroke/rw-eap-peap-md5[IPv4]
+|
+|{TESTS}/ikev2-stroke/rw-eap-peap-radius[RADIUS]
+
+|EAP_PEAP with EAP_MSCHAPv2 client authentication
+|{TESTS}/ikev2-stroke/rw-eap-peap-mschapv2[IPv4]
+|
+|
+|===
+
+== Remote Access with Virtual IP Adresses
+
+[cols="4,3"]
+|===
+|RAM-based server-side virtual IP pool
+|{TESTS}/ikev2-stroke/ip-pool[IPv4]
+
+|DB-based server-side virtual IP pool
+|{TESTS}/ikev2-stroke/ip-pool-db[IPv4]
+
+|Static server-side virtual IP addresses
+|{TESTS}/ikev2-stroke/config-payload[IPv4]
+
+|Static client-side virtual IP addresses
+|{TESTS}/ikev2-stroke/virtual-ip[IPv4]
+
+|Two RAM-based server-side virtual IP pools
+|{TESTS}/ikev2-stroke/ip-two-pools[IPv4]
+
+|Two DB-based server-side virtual IP pools
+|{TESTS}/ikev2-stroke/ip-two-pools-db[IPv4]
+|===
+
+== Site-to-Site
+
+[cols="4,1,2"]
+|===
+|RSA authentication with X.509 certificates
+|{TESTS}/ikev2-stroke/net2net-cert[IPv4]
+|{TESTS}/ipv6-stroke/net2net-ikev2[IPv6]
+
+|PSK authentication with pre-shared keys 
+|{TESTS}/ikev2-stroke/net2net-psk[IPv4]
+|
+
+|Connection setup automatically started by daemon
+|{TESTS}/ikev2-stroke/net2net-start[IPv4]
+|
+
+|Connection setup triggered by data to be tunneled
+|{TESTS}/ikev2-stroke/net2net-route[IPv4]
+| 
+|===
+
+== Host-to-Host
+
+[cols="4,1,2"]
+|===
+|IPsec tunnel mode with X.509 certificates
+|{TESTS}/ikev2-stroke/host2host-cert[IPv4]
+|{TESTS}/ipv6-stroke/host2host-ikev2[IPv6]
+
+|IPsec transport mode with X.509 certificates
+|{TESTS}/ikev2-stroke/host2host-transport[IPv4]
+|{TESTS}/ipv6-stroke/transport-ikev2[IPv6]
+|===
+
+== IP Protocol and Port Policies
+
+[cols="4,3"]
+|===
+|IPsec tunnel restricted to ICMP and ssh protocols
+|{TESTS}/ikev2-stroke/protoport-dual[IPv4]
+|===
+
+== Complete List
+
+* {TESTS}/ikev2-stroke[All IKEv2 legacy test scenarios]
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
