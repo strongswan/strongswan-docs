@@ -26,7 +26,7 @@ The `*pki*` command suite allows you to run a simple public key infrastructure.
 Generate RSA, ECDSA or EdDSA public key pairs, create PKCS#10 certificate requests
 containing subjectAltNames, create X.509 self-signed end entity and root CA
 certificates, issue end entity and intermediate CA certificates signed by the
-private key of a CA and containing subjectAltNames, CRL distribution points and
+private key of a CA and containing `subjectAltNames`, CRL distribution points and
 URIs of OCSP servers. You can also extract raw public keys from private keys,
 certificate requests and certificates and compute two kinds of SHA1-based key IDs.
 
@@ -46,9 +46,10 @@ certificate requests and certificates and compute two kinds of SHA1-based key ID
 * xref:pkiPub#[`pki --pub`]
 * xref:pkiVerify#[`pki --verify`]
 
-== How-To's
+== Tutorial
 
-* Set up a xref:simpleCA[simple CA] and issue peer certificates.
+* A xref:pkiQuickstart#[quickstart] tutorial on the use of the `*pki*` tool
+can be found xref:pkiQuickstart#[here].
 
 :AS: mailto:andreas.steffen@strongswan.org
 :CC: http://creativecommons.org/licenses/by/4.0/
