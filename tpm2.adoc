@@ -13,11 +13,11 @@ library is available from the https://github.com/tpm2-software[`tpm2-software`]
 project that also offers a set of https://github.com/tpm2-software/tpm2-tools[`tpm2-tools`] using the
 https://trustedcomputinggroup.org/resource/tcg-tss-2-0-enhanced-system-api-esapi-specification/[TCG TSS 2.0 Enhanced System Level API].
 
-When using the latest *strongswan-5.9.1* version with a *Linux 5.4* kernel or newer, we recommend these latest versions:
+When using a *strongSwan* version newer than *5.9.0* with *Linux 5.4* kernel or newer, we recommend these latest versions:
 
-* *tpm2-tss* version 3.0.3: https://github.com/tpm2-software/tpm2-tss/releases/tag/3.0.3
+* *tpm2-tss* version 3.1.0: https://github.com/tpm2-software/tpm2-tss/releases/tag/3.1.0
 
-* *tpm2-tools* version 5.0: https://github.com/tpm2-software/tpm2-tools/releases/tag/5.0
+* *tpm2-tools* version 5.2: https://github.com/tpm2-software/tpm2-tools/releases/tag/5.2
 
 In order to test if we can connect to the TPM 2.0 device, we list all persistent keys stored in the Non-Volatile (NV) RAM:
 
@@ -30,7 +30,7 @@ $ tpm2_getcap handles-persistent
 ----
 
 The man pages of all `*tpm2-tools*` functions with their arguments can be found
-https://github.com/tpm2-software/tpm2-tools/tree/5.0/man[here].
+https://github.com/tpm2-software/tpm2-tools/tree/5.2/man[here].
 The access to the `*/dev/tpmrm0*` TPM resource manager device requires `*root*` rights on most Linux platforms.
 But e.g. with Ubuntu, adding the user to the `*tss*` group enables direct access to the TPM device:
 
@@ -92,14 +92,14 @@ At the end of the output the fingerprint of the 2048 bit RSA key is listed:
 
 === RSA Endorsement Key
 
-The https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_createek.1.md[`tpm2_createek`]
+The https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_createek.1.md[`tpm2_createek`]
 command derives a 2048 bit RSA Endorsement Key (EK) in a deterministic way from the secret
 _Endorsement Primary Seed_ *unique* to each TPM device and makes the key persistent
 in the non-volatile memory of the TPM under the object handle `*0x81010002*`
 
  $ tpm2_createek -G rsa -c 0x81010002
 
-Using the https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_getcap.1.md[`tpm2_getcap`]
+Using the https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_getcap.1.md[`tpm2_getcap`]
 command we can check that the newly derived Endorsement Key has been persisted in the NV RAM
 
 ----
@@ -126,7 +126,7 @@ signature algorithm is NULL with ERROR hash
 === Delete Persisted Keys
 
 We therefore delete the duplicate key with the following
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command
 
 ----
 $ tpm2_evictcontrol -c 0x81010002
@@ -148,7 +148,7 @@ $ tpm2_getcap handles-persistent
 === ECC Endorsement Key
 
 Again using the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_createek.1.md[`tpm2_createek`]
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_createek.1.md[`tpm2_createek`]
 command we derive a 256 bit ECC Endorsement Key (EK) in a deterministic way from the secret
 _Endorsement Primary Seed_ *unique* to each TPM device and make the key persistent
 in the non-volatile memory of the TPM under the object handle `*0x81010002*`:
@@ -174,7 +174,7 @@ signature algorithm is NULL with ERROR hash
 
 Endorsement Key certificates issued for Intel firmware TPMs can be automatically
 downloaded from an Intel web server using the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_getekcertificate.1.md[`tpm2_getcertificate`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_getekcertificate.1.md[`tpm2_getcertificate`] command:
 
  $ tpm2_getekcertificate -o ek_ecc.crt -u ek_ecc.pub
 
@@ -203,7 +203,7 @@ $ pki --print --type x509 --in ek_ecc.crt
 
 For the RSA 2048 Endorsement Key we first have to extract the public keyfile `*ek_rsa.pub*`
 in the TPM 2.0 proprietary format using the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_readpublic.1.md[`tpm2_readpublic`]
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_readpublic.1.md[`tpm2_readpublic`]
 command because we forgot to do this in the first place:
 
  $ tpm2_readpublic -Q -c 0x81010001 -o ek_rsa.pub
@@ -259,7 +259,7 @@ $ tpm2_getcap handles-nv-index
 - 0x1C101C0
 ----
 
-Using the https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvreadpublic.1.md[`tpm2_nvreadpublic`]
+Using the https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_nvreadpublic.1.md[`tpm2_nvreadpublic`]
 command we can look for large data objects which are prime candidates for X.509 certificates:
 
 ----
@@ -337,7 +337,7 @@ loaded certificate from TPM NV index 0x01c0000a
 ----
 
 or we can first retrieve the binary certificate blob from the NV RAM using the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvread.1.md[`tpm2_nvread`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_nvread.1.md[`tpm2_nvread`] command:
 
  $ tpm2_nvread 0x01c00012 -C o -o ek_ecc384.crt
 
@@ -373,12 +373,12 @@ TPM 2.0 - PCR banks: SHA1 SHA256
 === RSA Attestation Key
 
 A 2048 bit RSA Attestation Key (AK) bound to the RSA EK with handle `*0x81010001*` can be created with the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_createak.1.md[`tpm2_createak`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_createak.1.md[`tpm2_createak`] command:
 
  $ tpm2_createak -C 0x81010001 -G rsa -g sha256 -s rsassa -c ak_rsa.ctx -u ak_rsa.pub -n ak_rsa.name
 
 and made persistent under the handle `*0x81010003*` with the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
 
 ----
 $ tpm2_evictcontrol -C o -c ak_rsa.ctx 0x81010003
@@ -402,12 +402,12 @@ signature algorithm is RSASSA with SHA256 hash
 === ECC Attestation Key
 
 A 256 bit ECC Attestation Key (AK) bound to the ECC EK with handle `*0x81010002*` can be created with the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_createak.1.md[`tpm2_createak`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_createak.1.md[`tpm2_createak`] command:
 
  $ tpm2_createak -C 0x81010002 -G ecc -g sha256 -s ecdsa -c ak_ecc.ctx -u ak_ecc.pub -n ak_ecc.name
 
 and made persistent under the handle `*0x81010004*` with the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
 
 ----
 $ tpm2_evictcontrol -C o -c ak_ecc.ctx 0x81010004
@@ -642,7 +642,7 @@ $ ls -l ak_ecc_cert.der
 -rw-rw-r-- 1 andi andi 1001 Dez 23 15:31 ak_ecc_cert.der
 ----
 
-The https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvdefine.1.md[`tpm2_nvdefine`]
+The https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_nvdefine.1.md[`tpm2_nvdefine`]
 command allocates a memory location with a size of 1001 bytes that can be accessed
 via the handle `*0x01800004*` which is also called the NV index
 
@@ -653,7 +653,7 @@ nv-index: 0x1800004
 ----
 
 Then we write the certificate file to the NV RAM destination using the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvwrite.1.md[`tpm2_nvwrite`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_nvwrite.1.md[`tpm2_nvwrite`] command:
 
  $ tpm2_nvwrite 0x01800004 -C o -i ak_ecc_cert.der
 
@@ -682,7 +682,7 @@ and finally storing the certificate
 
 We decide to use the RSA AK certificate externally, though. Thus we release the
 memory assigned to NV index `*0x01800003*` via the
-https://github.com/tpm2-software/tpm2-tools/blob/5.0/man/tpm2_nvundefine.1.md[`tpm2_nvundefine`] command:
+https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_nvundefine.1.md[`tpm2_nvundefine`] command:
 
  $ tpm2_nvundefine 0x01800003 -C o
 
