@@ -46,6 +46,9 @@ certificate requests and certificates and compute two kinds of SHA1-based key ID
 * xref:pkiPub#[`pki --pub`]
 * xref:pkiVerify#[`pki --verify`]
 
+Each subcommand has additional options. Pass `*--help*` to a subcommand to get
+additional information.
+
 == Tutorial
 
 * A xref:pkiQuickstart#[quickstart] tutorial on the use of the `*pki*` tool
