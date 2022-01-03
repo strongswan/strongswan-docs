@@ -1,5 +1,4 @@
 = IKEv2 Configuration Examples
-:toc: left
 
 :TESTS: https://www.strongswan.org/testing/testresults
 

@@ -11,7 +11,7 @@ swanctl --initiate --help
 
 == Description
 
-This xref:swanctl#[`*swanctl*`] subcommand initiates a CHILD or IKE Security
+This xref:./swanctl.adoc[`*swanctl*`] subcommand initiates a CHILD or IKE Security
 Association.
 
 == Options

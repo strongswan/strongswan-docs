@@ -12,7 +12,7 @@ pki --keyid --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand computes and displays public key identifiers.
+This xref:./pki.adoc[`*pki*`] subcommand computes and displays public key identifiers.
 Currently these are
 
 * `spk`  for `subjkey` i.e. the SHA-1 hash of `subjectPublicKey` and

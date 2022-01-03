@@ -1,6 +1,5 @@
 = Trusted Platform Module 2.0
 :prewrap!:
-:toc: left
 
 == Connect to a TPM 2.0 Device
 
@@ -42,7 +41,7 @@ The strongSwan libtpmtss `*tpm*` plugin and the TSS2 interface are enabled and b
 
  $ ./configure --enable-tss-tss2 --enable-tpm  ...
 
-With the strongSwan xref:pki#[`pki`] tool we can now list the persistent key stored under the handle `*0x81010001*`
+With the strongSwan xref:pki/pki.adoc[`pki`] tool we can now list the persistent key stored under the handle `*0x81010001*`
 
  $ pki --print --type priv --keyid 0x81010001 --debug 2
 
@@ -64,7 +63,7 @@ TPM 2.0 via TSS2 v2 available
 signature algorithm is NULL with ERROR hash
 ----
 
-Debug level 2 shows that xref:pki#[`pki`] extracts the public key from the TPM and converts it into a standard PKCS#1 format:
+Debug level 2 shows that xref:pki/pki.adoc[`pki`] extracts the public key from the TPM and converts it into a standard PKCS#1 format:
 
 ----
 L0 - subjectPublicKeyInfo:
@@ -179,7 +178,7 @@ https://github.com/tpm2-software/tpm2-tools/blob/5.2/man/tpm2_getekcertificate.1
  $ tpm2_getekcertificate -o ek_ecc.crt -u ek_ecc.pub
 
 For successful retrieval the public key `*ek_ecc.pub*` in the TPM 2.0 proprietary format is required.
-Using the xref:pki#[`pki`] tool we can list the downloaded EK certificate belonging to the ECC key:
+Using the xref:pki/pki.adoc[`pki`] tool we can list the downloaded EK certificate belonging to the ECC key:
 
 ----
 $ pki --print --type x509 --in ek_ecc.crt
@@ -298,7 +297,7 @@ $ tpm2_nvreadpublic
   ...
 ----
 
-We can use xref:pki#[`pki`] to directly list the properties of the EK certificates:
+We can use xref:pki/pki.adoc[`pki`] to directly list the properties of the EK certificates:
 
 ----
 $ pki --print --type x509 --keyid 0x01c00002
@@ -432,7 +431,7 @@ signature algorithm is ECDSA with SHA256 hash
 
 === RSA Certificate Request
 
-The xref:pki#[`pki`] tool can directly generate a *PKCS#10* certificate request
+The xref:pki/pki.adoc[`pki`] tool can directly generate a *PKCS#10* certificate request
 self-signed by the TPM 2.0 private key and containing the corresponding public
 key as well as the desired end entity identity: 
 
@@ -548,7 +547,7 @@ Certificate Request:
 
 X.509 end entity certificates have to be signed by an in-house or official external
 __Certification Authority__ (CA). In our example we are using the *strongSec 2016 Root CA*
-which was generated in 2016 with the xref:pki#[`pki`] command
+which was generated in 2016 with the xref:pki/pki.adoc[`pki`] command
 
  $ pki --gen --type rsa --size 4096 --outform pem > cakey.pem
 
@@ -772,13 +771,13 @@ Jan 04 15:18:38 edu charon-systemd[648407]: TPM 2.0 via TSS2 v2 available
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded certificate from TPM NV index 0x01800004
 ----
 
-The connection definition is received by the `*charon-systemd*` daemon triggered by the xref:swanctl#[`swanctl --load-conns`] command via the VICI interface
+The connection definition is received by the `*charon-systemd*` daemon triggered by the xref:swanctl/swanctl.adoc[`swanctl --load-conns`] command via the VICI interface
 
 ----
 Jan 04 15:18:38 edu charon-systemd[648407]: added vici connection: host
 ----
 
-The xref:swanctl#[`swanctl`] command line tool reports its actions
+The xref:swanctl/swanctl.adoc[`swanctl`] command line tool reports its actions
 
 ----
 Jan 04 15:18:38 edu swanctl[648429]: loaded certificate from '/etc/swanctl/x509/ak_rsa_cert.der'
@@ -793,7 +792,7 @@ Jan 04 15:18:38 edu swanctl[648429]: successfully loaded 1 connections, 0 unload
 Jan 04 15:18:38 edu systemd[1]: Started strongSwan IPsec IKEv1/IKEv2 daemon using swanctl.
 ----
 
-The xref:swanctl#[`swanctl`] command allows to list the loaded connection definitions
+The xref:swanctl/swanctl.adoc[`swanctl`] command allows to list the loaded connection definitions
 
 ----
 $ swanctl --list-conns

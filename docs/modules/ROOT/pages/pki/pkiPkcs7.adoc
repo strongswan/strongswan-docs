@@ -12,7 +12,7 @@ pki --pkcs7 --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand offers PKCS#7 wrap/unwrap functions.
+This xref:./pki.adoc[`*pki*`] subcommand offers PKCS#7 wrap/unwrap functions.
 
 == Options
 

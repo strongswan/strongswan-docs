@@ -11,7 +11,7 @@ pki --pkcs12 --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand handles PKCS#12 containers.
+This xref:-$./pki.adoc[`*pki*`] subcommand handles PKCS#12 containers.
 
 == Options
 

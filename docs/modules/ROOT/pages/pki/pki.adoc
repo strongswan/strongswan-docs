@@ -32,27 +32,36 @@ certificate requests and certificates and compute two kinds of SHA1-based key ID
 
 == Subcommands
 
-* xref:pkiGen#[`pki --gen`]
-* xref:pkiSelf#[`pki --self`]
-* xref:pkiIssue#[`pki --issue`]
-* xref:pkiSignCrl#[`pki --signcrl`]
-* xref:pkiReq#[`pki --req`]
-* xref:pkiAcert#[`pki --acert`]
-* xref:pkiPkcs7#[`pki --pkcs7`]
-* xref:pkiPkcs12#[`pki --pkcs12`]
-* xref:pkiKeyid#[`pki --keyid`]
-* xref:pkiPrint#[`pki --print`]
-* xref:pkiDn#[`pki --dn`]
-* xref:pkiPub#[`pki --pub`]
-* xref:pkiVerify#[`pki --verify`]
+[cols="1,1,1,1"]
+|===
+|xref:./pkiGen.adoc[`pki --gen`]
+|xref:./pkiSelf.adoc[`pki --self`]
+|xref:./pkiPrint.adoc[`pki --print`]
+|xref:./pkiPkcs7.adoc[`pki --pkcs7`]
+
+|xref:./pkiKeyid.adoc[`pki --keyid`]
+|xref:./pkiIssue.adoc[`pki --issue`]
+|xref:./pkiAcert.adoc[`pki --acert`]
+|xref:./pkiPkcs12.adoc[`pki --pkcs12`]
+
+|xref:./pkiPub.adoc[`pki --pub`]
+|xref:./pkiSignCrl.adoc[`pki --signcrl`]
+|xref:./pkiVerify.adoc[`pki --verify`]
+|xref:./pkiDn.adoc[`pki --dn`]
+
+|xref:./pkiReq.adoc[`pki --req`]
+|
+|
+|
+|===
 
 Each subcommand has additional options. Pass `*--help*` to a subcommand to get
 additional information.
 
 == Tutorial
 
-* A xref:pkiQuickstart#[quickstart] tutorial on the use of the `*pki*` tool
-can be found xref:pkiQuickstart#[here].
+* A xref:./pkiQuickstart.adoc[quickstart] tutorial on the use of the `*pki*` tool
+can be found xref:./pkiQuickstart.adoc[here].
 
 :AS: mailto:andreas.steffen@strongswan.org
 :CC: http://creativecommons.org/licenses/by/4.0/

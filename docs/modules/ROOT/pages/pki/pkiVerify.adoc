@@ -11,7 +11,7 @@ pki --verify --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand verifies and status the signature of an
+This xref:./pki.adoc[`*pki*`] subcommand verifies and status the signature of an
 X.509 certificate.
 
 

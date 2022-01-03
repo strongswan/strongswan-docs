@@ -16,7 +16,7 @@ pki --signcrl --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand generates an X.509 certificate revocation list (CRL)
+This xref:./pki.adoc[`*pki*`] subcommand generates an X.509 certificate revocation list (CRL)
 signed by a CA private key.
 
 == Options

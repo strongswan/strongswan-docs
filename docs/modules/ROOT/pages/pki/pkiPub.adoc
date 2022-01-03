@@ -12,7 +12,7 @@ pki --pub --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand extracts the public key from a private key,
+This xref:./pki.adoc[`*pki*`] subcommand extracts the public key from a private key,
 a PKCS#10 certificate request or an X.509 certificate.
 
 == Options

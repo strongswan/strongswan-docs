@@ -1,0 +1,5 @@
+name: strongswan-docs
+title: strongSwan Docs
+version: 5.9
+nav:
+        - modules/ROOT/nav.adoc

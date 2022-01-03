@@ -15,7 +15,7 @@ pki --acert --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand issues an X.509 attribute certificate linked to
+This xref:./pki.adoc[`*pki*`] subcommand issues an X.509 attribute certificate linked to
 a holder certificate.
 
 == Options

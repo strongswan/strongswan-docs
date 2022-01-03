@@ -12,7 +12,7 @@ pki --gen --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand generates a random RSA, ECDSA or EdDSA private key.
+This xref:./pki.adoc[`*pki*`] subcommand generates a random RSA, ECDSA or EdDSA private key.
 
 == Options
 

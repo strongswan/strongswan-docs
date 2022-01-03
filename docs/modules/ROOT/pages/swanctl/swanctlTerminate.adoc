@@ -12,8 +12,9 @@ swanctl --terminate --help
 
 == Description
 
-This xref:swanctl#[`*swanctl*`] subcommand terminates either a single `CHILD`
-Security Association or an `IKE SA` together with all its dependent `CHILD SAs`.
+This xref:./swanctl.adoc[`*swanctl*`] subcommand terminates either a single
+`CHILD` Security Association or an `IKE SA` together with all its dependent
+`CHILD SAs`.
 
 == Options
 

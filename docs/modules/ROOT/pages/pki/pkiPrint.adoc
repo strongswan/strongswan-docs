@@ -11,7 +11,7 @@ pki --print --help
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand prints credentials in a human readable form.
+This xref:./pki.adoc[`*pki*`] subcommand prints credentials in a human readable form.
 
 == Options
 

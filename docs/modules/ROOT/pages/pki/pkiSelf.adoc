@@ -1,38 +1,35 @@
-= pki --issue
+= pki --self
 :prewrap!:
 
 == Synopsis
 
 ----
-pki --issue [--in file] [--type pub|pkcs10|priv|rsa|ecdsa|ed25519|ed448] --cakey file|--cakeyid hex
-             --cacert file [--dn subject-dn] [--san subjectAltName]+
-            [--lifetime days] [--not-before datetime] [--not-after datetime] [--dateform form]
-            [--serial hex] [--ca] [--pathlen len] [--addrblock addr|subnet|range]+
-            [--flag serverAuth|clientAuth|crlSign|ocspSigning]+
-            [--crl uri [--crlissuer i]]+ [--ocsp uri]+ [--nc-permitted name]
-            [--nc-excluded name] [--policy-map issuer-oid:subject-oid]
-            [--policy-explicit len] [--policy-inhibit len] [--policy-any len]
-            [--cert-policy oid [--cps-uri uri] [--user-notice text]]+
-            [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
-            [--rsa-padding pkcs1|pss] [--outform der|pem]
+pki --self [--in file|--keyid hex] [--type rsa|ecdsa|ed25519|ed448|priv]
+            --dn distinguished-name [--san subjectAltName]+
+           [--lifetime days] [--not-before datetime] [--not-after datetime] [--dateform form]
+           [--serial hex] [--ca] [--pathlen len] [--addrblock addr|subnet|range]+
+           [--ocsp uri]+ [--flag serverAuth|clientAuth|crlSign|ocspSigning]+
+           [--nc-permitted name] [--nc-excluded name]
+           [--policy-map issuer-oid:subject-oid]
+           [--policy-explicit len] [--policy-inhibit len] [--policy-any len]
+           [--cert-policy oid [--cps-uri uri] [--user-notice text]]+
+           [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
+           [--rsa-padding pkcs1|pss] [--outform der|pem]
 
-pki --issue --help
+pki --self --help
 ----
 
 == Description
 
-This xref:pki#[`*pki*`] subcommand generates an X.509 certificate signed with a CA's
-private key.
+This xref:./pki.adoc[`*pki*`] subcommand generates a self-signed X.509 certificate.
 
 == Options
 
 ----
---in              (-i)  key/request file to issue, default: stdin
---type            (-t)  type of input, default: pub
---cacert          (-c)  CA certificate file
---cakey           (-k)  CA private key file
---cakeyid         (-x)  smartcard or TPM CA private key object handle
---dn              (-d)  distinguished name to include as subject
+--in              (-i)  private key input file, default: stdin
+--keyid           (-x)  smartcard or TPM private key object handle
+--type            (-t)  type of input key, default: priv
+--dn              (-d)  subject and issuer distinguished name
 --san             (-a)  subjectAltName to include in certificate
 --lifetime        (-l)  days the certificate is valid, default: 1095
 --not-before      (-F)  absolute time when the validity of the certificate begins
@@ -52,8 +49,6 @@ private key.
 --policy-inhibit  (-H)  inhibitPolicyMapping constraint
 --policy-any      (-A)  inhibitAnyPolicy constraint
 --flag            (-e)  include extendedKeyUsage flag
---crl             (-u)  CRL distribution point URI to include
---crlissuer       (-I)  CRL Issuer for CRL at distribution point
 --ocsp            (-o)  OCSP AuthorityInfoAccess URI to include
 --digest          (-g)  digest for signature creation, default: key-specific
 --rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
@@ -63,18 +58,15 @@ private key.
 --help            (-h)  show usage information
 ----
 
-The generic type `priv` can be used to load any supported private key type.
-
 == Examples
 
-* Create an `options` file to save repetitive typing work
+* Generate a self-signed end-entity certificate in DER format
 ----
-cat > pki.opt
---cacert caCert.der --cakey caKey.der --digest sha256 --flag serverAuth --lifetime 1460
+pki --self --in myKey.der --dn "C=CH, O=strongSwan, CN=moon.strongswan.org" > myCert.der
 ----
-* Issue an X.509 certificate based on a PKCS#10 certificate request
+* Generate a self-signed CA root certificate in PEM format
 ----
-pki --issue --options pki.opt --serial 01 --type pkcs10 --in myReq.der > myCert.der
+pki --self --in myCaKey.der --ca --dn "C=CH, O=strongSwan, CN=Root CA" --outform pem > myCaCert.pem
 ----
 
 :AS: mailto:andreas.steffen@strongswan.org

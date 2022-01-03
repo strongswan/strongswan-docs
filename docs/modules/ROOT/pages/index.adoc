@@ -1,0 +1,41 @@
+= strongSwan Documentation
+
+== Configuration Examples
+
+=== Modern vici-based Scenarios
+
+:VICI: https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/vici/README.md
+
+These scenarios use the modern {VICI}[Versatile IKE Control Interface] (VICI) as
+implemented by the `*vici*` plugin and the xref:swanctl/swanctl.adoc[`*swanctl*`]
+command line tool.
+
+* xref:config/quickstart.adoc[`*Quickstart*`] examples
+* xref:config/IKEv2.adoc[`*IKEv2*`] examples
+* xref:config/IKEv1.adoc[`*IKEv1*`] examples
+* xref:config/IPv6.adoc[`*IPv6*`] examples
+
+=== Legacy stroke-based Scenarios
+
+These scenarios use the deprecated `*stroke*` interface as implemented by the
+`*stroke*` plugin and the `*ipsec*` command line tool.
+
+* xref:config/IKEv2Stroke.adoc[`*IKEv2*`] examples
+* xref:config/IKEv1Stroke.adoc[`*IKEv1*`] examples
+* xref:config/IPv6Stroke.adoc[`*IPv6*`] examples
+
+== Platform Security
+
+* xref:tpm/tpm2.adoc[Using TPM 2.0 keys with strongSwan]
+
+== Tools
+
+* xref:swanctl/swanctl.adoc[`*swanctl*`] configures, controls and monitors the
+  `*charon*` IKE daemon
+* xref:pki/pki.adoc[`*pki*`] generates and analyzes RSA, ECDSA or EdDSA private
+  keys and X.509 certificates
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

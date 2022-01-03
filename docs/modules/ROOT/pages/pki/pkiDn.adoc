@@ -11,9 +11,10 @@ pki --dn --help
 
 == Description
 
-Extract the ASN.1-encoded subject `DistinguishedName` (`DN`) of an X.509 certificate
-and export it in different formats. This may be useful when the strongSwan
-identity parser is unable to produce the correct binary encoding from a string.
+This xref:./pki.adoc[`*pki*`] subcommand extracts the ASN.1-encoded subject
+`DistinguishedName` (`DN`) of an X.509 certificate and export it in different
+formats. This may be useful when the strongSwan identity parser is unable to
+produce the correct binary encoding from a string.
 
 == Options
 

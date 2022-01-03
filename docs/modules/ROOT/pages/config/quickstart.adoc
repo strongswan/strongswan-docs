@@ -1,14 +1,13 @@
 = Configuration Quickstart
 :prewrap!:
-:toc: left
 
 Certificates for users, hosts and gateways are issued by a fictitious
 strongSwan CA. In our example scenarios the CA certificate `strongswanCert.pem`
 must be present on all VPN endpoints in order to be able to authenticate the
 peers. For your particular VPN application you can either use certificates from
 any third-party CA or generate the needed private keys and certificates yourself
-with the strongSwan xref:pki#[`*pki*`] tool, the use of which is explained
-in the xref:pkiQuickstart#[certificates quickstart] section.
+with the strongSwan xref:pki/pki.adoc[`*pki*`] tool, the use of which is explained
+in the xref:pki/pkiQuickstart.adoc[certificates quickstart] section.
 
 == Site-to-Site Case
 

@@ -1,15 +1,14 @@
 = Certificates Quickstart
 :prewrap!:
-:toc: left
 
 This section is not a full-blown tutorial on how to use the strongSwan
-xref:pki#[`*pki*`] tool. It just lists a few points that are relevant if you
+xref:./pki.adoc[`*pki*`] tool. It just lists a few points that are relevant if you
 want to generate your own certificates and certificate revocation lists (`CRLs`)
 for use with strongSwan.
 
 == Generating a CA Certificate
 
-The xref:pki#[`*pki*`] command
+The xref:./pki.adoc[`*pki*`] command
 
     pki --gen --type ed25519 --outform pem > strongswanKey.pem
 
@@ -55,9 +54,9 @@ type
     pki --gen --type rsa --size 3072 > moonKey.der
 
 to generate a traditional 3072 bit RSA key and store it in binary `DER` format.
-As an alternative a  xref:tpm2#[`*TPM 2.0*`] _Trusted Platform Module_ available
+As an alternative a  xref:tpm/tpm2.adoc[`*TPM 2.0*`] _Trusted Platform Module_ available
 on every recent Intel platform could be used as a virtual smartcard to securely
-store an `RSA` or `ECDSA` private key. For details, refer to the xref:tpm2#[`*TPM 2.0*`]
+store an `RSA` or `ECDSA` private key. For details, refer to the xref:tpm/tpm2.adoc[`*TPM 2.0*`]
 tutorial.
 
 In a next step the command
@@ -124,7 +123,7 @@ to load this information is to put everything into a `PKCS#12` container:
                    -certfile strongswanCert.pem -caname "strongSwan Root CA" \
                    -out carolCert.p12
 
-The strongSwan xref:pki#[`*pki*`] tool currently is not able to create `PKCS#12`
+The strongSwan xref:./pki.adoc[`*pki*`] tool currently is not able to create `PKCS#12`
 containers so that `*openssl*` must be used.
 
 
@@ -152,9 +151,9 @@ A specific end entity certificate is revoked with the command
 
 Instead of the certificate file (in our example `moonCert.pem`), the serial number
 of the certificate to be revoked can be indicated using the `--serial`
-parameter. The xref:pkiSignCrl#[`*pki --signcrl*`] `--help` command documents all
-possible revocation reasons but the `--reason` parameter can also be omitted.
-The content of the new CRL file can be listed with the command
+parameter. The xref:./pkiSignCrl.adoc[`*pki --signcrl*`] `--help` command
+documents all possible revocation reasons but the `--reason` parameter can also
+be omitted. The content of the new CRL file can be listed with the command
 
     pki --print --type crl --in new.crl
 
