@@ -1,0 +1,57 @@
+= swanctl --terminate
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --terminate --child <name> | --ike <name> |
+                    --child-id <id> | --ike-id <id> [--timeout <s>]
+
+swanctl --terminate --help
+----
+
+== Description
+
+This xref:swanctl#[`*swanctl*`] subcommand terminates either a single `CHILD`
+Security Association or an `IKE SA` together with all its dependent `CHILD SAs`.
+
+== Options
+
+----
+--child     (-c)  terminate by CHILD_SA name
+--ike       (-i)  terminate by IKE_SA name
+--child-id  (-C)  terminate by CHILD_SA reqid
+--ike-id    (-I)  terminate by IKE_SA unique identifier
+--force     (-f)  terminate IKE_SA without waiting, unless timeout is set
+--timeout   (-t)  timeout in seconds before detaching
+----
+----
+--raw       (-r)  dump raw response message
+--pretty    (-P)  dump raw response message in pretty print
+--loglevel  (-l)  verbosity of redirected log
+--debug     (-v)  set debug level, default: 1
+--options   (-+)  read command line options from file
+--uri       (-u)  service URI to connect to
+--help      (-h)  show usage information
+----
+
+== Examples
+
+Let's assume we have an `IKE SA` named `*home*` with a `CHILD SA` named `*net*`.
+
+* Terminate the `IKE SA` called `*home*` together with its dependent `CHILD SA`
+  `*net*`
+----
+swanctl --terminate --ike home
+----
+
+* Terminate the `CHILD SA` `*net*` only, leaving the parent `IKE SA` `*home*`
+  installed.
+----
+swanctl --terminate --child net
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

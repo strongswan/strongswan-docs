@@ -1,18 +1,14 @@
 = swanctl
 :prewrap!:
 
-`*swanctl*` a command line utility to configure, control and monitor the IKE
-`*charon*` daemon using the xref:vici#[`*vici*`] interface.
-
-
 == Synopsis
 
 ----
 swanctl --initiate         (-i)  initiate a connection
         --terminate        (-t)  terminate a connection
         --rekey            (-R)  rekey an IKE or CHILD_SA
-        --uninstall        (-u)  uninstall a trap or shunt policy
         --install          (-p)  install a trap or shunt policy
+        --uninstall        (-u)  uninstall a trap or shunt policy
         --redirect         (-d)  redirect an IKE_SA
         --list-sas         (-l)  list currently active IKE_SAs
         --list-pols        (-P)  list currently installed policies
@@ -35,30 +31,62 @@ swanctl --initiate         (-i)  initiate a connection
         --help             (-h)  show usage information
 ----
 
+== Description
+
+`*swanctl*` is a command line utility to configure, control and monitor the IKE
+`*charon*` daemon using the xref:vici#[`*vici*`] interface.
+
+== Subcommands
+
+* xref:swanctlInitiate#[`swanctl --initiate`]
+* xref:swanctlTerminate#[`swanctl --terminate`]
+* xref:swanctlRekey#[`swanctl --rekey`]
+* xref:swanctlInstall#[`swanctl --install`]
+* xref:swanctlUninstall#[`swanctl --uninstall`]
+* xref:swanctlRedirect#[`swanctl --redirect`]
+* xref:swanctlListSas#[`swanctl --list-sas`]
+* xref:swanctlListPols#[`swanctl --list-pols`]
+* xref:swanctlListConns#[`swanctl --list-conns`]
+* xref:swanctlListAuths#[`swanctl --list-authorities`]
+* xref:swanctlListCerts#[`swanctl --list-certs`]
+* xref:swanctlListPools#[`swanctl --list-pools`]
+* xref:swanctlListAlgs#[`swanctl --list-algs`]
+* xref:swanctlLoadAll#[`swanctl --load-all`]
+* xref:swanctlLoadAuths#[`swanctl --load-authorities`]
+* xref:swanctlLoadConns#[`swanctl --load-conns`]
+* xref:swanctlLoadCreds#[`swanctl --load-creds`]
+* xref:swanctlLoadPools#[`swanctl --load-pools`]
+* xref:swanctlLog#[`swanctl --log`]
+* xref:swanctlFlushCerts#[`swanctl --flush-certs`]
+* xref:swanctlReloadSettings#[`swanctl --reload-settings`]
+* xref:swanctlStats#[`swanctl --stats`]
+* xref:swanctlCounters#[`swanctl --counters`]
+* xref:swanctlVersion#[`swanctl --version`]
+
 Each subcommand has additional options. Pass `*--help*` to a subcommand to get
 additional information.
 
-
 == swanctl.conf
 
-The `*swanctl --load*` commands read connections, secrets and IP address pools
-from xref:swanctlConf#[`*swanctl.conf*`], located in the
+The `*swanctl --load-...*` commands read connections, secrets and IP address pools
+from xref:swanctlConf#[`*swanctl.conf*`] located in the
 xref:swanctlDirectory#[swanctl configuration directory], usually _/etc/swanctl_.
 
-Since version:5.7.0 the loaded file may be specified for each command explicitly
-via @--file@ argument (e.g. to use separate files for connections and credentials),
-and since version:5.7.2 the default directory for the file and
-[[swanctlDirectory|the credentials]] may be set via @SWANCTL_DIR@ environment variable.
+The configuration file to be loaded may be specified for each command explicitly
+via the `*--file*` argument (e.g. to use separate files for connections and
+credentials). The default directory for the file and the
+[[swanctlDirectory|credentials]] may be set via the `*SWANCTL_DIR*` environment
+variable.
 
 == Credential directories
 
-The @--load-creds@ command also reads file based credentials, such as private keys
-and certificates, from a set of pre-defined sub-directories of the
-[[swanctlDirectory|swanctl configuration directory]].
+The `*--load-creds*` command also reads file-based credentials, such as private
+keys and certificates from a set of pre-defined sub-directories in the
+xref:swanctlDirectory#[swanctl configuration directory].
 
-Since version:5.7.2 the [[swanctlDirectory|credential directories]] are accessed
-relative to the actually loaded [[swanctl.conf]] file (see above) and the default
-directory may be changed at runtime via @SWANCTL_DIR@ environment variable.
+The [[swanctlDirectory|credential directories]] are accessed relative to the
+[[swanctl.conf]] file actually loaded  (see above) and the default
+directory may be changed at runtime via the `*SWANCTL_DIR*` environment variable.
 
 :AS: mailto:andreas.steffen@strongswan.org
 :CC: http://creativecommons.org/licenses/by/4.0/
