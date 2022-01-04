@@ -1,0 +1,45 @@
+= swanctl --load-authorities
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --load-authorities [--file]
+
+swanctl --load-authorities --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads certification
+authorities information
+
+== Options
+
+----
+--file     (-f)  custom path to swanctl.conf
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Load or reload all certificate authorities information
+----
+$ swanctl --load-authorities
+
+loaded authority 'strongswan'
+loaded authority 'research'
+loaded authority 'sales'
+successfully loaded 3 authorities, 0 unloaded
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

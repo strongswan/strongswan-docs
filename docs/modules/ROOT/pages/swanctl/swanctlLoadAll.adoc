@@ -1,0 +1,51 @@
+= swanctl --load-all
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --load-all [--clear] [--noprompt] [--file]
+
+swanctl --load-all --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand executes
+
+* xref:./swanctlLoadConns.adoc[`*swanctl --load-conns*`]
+
+* xref:./swanctlLoadCreds.adoc[`*swanctl --load-creds*`]
+
+* xref:./swanctlLoadAuths.adoc[`*swanctl --load-authorities*`]
+
+* xref:./swanctlLoadConns.adoc[`*swanctl --load-pools*`]
+
+within a single command.
+
+== Options
+
+----
+--clear    (-c)  clear previously loaded credentials
+--noprompt (-n)  do not prompt for passwords
+--file     (-f)  custom path to swanctl.conf
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Load or reload all connections, credentials, authorities and IP address pools
+----
+$ swanctl --load-all
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

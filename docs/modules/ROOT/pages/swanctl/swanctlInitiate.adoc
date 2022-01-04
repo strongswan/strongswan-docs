@@ -20,8 +20,7 @@ Association.
 --child    (-c)  initiate a CHILD_SA configuration
 --ike      (-i)  initiate an IKE_SA, or name of child's parent
 --timeout  (-t)  timeout in seconds before detaching
-----
-----
+
 --raw      (-r)  dump raw response message
 --pretty   (-P)  dump raw response message in pretty print
 --loglevel (-l)  verbosity of redirected log
@@ -38,12 +37,12 @@ Let's assume we have an `IKE SA` named `*home*` with a `CHILD SA` named `*net*`.
 * Initiate the `CHILD SA` called `*net*` which first establishes the parent
   `IKE SA` `*home*`
 ----
-swanctl --initiate --child net
+$ swanctl --initiate --child net
 ----
 
 * Initiate the `IKE SA` `*home*` only, without installing any `CHILD SA`
 ----
-swanctl --initiate --ike home
+$ swanctl --initiate --ike home
 ----
 
 :AS: mailto:andreas.steffen@strongswan.org

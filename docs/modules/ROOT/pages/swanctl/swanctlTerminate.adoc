@@ -25,8 +25,7 @@ This xref:./swanctl.adoc[`*swanctl*`] subcommand terminates either a single
 --ike-id    (-I)  terminate by IKE_SA unique identifier
 --force     (-f)  terminate IKE_SA without waiting, unless timeout is set
 --timeout   (-t)  timeout in seconds before detaching
-----
-----
+
 --raw       (-r)  dump raw response message
 --pretty    (-P)  dump raw response message in pretty print
 --loglevel  (-l)  verbosity of redirected log
@@ -43,13 +42,13 @@ Let's assume we have an `IKE SA` named `*home*` with a `CHILD SA` named `*net*`.
 * Terminate the `IKE SA` called `*home*` together with its dependent `CHILD SA`
   `*net*`
 ----
-swanctl --terminate --ike home
+$ swanctl --terminate --ike home
 ----
 
 * Terminate the `CHILD SA` `*net*` only, leaving the parent `IKE SA` `*home*`
   installed.
 ----
-swanctl --terminate --child net
+$ swanctl --terminate --child net
 ----
 
 :AS: mailto:andreas.steffen@strongswan.org

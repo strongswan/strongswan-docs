@@ -1,0 +1,59 @@
+= swanctl --list-authorities
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --list-authorities [--name <name>]
+
+swanctl --list-authorities --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand lists loaded certification
+authorities information
+
+== Options
+
+----
+--name     (-n)  filter by authority name
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* List the loaded certification authorities information
+----
+$ swanctl --list-authorities
+
+strongswan:
+  cacert: C=CH, O=strongSwan Project, CN=strongSwan Root CA
+  ocsp_uris: http://ocsp.strongswan.org:8880
+research:
+  cacert: C=CH, O=strongSwan Project, OU=Research, CN=Research CA
+  ocsp_uris: http://ocsp.strongswan.org:8881
+sales:
+  cacert: C=CH, O=strongSwan Project, OU=Sales, CN=Sales CA
+  ocsp_uris: http://ocsp.strongswan.org:8882----
+----
+
+* List the `*research*` authority only
+----
+$ swanctl --list-authorities --name research
+
+research:
+  cacert: C=CH, O=strongSwan Project, OU=Research, CN=Research CA
+  ocsp_uris: http://ocsp.strongswan.org:8881
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

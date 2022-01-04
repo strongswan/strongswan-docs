@@ -1,0 +1,157 @@
+= swanctl --list-counters
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --counters [--name <name>|--all] [--reset]
+
+swanctl --list-counters --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand lists the current state of the
+`IKE` message counters and requires the xref:plugins/counters.adoc[`*counters*`]
+plugin to be loaded by the `*charon*` daemon.
+
+== Options
+
+----
+--name     (-n)  connection name, omit for global counters
+--all      (-a)  get/reset counters for all tracked connections
+--reset    (-R)  reset the counters
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* List the global counters
+----
+$ swanctl --counters
+
+global:
+  ike-rekey-init        : 0
+  ike-rekey-resp        : 0
+  child-rekey           : 0
+  invalid               : 0
+  invalid-spi           : 0
+  ike-init-in-req       : 3
+  ike-init-in-resp      : 0
+  ike-init-out-req      : 0
+  ike-init-out-resp     : 3
+  ike-auth-in-req       : 3
+  ike-auth-in-resp      : 0
+  ike-auth-out-req      : 0
+  ike-auth-out-resp     : 3
+  create-child-in-req   : 0
+  create-child-in-resp  : 0
+  create-child-out-req  : 0
+  create-child-out-resp : 0
+  info-in-req           : 3
+  info-in-resp          : 0
+  info-out-req          : 0
+  info-out-resp         : 3
+----
+
+* List the counters of all tracked connections
+----
+$ swanctl --list-pols --all
+
+qske:
+  ike-rekey-init        : 0
+  ike-rekey-resp        : 0
+  child-rekey           : 0
+  invalid               : 0
+  invalid-spi           : 0
+  ike-init-in-req       : 0
+  ike-init-in-resp      : 0
+  ike-init-out-req      : 0
+  ike-init-out-resp     : 0
+  ike-auth-in-req       : 0
+  ike-auth-in-resp      : 0
+  ike-auth-out-req      : 0
+  ike-auth-out-resp     : 1
+  create-child-in-req   : 0
+  create-child-in-resp  : 0
+  create-child-out-req  : 0
+  create-child-out-resp : 0
+  info-in-req           : 1
+  info-in-resp          : 0
+  info-out-req          : 0
+  info-out-resp         : 1
+rw:
+  ike-rekey-init        : 0
+  ike-rekey-resp        : 0
+  child-rekey           : 0
+  invalid               : 0
+  invalid-spi           : 0
+  ike-init-in-req       : 0
+  ike-init-in-resp      : 0
+  ike-init-out-req      : 0
+  ike-init-out-resp     : 0
+  ike-auth-in-req       : 0
+  ike-auth-in-resp      : 0
+  ike-auth-out-req      : 0
+  ike-auth-out-resp     : 1
+  create-child-in-req   : 0
+  create-child-in-resp  : 0
+  create-child-out-req  : 0
+  create-child-out-resp : 0
+  info-in-req           : 2
+  info-in-resp          : 0
+  info-out-req          : 0
+  info-out-resp         : 2
+----
+
+* List counters of connection `*rw*` only
+----
+$ swanctl --counters --name rw
+rw:
+  ike-rekey-init        : 0
+  ike-rekey-resp        : 0
+  child-rekey           : 0
+  invalid               : 0
+  invalid-spi           : 0
+  ike-init-in-req       : 0
+  ike-init-in-resp      : 0
+  ike-init-out-req      : 0
+  ike-init-out-resp     : 0
+  ike-auth-in-req       : 0
+  ike-auth-in-resp      : 0
+  ike-auth-out-req      : 0
+  ike-auth-out-resp     : 1
+  create-child-in-req   : 0
+  create-child-in-resp  : 0
+  create-child-out-req  : 0
+  create-child-out-resp : 0
+  info-in-req           : 2
+  info-in-resp          : 0
+  info-out-req          : 0
+  info-out-resp         : 2
+----
+
+* Reset counters of connection `*rw*` only
+----
+$ swanctl --counters --name rw --reset
+
+reset-counters completed successfully
+----
+
+* Try to list reset counters of connection `*rw*`
+----
+$ swanctl --counters --name rw
+
+get-counters failed: no counters found for this connection
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

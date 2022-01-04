@@ -1,0 +1,56 @@
+= swanctl --redirect
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --redirect --ike <name> | --ike-id <id> | --peer-ip <ip|subnet|range>
+                   --peer-id <id|wildcards> | --gateway <ip|fqdn>
+
+swanctl --redirect --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand redirects an `IKE SA` to
+an alternative VPN gateway.
+
+== Options
+
+----
+--ike      (-i)  redirect by IKE_SA name
+--ike-id   (-I)  redirect by IKE_SA unique identifier
+--peer-ip  (-p)  redirect by client IP
+--peer-id  (-d)  redirect by IKE_SA name
+--gateway  (-g)  target gateway (IP or FQDN)
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Redirect the `IKE SA` of peer with IP address `*192.168.0.100*` to VPN gateway
+  with IP address `*192.168.0.1*`
+----
+$ swanctl --redirect --peer-ip 192.168.0.100 --gateway 192.168.0.1
+
+redirect completed successfully
+----
+
+* Redirect the `IKE SA` of peer `*dave@strongswan.org*` to VPN gateway
+  `*moon.strongswan.org*`
+----
+$ swanctl --redirect --peer-id dave@strongswan.org --gateway moon.strongswan.org
+
+redirect completed successfully
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

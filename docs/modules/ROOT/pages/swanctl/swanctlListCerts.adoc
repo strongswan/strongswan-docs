@@ -1,0 +1,149 @@
+= swanctl --list-certs
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --list-certs [--subject <dn/san>] [--pem]
+                     [--type x509|x509_ac|x509_crl|ocsp_response|pubkey]
+                     [--flag none|ca|aa|ocsp|any] [--raw|--pretty|--short|--utc]
+
+swanctl --list-certs --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand lists different kinds of loaded
+and received certificates.
+
+== Options
+
+----
+--subject   (-s)  filter by certificate subject
+--type      (-t)  filter by certificate type
+--flag      (-f)  filter by X.509 certificate flag
+--pem       (-p)  print PEM encoding of certificate
+--short     (-S)  omit some certificate details
+--utc       (-U)  use UTC for time fields
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+Let's assume that we have established a certificate-based connection between
+VPN client `*carol*` and VPN server `*moon*`.
+
+* List the loaded X.509 CA certificates
+----
+$ swanctl --list-certs --type x509 --flag ca
+
+List of X.509 CA Certificates
+
+  subject:  "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  issuer:   "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  validity:  not before Oct 20 07:50:47 2021, ok
+             not after  Oct 21 07:50:47 2031, ok (expires in 3576 days)
+  serial:    33:0d:91:9b:d9:bb:a3:f1
+  flags:     CA CRLSign self-signed
+  pathlen:   1
+  subjkeyId: 9c:b0:d5:d5:44:ce:48:6d:72:b1:b6:aa:49:fb:4a:50:81:87:ae:a6
+  pubkey:    RSA 3072 bits
+  keyid:     be:bc:f0:fd:0c:82:e4:82:01:69:b2:50:25:34:0d:80:0b:fd:b3:17
+  subjkey:   9c:b0:d5:d5:44:ce:48:6d:72:b1:b6:aa:49:fb:4a:50:81:87:ae:a6
+----
+
+* List the loaded and received X.509 end entity certificates
+----
+$ swanctl --list-sas --ike home --raw
+
+List of X.509 End Entity Certificates
+
+  subject:  "C=CH, O=strongSwan Project, OU=Research, CN=carol@strongswan.org"
+  issuer:   "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  validity:  not before Oct 20 07:50:47 2021, ok
+             not after  Oct 20 07:50:47 2029, ok (expires in 2845 days)
+  serial:    01
+  altNames:  carol@strongswan.org
+  flags:
+  CRL URIs:  http://crl.strongswan.org/strongswan.crl
+  authkeyId: 9c:b0:d5:d5:44:ce:48:6d:72:b1:b6:aa:49:fb:4a:50:81:87:ae:a6
+  subjkeyId: 7d:75:4b:b4:5f:f2:a2:aa:cf:d3:fc:6f:be:cf:13:24:c2:89:fb:7d
+  pubkey:    RSA 3072 bits, has private key
+  keyid:     44:6a:25:80:17:da:e9:ad:d8:17:ef:7e:90:e0:77:bf:e4:ca:26:0b
+  subjkey:   7d:75:4b:b4:5f:f2:a2:aa:cf:d3:fc:6f:be:cf:13:24:c2:89:fb:7d
+
+  subject:  "C=CH, O=strongSwan Project, CN=moon.strongswan.org"
+  issuer:   "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  validity:  not before Oct 20 07:50:47 2021, ok
+             not after  Oct 20 07:50:47 2029, ok (expires in 2845 days)
+  serial:    03
+  altNames:  moon.strongswan.org
+  flags:
+  CRL URIs:  http://crl.strongswan.org/strongswan.crl
+  authkeyId: 9c:b0:d5:d5:44:ce:48:6d:72:b1:b6:aa:49:fb:4a:50:81:87:ae:a6
+  subjkeyId: b7:fe:93:f5:0a:ff:d1:0b:cc:14:74:8d:43:48:b3:0b:e5:4c:6f:73
+  pubkey:    RSA 3072 bits
+  keyid:     79:41:59:0c:e5:a0:fa:03:97:df:a3:17:da:98:21:1d:fd:10:cd:8f
+  subjkey:   b7:fe:93:f5:0a:ff:d1:0b:cc:14:74:8d:43:48:b3:0b:e5:4c:6f:73
+----
+
+* Retrieve the X.509 certificate received from VPN server `*moon*` in printable
+`PEM` format
+----
+$ swanctl --list-certs --subject moon.strongswan.org --pem
+----
+[listing]
+-----BEGIN CERTIFICATE-----
+MIIEiDCCAvCgAwIBAgIBAzANBgkqhkiG9w0BAQsFADBHMQswCQYDVQQGEwJDSDEb
+MBkGA1UEChMSc3Ryb25nU3dhbiBQcm9qZWN0MRswGQYDVQQDExJzdHJvbmdTd2Fu
+IFJvb3QgQ0EwHhcNMjExMDIwMDc1MDQ3WhcNMjkxMDIwMDc1MDQ3WjBIMQswCQYD
+VQQGEwJDSDEbMBkGA1UEChMSc3Ryb25nU3dhbiBQcm9qZWN0MRwwGgYDVQQDExNt
+b29uLnN0cm9uZ3N3YW4ub3JnMIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKC
+AYEA68SzMCyPMi/7Tn1hM7oHZdBeD24U4WuejualK9X+jVY07Vj5UkLcEc1MvEuP
+ks5S/AjW/ZbVscnO21mgDK00vTgfaQ56Dn5qX6w7O1nJv3s36/uqAfZ2wIWU+09C
+v40gMZMCrmgYMhaJ4B+WhdZMFRbQuKUwMz+bR8XI1cNWBLIU52Iaz1Dibn1NvRXI
+zh4LfJQwMU+sbwj8Y8nbg90JDzedgxSPVQ/qseNEedNTB3zk8Xp3zCXXZP+LQ8oG
+/1+rA9HnLbqPQ1Bll3Rj2DOXgTmLgW51tEdNpfE8vbHUEcDA2HwhqUvltA86bcaT
+lK81/8ein2CXerwD6mGNCbZJPaFBK7k5fiaov/GR8zsUVd/+jiqXOjPhtYgdt9pn
+VqN/FF7HotbQahrLPYxKWqDhnn4u2lknorDeWZHcmFa9TKhjpk8kesko1tRlxjNW
+NaTxLLPsxoH9IGzUp3EIecX9fQpwVpEINdMurZQn8ZvJwZxrSgBrhIBDzoSDEvXi
+RkD/AgMBAAGjfjB8MB8GA1UdIwQYMBaAFJyw1dVEzkhtcrG2qkn7SlCBh66mMB4G
+A1UdEQQXMBWCE21vb24uc3Ryb25nc3dhbi5vcmcwOQYDVR0fBDIwMDAuoCygKoYo
+aHR0cDovL2NybC5zdHJvbmdzd2FuLm9yZy9zdHJvbmdzd2FuLmNybDANBgkqhkiG
+9w0BAQsFAAOCAYEAOwT/7nBJ0Pv7rzdXYBPo9E60MNERfkKOqbuxEyefNTt7c/pD
+7z4zNOpEn9tIaWMQOtJw6XQcj0QWWrXEocbj2r2wPFnnXfAKo9/noJQZgmmlbIEx
+ag7NzQscMxcLK3yDWGCiVrQA0aTLpWB66Qcd6PsGxiF+/hJZO/U+XpndhJ+a74Os
+B6gkS17Qpgw1W3YtxFmDGvJQSNkYXBgYmmuUkZlTPylc8niU5nXRRVvfN/alz7nn
+Q8d8TL+l3dPlwLkUuMAgf8QazUokwJpnbUqvF6Su4mtxpJVqZD3uRVfBQEk1PSYx
+QCl0ZEnkl2m+DDj3Bx4rWgseOjX6iAYMZXCSpDrt7dM2Nc2Q7fKh/b5E6Tj3VDjV
+LM+fM/URh+MJIhf7oziLIVoTqgHloHOQhSo/ygpb3me5uI1KfGQrYa2LZMaOvv0F
++KpMbZVQov+kE/iK9skTyTA2ZGon0lLBFhY+RKMTMARH+bZhf2/qeiyFHtEmdIfT
+/Atjj7UN+qGesmo2
+-----END CERTIFICATE-----
+
+* List of fetched X.509 Certificate Revocation Lists
+----
+$ swanctl --list-certs --type x509crl
+
+List of X.509 CRLs
+
+  issuer:   "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  update:    this on Jan 01 15:05:54 2022, ok
+             next on Jan 16 15:05:54 2022, ok (expires in 12 days)
+  serial:    03
+  authKeyId: 9c:b0:d5:d5:44:ce:48:6d:72:b1:b6:aa:49:fb:4a:50:81:87:ae:a6
+  2 revoked certificates:
+    0a: Oct 22 07:50:50 2021, ca compromise
+    08: Oct 22 07:50:50 2021, key compromise
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

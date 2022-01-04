@@ -1,0 +1,44 @@
+= swanctl --load-pools
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --load-pools [--file]
+
+swanctl --load-pools --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads IPv4
+and/or IPv6 address pools.
+
+== Options
+
+----
+--file     (-f)  custom path to swanctl.conf
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Load or reload both an IPv4 and an IPv6 address pool
+----
+$ swanctl --load-pools
+
+loaded pool 'pool_v4'
+loaded pool 'pool_v6'
+successfully loaded 2 pools, 0 unloaded
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

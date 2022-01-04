@@ -1,0 +1,47 @@
+= swanctl --log
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --log
+
+swanctl --log --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand traces logging output from the
+`*charon*` daemon via the `*vici*` interface.
+
+== Options
+
+----
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Log the activities on VPN gateway `*moon*`
+----
+$ swanctl --log
+
+13[NET] received packet: from 192.168.0.100[500] to 192.168.0.1[500] (240 bytes)
+13[ENC] parsed IKE_SA_INIT request 0 [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(FRAG_SUP) N(HASH_ALG) N(REDIR_SUP) ]
+13[IKE] 192.168.0.100 is initiating an IKE_SA
+13[CFG] selected proposal: IKE:AES_CBC_128/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/CURVE_25519
+13[IKE] sending cert request for "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+13[ENC] generating IKE_SA_INIT response 0 [ SA KE No N(NATD_S_IP) N(NATD_D_IP) CERTREQ N(FRAG_SUP) N(HASH_ALG) N(CHDLESS_SUP) N(MULT_AUTH) ]
+13[NET] sending packet: from 192.168.0.1[500] to 192.168.0.100[500] (313 bytes)
+...
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

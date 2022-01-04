@@ -1,0 +1,53 @@
+= swanctl --list-conns
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --list-conns
+
+swanctl --list-conns --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand lists loaded connection
+configurations.
+
+== Options
+
+----
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+Let's assume we have defined a connection named `*home*` with a child definition
+named `*net*`.
+
+* List the loaded connection configurations
+----
+$ swanctl --list-conns
+
+home: IKEv2, no reauthentication, rekeying every 14400s
+  local:  192.168.0.100
+  remote: 192.168.0.1
+  local public key authentication:
+    id: carol@strongswan.org
+    certs: C=CH, O=strongSwan Project, OU=Research, CN=carol@strongswan.org
+  remote public key authentication:
+    id: moon.strongswan.org
+  net: TUNNEL, rekeying every 3600s
+    local:  dynamic
+    remote: 10.1.0.0/16
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

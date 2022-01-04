@@ -1,0 +1,39 @@
+= swanctl --reload-settings
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --reload-settings
+
+swanctl --reload-settings --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand forces the `*charon*` daemon to
+reload the xref:config/strongswanConf.adoc[`*strongswan.conf*`] configuration
+file during runtime.
+
+== Options
+
+----
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Reload xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+----
+$ swanctl --reload-settings
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

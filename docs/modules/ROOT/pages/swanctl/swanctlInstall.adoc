@@ -1,0 +1,39 @@
+= swanctl --install
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --install --child <name> [--ike <name>]
+
+swanctl --install --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand installs a trap, drop or bypass
+policy defined by a `CHILD SA`. Optionally an `IKE SA` can be indicated under
+which the `CHILD SA` can be found.
+
+== Options
+
+----
+--child    (-c)  CHILD_SA configuration to install
+--ike      (-i)  name of the connection to which the child belongs
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* None
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

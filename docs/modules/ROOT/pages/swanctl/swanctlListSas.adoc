@@ -1,0 +1,68 @@
+= swanctl --list-sas
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --list-sas [--ike <name>|--ike-id <id>] [--raw|--pretty] [--noblock]
+
+swanctl --list-sas --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand lists established `IKE SAs` and
+their dependent `CHILD SAs`.
+
+== Options
+
+----
+--ike      (-i)  filter IKE_SAs by name
+--ike-id   (-I)  filter IKE_SAs by unique identifier
+--noblock  (-n)  don't wait for IKE_SAs in use
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+Let's assume we have an `IKE SA` named `*home*` with a `CHILD SA` named `*net*`.
+
+* List all `SAs`
+----
+$ swanctl --list-sas
+
+home: #1, ESTABLISHED, IKEv2, 6fd55d95f66b4a67_i* cea64d4a303e0ca2_r
+  local  'carol@strongswan.org' @ 192.168.0.100[4500]
+  remote 'moon.strongswan.org' @ 192.168.0.1[4500]
+  AES_CBC-128/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/CURVE_25519
+  established 1s ago, rekeying in 14043s
+  net: #1, reqid 1, INSTALLED, TUNNEL, ESP:AES_GCM_16-128
+    installed 1s ago, rekeying in 3397s, expires in 3959s
+    in  c8931e89,     84 bytes,     1 packets,     0s ago
+    out cee78125,     84 bytes,     1 packets,     0s ago
+    local  192.168.0.100/32
+    remote 10.1.0.0/16
+----
+
+* List `IKE SA` `*home*` in `raw` format
+----
+$ swanctl --list-sas --ike home --raw
+
+list-sa event {home {uniqueid=1 version=2 state=ESTABLISHED local-host=192.168.0.100 local-port=4500 local-id=carol@strongswan.org remote-host=192.168.0.1 remote-port=4500 remote-id=moon.strongswan.org initiator=yes initiator-spi=6fd55d95f66b4a67 responder-spi=cea64d4a303e0ca2 encr-alg=AES_CBC encr-keysize=128 integ-alg=HMAC_SHA2_256_128 prf-alg=PRF_HMAC_SHA2_256 dh-group=CURVE_25519 established=1 rekey-time=14043 child-sas {home-1 {name=home uniqueid=1 reqid=1 state=INSTALLED mode=TUNNEL protocol=ESP spi-in=c8931e89 spi-out=cee78125 encr-alg=AES_GCM_16 encr-keysize=128 bytes-in=84 packets-in=1 bytes-out=84 packets-out=1 rekey-time=3397 life-time=3959 install-time=1 local-ts=[192.168.0.100/32] remote-ts=[10.1.0.0/16]}}}}
+----
+
+* List `IKE SA` `#1`
+----
+$ swanctl --list-sas --ike-id 1
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

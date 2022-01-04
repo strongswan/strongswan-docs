@@ -1,0 +1,57 @@
+= swanctl --rekey
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --rekey --child <name> | --ike <name> |
+                --child-id <id> | --ike-id <id> [--reauth]
+
+swanctl --rekey --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand rekeys a CHILD or IKE Security
+Association.
+
+== Options
+
+----
+--child    (-c)  rekey by CHILD_SA name
+--ike      (-i)  rekey by IKE_SA name
+--child-id (-C)  rekey by CHILD_SA unique identifier
+--ike-id   (-I)  rekey by IKE_SA unique identifier
+--reauth   (-a)  reauthenticate instead of rekey an IKEv2 SA
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+Let's assume we have an `IKE SA` named `*home*` with a `CHILD SA` named `*net*`.
+
+* Rekey the `CHILD SA` called `*net*`
+----
+$ swanctl --rekey --child net
+----
+
+* Rekey the `IKE SA` `*home*`
+----
+$ swanctl --rekey --ike home
+----
+
+* Reauthenticate the `IKE SA` `*home*` from scratch
+----
+$ swanctl --rekey --ike home --reauth
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

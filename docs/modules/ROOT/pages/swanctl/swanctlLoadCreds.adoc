@@ -1,0 +1,47 @@
+= swanctl --load-creds
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --load-creds [--clear] [--noprompt] [--file]
+
+swanctl --load-creds --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads credentials,
+i.e. private keys, public keys, X.509 certificates or alternatively several
+kinds of preshared secrets.
+
+== Options
+
+----
+--clear    (-c)  clear previously loaded credentials
+--noprompt (-n)  do not prompt for passwords
+--file     (-f)  custom path to swanctl.conf
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Load or reload all credentials, e.g. an RSA private key and X.509 certificates
+----
+$ swanctl --load-creds
+
+loaded certificate from '/etc/swanctl/x509/carolCert.pem'
+loaded certificate from '/etc/swanctl/x509ca/strongswanCert.pem'
+loaded RSA key from '/etc/swanctl/rsa/carolKey.pem'
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

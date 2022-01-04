@@ -1,0 +1,46 @@
+= swanctl --stats
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --stats
+
+swanctl --stats --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand shows infos and statistics of
+the `*charon*` daemon.
+
+== Options
+
+----
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* Show statistics of VPN gateway `*moon*`
+----
+$ swanctl --stats
+
+uptime: 4 seconds, since Oct 18 10:20:03 2021
+worker threads: 16 total, 11 idle, working: 4/0/1/0
+job queues: 0/0/0/0
+jobs scheduled: 6
+IKE_SAs: 2 total, 0 half-open
+mallinfo: sbrk 3776512, mmap 0, used 3015456, free 761056
+loaded plugins: charon-systemd test-vectors pem pkcs1 openssl curl revocation nonce xcbc cmac ctr ccm vici kernel-netlink socket-default updown
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]

@@ -1,0 +1,74 @@
+= swanctl --list-pols
+:prewrap!:
+
+== Synopsis
+
+----
+swanctl --list-pols [--child <name>] [--trap] [--drop] [--pass]
+
+swanctl --list-pols --help
+----
+
+== Description
+
+This xref:./swanctl.adoc[`*swanctl*`] subcommand lists the currently installed
+`*trap*`, `*drop*` and `*pass*` policies.
+
+== Options
+
+----
+--child    (-c)  filter policies by CHILD_SA config name
+--trap     (-t)  list trap policies
+--drop     (-d)  list drop policies
+--pass     (-p)  list bypass policies
+
+--raw      (-r)  dump raw response message
+--pretty   (-P)  dump raw response message in pretty print
+--debug    (-v)  set debug level, default: 1
+--options  (-+)  read command line options from file
+--uri      (-u)  service URI to connect to
+--help     (-h)  show usage information
+----
+
+== Examples
+
+* List all currently installed policies
+----
+$ swanctl --list-pols
+
+shunts/drop-eth0-default, DROP
+  local:  0.0.0.0/0
+  remote: 0.0.0.0/0
+shunts/pass-ssh-in, PASS
+  local:  0.0.0.0/0[tcp/ssh]
+  remote: 0.0.0.0/0[tcp]
+shunts/pass-ssh-out, PASS
+  local:  0.0.0.0/0[tcp]
+  remote: 0.0.0.0/0[tcp/ssh]
+shunts/pass-http-out, PASS
+  local:  0.0.0.0/0[tcp]
+  remote: 192.168.0.150/32[tcp/http]
+----
+
+* List `*drop*` policies, only
+----
+$ swanctl --list-pols --drop
+
+shunts/drop-eth0-default, DROP
+  local:  0.0.0.0/0
+  remote: 0.0.0.0/0
+----
+
+* List policy of `CHILD SA` `*pass-ssh-in*`
+----
+$ swanctl --list-pols --child pass-ssh-in
+
+shunts/pass-ssh-in, PASS
+  local:  0.0.0.0/0[tcp/ssh]
+  remote: 0.0.0.0/0[tcp]
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen] {CC}[CC BY 4.0]
