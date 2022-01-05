@@ -1,0 +1,93 @@
+= test-vectors Plugin
+
+== Purpose
+
+The `*libstrongswan*` library supports self tests of crypto algorithms.
+Currently the crypto tester supports testing of encryption algorithms,
+integrity algorithms, hash functions, extended output functions (XOFs),
+key exchange methods, pseudo random functions (PRFs) and random number
+generators (RNGs).
+
+The self test framework is built into the crypto factory of `*libstrongswan*`.
+But to actually run the self tests, the framework requires test vectors.
+Any plugin can register test vectors with the crypto factory. strongSwan ships
+with a default set of test vectors in a separate `*test-vector*` plugin.
+To build and load the plugin, add the xref:install/autoconf.adoc[`*./configure*`]
+option
+
+ --enable-test-vectors
+
+== Running tests
+
+There are currently two ways to run crypto tests:
+
+=== At startup
+
+During daemon initialization, each plugin registers the crypto algorithms it
+provides. To accept an implementation, the algorithms can be tested by setting
+the following in xref:config/strongswanConf.adoc[strongswan.conf]
+----
+libstrongswan {
+  crypto_test {
+    on_add = yes
+  }
+}
+----
+
+Implementations failing a test vector are not accepted and can't be used. Adding
+
+ required = yes
+
+to the `*crypto_test*` section above requires an algorithm to be tested against
+at least one vector. If no test vectors are available, the algorithm will not be
+available.
+
+=== During operation
+
+Besides, or in addition to startup tests the crypto factory can run algorithm
+tests each time a crypto primitive is instantiated. This gives you some
+guarantee that an implementation is behaving correctly over a longer time period.
+But keep in mind: Some crypto primitives are instantiated only once at startup
+and are used over the whole runtime. These are not tested periodically. Adding
+
+ on_create = yes
+
+to the `*crypto_test*` section enables self testing during instantiation. You
+can also use the `*required*` option discussed above.
+
+== Benchmarking
+
+The algorithms may optionally be benchmarked when they are loaded, i.e.
+`*on_add*` has to be enabled and
+
+ bench = yes
+
+has to be set in the `*crypto_test*`  section. If multiple implementations of
+the same algorithm are loaded, they are sorted by their efficiency
+(implementations of key exchange methods are currently not affected).
+
+The buffer size and duration may optionally be configured via `*bench_size*`
+and `*bench_time*` settings (see xref:config/strongswanConf.adoc[strongswan.conf]
+for details).
+
+== Entropy for RNG tests
+
+Depending on your test vectors, testing random number generators needs several
+thousand bytes of input. This might be problematic for RNGs of high quality, as
+such implementations often block if not enough entropy is available.
+
+Testing RNGs with `*RNG_TRUE*` quality is disabled by default, as you usually do
+not have enough entropy to complete the tests in reasonable time. If you have a
+hardware based source of randomness, you can enable the tests for high quality
+RNGs by adding
+
+ rng_true = yes
+
+to the `*crypto_test*` section.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

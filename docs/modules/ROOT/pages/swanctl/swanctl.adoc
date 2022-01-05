@@ -1,4 +1,4 @@
-= swanctl
+= swanctl Tool
 :prewrap!:
 
 == Synopsis
@@ -34,7 +34,7 @@ swanctl --initiate         (-i)  initiate a connection
 == Description
 
 `*swanctl*` is a command line utility to configure, control and monitor the IKE
-`*charon*` daemon using the xref:vici#[`*vici*`] interface.
+`*charon*` daemon via the xref:plugins/vici.adoc[`*vici*`] interface plugin.
 
 == Subcommands
 
@@ -79,26 +79,31 @@ additional information.
 == swanctl.conf
 
 The `*swanctl --load-...*` commands read connections, secrets and IP address pools
-from xref:swanctlConf#[`*swanctl.conf*`] located in the
-xref:swanctlDirectory#[swanctl configuration directory], usually _/etc/swanctl_.
+from xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] located in the
+xref:swanctl/swanctlDir.adoc#[swanctl configuration directory], usually
+`*/etc/swanctl*`.
 
 The configuration file to be loaded may be specified for each command explicitly
-via the `*--file*` argument (e.g. to use separate files for connections and
-credentials). The default directory for the file and the
-[[swanctlDirectory|credentials]] may be set via the `*SWANCTL_DIR*` environment
-variable.
+via the `*--file*` argument, e.g. to use separate files for the `*connections*`
+and `*secrets*` sections.
+
+The path to the `*swanctl*` directory can also be set with the `*SWANCTL_DIR*`
+environment variable.
 
 == Credential directories
 
 The `*--load-creds*` command also reads file-based credentials, such as private
 keys and certificates from a set of pre-defined sub-directories in the
-xref:swanctlDirectory#[swanctl configuration directory].
+xref:swanctl/swanctlDir.adoc[swanctl configuration directory].
 
-The [[swanctlDirectory|credential directories]] are accessed relative to the
-[[swanctl.conf]] file actually loaded  (see above) and the default
-directory may be changed at runtime via the `*SWANCTL_DIR*` environment variable.
+The xref:swanctl/swanctlDir.adoc[credential directories] are accessed relative
+to the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file actually loaded
+(see above) and the default directory may be changed at runtime via the
+`*SWANCTL_DIR*` environment variable.
 
 :AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:TB: mailto:tobias@strongswan.org
 :CC: http://creativecommons.org/licenses/by/4.0/
 
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]
+{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

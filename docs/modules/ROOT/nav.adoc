@@ -1,6 +1,31 @@
-.Platform Security
-* xref:tpm/tpm2.adoc[TPM 2.0]
+.Installation
+** xref:install/autoconf.adoc[]
+
+.Configuration
+** xref:config/strongswanConf.adoc[strongswan.conf]
+** xref:swanctl/swanctlConf.adoc[swanctl.conf]
+
+.Features
+** xref:features/vip.adoc[]
 
 .Tools
-* xref:swanctl/swanctl.adoc[swanctl]
-* xref:pki/pki.adoc[pki]
+** xref:swanctl/swanctl.adoc[]
+** xref:pki/pki.adoc[]
+
+.Plugins
+* xref:plugins/plugins.adoc[]
+.libtstrongswan Plugins
+** xref:plugins/constraints.adoc[]
+** xref:plugins/curl.adoc[]
+** xref:plugins/pkcs11.adoc[]
+** xref:plugins/test-vectors.adoc[]
+** xref:plugins/winhttp.adoc[]
+** xref:plugins/addrblock.adoc[]
+** xref:plugins/attr.adoc[]
+** xref:plugins/resolve.adoc[]
+** xref:plugins/updown.adoc[]
+** xref:plugins/vici.adoc[]
+
+.Platform Security
+* xref:tpm/tpm2.adoc[TPM 2.0]
+* xref:tnc/tnc.adoc[]

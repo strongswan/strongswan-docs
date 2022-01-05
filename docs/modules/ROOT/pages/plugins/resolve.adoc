@@ -1,0 +1,56 @@
+= resolve Plugin
+
+:RESOLVCONF: http://en.wikipedia.org/wiki/Resolvconf
+
+== Purpose
+
+The `*resolve*` plugin writes name servers to `*resolv.conf*`.
+It is enabled by default but may be disabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --disable-resolve
+
+== Behavior
+
+Name servers received via `CP` configuration payloads (IKEv2) or via
+`Mode Config` (IKEv1) are added to `*/etc/resolv.conf*` or installed via
+`*resolvconf(8)*`. When the connection goes down name servers are automatically
+removed again.
+
+== Configuration
+
+The plugin is configured using the following
+xref:config/strongswanConf.adoc[strongswan.conf] options.
+
+[cols="4,1,8"]
+|===
+|Key|Default|Description
+
+|charon.plugins.resolve.file
+|/etc/resolv.conf|
+File where name servers are written to
+
+|charon.plugins.resolve.resolv_conf.iface_prefix
+|lo.inet.ipsec.
+|Prefix to be used for interface names provided to `*resolvconf(8)*`
+|===
+
+=== Support for resolvconf(8)
+
+strongSwan provides support for installing name servers via the
+{RESOLVCONF}[`*resolvconf*`] framework.  If `*resolvconf*` is installed the
+plugin automatically invokes it appropriately instead of modifying `*resolv.conf*`
+directly.
+
+The interface names provided to `*resolvconf*` are built by adding the IP
+address of the name server to the prefix configured in
+xref:config/strongswanConf.adoc[strongswan.conf] (or the default).
+The result must be a valid interface name according to the rules specified by
+`*resolvconf(8)*`. Additionally, the resulting interface name should have a high
+priority when the order defined in `*interface-order(5)*` is applied.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

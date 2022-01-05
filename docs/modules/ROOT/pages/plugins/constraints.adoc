@@ -1,0 +1,41 @@
+= constraints Plugin
+
+:RFC5280: https://datatracker.ietf.org/doc/html/rfc5280
+
+== Purpose
+
+The `*constraints*` plugin for `*libstrongswan*` provides advanced constraint
+checking for X.509 certificates that are defined in {RFC5280}[RFC 5280].
+
+Currently the following constraints are enforced:
+
+* `*pathLenConstraint*`
+  (see {RFC5280}#section-4.2.1.9[section 4.2.1.9 of RFC 5280]):
+   If an issuer certificate specifies a maximum path length, the plugin verifies
+   that the trust path does not exceed it
+
+
+* `*nameConstraints*`
+  (see {RFC5280}#section-4.2.1.10[section 4.2.1.10 of RFC 5280]):
+   Allows an issuer certificate to limit the name space within which all subject
+   names in the trust path must be located
+
+* `*policyConstraints*`
+  (see {RFC5280}#section-4.2.1.11[section 4.2.1.11 of RFC 5280]):
+   The plugin verifies the policy constraints specified by an issuer certificate
+
+The `*constraints*` plugin is enabled by default but may be disabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --disable-constraints
+
+== X.509 Certificates
+
+The xref:pki/pki.adoc[pki] tool supports the creation of X.509 certificates
+containing one or several of the constraints defined above.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

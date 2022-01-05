@@ -1,0 +1,199 @@
+= attr Plugin
+
+:IANA: https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml#ikev2-parameters-21
+
+== Purpose
+
+The `*attr*` plugin provides IKE attributes configured in
+xref:config/strongswanConf.adoc[strongswan.conf] to peers.
+It is enabled by default but may be disabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --disable-attr
+
+== Behavior
+
+Configured attributes are assigned to peers via `CP` configuration payloads (IKEv2)
+or via Mode Config (IKEv1). Attributes are only assigned to peers if they
+request a xref:features/vip.adoc[virtual IP address].
+
+== Configuration
+
+The plugin is configured using the following
+xref:config/strongswanConf.adoc[strongswan.conf] options.
+
+[cols="4,1,8"]
+|===
+|Key|Default|Description
+
+|charon.plugins.attr.<attribute> |
+|Attribute assigned to a peer via `CP` configuration payload or `Mode Config`
+|===
+
+=== Attribute Types
+
+Possible values for `*<attribute*` are listed in the following table. Depending
+on the address family of the IP address specified as value the proper `IP4` or
+`IP6` attribute type is used. A complete list of IKEv2 configuration payload
+(`CP`) attributes can be found on the {IANA}[IANA] website. Multiple values can
+be specified as a comma-separated list.
+
+==== IPv4 Attributes
+
+[cols="2,4,1,8"]
+|===
+|Key          |Attribute Type      |Code |Description
+
+|address      |INTERNAL_IP4_ADDRESS|1
+|Internal IPv4 address
+
+|netmask      |INTERNAL_IP4_NETMASK|2
+|Netmask of the internal network (in dotted decimal notation), similar to
+ `*subnet*` but bound to the internal address
+
+|dns          |INTERNAL_IP4_DNS    |3
+|DNS server
+
+|nbns         |INTERNAL_IP4_NBNS   |4
+|WINS server
+
+|dhcp         |INTERNAL_IP4_DHCP   |6
+|DHCP server
+
+|subnet   |INTERNAL_IP4_SUBNET |13
+|The protected sub-networks that this edge-device protects (in `CIDR` notation).
+ Usually ignored in deference to `*local_ts*`, though Mac OS X clients will use
+ this for routes
+|===
+
+==== IPv6 Attributes
+
+[cols="2,4,1,8"]
+|===
+|Key          |Attribute Type      |Code |Description
+
+|address      |INTERNAL_IP6_ADDRESS|8
+|Internal IPv6 address
+
+|netmask      |INTERNAL_IP6_NETMASK|9
+|Netmask of the internal network (IKEv1 only)
+
+|dns          |INTERNAL_IP6_DNS    |10
+|DNS server
+
+|nbns         |INTERNAL_IP6_NBNS   |11
+|WINS server (IKEv1 only)
+
+|dhcp         |INTERNAL_IP6_DHCP   |12
+|DHCP server
+
+|subnet       |INTERNAL_IP6_SUBNET |15
+|The protected sub-networks that this edge-device protects (in `CIDR` notation)
+|===
+
+==== Miscellaneous IANA Attributes
+
+The configured attribute type `*<integer code>*` as assigned by {IANA}[IANA].
+The value as defined by the referenced RFCs (see following examples),
+IP addresses and subnets are recognized, otherwise the literal string is used as
+the attribute value.
+
+[cols="2,4,1,8"]
+|===
+|Key          |Attribute Type      |Code |Description
+
+|7            |APPLICATION_VERSION |7
+|String of printable ASCII characters that signifies the version or application
+ of the IPsec host
+
+|18           |INTERNAL_IP6_PREFIX |18
+|Subnet passed to the clients as prefix
+|===
+
+==== Cisco Unity extensions for IKEv1 (IPv4 and IPv6)
+
+[cols="2,4,1,8"]
+|===
+|Key          |Attribute Type      |Code |Description
+
+|28672        |UNITY_BANNER        |28672
+|Message displayed on certain clients after login
+
+|28673        |UNITY_SAVE_PASSWD   |28673
+|Allow client to save Xauth password in local storage
+
+|28674        |UNITY_DEF_DOMAIN    |28674
+|Default search domain used when resolving host names via the assigned DNS servers
+
+|28675        |UNITY_SPLITDNS_NAME |28675
+|If split tunneling is used clients might not install the assigned DNS servers
+ globally. This space-separated list of domain names allows clients, such as
+ Mac OS X, to selectively query the assigned DNS servers. Seems Mac OS X uses
+ only the first item in the list
+
+|split-include|UNITY_SPLIT_INCLUDE |28676
+|Comma-separated list of subnets to tunnel. The xref:plugins/unity.adoc[unity]
+ plugin provides a connection specific approach to assign this attribute
+
+|28677        |UNITY_NATT_PORT     |28677
+|
+
+|split-exclude|UNITY_LOCAL_LAN     |28678
+|Comma-separated list of subnets not to tunnel
+
+|28679        |UNITY_PFS           |28679
+|
+
+|28680        |UNITY_FW_TYPE       |28680
+|
+
+|28681        |UNITY_BACKUP_SERVERS|28681
+|
+
+|28682        |UNITY_DDNS_HOSTNAME |28682
+|
+|===
+
+=== Legacy Options
+
+[cols="4,1,8"]
+|===
+|Key|Default|Description
+
+|charon.dns1  |
+|DNS server 1 assigned to peer via `CP` configuration payload
+
+|charon.dns2  |
+|DNS server 2 assigned to peer via `CP` configuration payload
+
+|charon.nbns1 |
+|WINS server 1 assigned to peer via `CP` configuration payload
+
+|charon.nbns2 |
+|WINS server 2 assigned to peer via `CP` configuration payload
+|===
+
+== Example
+
+----
+# the following assigns two DNS servers to peers
+charon {
+    plugins {
+        attr {
+            dns = 10.0.10.10, 10.0.20.10
+        }
+    }
+}
+
+# this is the same using the legacy options
+charon {
+    dns1 = 10.0.10.10
+    dns2 = 10.0.20.10
+}
+----
+
+:AS: mailto:andreas.steffen@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

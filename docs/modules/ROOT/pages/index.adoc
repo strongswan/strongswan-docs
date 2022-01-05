@@ -7,8 +7,8 @@
 :VICI: https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/vici/README.md
 
 These scenarios use the modern {VICI}[Versatile IKE Control Interface] (VICI) as
-implemented by the `*vici*` plugin and the xref:swanctl/swanctl.adoc[`*swanctl*`]
-command line tool.
+implemented by the xref:plugins/vici.adoc[`*vici*`] plugin and the
+xref:swanctl/swanctl.adoc[`*swanctl*`] command line tool.
 
 * xref:config/quickstart.adoc[`*Quickstart*`] examples
 * xref:config/IKEv2.adoc[`*IKEv2*`] examples

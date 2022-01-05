@@ -1,0 +1,38 @@
+= curl Plugin
+
+== Purpose
+
+The `*curl*` plugin for `*libstrongswan*` allows to fetch CRLs and exchange OCSP
+messages using the `*libcurl*` library based on `file:`, `http:`, `https:` and
+`ftp:` URIs.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-curl
+
+== HTTPS URIs
+
+The `*curl*` plugin can fetch data via HTTPS if `*libcurl*` has been built with a
+TLS backend.
+
+To use the TLS backend in a multi-threaded environment, that backend must be
+explicitly initialized before use. The `*curl*` plugin does not do that by itself,
+but relies on the appropriate strongSwan crypto plugin for doing so. This implies
+that a corresponding strongSwan crypto plugin is required which matches the TLS
+backend that `*curl*` uses:
+
+* If `*libcurl*` uses OpenSSL as a backend, then_`--enable-openssl` is required
+  when building strongSwan in order to support fetching via HTTPS.
+
+* Likewise, if `*libcurl*` uses _GnuTLS_ as a backend, `--enable-gcrypt` is needed
+  to fetch via HTTPS.
+
+* For an NSS-based `*libcurl*` TLS backend, no dependency in strongSwan that is
+  able to initialize fetching via HTTPS.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

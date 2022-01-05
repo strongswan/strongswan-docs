@@ -1,4 +1,4 @@
-= pki
+= pki Tool
 :prewrap!:
 
 == Synopsis
@@ -64,6 +64,8 @@ additional information.
 can be found xref:./pkiQuickstart.adoc[here].
 
 :AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:TB: mailto:tobias@strongswan.org
 :CC: http://creativecommons.org/licenses/by/4.0/
 
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]
+{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

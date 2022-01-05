@@ -1,0 +1,21 @@
+= winhttp Plugin
+
+== Purpose
+
+The `*winhttp*` plugin for `*libstrongswan*` is a CRL/OCSP fetcher plugin used
+with the xref:os/windows.adoc[Windows] platform. It supports fetching of `CRL`
+or `OCSP` information over `HTTP` or `HTTPS` URLs using the native `WinHTTP` API.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-winhttp
+
+As `MinGW` usually does not come with a `*libwinhttp.dll*`, use a copy of
+`*winhttp.dll*` from `Windows\System32` for a cross-platform build.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

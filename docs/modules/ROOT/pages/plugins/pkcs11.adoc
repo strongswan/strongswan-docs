@@ -1,0 +1,104 @@
+= pkcs11 Plugin
+
+== Purpose
+
+The `*pkcs11*` plugin for `*libstrongswan*` implements the `PKCS#11` smart card
+interface and can be used by both the IKE `*charon*` daemon and the
+xref:pki/pki.adoc[pki] tool. Besides `RSA` keys the plugin also supports `ECDSA`,
+`DH/ECDH` and `RNG`.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-pkcs11
+
+== Configuration
+
+To use the plugin, the available `PKCS#11` modules have to be configured in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+
+[cols="9,1,10"]
+|===
+|Key|Default|Description
+
+|libstrongswan.plugins.pkcs11.modules                             |
+|This section lists available `PKCS#11` modules
+
+|libstrongswan.plugins.pkcs11.modules.<name>.path                 |
+|Full path to the shared object file of this `PKCS#11` module
+
+|libstrongswan.plugins.pkcs11.modules.<name>.os_locking           |no
+|Whether OS locking should be enabled for this module
+
+|libstrongswan.plugins.pkcs11.modules.<name>.load_certs           |yes
+|Whether the `PKCS#11` modules should load certificates from tokens
+
+|libstrongswan.plugins.pkcs11.reload_certs                        |no
+|Whether the `PKCS#11` modules should reload all certificates if `*charon*` receives a `SIGHUP`
+
+|libstrongswan.plugins.pkcs11.use_dh                              |no
+|Whether the `PKCS#11` modules should be used for `DH` and `ECDH`
+
+|libstrongswan.plugins.pkcs11.use_ecc                             |no
+|Whether the PKCS#11 modules should be used for `ECDH` and `ECDSA` public key operations.
+ `ECDSA` private keys can be used regardless of this option
+
+|libstrongswan.plugins.pkcs11.use_hasher                          |no
+|Whether the `PKCS#11` modules should be used to hash data
+
+|libstrongswan.plugins.pkcs11.use_pubkey                          |no
+|Whether the `PKCS#11` modules should be used for public key operations,
+ even for keys not stored on tokens
+
+|libstrongswan.plugins.pkcs11.use_rng                             |no
+|Whether the `PKCS#11` modules should be used as `RNG`
+|===
+
+Example:
+----
+libstrongswan {
+  # ...
+  plugins {
+    pkcs11 {
+      modules {
+        my-xy-module {
+          path = /path/to/pkcs11/lib.so
+        }
+      }
+    }
+  }
+}
+----
+
+== Behavior
+
+Certificates stored on smart cards are loaded automatically when the daemon is
+started. If the `PKCS#11` module supports hot-plugging, the certificates are
+reloaded when a token gets inserted or removed later. The first certificate
+matching the local identity
+
+ connections.<conn>.local<suffix>.id
+
+in xref:swanctl/swanctlConf.adoc[swanctl.conf] will be used.
+
+Specific certificates can also be loaded via xref:swanctl/swanctlConf.adoc[swanctl.conf]
+using sections of the form
+
+ connections.<conn>.local<suffix>.cert<suffix>
+
+To access the private key you have to specify the associated PIN in
+xref:swanctl/swanctlConf.adoc[swanctl.conf] in section of the form
+
+  secrets.token<suffix>
+
+Depending on the configuration reloading the secrets will prompt the user for
+the PIN.
+
+[[NetworkManager#Smart-card-requirements|NetworkManager]] makes the use of
+smart cards with IKEv2 even easier.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

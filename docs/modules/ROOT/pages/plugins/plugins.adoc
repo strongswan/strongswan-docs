@@ -1,0 +1,599 @@
+= Plugin List
+
+The strongSwan distribution ships with an ever growing list of plugins. This
+allows us to add extended and specialized features, but keep the core as small
+as possible.
+
+Many strongSwan component libraries come with a set of plugins. The plugins for
+`*libstrongswan*` e.g. provide cryptographic backends, URI fetchers and database
+layers whereas `*libcharon*` comes with a large set of very specialized plugins
+for specific needs.
+
+:BOTAN:     https://botan.randombit.net/
+:GCRYPT:    https://gnupg.org/software/libgcrypt/
+:GMP:       https://gmplib.org/
+:OPENSSL:   https://openssl.org/
+:UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
+:WIRESHARK: https://www.wireshark.org/
+:WOLFSSL:   https://github.com/wolfSSL/wolfssl
+:RFC3779:   https://datatracker.ietf.org/doc/html/rfc3779
+:RFC4034:   https://datatracker.ietf.org/doc/html/rfc4034
+
+:E: footnote:E[E = Enabled by default (plugins can be enabled/disabled using their respective xref:install/autoconf.adoc[./configure] options)]
+:E_ref: footnote:E[]
+:S: footnote:S[S = Plugin status: s = stable, e = experimental, d = under development/incomplete]
+:S_ref: footnote:S[]
+
+== libstrongswan Plugins
+
+[cols="5,1,1,20"]
+|===
+|Plugin Name                              |E{E}|S{S}|Description
+
+|acert                                    | |s
+|Support of X.509 attribute certificates
+
+|aes                                      |x|s
+|AES-128/192/256 cipher software implementation
+
+|aesni                                    | |s
+|Intel AES-NI crypto plugin
+
+|af-alg                                   | |s
+|AF_ALG Linux kernel crypto API
+
+|agent                                    | |s
+|RSA/ECDSA private key backend connecting to ssh-agent
+
+|bliss                                    | |e
+|Bimodal Lattice Signature Scheme (BLISS) post-quantum computer signature scheme
+
+|blowfish                                 | |s
+|Blowfish cipher software implementation
+
+|botan                                    | |s
+|Crypto backend based on the {BOTAN}[Botan] library
+
+|ccm                                      | |s
+|CCM cipher mode wrapper
+
+|chapoly                                  | |s
+|ChaCha20/Poly1305 AEAD implementation and ChaCha20 XOF
+
+|cmac                                     |x|s
+|CMAC cipher mode wrapper
+
+|xref:./constraints.adoc[constraints]     |x|s
+|X.509 certificate advanced constraint checking
+
+|ctr                                      | |s
+|CTR cipher mode wrapper
+
+|xref:./curl.adoc[curl]                   | |s
+|libcurl based HTTP/FTP fetcher
+
+|curve25519                               |x|s
+|X25519 DH group and Ed25519 public key authentication
+
+|des                                      |x|s
+|DES/3DES cipher software implementation
+
+|dnskey                                   |x|s
+|Parse {RFC4034}[RFC 4034] public keys
+
+|drbg                                     |x|s
+|NIST Deterministic Random Bit Generator based on AES-CTR and HMAC-SHA2 modes.
+ Required by the ntru plugins
+
+|files                                    | |s
+|Fetcher for local file:// URIs
+
+|fips-prf                                 |x|s
+|PRF specified by FIPS, used by EAP-SIM/AKA algorithms
+
+|gcm                                      | |s
+|GCM cipher mode wrapper
+
+|gcrypt                                   | |s
+|Crypto backend based on {GCRYPT}[libgcrypt]
+
+|gmp                                      |x|s
+|RSA/DH crypto backend based on {GMP}[libgmp]
+
+|hmac                                     |x|s
+|HMAC wrapper using various hashers
+
+|keychain                                 | |e
+|Mac OS X Keychain Services credential set
+
+|ldap                                     | |s
+|LDAP fetching plugin based on libldap
+
+|md4                                      | |s
+|MD4 hasher software implementation
+
+|md5                                      |x|s
+|MD5 hasher software implementation
+
+|mgf1                                     | |s
+|MGF1 mask generation function
+
+|mysql                                    | |s
+|MySQL database backend based on libmysqlclient
+
+|newhope                                  | |e
+|Key exchange based on post-quantum computer New Hope algorithm
+
+|nonce                                    |x|s
+|Default nonce generation plugin
+
+|ntru                                     | |e
+|Key exchange based on post-quantum computer NTRU encryption
+
+|openssl                                  | |s
+|Crypto backend based on the {OPENSSL}[OpenSSL] library
+
+|padlock                                  | |e
+|VIA padlock crypto backend, provides AES128/SHA1
+
+|pem                                      |x|s
+|PEM encoding/decoding routines
+
+|pgp                                      |x|s
+|PGP encoding/decoding routines
+
+|pkcs1                                    |x|s
+|PKCS#1 encoding/decoding routines
+
+|pkcs7                                    |x|s
+|PKCS#7 encoding/decoding routines
+
+|pkcs8                                    |x|s
+|PKCS#8 decoding routines
+
+|xref:./pkcs11.adoc[pkcs11]               | |s
+|PKCS#11 smart card backend
+
+|pkcs12                                   |x|s
+|PKCS#12 decoding routines
+
+|pubkey                                   |x|s
+|Wrapper to handle raw public keys as trusted certificates
+
+|random                                   |x|s
+|RNG reading from /dev/[u]random
+
+|rc2                                      |x|s
+|RC2 cipher software implementation
+
+|rdrand                                   | |e
+|High quality / high performance random source using the Intel _rdrand_ instruction
+
+|revocation                               |x|s
+|X.509 CRL/OCSP revocation checking
+
+|sha1                                     |x|s
+|SHA1 hasher software implementation
+
+|sha2                                     |x|s
+|SHA-2 hasher software implementation
+
+|sha3                                     | |s
+|SHA-3 hasher and SHAKE128/SHAKE256 XOF software implementation
+
+|soup                                     | |s
+|libsoup based HTTP fetcher
+
+|sqlite                                   | |s
+|SQLite database backend based on libsqlite3
+
+|sshkey                                   |x|s
+|SSH key decoding routines
+
+|xref:./test-vectors.adoc[test-vectors]   | |s
+|Set of test vectors for various algorithms
+
+|unbound                                  | |s
+|DNSSEC enabled resolver using {UNBOUND}[libunbound]
+
+|xref:./winhttp.adoc[winhttp]             | |s|
+WinHTTP based HTTP/HTTPS fetcher for Windows platform
+
+|wolfssl                                  | |s
+|Crypto backend based on the {WOLFSSL}[wolfSSL] library
+
+|x509                                     |x|s
+|Advanced X.509 plugin for parsing/generating X.509 certificates/CRLs and OCSP messages
+
+|xcbc                                     |x|s
+|XCBC wrapper using various ciphers
+|===
+
+== libcharon Plugins
+
+[cols="5,1,1,20"]
+|===
+|Plugin Name                              |E{E_ref}|S{S_ref}|Description
+
+|xref:./addrblock.adoc[addrblock]         | |s
+|Narrow traffic selectors to {RFC3779}[RFC 3779] address blocks in X.509 certificates
+
+|android-dns                              | |s
+|xref:os/android.adoc[Android]-specific DNS handler plugin
+
+|android-log                              | |s
+|xref:os/android.adoc[Android]-specific logger plugin
+
+|xref:./attr.adoc[attr]                   |x|s
+|Provides IKE attributes configured in strongswan.conf
+
+|xref:./attr-sql.adoc[attr-sql]           | |s
+|Provides IKE attributes read from a database to peers
+
+|xref:./bypass-lan.adoc[bypass-lan]       | |e
+|Automatically installs and updates bypass policies for locally attached subnets
+
+|xref:./certexpire.adoc[certexpire]       | |s
+|Export expiration dates of used certificates
+
+|xref:./counters.adoc[counters]           | |s
+|Provides IKE performance counters (queryable via xref:./vici.adoc[vici] and
+ e.g. the xref:swanctl/swanctlCounters.adoc[`*swanctl --counters*`] command
+
+|xref:./coupling.adoc[coupling]           | |s
+|Permanent peer certificate coupling
+
+|xref:./dhcp.adoc[dhcp]                   | |s
+|Request xref:features/vip.adoc[virtual IP] address from a DHCP server
+
+|xref:./connmark.adoc[conmark]            | |e
+|Plugin using Netfilter conntrack marks to handle multiple transport mode clients (for L2TP)
+
+|dnscert                                  | |s
+|Provides authentication via CERT RRs protected by DNSSEC
+
+|xref:./duplicheck.adoc[duplicheck]       | |s
+|Advanced duplicate checking with liveness test and notifications
+
+|eap-aka                                  | |s
+|Generic EAP-AKA protocol handler using different backends
+
+|eap-aka-3gpp                             | |s
+|EAP-AKA backend implementing 3GPP MILENAGE algorithms in software
+
+|eap-aka-3gpp2                            | |s
+|EAP-AKA backend implementing 3GPP2 algorithms in software
+
+|xref:./eap-dynamic.adoc[eap-dynamic]     | |s
+|EAP proxy plugin that dynamically selects an EAP method requested/supported by the client
+
+|xref:./eap-gtc.adoc[eap-gtc]             | |s
+|EAP-GTC protocol handler authenticating with XAuth backends
+
+|eap-identity                             | |s
+|EAP-Identity identity exchange algorithm, to use with other EAP protocols
+
+|eap-md5                                  | |s
+|EAP-MD5 protocol handler using passwords
+
+|eap-mschapv2                             | |s
+|EAP-MSCHAPv2 protocol handler using passwords/NT hashes
+
+|eap-peap                                 | |s
+|EAP-PEAP protocol handler, wraps other EAP methods securely
+
+|xref:./eap-radius.adoc[eap-radius]       | |s
+|EAP server proxy plugin forwarding EAP conversations to a RADIUS server
+
+|eap-sim                                  | |s
+|Generic EAP-SIM protocol handler using different backends
+
+|eap-sim-file                             | |s
+|EAP-SIM backend reading triplets from a file
+
+|eap-sim-pcsc                             | |s
+|EAP-SIM backend based on a PC/SC smartcard reader
+
+|eap-simaka-pseudonym                     | |s
+|EAP-SIM/AKA in-memory pseudonym identity database
+
+|eap-simaka-reauth                        | |s
+|EAP-SIM/AKA in-memory reauthentication identity database
+
+|xref:./eap-simaka-sql.adoc[eap-simaka]   | |s
+|EAP-SIM/AKA backend reading triplets/quintuplets from a SQL database
+
+|xref:./eap-tls.adoc[eap-tls]             | |s
+|EAP-TLS protocol handler, to authenticate with certificates in EAP
+
+|eap-tnc                                  | |s
+|EAP-TNC protocol handler, Trusted Network Connect in a TLS tunnel
+
+|eap-ttls                                 | |s
+|EAP-TTLS protocol handler, wraps other EAP methods securely
+
+|xref:./error-notify.adoc[error-notify]   | |s
+|Notification about errors via UNIX socket
+
+|xref:./ext-auth.adoc[ext-auth]           | |s
+|Invokes an external script for custom authorization rules
+
+|xref:./farp.adoc[farp]                   | |s
+|Fakes ARP responses for requests to a xref:features/vip.adoc[virtual IP]
+ assigned to a peer
+
+|xref:./forecast.adoc[forecast]           | |e
+|Multicast and broadcast forwarding plugin
+
+|xref:./ha.adoc[ha]                       | |s
+|High-Availability clustering
+
+|ipseckey                                 | |s
+|Provides authentication via IPSECKEY RRs protected by DNSSEC
+
+|xref:./kernel-libipsec.adoc[kernel-lilbipec] | |e
+|IPsec "kernel" interface in user-space using libipsec
+
+|kernel-netlink                           |x|s
+|IPsec/Networking kernel interface using Linux Netlink
+
+|xref:./kernel-iph.adoc[kernel-iph]       | |e
+|Networking backend for the Windows platform, based on IPHelper APIs
+
+|kernel-pfkey                             | |e
+|IPsec kernel interface using PF_KEY
+
+|kernel-pfroute                           | |e
+|Networking kernel interface using PF_ROUTE
+
+|xref:./kernel-wfp.adoc[kernel-wfp]       | |e
+|IPsec backend for the Windows platform, using the Windows Filtering Platform
+
+|led                                      | |s
+|Let Linux LED subsystem LEDs blink on IKE activity
+
+|xref:./lookip.adoc[lookip]               | |s
+|Virtual IP lookup facility using a UNIX socket
+
+|xref:./load-tester.adoc[load-tester]     | |s
+|Perform IKE load tests against self or a gateway
+
+|medcli                                   | |d
+|Web interface based mediation client interface
+
+|medsrv                                   | |d
+|Web interface based mediation server interface
+
+|osx-attr                                 | |e
+|Mac OS X SystemConfiguration attribute handler
+
+|p-cscf                                   | |s
+|Plugin that requests P-CSCF server addresses from an ePDG via IKEv2
+
+|xref:./radattr.adoc[radattr]             | |s
+|Plugin to inject and process custom RADIUS attributes as IKEv2 client
+
+|xref:./resolve.adoc[resolve]             |x|s
+|Writes name servers received via IKE to a resolv.conf file or installs them via resolvconf(8)
+
+|save-keys                                | |s
+|Development/Debugging plugin that saves IKE and/or ESP keys to files compatible with {WIRESHARK}[Wireshark]
+
+|xref:./smp.adoc[smp]                     | |d
+|XML based strongSwan Management Protocol
+
+|socket-default                           |x|s
+|Default socket implementation for IKE messages
+
+|socket-dynamic                           | |e
+|Dynamic binding socket implementation, capable of sending IKE messages on any port
+
+|xref:./socket-win.adoc[socket-win]      | |s
+|Socket implementation for IKE messages on Windows, based on Winsock2 APIs
+
+|xref:./sql.adoc[sql]                     | |s
+|SQL configuration backend reading configurations/credentials from a database
+
+|stroke                                   |x|s
+|Deprecated stroke configuration/control backend, to use with ipsec script and starter
+
+|xref:./tnc-ifmap.adoc[tnc-ifmap]        | |s
+|Trusted Network Connect IF-MAP 2.0 client
+
+|xref:./tnc-pdp.adoc[tnc-pdp]             | |s
+|Trusted Network Connect Policy Decision Point with RADIUS server interface
+
+|xref:./systime-fix.adoc[systime-fix]     | |s
+|Handle invalid system time when checking certificates
+
+|uci                                      | |d
+|OpenWRT UCI configuration backend
+
+|xref:./unity.adoc[unity]                 | |s
+|Cisco Unity extensions for IKEv1
+
+|xref:./updown.adoc[updown]               |x|s
+|Shell script invocation during tunnel up/down events
+
+|xref:./vici.adoc[vici]                   |x|s
+|Versatile IKE Control Interface
+
+|xref:./whitelist.adoc[whitelist]         | |s
+|Check authenticated identities against a whitelist
+
+|xref:./xauth-eap.adoc[xauth-eap]         | |s
+|XAuth backend that uses EAP methods to verify passwords
+
+|xauth-generic                            |x|s
+|Generic XAuth backend that provides passwords from credential sets
+
+|xref:./xauth-noauth.adoc[xauth-noauth]   | |s
+|XAuth backend that does not do any authentication
+
+|xref:./xauth-pam.adoc[xauth-pam]         | |s
+|XAuth backend that uses PAM modules to verify passwords
+|===
+
+== libtpmtss Plugins
+
+[cols="5,1,1,20"]
+|===
+|Plugin Name                              |E{E_ref}|S{S_ref}|Description
+
+|xref:./tpm.adoc[tpm]                     | |s
+|Access persistent RSA and ECDSA private keys bound to a xref:tpm/tpm2.adoc[TPM 2.0].
+ Optionally use the xref:tpm/tpm2.adoc[TPM 2.0] as a true random number source.
+|===
+
+== libtnccs Plugins
+
+[cols="5,1,1,20"]
+|===
+|Plugin Name                              |E{E_ref}|S{S_ref}|Description
+
+|tnccs-11                                 | |s
+|xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) protocol version 1.1
+
+|tnccs-20                                 | |s
+|xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) protocol version 2.0
+
+|tnccs-dynamic                            | |s
+|xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) dynamic protocol discovery
+
+|tnc-tnccs                                | |s
+|Manages the xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) connection layer
+
+|tnc-imc                                  | |s
+|Manages xref:tnc/tnc.adoc[TNC] Integrity Measurement Collectors (IMCs)
+
+|tnc-imv                                  | |s
+|Manages xref:tnc/tnc.adoc[TNC] Integrity Measurement Validators (IMVs)
+|===
+
+== Default Plugins
+
+The following 35 plugins are built and loaded by default:
+
+[cols="5,1,1,20"]
+|===
+|Plugin Name                              |E{E_ref}|S{S_ref}|Description
+
+|aes                                      |x|s
+|AES-128/192/256 cipher software implementation
+
+|cmac                                     |x|s
+|CMAC cipher mode wrapper
+
+|xref:./constraints.adoc[constraints]     |x|s
+|X.509 certificate advanced constraint checking
+
+|curve25519                               |x|s
+|X25519 DH group and Ed25519 public key authentication
+
+|des                                      |x|s
+|DES/3DES cipher software implementation
+
+|dnskey                                   |x|s
+|Parse {RFC4034}[RFC 4034] public keys
+
+|drbg                                     |x|s
+|NIST Deterministic Random Bit Generator based on AES-CTR and HMAC-SHA2 modes.
+ Required by the `*gmp*` and `*ntru*` plugins
+
+|fips-prf                                 |x|s
+|PRF specified by FIPS, used by EAP-SIM/AKA algorithms
+
+|gmp                                      |x|s
+|RSA/DH crypto backend based on {GMP}[libgmp]
+
+|hmac                                     |x|s
+|HMAC wrapper using various hashers
+
+|md5                                      |x|s
+|MD5 hasher software implementation
+
+|nonce                                    |x|s
+|Default nonce generation plugin
+
+|pem                                      |x|s
+|PEM encoding/decoding routines
+
+|pgp                                      |x|s
+|PGP encoding/decoding routines
+
+|pkcs1                                    |x|s
+|PKCS#1 encoding/decoding routines
+
+|pkcs7                                    |x|s
+|PKCS#7 encoding/decoding routines
+
+|pkcs8                                    |x|s
+|PKCS#8 decoding routines
+
+|pkcs12                                   |x|s
+|PKCS#12 decoding routines
+
+|pubkey                                   |x|s
+|Wrapper to handle raw public keys as trusted certificates
+
+|random                                   |x|s
+|RNG reading from /dev/[u]random
+
+|rc2                                      |x|s
+|RC2 cipher software implementation
+
+|revocation                               |x|s
+|X.509 CRL/OCSP revocation checking
+
+|sha1                                     |x|s
+|SHA1 hasher software implementation
+
+|sha2                                     |x|s
+|SHA-2 hasher software implementation
+
+|sshkey                                   |x|s
+|SSH key decoding routines
+
+|x509                                     |x|s
+|Advanced X.509 plugin for parsing/generating X.509 certificates/CRLs and OCSP messages
+
+|xcbc                                     |x|s
+|XCBC wrapper using various ciphers
+
+|*libstrongswan*                          |27|
+|
+
+|xref:./attr.adoc[attr]                   |x|s
+|Provides IKE attributes configured in strongswan.conf
+
+|kernel-netlink                           |x|s
+|IPsec/Networking kernel interface using Linux Netlink
+
+|xref:./resolve.adoc[resolve]             |x|s
+|Writes name servers received via IKE to a resolv.conf file or installs them via resolvconf(8)
+
+|socket-default                           |x|s
+|Default socket implementation for IKE messages
+
+|stroke                                   |x|s
+|Deprecated stroke configuration/control backend, to use with ipsec script and starter
+
+|xref:./updown.adoc[updown]               |x|s
+|Shell script invocation during tunnel up/down events
+
+|xref:./vici.adoc[vici]                   |x|s
+|Versatile IKE Control Interface
+
+|xauth-generic                            |x|s
+|Generic XAuth backend that provides passwords from credential sets
+
+|*libcharon*                              |8|
+|
+|===
+
+:AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

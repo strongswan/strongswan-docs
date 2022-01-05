@@ -1,0 +1,235 @@
+= updown Plugin
+
+== Purpose
+
+The `*updown*` plugin invokes a script when an IKEv2 `CHILD SA` or an IKEv1
+`Quick Mode` gets established or deleted.
+
+The plugin is enabled by default, but can be disabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --disable-updown
+
+== Configuration
+
+To invoke the default `*_updown*` script with
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] pass the absolute path to it in
+
+ connections.<conn>.children.<child>.updown
+
+and add the `*iptables*` argument so that the default behavior is triggered, e.g.
+
+ updown = /usr/local/libexec/ipsec/_updown iptables
+
+The default `*_updown*` script installs `*ACCEPT*` Netfilter rules in the Linux
+kernel by invoking `*iptables*` for the established traffic selectors, allowing
+default `*DROP*` policies. If the local traffic selector is not a single host
+then the option
+
+  connections.<conn>.children.<child>.hostaccess
+
+in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] inserts rules in the `INPUT`
+and `OUTPUT` chains, besides the rules in the `FORWARD` chain, that allow
+accessing the VPN server itself. Please refer to the `*_updown*` script for
+details.
+
+Alternatively, an arbitrary script can be configured via the `*updown*` attribute
+in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]  to install custom firewall
+rules or perform other actions.
+
+== Behavior
+
+The plugin allows the invocation of custom commands associated with `CHILD SA up`
+and `CHILD SA down` events. The script is compatible to the `*_updown*` script
+originally used by the `*pluto*` IKEv1 daemon.
+
+=== Updown Script Interface
+
+The following `PLUTO` environment variables are passed to the `*_updown*` script:
+
+[cols="1,5"]
+|===
+|Variable | Description
+
+|PLUTO_VERSION
+|indicates what version of this interface is being used. This document describes
+ version 1.1 which is upwardly compatible with version 1.0
+
+|PLUTO_VERB
+|specifies the name of the operation to be performed (`up-host`, `up-client`,
+ `down-host`, or `down-client`). If the address family for security gateway to
+ security gateway communications is IPv6, then a suffix of -v6 is added to the
+ verb
+
+|PLUTO_CONNECTION
+|is the name of the connection for which we are routing
+
+|PLUTO_INTERFACE
+|is the name of the ipsec interface to be used
+
+|PLUTO_REQID
+|is the reqid of the ESP or AH policy
+
+|PLUTO_PROTO
+|is the negotiated IPsec protocol, `ah` or `esp`
+
+|PLUTO_IPCOMP
+|is not empty if IPComp was negotiated
+
+|PLUTO_UNIQUEID
+|is the unique identifier of the associated IKE_SA
+
+|PLUTO_ME
+|is the IP address of our host.
+
+|PLUTO_MY_ID
+|is the ID of our host.
+
+|PLUTO_MY_CLIENT
+|is the IP address/netmask in CIDR format of our client subnet.  If the client
+ is just the host, this will be the host's own IP address/max (where max is 32
+ for IPv4 and 128 for IPv6)
+
+|PLUTO_MY_SOURCEIP
+|is a legacy variable and equals the first virtual IP (either IPv4 or IPv6)
+
+|PLUTO_MY_SOURCEIP4_$i
+|contains a IPv4 virtual IP received from a responder where $i enumerates from 1
+ to the number of IPs per address family
+
+|PLUTO_MY_SOURCEIP6_$i
+|contains a IPv6 virtual IP received from a responder where $i enumerates from 1
+ to the number of IPs per address family
+
+|PLUTO_MY_PROTOCOL
+|is the IP protocol that will be transported
+
+|PLUTO_MY_PORT
+|is the UDP/TCP port to which the IPsec SA is restricted on our side. For
+ ICMP/ICMPv6 this contains the message type and PLUTO_PEER_PORT the message code
+
+|PLUTO_PEER
+|is the IP address of our peer
+
+|PLUTO_PEER_ID
+|is the ID of our peer
+
+|PLUTO_PEER_CLIENT
+|is the IP address/netmask in CIDR format of the peer's client subnet. If the
+ client is just the peer, this will be the peer's own IP address/max (where max
+ is 32 for IPv4 and 128 for IPv6).
+
+|PLUTO_PEER_SOURCEIP
+|is a legacy variable and equals the first virtual IP (either IPv4 or IPv6)
+
+|PLUTO_PEER_SOURCEIP4_$i
+|contains a IPv4 virtual IP sent to an initiator where $i enumerates from 1 to
+ the number of IPs per address family
+
+|PLUTO_PEER_SOURCEIP6_$i
+|contains a IPv6 virtual IP sent to an initiator where $i enumerates from 1 to
+ the number of IPs per address family
+
+|PLUTO_PEER_PROTOCOL
+|is the IP protocol that will be transported
+
+|PLUTO_PEER_PORT
+|is the UDP/TCP port to which the IPsec SA is restricted on the peer side. For
+ ICMP/ICMPv6 this contains the message code and PLUTO_MY_PORT the message type
+
+|PLUTO_XAUTH_ID
+|is an optional user ID employed by the XAUTH protocol
+
+|PLUTO_MARK_IN
+|is an optional XFRM mark set on the inbound IPsec SA
+
+|PLUTO_MARK_OUT
+|is an optional XFRM mark set on the outbound IPsec SA
+
+|PLUTO_IF_ID_IN
+|is an optional XFRM interface ID set on the inbound IPsec SA
+
+|PLUTO_IF_ID_OUT
+|is an optional XFRM interface ID set on the outbound IPsec SA
+
+|PLUTO_UDP_ENC
+|contains the remote UDP port in the case of ESP_IN_UDP encapsulation
+
+|PLUTO_DNS4_$i
+|contains an IPv4 DNS server attribute received from a responder, $i enumerates
+ from 1 to the number of servers per address family
+
+|PLUTO_DNS6_$i
+|contains an IPv6 DNS server attribute received from a responder, $i enumerates
+ from 1 to the number of servers per address family
+|===
+
+=== Updown Events
+
+The `*updown*` plugin invokes the script hook with the following `*PLUTO_VERB*`
+values:
+
+[cols="1,5"]
+|===
+|PLUTO_VERB | Description
+
+|up-host
+|`CHILD SA up` event, where the negotiated local traffic selector is a single
+ IPv4 host
+
+|up-host-v6
+|`CHILD SA up` event, where the negotiated local traffic selector is a single
+ IPv6 host
+
+|up-client
+|`CHILD_SA up` event, where the negotiated local traffic selector is an
+ IPv4 subnet
+
+|up-client-v6
+|`CHILD_SA up` event, where the negotiated local traffic selector is an
+ IPv6 subnet
+
+|down-host
+|`CHILD_SA down` event, counterpart of up-host
+
+|down-host-v6
+|`CHILD_SA down` event, counterpart of up-host-v6
+
+|down-client
+|`CHILD_SA down` event, counterpart of up-client
+
+|down-client-v6
+|`CHILD_SA down` event, counterpart of up-client-v6
+|===
+
+Note that while `CHILD SA` rekeying establishes a new `CHILD SA`, the hooks do
+not get invoked.
+
+With IKEv2 a negotiated `CHILD SA` may contain multiple hosts or subnets in the
+negotiated traffic selectors. To keep compatibility with the scripts originally
+designed for IKEv1, the script gets invoked for each traffic selector
+combination once. This means with multiple traffic selectors,
+establishing/closing a `CHILD SA` invokes the script more than once.
+
+== Logging
+
+The default _updown_ script additionally logs the `CHILD SA` event to `*syslog*`.
+This behavior can be disabled by commenting out the `*VPN_LOGGING*` option in
+the script.
+
+== Alternatives
+
+The `*updown*` script allows the installation of custom `*iptables*`rules and
+often it is very simple to implement custom logic. It has, however, some
+limitations for historical reasons and might not scale with a lot of tunnels.
+
+To accept traffic with default `DROP` policies, one may alternatively use global,
+non-tunnel specific rules matching IPsec traffic with the Netfilter `*policy*`
+match.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

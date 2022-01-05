@@ -1,0 +1,115 @@
+= vici Plugin
+
+:VICI:   https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/vici/README.md
+:DAVICI: https://github.com/strongswan/davici/
+:GOVICI: https://github.com/strongswan/govici/
+:PYPY:   https://pypi.python.org/pypi/vici/
+
+== Purpose
+
+The `*vici*` [ˈvitʃi] plugin for `*libcharon*` provides the
+{VICI}[Versatile IKE Control Interface] (VICI). As its name indicates, it
+provides an interface for external applications to not only configure, but also
+to control and monitor the IKE daemon `*charon*`.
+
+strongSwan is often used to provide IKE service functionality in a tailored
+system for specific needs. Developers of such systems often have a need to
+automate configuration and control of the IKE daemon. For this purpose, external
+components require to interact with the strongSwan infrastructure without human
+intervention.
+
+The existing `*starter*`, `*ipsec.conf*` and `*stroke*` interfaces had never
+been designed to get automated. Scripting these tools is difficult, returning
+information is cumbersome. While the `*libcharon*` and `*libstrongswan*`
+libraries are reusable and extendable and thus have very powerful plugin APIs,
+writing and maintaining strongSwan code is non-trivial.
+
+{VICI}[VICI] is an attempt to improve the situation for system integrators by
+providing a stable IPC interface, allowing external tools to query, configure
+and control the IKE daemon.
+
+The most prominent user of the {VICI}[VICI] interface is
+xref:swanctl/swanctl.adoc[swanctl], a command line application to configure and
+control `*charon*`. It is the driving force to develop, extend and maintain the
+{VICI}[VICI] interface, and currently provides almost all functionality to run
+strongSwan installations without the need for `*ipsec.conf*` and friends.
+
+The `*vici*` plugin is enabled by default but may be disabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --disable-vici
+
+== Configuration
+
+The plugin is configured using the following
+xref:config/strongswanConf.adoc[`strongswan.conf`] options:
+
+[cols="1,1,2"]
+|===
+|Key|Default|Description
+
+|charon.plugins.vici.socket
+|unix:///var/run/charon.vici
+|URI the plugin listens for client connections
+|===
+
+On Windows, the default URL is `tcp://127.0.0.1:4502`.
+
+== Protocol details
+
+The {VICI}[VICI]  protocol runs over a reliable transport protocol. As the
+protocol itself currently does not provide any security or authentication
+properties, it is recommended to run it over a UNIX socket with appropriate
+permissions. The high and low level protocol details can be found in the
+{VICI}[VICI README].
+
+== Writing clients
+
+For the client side, any programming language may be used to communicate to the
+daemon using the {VICI}[VICI] protocol. Currently strongSwan comes with
+{VICI}[VICI] client libraries for C, Perl, Python and Ruby. The available
+operations and some simple examples using the libvici C interface, the Python Egg,
+Perl CPAN module and Ruby gem and can be found in the {VICI}[VICI README].
+
+=== libvici C bindings
+
+libvici provides a low-level C API to exchange messages using the {VICI}[VICI]
+protocol. Since the release of the *davici* library, it's mostly intended for
+internal use as it depends on `*libstrongswan*` (GPLv2). However, it still
+provides a stable, coding-style neutral API and might be suitable for some
+applications.
+
+The libvici API is documented in the `src/libcharon/plugins/vici/libvici.h`
+header file. The header itself is MIT licensed, allowing for non-GPLv2
+third-party implementations of the API.
+
+=== davici C library
+
+The {DAVICI}[davici] project provides a C client implementation of the {VICI}[VICI]
+protocol. In contrast to libvici, it does not build upon the libstrongswan
+library, is designed for asynchronous operation and is LGPLv2+ licensed. It is
+usually a more suitable choice when integrating VICI client functionality into
+an application.
+
+=== govici Go library
+
+A Go implementation of the {VICI}[VICI] protocol is available on {GOVICI}[GitHub].
+
+=== Ruby gem
+
+A Ruby gem allowing Ruby applications to control and monitor the IKE daemon.
+
+=== Python egg
+
+A Python egg for the very same purpose. It may also be installed via {PYPY}[PyPI].
+
+=== Perl CPAN module
+
+A Perl CPAN module as a client-side wrapper around the {VICI}[VICI] protocol.
+
+:AS: mailto:andreas.steffen@strongswan.org
+:MW: mailto:martin@strongswan.org
+:TB: mailto:tobias@strongswan.org
+:CC: http://creativecommons.org/licenses/by/4.0/
+
+{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]
