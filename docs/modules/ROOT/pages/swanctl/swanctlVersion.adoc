@@ -42,8 +42,3 @@ $ swanctl 5.9.4 --version --daemon
 
 strongSwan charon-systemd (Linux, 5.11.0-44-generic, x86_64)
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

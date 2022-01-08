@@ -38,8 +38,3 @@ loaded authority 'research'
 loaded authority 'sales'
 successfully loaded 3 authorities, 0 unloaded
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

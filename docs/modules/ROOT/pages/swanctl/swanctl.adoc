@@ -100,10 +100,3 @@ The xref:swanctl/swanctlDir.adoc[credential directories] are accessed relative
 to the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file actually loaded
 (see above) and the default directory may be changed at runtime via the
 `*SWANCTL_DIR*` environment variable.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:MW: mailto:martin@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

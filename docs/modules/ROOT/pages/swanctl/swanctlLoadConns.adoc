@@ -36,8 +36,3 @@ $ swanctl --load-conns
 loaded connection 'home'
 successfully loaded 1 connections, 0 unloaded
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

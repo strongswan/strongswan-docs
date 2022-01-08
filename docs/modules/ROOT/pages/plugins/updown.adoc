@@ -226,10 +226,3 @@ limitations for historical reasons and might not scale with a lot of tunnels.
 To accept traffic with default `DROP` policies, one may alternatively use global,
 non-tunnel specific rules matching IPsec traffic with the Netfilter `*policy*`
 match.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:MW: mailto:martin@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

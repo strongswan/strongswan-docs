@@ -96,9 +96,3 @@ the PIN.
 
 [[NetworkManager#Smart-card-requirements|NetworkManager]] makes the use of
 smart cards with IKEv2 even easier.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

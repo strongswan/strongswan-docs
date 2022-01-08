@@ -53,8 +53,3 @@
 == Complete List
 
 * {TESTS}/ipv6[All IPv6 test scenarios]
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

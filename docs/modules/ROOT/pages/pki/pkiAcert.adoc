@@ -51,8 +51,3 @@ cat > acert.opt
 ----
 pki --acert --options acert.opt --in holder.der --group sales --group finance > ac.der
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

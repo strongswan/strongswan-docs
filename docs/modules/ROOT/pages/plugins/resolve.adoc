@@ -48,9 +48,3 @@ xref:config/strongswanConf.adoc[strongswan.conf] (or the default).
 The result must be a valid interface name according to the rules specified by
 `*resolvconf(8)*`. Additionally, the resulting interface name should have a high
 priority when the order defined in `*interface-order(5)*` is applied.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

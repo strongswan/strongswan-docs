@@ -67,8 +67,3 @@ shunts/pass-ssh-in, PASS
   local:  0.0.0.0/0[tcp/ssh]
   remote: 0.0.0.0/0[tcp]
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

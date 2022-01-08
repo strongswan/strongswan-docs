@@ -150,8 +150,3 @@ $ swanctl --counters --name rw
 
 get-counters failed: no counters found for this connection
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

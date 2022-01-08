@@ -30,9 +30,3 @@ backend that `*curl*` uses:
 
 * For an NSS-based `*libcurl*` TLS backend, no dependency in strongSwan that is
   able to initialize fetching via HTTPS.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:MW: mailto:martin@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

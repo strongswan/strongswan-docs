@@ -53,8 +53,3 @@ $ pki --dn --in myCert.der --format bin | xxd
 0000020: 5377 616e 310f 300d 0603 5504 0313 0653  Swan1.0...U....S
 0000030: 6572 7665 72                             erver
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

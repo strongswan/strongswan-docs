@@ -40,8 +40,3 @@ $ swanctl --log
 13[NET] sending packet: from 192.168.0.1[500] to 192.168.0.100[500] (313 bytes)
 ...
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

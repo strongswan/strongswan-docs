@@ -61,8 +61,3 @@ list-sa event {home {uniqueid=1 version=2 state=ESTABLISHED local-host=192.168.0
 ----
 $ swanctl --list-sas --ike-id 1
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

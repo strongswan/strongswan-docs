@@ -126,8 +126,3 @@ rng:
 nonce-gen:
   NONCE_GEN[nonce]
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

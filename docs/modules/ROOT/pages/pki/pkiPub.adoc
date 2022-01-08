@@ -45,8 +45,3 @@ pki --pub --in myReq.der --type pkcs10  > myPub.der
 ----
 pki --pub --in myCert.der --type x509  > myPub.der----
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

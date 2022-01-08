@@ -33,9 +33,3 @@ xref:install/autoconf.adoc[`*./configure*`] option
 
 The xref:pki/pki.adoc[pki] tool supports the creation of X.509 certificates
 containing one or several of the constraints defined above.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

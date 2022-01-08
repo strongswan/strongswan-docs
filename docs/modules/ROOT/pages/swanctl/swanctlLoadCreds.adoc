@@ -40,8 +40,3 @@ loaded certificate from '/etc/swanctl/x509/carolCert.pem'
 loaded certificate from '/etc/swanctl/x509ca/strongswanCert.pem'
 loaded RSA key from '/etc/swanctl/rsa/carolKey.pem'
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

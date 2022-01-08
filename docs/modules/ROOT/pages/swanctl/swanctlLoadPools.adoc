@@ -37,8 +37,3 @@ loaded pool 'pool_v4'
 loaded pool 'pool_v6'
 successfully loaded 2 pools, 0 unloaded
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

@@ -106,10 +106,3 @@ A Python egg for the very same purpose. It may also be installed via {PYPY}[PyPI
 === Perl CPAN module
 
 A Perl CPAN module as a client-side wrapper around the {VICI}[VICI] protocol.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:MW: mailto:martin@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen], {MW}[Martin Willi] {CC}[CC BY 4.0]

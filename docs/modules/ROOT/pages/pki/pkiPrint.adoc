@@ -102,8 +102,3 @@ signature algorithm is ECDSA with SHA256 hash
   keyid:     73:2c:76:9e:8d:1b:2e:fe:f8:b6:4d:5a:e8:3f:84:d1:29:73:3f:dd
   subjkey:   b4:05:b9:62:32:f6:87:7e:a7:1c:38:b3:20:57:37:b4:37:83:ca:ff
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

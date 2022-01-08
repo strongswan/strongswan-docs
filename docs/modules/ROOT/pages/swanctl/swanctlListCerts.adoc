@@ -142,8 +142,3 @@ List of X.509 CRLs
     0a: Oct 22 07:50:50 2021, ca compromise
     08: Oct 22 07:50:50 2021, key compromise
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

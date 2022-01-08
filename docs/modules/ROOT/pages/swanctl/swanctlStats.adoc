@@ -39,8 +39,3 @@ IKE_SAs: 2 total, 0 half-open
 mallinfo: sbrk 3776512, mmap 0, used 3015456, free 761056
 loaded plugins: charon-systemd test-vectors pem pkcs1 openssl curl revocation nonce xcbc cmac ctr ccm vici kernel-netlink socket-default updown
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

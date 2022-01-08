@@ -52,8 +52,3 @@ research:
   cacert: C=CH, O=strongSwan Project, OU=Research, CN=Research CA
   ocsp_uris: http://ocsp.strongswan.org:8881
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

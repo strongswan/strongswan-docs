@@ -63,9 +63,3 @@ The complete chain from the root certificate to the leaf/peer certificate needs 
 ** valid: issuer has 10.0.0.0/8, issued certificate has 10.0.0.0/22
 ** invalid: issuer has 10.0.0.0/8, issued certificate has 172.16.0.0/24
 ** invalid: issuer has 10.0.0.0/16, issued certificate has 10.1.0.0/16
-
-:AS: mailto:andreas.steffen@strongswan.org
-:TB: mailto:tobias@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{TB}[Tobias Brunner], {AS}[Andreas Steffen] {CC}[CC BY 4.0]

@@ -41,8 +41,3 @@ subjkey (SHA-1 of subjectPublicKey):
 keyid (SHA-1 of subjectPublicKeyInfo):
              4a:ea:13:89:12:dc:96:b4:35:79:14:00:ee:d6:59:4d:f3:6b:63:bd
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

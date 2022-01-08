@@ -54,8 +54,3 @@ pki --signcrl --cacert caCert.der --cakey caKey.der --reason superseded --cert p
 ----
 pki --signcrl --cacert caCert.der --cakey caKey.der --lastcrl crl1.der --serial 0123 --serial 0345 > crl2.der
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

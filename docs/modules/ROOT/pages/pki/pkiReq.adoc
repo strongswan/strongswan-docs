@@ -53,8 +53,3 @@ cat > req.opt
 ----
 pki --req --options req.opt --in myKey.der --dn "C=CH, O=strongSwan, CN=carol@strongswan.org" --san carol@strongswan.org > myReq.der
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

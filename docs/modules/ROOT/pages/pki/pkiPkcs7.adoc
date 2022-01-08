@@ -29,8 +29,3 @@ This xref:./pki.adoc[`*pki*`] subcommand offers PKCS#7 wrap/unwrap functions.
 --options         (-+)  read command line options from file----
 --help            (-h)  show usage information
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

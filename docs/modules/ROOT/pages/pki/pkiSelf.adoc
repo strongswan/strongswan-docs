@@ -68,8 +68,3 @@ pki --self --in myKey.der --dn "C=CH, O=strongSwan, CN=moon.strongswan.org" > my
 ----
 pki --self --in myCaKey.der --ca --dn "C=CH, O=strongSwan, CN=Root CA" --outform pem > myCaCert.pem
 ----
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

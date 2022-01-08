@@ -149,8 +149,3 @@
 == Complete List
 
 * {TESTS}/ikev2[All IKEv2 test scenarios]
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]

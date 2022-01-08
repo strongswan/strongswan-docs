@@ -36,8 +36,3 @@ The exit status is
  * `2` if the certificate's lifetimes are invalid, and
  * `3` if the certificate has been verified successfully but the online
        revocation check indicated that it has been revoked.
-
-:AS: mailto:andreas.steffen@strongswan.org
-:CC: http://creativecommons.org/licenses/by/4.0/
-
-{AS}[Andreas Steffen] {CC}[CC BY 4.0]
