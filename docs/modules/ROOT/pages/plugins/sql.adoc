@@ -1,0 +1,68 @@
+= sql Plugin
+
+:GITHUB: https://github.com/strongswan/strongswan/blob/master
+
+== Purpose
+
+The `*sql*` plugin for `*libcharon*` allows to store the complete connection
+configuration in a relational database. Further, the `*charon*` daemon reads
+credentials such as certificates, private keys or passwords from the database
+to do all kinds of authentication. Logging to the database is also possible.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-sql
+
+Also required is support for either `MySQL`/`MariaDB` (`*--enable-mysql*`) or
+`SQLite` (`*--enable-sqlite*`) which builds and loads the `*mysql*` or `*sqlite*`
+plugin, respectively.
+
+== Configuration
+
+The `*sql*` plugin is still rather experimental. Thus there is currently no
+comfortable frontend to configure the database. But there are some `SQL` scripts
+to assist you in the database setup (more information on the tables and values
+can be found xref:./sqlite.adoc[here]).
+
+* MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*source:src/pool/mysql.sql*`]
+
+* SQLite tables: {GITHUB}/src/pool/sqlite.sql[`*source:src/pool/sqlite.sql*`]
+
+* Test data: {GITHUB}/testing/tests/sql[`*source:testing/tests/sql*`], e.g. this example
+  {GITHUB}/testing/tests/sql/ip-pool-db/hosts/moon/etc/ipsec.d/data.sql.in[`*data.sql*`]
+  file.
+
+The `*sql*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_sql[`*charon.plugins.sql*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/sql.adoc[]
+|===
+
+=== Examples
+
+----
+# MySQL:
+charon {
+  plugins {
+    sql {
+      database = mysql://user:pass@localhost/database
+    }
+  }
+}
+----
+----
+# SQLite:
+charon {
+  plugins {
+    sql {
+      database = sqlite:///etc/ipsec.d/ipsec.db
+    }
+  }
+}
+----

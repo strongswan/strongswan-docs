@@ -41,16 +41,15 @@ xref:install/autoconf.adoc[`*./configure*`] option
 
 == Configuration
 
-The plugin is configured using the following
-xref:config/strongswanConf.adoc[`strongswan.conf`] options:
+The `*vici*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_vici[`*charon.plugins.vici*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="1,1,2"]
+[cols="2,1,8"]
 |===
 |Key|Default|Description
 
-|charon.plugins.vici.socket
-|unix:///var/run/charon.vici
-|URI the plugin listens for client connections
+include::partial$config/plugins/vici.adoc[]
 |===
 
 On Windows, the default URL is `tcp://127.0.0.1:4502`.

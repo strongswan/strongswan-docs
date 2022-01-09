@@ -1,0 +1,120 @@
+= kernel-libipsec Plugin
+
+:GITHUB: https://github.com/strongswan/strongswan/blob/master
+:SYSCTL: https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
+:TESTS:  https://www.strongswan.org/testing/testresults
+:EX1:    {TESTS}/libipsec/net2net-cert
+:EX2:    {TESTS}/libipsec/host2host-cert
+
+== Purpose
+
+The `*kernel-libipsec*` plugin for `*libcharon*` provides an IPsec backend that
+works entirely in userland, using TUN devices and our own `*libipsec*` IPsec
+implementation, see {GITHUB}/src/libipsec/[`source:src/libipsec`].
+
+Both other kernel interfaces, `*kernel-netlink*` (the default) and `*kernel-pfkey*`,
+install IPsec SAs in the operating system's IPsec stack. This plugin provides an
+alternative, for instance, if the OS implementation does not support a required
+algorithm (e.g. AES-GCM on Mac OS X). However, it generally performs worse than
+the OS kernel's IPsec stack. In particular, when handling a lot of SAs and/or
+traffic, thus it is **not recommended to be used on security gateways**.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-kernel-libipsec
+
+A network kernel backend is still required, so either the `*kernel-netlink*` or
+the `*kernel-pfroute*` plugin has to be enabled, too.
+
+== Behavior
+
+With the plugin enabled a TUN device is created on startup that will be used to
+handle cleartext traffic from and to the host. For each IPsec SA routes get
+installed that direct traffic to the TUN device, from there the plugin reads the
+cleartext packets and encrypts them via `*libipsec*`. The resulting ESP packets
+will be sent over the UDP sockets the daemon uses for IKE traffic, which is why
+*the plugin currently only works with UDP encapsulation (NAT-T) enabled*.
+Encapsulated ESP packets that are received on the daemon's UDP socket are
+decrypted by `*libipsec*` and then injected via TUN device. `*libipsec*` can use
+all ciphers supported for IKE to encrypt and authenticate traffic.
+
+NOTE: `*libipsec*` is not intended for scenarios with high amounts of traffic or
+      high burst traffic. It is not optimized for performance and buffers each
+      packet in memory. In combination with insufficient processor power this
+      will lead to a out of memory condition and a crash of charon or the whole
+      device. SA and policy lookups are also not particularly optimized.
+
+On systems that use the `*kernel-pfroute*` plugin (xref:os/freebsd.adoc[FreeBSD]
+or xref:os/osx.adoc[Mac OSX]) a separate TUN device will be created for each
+xref:features/vip.adoc[virtual IP]. On Linux this is not required.
+
+== Configuration
+
+The `*kernel-libipsec*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_kernel_libipsec[`*charon.plugins.kernel-libipsec*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/kernel-libipsec.adoc[]
+|===
+
+== Host-to-Host Tunnels
+
+If the IKE peer is included in the remote traffic selector a separate route is
+installed that excepts such traffic from the route via TUN device to allow
+further IKE traffic between the peers (otherwise a routing loop would ensue).
+But if the remote traffic selector *equals* the IKE peer this won't work anymore.
+Therefore such traffic selectors are not allowed by default.
+
+It is possible to use such traffic selectors on newer Linux hosts by using
+`*fwmark*` options with the `*kernel-netlink*` and `*socket-default*` plugins.
+
+The relevant xref:config/strongswanConf.adoc[`*strongswan.conf*`] options are as
+follows:
+----
+charon {
+  plugins {
+    kernel-netlink {
+      fwmark = !0x42
+    }
+    socket-default {
+      fwmark = 0x42
+    }
+    kernel-libipsec {
+      allow_peer_ts = yes
+    }
+  }
+}
+----
+
+* The first option configures the routing rule for strongSwan's own routing table
+  in such a way that the routes in that table will only apply to packets that
+  *do not* feature the configured `*fwmark*` (`*0x42*` in the example above).
+
+* The second option forces an `*fwmark*` of `*0x42*` on all packets sent by the
+  IKE daemon. This includes IKE packets but also the UDP encapsulated ESP packets
+  that are sent over that socket. Such traffic is now not affected by the routes
+  (via TUN device) installed by strongSwan in its own routing table.
+
+* The third option finally enables negotiation of host-to-host tunnels.
+
+To make the Linux kernel actually consider the routes as required the
+`*net.ipv4.conf.all.rp_filter*` setting has to be set:
+
+ # sysctl -w net.ipv4.conf.all.rp_filter=2
+
+Read the {SYSCTL}[documentation] about this setting to understand the impact.
+It basically disables the `*rp_filter*` You possibly need to alter your local
+firewall rules to plug a hole caused by changing the setting.
+
+== Examples
+
+image:a-m-w-s-b.png[topology,340,129,link={EX1},title=libipsec/net2net-cert example]
+strongSwan {EX1}[net-to-net example] using `*libipsec*`.
+
+image:m-w-s.png[topology,141,129,link={EX2},title=libipsec/host2host-cert example]
+strongSwan {EX2}[host-to-host example] using `*libipsec*` with `*fmark*` options.

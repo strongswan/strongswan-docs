@@ -1,0 +1,7 @@
+|file                      |[->]
+|File where name servers are written to.
+`*[/etc/resolv.conf]*`
+
+|resolv_conf.iface_prefix  |[->]
+|Prefix to be used for interface names provided to `*resolvconf(8)*`.
+ `*[lo.inet.ipsec.]*`

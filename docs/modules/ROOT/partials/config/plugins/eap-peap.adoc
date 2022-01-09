@@ -1,0 +1,21 @@
+|fragment_size              |`1024`
+|Maximum size of an EAP-PEAP packet
+
+|max_message_count          |`32`
+|Maximum number of processed EAP-PEAP packets. (`*0*` = no limit)
+
+|include_length             |`no`
+|Include length in non-fragmented EAP-PEAP packets
+
+|phase2_method              |[->]
+|Phase2 EAP client authentication method.
+ `*[mschapv2]*`
+
+|phase2_piggyback           |`no`
+|Phase2 EAP Identity request piggybacked by server onto TLS Finished message
+
+|phase2_tnc                 |`no`
+|Start phase2 EAP-TNC protocol after successful client authentication
+
+|request_peer_auth          |`no`
+|Request peer authentication based on a client certificate

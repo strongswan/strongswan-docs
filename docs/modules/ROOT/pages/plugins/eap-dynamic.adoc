@@ -1,0 +1,49 @@
+= eap-dynamic Plugin
+
+:TESTS: https://www.strongswan.org/testing/testresults
+:EX:    {TESTS}/ikev2/rw-eap-dynamic
+
+== Purpose
+
+The `*eap-dynamic*` plugin for `*libcharon*` acts as a proxy that dynamically
+selects an EAP method that is supported/preferred by the client. If the original
+EAP method initiated by the plugin is rejected with an `*EAP-NAK*` message, it
+will select a different method that is supported/requested by the client.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-eap-dynamic
+
+You also need to enable actual EAP methods, such as `*eap-md5*`, `*eap-mschapv2*`
+or `*eap-tls*`.
+
+== Configuration
+
+The `*eap-dynamic*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_eap_dynamic[`*charon.plugins.eap-dynamic*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,9"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/eap-dynamic.adoc[]
+|===
+
+== Client Behavior
+
+Irrespective of whether the plugin is enabled or not, strongSwan will send an
+`*EAP-NAK*` message if the server initiates an EAP method that the client doesn't
+support. Clients may also request a specific EAP method by configuring that
+method with in the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+ connections.<conn>.local.auth = eap-<method>
+
+The `*EAP-NAK*` will then only contain that method, otherwise all supported
+methods are included.
+
+== Example
+
+image:a-m-c-w-d.png[topology,252,129,link={EX},title=eap-dynamic example]
+strongSwan {EX}[example] showing the use of the `*eap-dynamic*` plugin.

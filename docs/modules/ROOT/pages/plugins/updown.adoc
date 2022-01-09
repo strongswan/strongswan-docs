@@ -2,8 +2,8 @@
 
 == Purpose
 
-The `*updown*` plugin invokes a script when an IKEv2 `CHILD SA` or an IKEv1
-`Quick Mode` gets established or deleted.
+The `*updown*` plugin for `*libcharon*` invokes a script when an IKEv2 `CHILD SA`
+or an IKEv1 `Quick Mode` gets established or deleted.
 
 The plugin is enabled by default, but can be disabled with the
 xref:install/autoconf.adoc[`*./configure*`] option
@@ -202,8 +202,8 @@ values:
 |`CHILD_SA down` event, counterpart of up-client-v6
 |===
 
-Note that while `CHILD SA` rekeying establishes a new `CHILD SA`, the hooks do
-not get invoked.
+NOTE: While `CHILD SA` rekeying establishes a new `CHILD SA`, the hooks do
+      not get invoked.
 
 With IKEv2 a negotiated `CHILD SA` may contain multiple hosts or subnets in the
 negotiated traffic selectors. To keep compatibility with the scripts originally

@@ -1,0 +1,9 @@
+|file |
+|File to store coupling list to
+
+|hash |`sha1`
+|Hashing algorithm to fingerprint coupled certificates
+ (`md5/sha1/sha256/sha384/sha512`)
+
+|max  |`1`
+|Maximum number of coupling entries to create

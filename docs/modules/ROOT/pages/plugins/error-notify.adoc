@@ -1,0 +1,51 @@
+= error-notify Plugin
+
+:GITHUB:    https://github.com/strongswan/strongswan/blob/master
+:ENFY_DEF:  src/libcharon/plugins/error_notify/error_notify_msg.h
+:ENFY_TOOL: src/libcharon/plugins/error_notify/error_notify.c
+
+== Purpose
+
+The `*error-notify*` plugin for `*libcharon*` provides an interface to receive
+notifications about errors that occur in the keying daemon via UNIX socket.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-error-notify
+
+== Implementation
+
+If the plugin is enabled, it opens a UNIX socket and sends error notifications
+to connected listeners.
+
+== Configuration
+
+The `*error-notify*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_error_notify[`*charon.plugins.error-notify*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="1,2,4"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/error-notify.adoc[]
+|===
+
+== error-notify Tool
+
+The `*error-notify*` utility usually invoked by
+
+ /usr/libexec/ipsec/error-notify
+
+demonstrates how error notifications can be received. It is currently very
+simple and takes no arguments and when invoked simply lists all received error
+messages to STDOUT.
+
+== Socket Interface
+
+The `*error_notify*` socket interface definition can be found here:
+{GITHUB}/{ENFY_DEF}[`source:{ENFY_DEF}`].
+
+The `*error-notify*` tool demonstrating how the interface can be used:
+{GITHUB}/{ENFY_TOOL}[`source:{ENFY_TOOL}`]

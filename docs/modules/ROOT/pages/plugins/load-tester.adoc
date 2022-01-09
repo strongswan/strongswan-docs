@@ -1,0 +1,283 @@
+= load-tester Plugin
+
+:GITHUB:   https://github.com/strongswan/strongswan/blob/master
+:LT_CREDS: src/libcharon/plugins/load_tester/load_tester_creds.c
+
+== Purpose
+
+The a `*load-tester*` plugin for `*libcharon*` does stability testing and
+performance optimizations of the '*charon*` daemon. This plugin allows to set up
+thousands of tunnels concurrently against the daemon itself or a remote host.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-load-tester
+
+WARNING: Never enable the `*load-tester*` plugin on productive systems. It
+         provides preconfigured credentials and allows an attacker to
+         authenticate as any user.
+
+To make sure you are aware of this risk, an additional `*enable*` switch in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] is required to load the
+plugin.
+
+== Configuration
+
+The `*load-tester*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_load_tester[`*charon.plugins.load-tester*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="4,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/load-tester.adoc[]
+|===
+
+== Testing against Self
+
+In the simplest case, the the daemon initiates IKE_SAs against self using the
+loopback interface. This will actually establish the doubled number of IKE_SAs,
+as the daemon is initiator and responder for each IKE_SA at the same time.
+Installation of IPsec SAs would fail, as each SA gets installed twice. To
+simulate the correct behavior, a faked kernel interface can be enabled which does
+not install the IPsec SAs at the kernel level.
+
+A simple loop-back configuration in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] might look like this:
+----
+charon {
+  # create a new IKE_SA for each CHILD_SA to simulate different clients
+  reuse_ikesa = no
+  # turn off denial of service protection
+  dos_protection = no
+
+  plugins {
+    load-tester {
+      # enable the plugin
+      enable = yes
+      # use 4 threads to initiate connections simultaneously
+      initiators = 4
+      # each thread initiates 1000 connections
+      iterations = 1000
+      # delay each initiation in each thread by 20ms
+      delay = 20
+      # fake the kernel interface to avoid SA conflicts
+      fake_kernel = yes
+    }
+  }
+}
+----
+This will initiate 4000 IKE_SAs within 20 seconds. You may increase the delay
+value if your box can not handle that much load, or decrease it to put more load
+on it. If the daemon starts retransmitting messages, your box probably can not
+handle all connection attempts.
+
+== Testing against Remote Host
+
+The plugin also allows to test against a remote host. This might help to test
+against a real world configuration. A connection setup to do stress testing of a
+gateway might look like this:
+----
+charon {
+  reuse_ikesa = no
+  threads = 32
+
+  plugins {
+    load-tester {
+      # enable the plugin
+      enable = yes
+      # 10000 connections, ten in parallel
+      initiators = 10
+      iterations = 1000
+      # use a delay of 100ms, overall time is: iterations * delay = 100s
+      delay = 100
+      # address of the gateway (releases before 5.0.2 used the "remote" keyword!)
+      responder = 1.2.3.4
+      # IKE-proposal to use
+      proposal = aes128-sha1-modp1024
+      # use faster PSK authentication instead of 1024bit RSA
+      initiator_auth = psk
+      responder_auth = psk
+      # request a virtual IP using configuration payloads
+      request_virtual_ip = yes
+      # disable IKE_SA rekeying (default)
+      ike_rekey = 0
+      # enable CHILD_SA every 60s
+      child_rekey = 60
+      # do not delete the IKE_SA after it has been established (default)
+      delete_after_established = no
+      # do not shut down the daemon if all IKE_SAs established
+      shutdown_when_complete = no
+    }
+  }
+}
+----
+
+== Configuration Details
+
+For public key authentication, the responder uses the
+
+ "CN=srv, OU=load-test, O=strongSwan"
+
+identity. The initiator, each connection attempt uses a different identity in
+the form
+
+ "CN=c1-r1, OU=load-test, O=strongSwan"
+
+where the first number inidicates the client number, the second the
+authentication round (if multiple authentication is used).
+
+For PSK authentication, FQDN identities are used. The server uses
+`*srv.strongswan.org*`, the client uses an identity in the form
+`*c1-r1.strongswan.org*`.
+
+For EAP authentication, the client uses a NAI in the form
+`*100000000010001@strongswan.org*`.
+
+To configure multiple authentication, concatenate multiple methods using, e.g.
+
+ initiator_auth = pubkey|psk|eap-md5|eap-aka
+
+The responder uses a hardcoded certificate based on a 1024-bit RSA key
+ (see {GITHUB}/{LT_CREDS}[{LT_CREDS}]). This certificate additionally serves as
+ CA certificate. A peer uses the same private key, but generates client
+ certificates on demand signed by the CA certificate. Install the Responder/CA
+ certificate on the remote host to authenticate all clients.
+
+To speed up testing, the load tester plugin implements a special Diffie-Hellman
+implementation called `*modpnull*`. By setting
+
+ proposal = aes128-sha1-modpnull
+
+this wickedly fast DH implementation is used. It does not provide any security at
+all, but allows to run tests without DH calculation overhead.
+
+=== Custom Credentials
+
+`*load-tester*` can use a custom set of certificates for authentication.
+Certificates are still issued on demand and the `*issuer_key*` and `*isser_cert*`
+options define the path to load the CA certificate and private key to load for
+issuing certificates. To load additional certificates to verify the trust chain
+(above `*issuer_cert*`), the `*ca_dir*` option takes a directory to load trusted
+certificates from.
+
+By default, the on-demand generated peer certificates are issued with RSA
+signatures using SHA1. To use a different hashing algorithm, the `*digest*` option
+can be used, which accepts hash algorithms, such as `*md5*`, `*sha1*`, `*sha256*`
+or `*sha512*`.
+
+To use other peer identities than those hard-coded, the `*initiator_id*` and
+`*responder_id*` options can be used. These options can contain up to two `*%d*`
+printf specifiers to replace. The first one is replaced by a unique number for
+each tunnel established, starting from `*1*`. The second is replaced by the
+authentication round for this connection, starting at `*1*`. Take care to use
+`*%d*` identifiers only and just two of them, as the format string is not
+validated. To include `*%*` characters in an identity, prefix it with an
+additional `*%*` as you would do it in a `*printf*` format string. As a responder,
+a specific `*initiator_id*` wouldn't match to a custom `*initiator_id*` configured
+on the client. Hence the `*initiator_match*` option is introduced which can be
+defined to an identity with wildcards that should match to all identities the
+initiator generates from the `*initiator_id*` template.
+
+The identities generated from the configured templates are included in the
+on-demand issued certificates. Distinguished Name identities are encoded as
+subject. FQDN, email, IPv4/v6 identities are encoded as subjectAltName. If a
+subjectAltName gets encoded, the subject Distinguished Name of the certificate
+is a single Common Name Relative Distinguished Name equal to the subjectAltName.
+
+An example of a load-test to itself with custom credentials could look like this:
+----
+charon {
+  # ...
+  plugins {
+    load-tester {
+      enable = yes
+      initiators = 1
+      iterations = 100
+      fake_kernel = yes
+
+      # initiator authenticates twice with on-demand
+      # generated certificates. Responder authenticates
+      # once only.
+      initiator_auth = pubkey|pubkey
+      initiator_id = conn-%d-round-%d@strongswan.org
+      initiator_match = *@strongswan.org
+      responder_id = srv.strongswan.org
+      digest = sha256
+      issuer_cert = /path/to/ca.crt
+      issuer_key = /path/to/ca.key
+      ca_dir = /path/to/trustchain/certs
+    }
+ }
+}
+----
+
+=== Traffic Selectors
+
+Custom traffic selectors can be defined. The `*initiator_tsi*`,`*initiator_tsr*`,
+`*responder_tsi*` and `*responder_tsr*` define a traffic selector to propose as
+initiator or narrow down as responder. Only a single CIDR style subnet definition
+is allowed, protocol/port selectors are currently not supported.
+
+=== On-Demand Installed External Addresses
+
+To generate load against a responder that simulates more closely the real world,
+`*load-tester*` can use a unique external tunnel address for each established
+`IKE SA`. The IPs are installed on-demand just before tunnel establishment on
+one or more interfaces. The `*addrs*` sections takes key/value pairs of address
+pools to use, the `*addrs_prefix*` defines the network prefix how the address is
+installed on the interface. An example could look like this:
+----
+charon {
+  # ...
+  plugins {
+    load-tester {
+      # ...
+      addrs {
+        # install ~32K addresses on eth0
+        eth0 = 10.2.0.0/17
+        # and then ~32K addresses on eth1
+        eth1 = 10.2.128.0/17
+      }
+      # install all addresses with a /16 prefix
+      addrs_prefix = 16
+    }
+ }
+}
+----
+
+NOTE: Make sure to shut down unused network services when installing hundreds of
+      addresses. Some services don't scale very well to this many addresses, the
+      Avahi daemon for example can significantly slow down the system when
+      running such tests.
+
+== Triggered Batch Initiations
+
+Tunnels can not only be initiated on daemon startup with the `*initiators*`/
+`*iterations*` keywords, but also while the daemon is running. The `*load-tester*`
+tool takes as first argument the number of tunnels, and as second argument the
+delay between each initiation. Multiple clients can trigger initiation at the
+same time.
+
+The `*load-tester*` tool prints the status of the initiation with some simple
+characters to the console:
+----
+. : Initiation of a single tunnel started
+! : Initiation of a tunnel failed
++ : A tunnel has been established successfully
+- : A tunnel failed to establish during the exchange
+* : A message has been retransmitted
+----
+A session might look like this:
+----
+> ipsec load-tester initiate 100 2
+.....++.+++..+..+.+.++..++.+.+.+.+.+.++..+..++...++.+.+.+.+.+
+...+++.+.+..++.++..+.++....+.+++++...+..+.++.+.++....++..+++.
++..++.+.+.++.++....+++..++..+..+++.+..+..++.+.+..+++...++.++.
++..+.+.+.+.+.+++*+
+----
+100 tunnels have been initiated and established successfully, one packet has
+been lost and was retransmitted. If many packets get retransmitted, this can be
+an indication that one of the systems is overloaded.

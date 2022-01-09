@@ -1,0 +1,7 @@
+|enabled |`no`
+|Enable whitelist checking
+
+|socket                    |
+|Socket provided by the whitelist plugin.
+ `*[unix://$\{piddir}/charon.wlst]*`
+

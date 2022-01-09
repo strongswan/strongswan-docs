@@ -1,0 +1,52 @@
+= coupling Plugin
+
+== Purpose
+
+The `*coupling*` plugin for `*libcharon*` provides a mechanism to couple a peer
+certificate permanently. While uncoupled, any peer certificate is accepted if it
+can be verified using a trustchain. The certificate is then added to a coupling list.
+Once the coupling list reaches a predefined count of entries, no new certificates
+are accepted. Only certificates listed in the couplings file now can authenticate
+successfully.
+
+There are different scenarios where such a coupling might make sense, but of
+course only if a peer talks to an exclusive peer list. Once coupled, only listed
+certificates are accepted: Newly issued certificates issued by i.e. a compromised
+CA don't get a chance to authenticate successfully.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-coupling
+
+== Implementation
+
+The `*coupling*` plugin uses a text file to store the list, each line consists of:
+
+ hex-encoded-hash-of-full-cert unix-timestamp-of-coupling cert-subject-dn
+
+The hash itself is sufficient to validate a coupling entry, the other values are
+for informative purposes only. You can manually alter the coupling file, but make
+sure the hex encoded hash begins with the first character of a line.
+
+== Configuration
+
+The `*coupling*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_coupling[`*charon.plugins.coupling*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/coupling.adoc[]
+|===
+
+The default value for `*max*` of `*1*` allows only a single certificate to
+couple. Once coupled, no other certificates get accepted. Using a higher `*max*`
+value accepts more than one certificate. But be aware that until the list of
+coupled certificates reaches `*max*`, any certificate (verifiable by a trustchain)
+gets accepted and inserted to the coupling list.
+
+The hash is created using the specified hashing algorithm over the full DER
+encoded certificate. The plugin does not load if no `*file*` is specified.

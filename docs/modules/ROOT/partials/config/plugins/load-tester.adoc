@@ -1,0 +1,135 @@
+|addrs                   |
+|Subsection that contains key/value pairs with address pools (in CIDR notation)
+ to use for a specific network interface e.g. eth0 = 10.10.0.0/16
+
+|addrs_keep              |`no`
+|Whether to keep dynamic addresses installed even after the associated SA got terminated
+
+|addrs_prefix            |`16`
+|Network prefix length to use when installing dynamic addresses. If set to `-1`
+ the full address is used (i.e. 32 or 128)
+
+|ca_dir                  |
+|Directory to load (intermediate) CA certificates from
+
+|child_rekey             |`600`
+|Seconds to start CHILD_SA rekeying after setup
+
+|crl                     |
+|URI to a CRL to include as certificate distribution point in generated certificates
+
+|delay                   |`0`
+|Delay between initiatons for each thread
+
+|delete_after_established|`no`
+|Delete an IKE_SA as soon as it has been established
+
+|digest                  |`sha1`
+|Digest algorithm used when issuing certificates
+
+|dpd_delay               |`0`
+|DPD delay to use in load test
+
+|dynamic_port            |`0`
+|Base port to be used for requests (each client uses a different port)
+
+|eap_password            |[->]
+|EAP secret to use in load test.
+ `*[default-pwd]*`
+
+|enable                  |`no`
+|Enable the load testing plugin
+
+|esp                     |[->]
+|CHILD_SA proposal to use for load tests.
+ `*[aes128-sha1]*`
+
+|fake_kernel             |`no`
+|Fake the kernel interface to allow load-testing against self
+
+|ike_rekey               |`0`
+|Seconds to start IKE_SA rekeying after setup
+
+|init_limit              |`0`
+|Global limit of concurrently established SAs during load test
+
+|initiator               |[->]
+|Address to initiate from.
+ `*[0.0.0.0]*`
+
+|initiator_auth          |[->]
+|Authentication method(s) the intiator uses.
+ `*[pubkey]*`
+
+|initiator_id            |
+|Initiator ID used in load test
+
+|initiator_match         |
+|Initiator ID to match against as responder
+
+|initiator_tsi           |
+|Traffic selector on initiator side, as proposed by initiator
+
+|initiator_tsr           |
+|Traffic selector on responder side, as proposed by initiator
+
+|initiators              |`0`
+|Number of concurrent initiator threads to use in load test
+
+|issuer_cert             |
+|Path to the issuer certificate (if not configured a hard-coded default value is used)
+
+|issuer_key              |
+|Path to private key that is used to issue certificates (if not configured a
+ hard-coded default value is used)
+
+|iterations              |`1`
+|Number of IKE_SAs to initiate by each initiator in load test
+
+|mode                    |[->]
+|IPsec mode to use, one of `*tunnel*`, `*transport*`, or `*beet*`.
+ `*[tunnel]*`
+
+|pool                    |
+|Provide virtual IPs from a named pool
+
+|preshared_key           |[->]
+|Preshared key to use in load test.
+ `*[<default-psk>]*`
+
+|proposal                |[->]
+|IKE proposal to use in load test.
+ `*[aes128-sha1-modp768]*`
+
+|request_virtual_ip      |`no`
+|Request an `INTERNAL_IPV4_ADDR` and `INTERNAL_IPV6_ADDR` (since version 5.9.1)
+ from the server
+
+|responder               |[->]
+|Address to initiation connections to.
+ `*[127.0.0.1]*`
+
+|responder_auth          |`pubkey`
+|Authentication method(s) the responder uses
+
+|responder_id            |
+|Responder ID used in load test
+
+|responder_tsi           |[->]
+|Traffic selector on initiator side, as narrowed by responder.
+ `*[initiator_tsi]*`
+
+|responder_tsr           |[->]
+|Traffic selector on responder side, as narrowed by responder.
+`*[initiator_tsr]*`
+
+|shutdown_when_complete  |`no`
+|Shutdown the daemon after all IKE_SAs have been established
+
+|socket                  |[->]
+|Socket provided by the `*load-tester*` plugin.
+ `*[unix://$\{piddir}/charon.ldt]*`
+
+|version                 |`0`
+|IKE version to use (`*0*` means use IKEv2 as initiator and accept any version as
+ responder)

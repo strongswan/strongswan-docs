@@ -1,0 +1,9 @@
+|database                                    |
+|Mediation client database URI. If it contains a password, make sure to adjust
+ the access permissions of the config file accordingly
+
+|dpd                                         |`5m`
+|DPD timeout to use in mediation client plugin
+
+|rekey                                       |`20m`
+|Rekeying time on mediation connections in mediation client plugin

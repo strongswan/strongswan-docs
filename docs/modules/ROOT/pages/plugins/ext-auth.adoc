@@ -1,0 +1,53 @@
+= ext-auth Plugin
+
+== Purpose
+
+The `*ext-auth*` plugin for `*libcharon*` invokes an external script to implement
+custom authorization rules.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-ext-auth
+
+== Implementation
+
+If the plugin is configured, it invokes the command under a shell and evaluates
+the return value. If the command exits cleanly with an exit code of `*0*`
+authorization is granted. Otherwise `IKE SA` authorization is rejected usually
+resulting in an _AUTH_FAILED_ notification.
+
+The configured command is invoked under a shell (`*sh -c*`) with the following
+environment variables set:
+
+[cols="1,4"]
+|===
+|Variable            |Description
+
+|IKE_UNIQUE_ID       |The IKE_SA numerical unique identifier
+
+|IKE_NAME            |The peer configuration connection name
+
+|IKE_LOCAL_HOST      |Local IKE IP address
+
+|IKE_REMOTE_HOST     |Remote IKE IP address
+
+|IKE_LOCAL_ID        |Local IKE identity
+
+|IKE_REMOTE_ID       |Remote IKE identity
+
+|IKE_REMOTE_EAP_ID   |Remote EAP or XAuth identity, if used
+|===
+
+== Configuration
+
+The `*ext-auth*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_ext_auth[`*charon.plugins.ext-auth*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="3,1,5"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/ext-auth.adoc[]
+|===

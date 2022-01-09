@@ -1,0 +1,6 @@
+|strict  |`yes`
+|If set to `*yes*`, a subject certificate without an `*IPAddrblock*` extension
+ is rejected if the issuer certificate posesses an `*IPAddrblock*`  extension
+ extension. If set to `*no*`, subject certificates issued without the
+ `*IPAddrblock*` extension are accepted without any traffic selector checks and
+ no policy is enforced by the plugin.

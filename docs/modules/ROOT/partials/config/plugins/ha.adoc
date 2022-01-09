@@ -1,0 +1,37 @@
+|autobalance                      |`0`
+|Interval in seconds to automatically balance handled segments between nodes.
+ Set to `*0*` to disable
+
+|buflen                           |`2048`
+|Buffer size for received HA messages. For IKEv1 the public DH factors are also
+ transmitted so depending on the DH group the HA messages can get quite big
+ (the default should be fine up to `*modp4096*`)
+
+|fifo_interface                   |`yes`
+|
+
+|heartbeat_delay                  |`1000`
+|
+
+|heartbeat_timeout                |`2100`
+|
+
+|local                            |
+|
+
+|monitor                          |`yes`
+|
+
+|pools                            |
+|
+
+|remote                           |
+|
+
+|resync                           |`yes`
+|
+|secret                           |
+|
+
+|segment_count                    |`1`
+|

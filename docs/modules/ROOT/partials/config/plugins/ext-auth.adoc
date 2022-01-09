@@ -1,0 +1,2 @@
+|charon.plugins.ext-auth.script|
+|Script or command to execute

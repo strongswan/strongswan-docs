@@ -1,0 +1,42 @@
+= farp Plugin
+
+:ARP8: https://www.freebsd.org/cgi/man.cgi?query=arp&sektion=8
+
+== Purpose
+
+The `*farp*` plugin for `*libcharon*` fakes `ARP` responses for requests to e.g.
+a xref:features/vip.adoc[virtual IP] address to be assigned to a peer.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-farp
+
+== Behavior
+
+With the plugin enabled the IKEv2 daemon responds to `ARP` requests for IP
+addresses in the remote traffic selectors (e.g. xref:features/vip.adoc[virtual IP]
+addresses that were handed out to clients but could be complete subnets)
+with its own MAC address.
+
+In combination with the xref:./dhcp.adoc[`*dhcp*`] plugin this plugin lets a
+road-warrior fully act as a client on the local `LAN` of the responder.
+
+== Limitations
+
+Since strongSwan version 5.9.2 the plugin also works on `Mac OSX` and `FreeBSD`.
+That wasn't the case for previous versions due to the implementation relying on
+`*AF/PF_PACKET*` sockets only. If you use such a version or don't have the plugin
+available for other reasons, `ARP` proxying for xref:features/vip.adoc[virtual IP]
+addresses an be achieved via the {ARP8}[arp(8)] utility and an
+xref:./updown.adoc[`*updown*`] script, e.g.
+----
+case $PLUTO_VERB in
+        up-client)
+        arp -s ${PLUTO_PEER_SOURCEIP4_1} auto pub
+        ;;
+        down-client)
+        arp -d ${PLUTO_PEER_SOURCEIP4_1} pub
+        ;;
+esac
+----

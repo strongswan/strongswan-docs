@@ -1,0 +1,16 @@
+|cadir              |
+|Path to directory with AIK cacerts
+
+|dh_group           |[->]
+|Preferred Diffie-Hellman group.
+ `*[ecp256]*`
+
+|hash_algorithm     |[->]
+|Preferred measurement hash algorithm.
+ `*[sha384]*`
+
+|min_nonce_len      |`0`
+|DH minimum nonce length
+
+|remediation_uri    |
+|URI pointing to attestation remediation instructions

@@ -1,0 +1,23 @@
+|csv.cron         |
+|Cron style string specifying CSV export times
+
+|csv.empty_string |
+|String to use in empty intermediate CA fields
+
+|csv.fixed_fields |`yes`
+|Use a fixed intermediate CA field count
+
+|csv.format       |[->]
+|{STRFTIME}[`*strftime()*`] format string to export expiration dates as.
+ `*[%d:%m:%Y]*`
+
+|csv.local        |
+|{STRFTIME}[`*strftime()*`] format string for the CSV file to export local
+ certificates to
+
+|csv.remote      |
+|{STRFTIME}[`*strftime()*`] format string for the CSV file to export remote
+ certificates to
+
+|csv.separator    |`,`
+|CSV field separator

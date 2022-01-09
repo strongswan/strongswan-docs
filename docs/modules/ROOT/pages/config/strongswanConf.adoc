@@ -1,1 +1,970 @@
-= strongswan.conf Configuration File
+= strongswan.conf
+:page-toclevels: 4
+:COLS: cols="4,1,8"
+
+:GITHUB:   https://github.com/strongswan/strongswan/blob/master
+:SETTINGS: src/libstrongswan/settings/settings.h
+:STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC4739:  {IETF}/rfc4739
+:RFC4941:  {IETF}/rfc4941
+:RFC5685:  {IETF}/rfc5685
+:RFC5998:  {IETF}/rfc5998
+:RFC7427:  {IETF}/rfc7427
+
+NOTE: This page documents the configuration options of the most current release.
+       Therefore, you should always consult the *strongswan.conf(5)* man page
+       that comes with the release you are using to confirm which options are
+       actually available.
+
+== Overview
+
+While the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] and the legacy
+`*ipsec.conf*` configuration files are well suited to define IPsec-related
+configuration parameters, it is not useful for other strongSwan applications to
+read options from these files. As the number of components of the strongSwan
+project is continually growing, we needed a more flexible configuration file that
+is easy to extend and can be used by all components.
+
+The default `*strongswan.conf*` file is installed under `*$\{sysconfdir}*`, i.e.
+the path usually  is `*/etc/strongswan.conf*`.
+
+Since version 5.1.2 the default config file may be split up and separate files
+are placed in the xref:config/strongSwanDir.adoc[`*/etc/strongswan.d*`] directory.
+
+The location in which `*strongswan.conf*` is looked for can be overwritten at
+start time of the process using libstrongswan by setting the `*STRONGSWAN_CONF*`
+environmental variable to the desired location.
+
+== Reloading
+
+The IKE `*charon*` daemon and some of its derivatives reloads `*strongswan.conf*`
+if it receives a `*SIGHUP*` signal (that has to be sent manually to the `*charon*`
+daemon) or can be triggered via either the xref:plugins/vici.adoc[`*vici*`]
+`*reload-settings*` or the xref:swanctl/swanctl.adoc[`*swanctl*`]
+`*--reload-settings*` commands.
+
+This reloads the xref:loggerConfiguration.adoc[logger settings] and some plugins
+also support reloading their configuration (e.g. the
+xref:plugins/attr.adoc[*`attr*`], the xref:plugins/pkcs11.adoc[`*pkcs11*`] or the
+xref:plugins/eap-radius.adoc[`*eap-radius*`] plugins) and many settings are always
+read directly from the latest config (some at least for new connections).
+
+== Syntax
+
+The format consists of hierarchical `*sections*` and a list of `*key/value*` pairs
+in each `*section*`.
+
+Each section has a name, followed by C-style curly brackets defining the section
+body. Each section body contains a set of `*subsections*` and `*key/value*` pairs:
+----
+settings := (section|keyvalue)*
+section  := name { settings }
+keyvalue := key = value\n
+----
+
+Values must be terminated by a newline. Comments are possible using the
+#-character. Section names and keys may contain any printable character except:
+----
+. , : { } = " # \n \t space
+----
+
+An example might look like this:
+----
+a = b
+section-one {
+  somevalue = asdf
+  subsection {
+    othervalue = xxx
+  }
+  # yei, a comment
+  yetanother = zz
+}
+section-two {
+  x = 12
+}
+----
+
+Indentation is optional. You may use tabs or spaces.
+
+=== Referencing other Sections
+
+Since version 5.7.0 it is possible to inherit settings and sections from another
+section. This feature is mainly useful in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] which uses the same configuration
+file format.
+
+The syntax for references is as follows:
+----
+section    := name : references { settings }
+references := absname[, absname]*
+absname    := name[.name]*
+----
+
+All `*key/value*` pairs and all `*subsections*` of the referenced sections will
+be inherited by the section that references them via their absolute name. Values
+may be overridden in the section or any of its sub-sections (use an empty
+assignment to clear a value so its default value, if any, will apply). It is
+currently not possible to limit the inclusion level or clear/remove inherited
+`*subsections*`.
+
+If the order is important (e.g. for auth rounds in a connection, if `*round*` is
+not used), it should be noted that inherited settings/sections will follow those
+defined in the current section (if multiple sections are referenced, their
+settings are enumerated left to right).
+
+References are evaluated dynamically at runtime, so referring to sections later
+in the config file or included via other files is no problem.
+
+Here is an example of how this might look like in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]:
+----
+conn-defaults {
+  # default settings for all conns (e.g. a cert, or IP pools)
+}
+eap-defaults {
+  # defaults if eap is used (e.g. a remote auth round)
+}
+child-defaults {
+  # defaults for child configs (e.g. traffic selectors)
+}
+connections {
+  conn-a : conn-defaults, eap-defaults {
+    # set/override stuff specific to this connection
+    children {
+      child-a : child-defaults {
+        # set/override stuff specific to this child
+      }
+    }
+  }
+  conn-b : conn-defaults {
+    # set/override stuff specific to this connection
+    children {
+      child-b : child-defaults {
+        # set/override stuff specific to this child
+      }
+    }
+  }
+  conn-c : connections.conn-a {
+    # everything is inherited, including everything conn-a
+    # already inherits from the sections it and its
+    # sub-section reference
+  }
+}
+----
+
+=== Including Files
+
+The `*include*` statement allows to include otherfiles into `*strongswan.conf*`,
+e.g.
+
+ include /some/path/*.conf
+
+If the file name is not an absolute path, it is considered to be relative to the
+directory of the file containing the include statement. The file name may include
+shell wildcards. Also, such inclusions can be nested.
+
+Sections loaded from the included files *extend* previously loaded sections; already
+existing values are *replaced*. It is important to note that settings are added
+relative to the section the include statement is in.
+
+As an example, the following three files result in the same final config as the
+one given above:
+----
+a = b
+section-one {
+  somevalue = before include
+  include include.conf
+}
+include other.conf
+----
+File `include.conf`:
+----
+# settings loaded from this file are added to section-one
+# the following replaces the previous value
+somevalue = asdf
+subsection {
+  othervalue = yyy
+}
+yetanother = zz
+----
+File `other.conf`:
+----
+# this extends section-one and subsection
+section-one {
+  subsection {
+    # this replaces the previous value
+    othervalue = xxx
+  }
+}
+section-two {
+  x = 12
+}
+----
+
+== Reading values
+
+The config file is read by libstrongswan during library initialization (or when
+a reload is triggered). Values are accessed using a dot-separated section list
+and a key: Accessing `*section-one.subsection.othervalue*` in the examples above
+will return `*xxx*`.
+
+Have a look at the settings interface {GITHUB}/{SETTINGS}[`source:{SETTINGS}`]
+to learn about the details.
+
+== Keys
+
+The following list shows all `*strongswan.conf*` keys that are currently defined
+(using dot notation).
+
+* `*$\{prefix}*` refers to the directory that can be configured with the
+  `*--prefix*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
+  option (defaults to `*/usr/local*`).
+
+* `*$\{sysconfdir}*` refers to the directory that can be configured with the
+  `*--sysconfdir*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
+  option (defaults to `*$\{prefix}/etc*`).
+
+* `*$\{piddir}*` refers to the directory that can be configured with the
+  `*--with-piddir*` xref:install/autoconf.adoc#_with_options[`*./configure*`]
+  option (defaults to `*/var/run*`).
+
+* `*$\{nm_ca_dir}*` refers to the directory that can be configured with the
+  `*--with-nm-ca-dir*` xref:install/autoconf.adoc#_with_options[`*./configure*`]
+  option (defaults to `*/usr/share/ca-certificates*`).
+
+=== xref:tpm/aikgen.adoc[aikgen]
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/aikgen.adoc[]
+|===
+
+=== xref:tnc/attest.adoc[attest]
+[{COLS}]
+|===
+
+include::partial$config/attest.adoc[]
+|===
+
+=== charon
+
+Many of the options in this section also apply to
+xref:daemons/charon-cmd.adoc[`*charon-cmd*`],
+xref:daemons/charon-systemd.adoc[*`charon-systemd*`] and other derivatives of
+the `*charon*` daemon. Just use their respective name (e.g. `*charon-systemd*`
+instead of `*charon*`).
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/charon_1.adoc[]
+|===
+
+==== xref:plugins/test-vectors.adoc[charon.crypto_test]
+[{COLS}]
+|===
+
+include::partial$config/charon_crypto_test.adoc[]
+|===
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/charon_2.adoc[]
+|===
+
+==== charon.leak_detective
+[{COLS}]
+|===
+
+include::partial$config/charon_leak_detective.adoc[]
+|===
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+include::partial$config/charon_3.adoc[]
+|===
+
+==== Dangerous Options
+
+include::partial$config/charon_danger.adoc[]
+
+=== charon.plugins
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+|===
+
+==== xref:plugins/addrblock.adoc[charon.plugins.addrblock]
+[{COLS}]
+|===
+
+include::partial$config/plugins/addrblock.adoc[]
+|===
+
+==== charon.plugins.android-log
+[{COLS}]
+|===
+
+include::partial$config/plugins/android-log.adoc[]
+|===
+
+==== xref:plugins/attr.adoc[charon.plugins.attr]
+[{COLS}]
+|===
+
+include::partial$config/plugins/attr.adoc[]
+|===
+
+==== xref:plugins/attr-sql.adoc[charon.plugins.attr-sql]
+[{COLS}]
+|===
+
+include::partial$config/plugins/attr-sql.adoc[]
+|===
+
+==== charon.plugins.bliss
+[{COLS}]
+|===
+
+include::partial$config/plugins/bliss.adoc[]
+|===
+
+==== charon.plugins.botan
+[{COLS}]
+|===
+
+include::partial$config/plugins/botan.adoc[]
+|===
+
+==== xref:plugins/bypass-lan.adoc[charon.plugins.bypass-lan]
+[{COLS}]
+|===
+
+include::partial$config/plugins/bypass-lan.adoc[]
+|===
+
+==== xref:plugins/certexpire.adoc[charon.plugins.certexpire]
+[{COLS}]
+|===
+
+include::partial$config/plugins/certexpire.adoc[]
+|===
+
+==== xref:plugins/coupling.adoc[charon.plugins.coupling]
+[{COLS}]
+|===
+
+include::partial$config/plugins/coupling.adoc[]
+|===
+
+==== charon.plugins.curl
+[{COLS}]
+|===
+
+include::partial$config/plugins/curl.adoc[]
+|===
+
+==== xref:plugins/dhcp.adoc[charon.plugins.dhcp]
+[{COLS}]
+|===
+
+include::partial$config/plugins/dhcp.adoc[]
+|===
+
+==== xref:plugins/duplicheck.adoc[charon.plugins.duplicheck]
+[{COLS}]
+|===
+
+include::partial$config/plugins/duplicheck.adoc[]
+|===
+
+==== charon.plugins.eap-aka
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-aka.adoc[]
+|===
+
+==== charon.plugins.eap-aka-3gpp
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-aka-3gpp.adoc[]
+|===
+
+==== charon.plugins.eap-aka-3gpp2
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-aka-3gpp2.adoc[]
+|===
+
+==== xref:plugins/eap-dynamic.adoc[charon.plugins.eap-dynamic]
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-dynamic.adoc[]
+|===
+
+==== xref:plugins/eap-gtc.adoc[charon.plugins.eap-gtc]
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-gtc.adoc[]
+|===
+
+==== charon.plugins.eap-peap
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-peap.adoc[]
+|===
+
+==== xref:plugins/eap-radius.adoc[charon.plugins.eap-radius]
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-radius.adoc[]
+|===
+
+==== charon.plugins.eap-sim
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-sim.adoc[]
+|===
+
+==== xref:plugins/eap-simaka-sql.adoc[charon.plugins.eap-simaka-sql]
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-simaka-sql.adoc[]
+|===
+
+==== xref:plugins/eap-tls.adoc[charon.plugins.eap-tls]
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-tls.adoc[]
+|===
+
+==== charon.plugins.eap-tnc
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-tnc.adoc[]
+|===
+
+==== charon.plugins.eap-ttls
+[{COLS}]
+|===
+
+include::partial$config/plugins/eap-ttls.adoc[]
+|===
+
+==== xref:plugins/error-notify.adoc[charon.plugins.error-notify]
+[{COLS}]
+|===
+
+include::partial$config/plugins/error-notify.adoc[]
+|===
+
+==== xref:plugins/ext-auth.adoc[charon.plugins.ext-auth]
+[{COLS}]
+|===
+
+include::partial$config/plugins/ext-auth.adoc[]
+|===
+
+==== charon.plugins.gcrypt
+[{COLS}]
+|===
+
+include::partial$config/plugins/gcrypt.adoc[]
+|===
+
+==== xref:plugins/ha.adoc[charon.plugins.ha]
+[{COLS}]
+|===
+
+include::partial$config/plugins/ha.adoc[]
+|===
+
+==== charon.plugins.ipseckey
+[{COLS}]
+|===
+
+include::partial$config/plugins/ipseckey.adoc[]
+|===
+
+==== xref:plugins/kernel-libipsec.adoc[charon.plugins.kernel-libipsec]
+[{COLS}]
+|===
+
+include::partial$config/plugins/kernel-libipsec.adoc[]
+|===
+
+==== charon.plugins.kernel-netlink
+[{COLS}]
+|===
+
+include::partial$config/plugins/kernel-netlink.adoc[]
+|===
+
+==== charon.plugins.kernel-pfkey
+[{COLS}]
+|===
+
+include::partial$config/plugins/kernel-pfkey.adoc[]
+|===
+
+==== charon.plugins.kernel-pfroute
+[{COLS}]
+|===
+
+include::partial$config/plugins/kernel-pfroute.adoc[]
+|===
+
+==== charon.plugins.led
+[{COLS}]
+|===
+
+include::partial$config/plugins/led.adoc[]
+|===
+
+==== xref:plugins/load-tester.adoc[charon.plugins.load-tester]
+[{COLS}]
+|===
+
+include::partial$config/plugins/load-tester.adoc[]
+|===
+
+==== xref:plugins/lookip.adoc[charon.plugins.lookip]
+[{COLS}]
+|===
+
+include::partial$config/plugins/lookip.adoc[]
+|===
+
+==== charon.plugins.ntru
+[{COLS}]
+|===
+
+include::partial$config/plugins/ntru.adoc[]
+|===
+
+==== charon.plugins.openssl
+[{COLS}]
+|===
+
+include::partial$config/plugins/openssl.adoc[]
+|===
+
+==== charon.plugins.osx-attr
+[{COLS}]
+|===
+
+include::partial$config/plugins/osx-attr.adoc[]
+|===
+
+==== xref:plugins/pkcs11.adoc[charon.plugins.pkcs11]
+[{COLS}]
+|===
+
+include::partial$config/plugins/pkcs11.adoc[]
+|===
+
+==== xref:plugins/radattr.adoc[charon.plugins.radattr]
+[{COLS}]
+|===
+
+include::partial$config/plugins/radattr.adoc[]
+|===
+
+==== charon.plugins.random
+[{COLS}]
+|===
+
+include::partial$config/plugins/random.adoc[]
+|===
+
+==== xref:plugins/resolve.adoc[charon.plugins.resolve]
+[{COLS}]
+|===
+
+include::partial$config/plugins/resolve.adoc[]
+|===
+
+==== charon.plugins.revocation
+[{COLS}]
+|===
+
+include::partial$config/plugins/revocation.adoc[]
+|===
+
+==== charon.plugins.save-keys
+[{COLS}]
+|===
+
+include::partial$config/plugins/save-keys.adoc[]
+|===
+
+==== charon.plugins.socket-default
+[{COLS}]
+|===
+
+include::partial$config/plugins/socket-default.adoc[]
+|===
+
+==== xref:plugins/sql.adoc[charon.plugins.sql]
+[{COLS}]
+|===
+
+include::partial$config/plugins/sql.adoc[]
+|===
+
+==== charon.plugins.stroke
+[{COLS}]
+|===
+
+include::partial$config/plugins/stroke.adoc[]
+|===
+
+==== xref:plugins/systime-fix.adoc[charon.plugins.systime-fix]
+[{COLS}]
+|===
+
+include::partial$config/plugins/systime-fix.adoc[]
+|===
+
+==== xref:plugins/tnc-ifmap.adoc[charon.plugins.tnc-ifmap]
+[{COLS}]
+|===
+
+include::partial$config/plugins/tnc-ifmap.adoc[]
+|===
+
+==== charon.plugins.tnc-imc
+[{COLS}]
+|===
+
+include::partial$config/plugins/tnc-imc.adoc[]
+|===
+
+==== charon.plugins.tnc-imv
+[{COLS}]
+|===
+
+include::partial$config/plugins/tnc-imv.adoc[]
+|===
+
+==== charon.plugins.tnc-pdp
+[{COLS}]
+|===
+
+include::partial$config/plugins/tnc-pdp.adoc[]
+|===
+
+==== charon.plugins.tnccs-11
+[{COLS}]
+|===
+
+include::partial$config/plugins/tnccs-11.adoc[]
+|===
+
+==== charon.plugins.tnccs-20
+[{COLS}]
+|===
+
+include::partial$config/plugins/tnccs-20.adoc[]
+|===
+
+==== xref:plugins/tpm.adoc[charon.plugins.tpm]
+[{COLS}]
+|===
+
+include::partial$config/plugins/tpm.adoc[]
+|===
+
+==== charon.plugins.unbound
+[{COLS}]
+|===
+
+include::partial$config/plugins/unbound.adoc[]
+|===
+
+==== xref:plugins/updown.adoc[charon.plugins.updown]
+[{COLS}]
+|===
+
+include::partial$config/plugins/updown.adoc[]
+|===
+
+==== xref:plugins/vici.adoc[charon.plugins.vici]
+[{COLS}]
+|===
+
+include::partial$config/plugins/vici.adoc[]
+|===
+
+==== xref:plugins/whitelist.adoc[charon.plugins.whitelist]
+[{COLS}]
+|===
+
+include::partial$config/plugins/whitelist.adoc[]
+|===
+
+==== charon.plugins.wolfssl
+[{COLS}]
+|===
+
+include::partial$config/plugins/wolfssl.adoc[]
+|===
+
+==== xref:plugins/xauth-eap.adoc[charon.plugins.xauth-eap]
+[{COLS}]
+|===
+
+include::partial$config/plugins/xauth-eap.adoc[]
+|===
+
+==== xref:plugins/xauth-pam.adoc[charon.plugins.xauth-pam]
+[{COLS}]
+|===
+
+include::partial$config/plugins/xauth-pam.adoc[]
+|===
+
+=== xref:daemons/charon-nm[charon-nm]
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/charon-nm.adoc[]
+|===
+
+=== xref:daemons/charon-systemd[charon-systemd]
+[{COLS}]
+|===
+
+include::partial$config/charon-systemd.adoc[]
+|===
+
+=== imv_policy_manager
+[{COLS}]
+|===
+
+include::partial$config/imv_policy_manager.adoc[]
+|===
+
+=== libimcv
+
+Alternatively the `*libimcv*` options could be defined in a `*charon.imcv*`
+subsection.
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/libimcv.adoc[]
+|===
+
+==== libimcv.os_info
+[{COLS}]
+|===
+
+include::partial$config/libimcv_os_info.adoc[]
+|===
+
+==== libimcv.swid_gen
+[{COLS}]
+|===
+
+include::partial$config/libimcv_swid_gen.adoc[]
+|===
+
+==== libimcv.plugins.imc-attestation
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imc-attestation.adoc[]
+|===
+
+==== libimcv.plugins.imc-hcd
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imc-hcd.adoc[]
+|===
+
+==== libimcv.plugins.imc-os
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imc-os.adoc[]
+|===
+
+==== libimcv.plugins.imc-scanner
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imc-scanner.adoc[]
+|===
+
+==== libimcv.plugins.imc-swima
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imc-swima.adoc[]
+|===
+
+==== libimcv.plugins.imc-test
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imc-test.adoc[]
+|===
+
+==== libimcv.plugins.imv-attestation
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imv-attestation.adoc[]
+|===
+
+==== libimcv.plugins.imv-os
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imv-os.adoc[]
+|===
+
+==== libimcv.plugins.imv-scanner
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imv-scanner.adoc[]
+|===
+
+==== libimcv.plugins.imv-swima
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imv-swima.adoc[]
+|===
+
+==== libimcv.plugins.imv-test
+[{COLS}]
+|===
+
+include::partial$config/imcvs/imv-test.adoc[]
+|===
+
+=== libtls
+
+Alternatively the `*libtls*` options could be defined in a `*charon.tls*`
+subsection.
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/libtls.adoc[]
+|===
+
+=== libtnccs
+
+Alternatively the `*libtnccs*` options could be defined in a `*charon.tnc*`
+subsection.
+
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/libtnccs.adoc[]
+|===
+
+=== manager
+[{COLS}]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/manager.adoc[]
+|===
+
+=== medcli
+[{COLS}]
+|===
+
+include::partial$config/medcli.adoc[]
+|===
+
+=== medsrv
+[{COLS}]
+|===
+
+include::partial$config/medsrv.adoc[]
+|===
+
+=== xref:pki/pki.adoc[pki]
+[{COLS}]
+|===
+
+include::partial$config/pki.adoc[]
+|===
+
+=== xref:tools/pool.adoc[pool]
+[{COLS}]
+|===
+
+include::partial$config/pool.adoc[]
+|===
+
+=== xref:tnc/pt-tls-client.adoc[pt-tls-client]
+[{COLS}]
+|===
+
+include::partial$config/pt-tls-client.adoc[]
+|===
+
+=== xref:tools/scepclient.adoc[scepclient]
+[{COLS}]
+|===
+
+include::partial$config/scepclient.adoc[]
+|===
+
+=== xref:tnc/sec-updater.adoc[sec-updater]
+[{COLS}]
+|===
+
+include::partial$config/sec-updater.adoc[]
+|===
+
+=== xref:tnc/sec-collector.adoc[sw-collector]
+[{COLS}]
+|===
+
+include::partial$config/sw-collector.adoc[]
+|===
+
+=== starter
+[{COLS}]
+|===
+
+include::partial$config/starter.adoc[]
+|===
+
+=== xref:swanctl/swanctl.adoc[swanctl]
+[{COLS}]
+|===
+
+include::partial$config/swanctl.adoc[]
+|===

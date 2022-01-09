@@ -1,0 +1,5 @@
+|dlcose                      |`yes`
+|Unload IMC after use
+
+|preferred_language          |`en`
+|Preferred language for TNC recommendations

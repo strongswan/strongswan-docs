@@ -1,0 +1,62 @@
+= duplicheck Plugin
+
+:GITHUB:     https://github.com/strongswan/strongswan/blob/master
+:DUPLICHECK: src/libcharon/plugins/duplicheck/duplicheck.c
+
+== Purpose
+
+The `*duplicheck*` plugin for `*libcharon*` provides an advanced but very
+specialized peer identity duplicate checking that works independently from the
+xref:swanctl/swanctlConf.adoc[`*unique*`] connection feature.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-duplicheck
+
+== Behavior
+
+The behavior of the `*duplicheck*` plugin is as follows:
+
+* While establishing a new `IKE SA` check if already one exists with the same
+  peer identity
+
+* If yes:
+
+  ** Initiate an IKE_SA delete exchange on the old `IKE SA` to liveness check and
+    simultaneously delete it
+
+  ** If no response is received after several retransmits to the delete, destroy
+     the old `IKE SA`
+
+  ** If a response is received:
+
+     *** Also delete the newly established `IKE SA`
+
+    *** Send a notification over a UNIX socket to listening applications (if any)
+
+== Configuration
+
+The `*duplicheck*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_duplicheck[`*charon.plugins.duplicheck*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,9"]
+|===
+|Key|Default|Description [Default]
+
+include::partial$config/plugins/duplicheck.adoc[]
+|===
+
+== Notifications
+
+If two `IKE SAs` exist with the same peer identity and the old `IKE SA` confirmed
+the triggered delete message, a notification is sent to a listening application
+over a UNIX or TCP socket. An example application of a listener is provided with
+the `*duplicheck*` tool. It listens on the socket and receives the affected peer
+identity. To integrate notification listening to your application, see
+
+{GITHUB}/{DUPLICHECK}[`source:{DUPLICHECK}`]
+
+You'll have to start a dedicated thread to read from the socket or integrated
+the file descriptor to your applications main loop.

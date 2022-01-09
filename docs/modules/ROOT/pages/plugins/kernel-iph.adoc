@@ -1,0 +1,23 @@
+= kernel-iph Plugin
+
+== Purpose
+
+The `*kernel-iph*` plugin for `*libcharon*` is a networking backend for the
+xref:os/windows.adoc[Windows] platform using the IPHelper API family. It provides
+address and routing lookup functionality and installs routes for IPsec traffic.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-kernel-iph
+
+== Behavior
+
+When installing routes for IPsec policies, the backend implicitly enables IP
+forwarding in the Windows kernel.
+
+== Limitations
+
+The backend does not support installation of xref:features/vip.adoc[virtual IP]
+addresses for IPsec clients. Further, routes get installed to the main routing
+table, hence IPsec routes can not be excluded from routing lookups for IKE traffic.

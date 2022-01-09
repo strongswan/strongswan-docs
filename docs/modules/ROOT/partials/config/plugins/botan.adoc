@@ -1,0 +1,4 @@
+|internal_rng_only    |`no`
+|If enabled, only Botan's internal RNG will be used throughout the plugin.
+ Otherwise and if supported by Botan, `*rng_t*` implementations provided by
+ other loaded plugins will be used as RNG

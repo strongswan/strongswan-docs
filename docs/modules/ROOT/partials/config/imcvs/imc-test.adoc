@@ -1,0 +1,16 @@
+|additional_ids            |`0`
+|Number of additional IMC IDs
+
+|command                   |`none`
+|Command to be sent to the Test IMV. Valid commands are `*allowed*`, `*isolate*`,
+ `*block*`, `*none*` or `*retry*`
+
+|dummy_size                |`0`
+|Size of dummy attribute to be sent to the Test IMV (`*0*` = disabled)
+
+|retry                     |`no`
+|Do a handshake retry
+
+|retry_command             |
+|Command to be sent to the IMV Test in the handshake retry.  Valid commands are
+ `*allowed*`, `*isolate*`, `*block*` or `*none*`

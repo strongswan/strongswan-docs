@@ -1,0 +1,2 @@
+|quick_random                 |`no`
+|Use faster random numbers in gcrypt. *For testing only, produces weak keys!*

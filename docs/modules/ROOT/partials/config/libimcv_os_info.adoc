@@ -1,0 +1,8 @@
+|default_password_enabled       |`no`
+|Manually set whether a default password is enabled
+
+|name                           |
+|Manually set the name of the client OS (e.g. `*Ubuntu*`)
+
+|version                        |
+|Manually set the version of the client OS (e.g. `*20.04 x86_64*`)

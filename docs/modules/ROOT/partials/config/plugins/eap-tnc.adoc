@@ -1,0 +1,7 @@
+|max_message_count           |`10`
+|Maximum number of processed EAP-TNC packets (`*0*` = no limit)
+
+|protocol                    |[->]
+|IF-TNCCS protocol version to be used (`*tnccs-1.1*`, `*tnccs-2.0*`,
+ `*tnccs-dynamic*`).
+ `*[tnccs-2.0]*`

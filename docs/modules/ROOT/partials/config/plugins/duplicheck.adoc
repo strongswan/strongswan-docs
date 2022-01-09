@@ -1,0 +1,6 @@
+|enable |`yes`
+|Enable duplicheck functionality
+
+|socket |[->]
+|Socket provided by the duplicheck plugin.
+ `*[`unix://$\{piddir}/charon.dck`]*`

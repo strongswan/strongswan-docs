@@ -1,0 +1,37 @@
+= unity Plugin
+
+The `*unity*` plugin provides for `*libcharon*` support for parts of the IKEv1
+Cisco Unity Extensions.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-unity
+
+== Client Behavior
+
+As a client the IKEv1 `*charon*` daemon will narrow traffic selectors to the
+received `*Split-Include*` attributes and will automatically install IPsec bypass
+policies for received `*Local-LAN*` attributes.
+
+== Server Behavior
+
+As a server the IKEv1 `*charon*` daemon will send `*Split-Include*` attributes
+for `*local_ts*` definitions containing multiple subnets to Unity-aware clients.
+Alternatively Unity-attributes may be assigned via the xref:./attr.adoc[`*attr*`]
+or xref:./attr-sql.adoc[`*attr-sql*`] plugins.
+
+== Configuration
+
+[cols="2,1,7"]
+|===
+|Key|Default|Description
+
+|charon.cisco_unity |no
+|Send Cisco Unity vendor ID payload in main or aggressive mode
+|===
+
+On a server the subnets listed in `*local_ts*` will be transmitted as
+`*Split-Include*` attributes to clients during `ModeConfig`. `ModeConfig`
+is only triggered if the client requests a xref:features/vip.adoc[virtual IP]
+address.

@@ -1,0 +1,22 @@
+|client_cert            |
+|Path to X.509 certificate file of IF-MAP client
+
+|client_key             |
+|Path to private key file of IF-MAP client
+
+|device_name            |
+|Unique name of strongSwan server as a PEP and/or PDP device
+
+|renew_session_interval |`150`
+|Interval in seconds between periodic IF-MAP RenewSession requests
+
+|server_cert            |
+|Path to X.509 certificate file of IF-MAP server
+
+|server_uri             |[->]
+|URI of the form `[https://]servername[:port][/path]`.
+ `*[\https://localhost:8444/imap]*`
+
+|username_password      |
+|Credentials of IF-MAP client of the form `username:password`. If set, make sure
+ to adjust the permissions of the config file accordingly

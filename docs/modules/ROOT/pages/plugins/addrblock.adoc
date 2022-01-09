@@ -1,65 +1,149 @@
 = addrblock Plugin
 
+:TESTS:   https://www.strongswan.org/testing/testresults
+:EX:      {TESTS}/ikev2/net2net-rfc3779
 :RFC3779: https://datatracker.ietf.org/doc/html/rfc3779
 
 == Purpose
 
-The `*addrblock*` plugin for `*libcharon*` implements traffic selector narrowing
-and authentication of the local and remote subnets against the IP address fields
-in X.509 certificates, as standardized in {RFC3779}[RFC 3779].
+The `*addrblock*` plugin for `*libcharon*` implements authorization of the
+remote subnets against the `*IPAddrBlocks*` extension as standardized in
+{RFC3779}[RFC 3779] that are contained in the peer's X.509 certificate.
+
+If necessary and possible, the remote subnets proposed by the peer are
+automatically narrowed to the subnets defined in the `*IPAddrBlocks*` extension.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-addrblock
 
 == Behavior
 
-If a peer certificate contains IP address blocks in the proper field, it enforces
-that its certificate chain contains the required address blocks.
+The xref:pki/pki.adoc[pki] tool supports the issuing of both X.509 CA and
+End-Entity certificates with address blocks using the argument
+
+ --addrblock <address block>
+
+=== X.509 End-Entity Certificate with IPAddrBlocks Extension
+
+----
+subject:  "C=CH, O=strongSwan Project, OU=RFC3779, CN=moon.strongswan.org"
+issuer:   "C=CH, O=strongSwan Project, OU=RFC3779, CN=strongSwan RFC3779 Root CA"
+validity:  not before Oct 03 08:00:38 2021, ok
+           not after  Oct 03 08:00:38 2029, ok (expires in 2906 days)
+serial:    01
+altNames:  moon.strongswan.org
+flags:
+CRL URIs:  http://crl.strongswan.org/strongswan_rfc3779.crl
+addresses: 10.1.0.0/16, 192.168.0.1/32, fec0::1/128, fec1::/16
+authkeyId: 5a:74:31:f9:0b:6d:1a:cb:30:95:f0:1d:8c:73:78:ec:19:db:53:e2
+subjkeyId: 6c:6c:13:79:d9:4e:bc:03:98:33:fd:e3:e3:61:75:9d:6b:44:28:3e
+pubkey:    RSA 3072 bits, has private key
+keyid:     a0:46:53:a2:b8:30:56:43:2e:e2:35:05:c5:f6:74:84:15:c0:4a:7e
+subjkey:   6c:6c:13:79:d9:4e:bc:03:98:33:fd:e3:e3:61:75:9d:6b:44:28:3e
+----
+
+The peer `*moon.strongswan.org*` is allowed to use the IPv4 addresses
+`*10.1.0.0/16*` and `*192.168.0.1/32*` as well as the IPv6 addresses
+`*fec0::1/128*` and `*fec1::/16*`.
+
+=== X.509 CA Certificate with IPAddrBlocks Extension
+
+----
+subject:  "C=CH, O=strongSwan Project, OU=RFC3779, CN=strongSwan RFC3779 Root CA"
+issuer:   "C=CH, O=strongSwan Project, OU=RFC3779, CN=strongSwan RFC3779 Root CA"
+validity:  not before Oct 03 08:00:38 2021, ok
+           not after  Oct 04 08:00:38 2031, ok (expires in 3637 days)
+serial:    4c:c1:5c:87:8f:fc:5b:5f
+flags:     CA CRLSign self-signed
+addresses: 10.1.0.0..10.2.255.255, 10.3.0.1..10.3.3.232, 192.168.0.0/24,
+           fec0::..fec2:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+subjkeyId: 5a:74:31:f9:0b:6d:1a:cb:30:95:f0:1d:8c:73:78:ec:19:db:53:e2
+pubkey:    RSA 3072 bits
+keyid:     3d:45:b0:ad:ee:99:c5:51:11:8d:31:d5:e5:53:0f:cc:1e:ac:99:28
+subjkey:   5a:74:31:f9:0b:6d:1a:cb:30:95:f0:1d:8c:73:78:ec:19:db:53:e2
+----
+
+In order for an End-Entity certificate to be valid, all the IP address blocks
+defined in its `*IPAddrBlocks*` extension must be fully contained in the
+IP address blocks as defined by the `*IPAddrBlocks*` extension of the issuing
+CA's certificate:
+
+* `*10.1.0.0/16*` contained in `*10.1.0.0..10.2.255.255*`: ok
+
+* `*192.168.0.1/32*` contained in `*192.168.0.0/24*`: ok
+
+* `*fec0::1/128*` contained in `*fec0::..fec2:ffff:ffff:ffff:ffff:ffff:ffff:ffff*`: ok
+
+* `*fec1::/16*` contained in `*fec0::..fec2:ffff:ffff:ffff:ffff:ffff:ffff:ffff*`: ok
 
 == Configuration
 
-The plugin is configured using the following
-xref:config/strongswanConf.adoc[strongswan.conf] options.
+The `*addrblock*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_addrblock[`*charon.plugins.addrblock*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="3,1,10"]
+[cols="2,1,10"]
 |===
 |Key |Default | Description
 
-|charon.plugins.addrblock.strict |yes
-|If set to yes, a subject certificate without an addrblock extension is rejected
- if the issuer certificate has such an addrblock extension. If set to no, subject
- certificates issued without the addrblock extension are accepted without any
- traffic selector checks and no policy is enforced by the plugin.
+include::partial$config/plugins/addrblock.adoc[]
 |===
 
-The xref:pki/pki.adoc[pki] tool supports the issuing of certificates with address
-blocks using the `*--addrblock <address block>*` argument.
 
-== Use Cases
+== Example
 
-* A hub-and-spoke topology where strongSwan with the `*addrblock*` plugin is set
-  up as the hub and a proper configuration is used to narrow the requested
-  `CHILD_SAs` of the spokes to their corresponding allowed local subnets. For
-  example such a configuration could be used on the hub:
-<pre>
-        right = %any
-        rightca = "C=CH, O=Linux strongSwan, CN=strongSwan Root CA"
-        leftsubnet = 192.168.0.0/24
-        rightsubnet = 0.0.0.0/0
-        leftid = my.super.site
-        leftcert = /etc/ipsec.d/certs/certificate_hub.pem
-        fragmentation = yes
-        leftsendcert = always
-        dpdaction = clear
-        auto = add
-</pre>
+The VPN peer `*sun*` doesn't know the IPv4 subnet behind the VPN peer `*moon*`
+nor its IPv4 host address:
 
-  Such a configuration obviously only works for the spokes, if they are keeping the VPN up by themselves, because the connections are not routed locally or initiated locally automatically, because there is no configuration for it. Such a scenario works for remote peers that (try to) keep up the VPN by themselves. In any case, [[SecurityRecommendations#Tunnel-Shunting|traffic shunting]] using iptables should be used to make sure no traffic leaks into the WAN.
+----
+connections {
+   host {
+      local {
+         auth = pubkey
+         certs = sunCert.pem
+         id = sun.strongswan.org
+      }
+      remote {
+         auth = pubkey
+         id = moon.strongswan.org
+      }
+      children {
+         net {
+            local_ts  = 10.2.0.0/16
+         }
+      }
+   }
+}
+----
 
-* A theoretical alternative way to assign virtual IPs by storing it in the remote peer's certificate, using an initial traffic selector of 0.0.0.0/0 == 0.0.0.0/0. That way the traffic selector will be narrowed to the remote peer's VIP on its side and will/might be narrowed to the local configured subnet, or the subnet that is stored in the local peer's certificate or a subset of it.
+Peer `*moon*` initiates an IPsec connection to peer `*sun*` and establishes both
+a `*host*` `CHILD SA` as well as a `*net*` `CHILD SA`
+----
+15[IKE] checking certificate-based traffic selector constraints [RFC 3779]
+15[IKE]   TS 192.168.0.1/32 is contained in address block constraint 192.168.0.1/32 (subset 192.168.0.1/32)
+15[IKE] CHILD_SA host{1} established with SPIs c74e3018_i c6d3f865_o and TS 192.168.0.2/32 === 192.168.0.1/32
+----
+Because `*moon*` uses the IPv4 host address as defined in the certificate the
+`*host*` CHILD SA` succeeds.
+----
+16[IKE] checking certificate-based traffic selector constraints [RFC 3779]
+16[IKE]   TS 10.0.0.0/14 is contained in address block constraint 10.1.0.0/16 (subset 10.1.0.0/16)
+16[IKE] CHILD_SA net{2} established with SPIs ca758282_i c83f2e49_o and TS 10.2.0.0/16 === 10.1.0.0/16
+----
+The peer proposes a much larger subnet `*10.0.0.0/14*` but it is automatically
+narrowed by `*sun*` to the subnet `*10.1.0.0/16*` defined in the certificate.
 
-== Noteworthy Issues
+In another connection attempt `*moon*` proposes a `*10.5.0.0/16*` network not
+covered by the `*IPaddrBlock*` extension of the `*moon*` certificate
+----
+16[IKE] checking certificate-based traffic selector constraints [RFC 3779]
+16[IKE]   TS 10.5.0.0/16 is not contained in any address block constraint
+16[IKE] no acceptable traffic selectors found
+16[IKE] failed to establish CHILD_SA, keeping IKE_SA
+----
+so the establishment of the `CHILD SA` fails.
 
-The complete chain from the root certificate to the leaf/peer certificate needs to contain the proper address blocks or a subset of a/some block(s) of the issuing certificate.* If that is not the case, authentication will fail and charon will log a corresponding error message telling you that the issuer certificate lacks the address block.
-** Examples:
-** valid: issuer has 10.0.0.0/8, issued certificate has 10.0.0.0/8
-** valid: issuer has 10.0.0.0/8, issued certificate has 10.0.0.0/22
-** invalid: issuer has 10.0.0.0/8, issued certificate has 172.16.0.0/24
-** invalid: issuer has 10.0.0.0/16, issued certificate has 10.1.0.0/16
+image:a-m-w-s-b.png[topology,340,129,link={EX},title=net2net-rfc3779 example]
+strongSwan {EX}[example] showing the use of the `*addrblock*` plugin.

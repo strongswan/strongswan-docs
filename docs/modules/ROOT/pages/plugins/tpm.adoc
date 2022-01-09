@@ -1,0 +1,25 @@
+= tpm Plugin
+
+== Purpose
+
+The `*tpm*` plugin for `*libtpmtss*` allows to access persistent RSA and ECDSA
+private keys bound to a xref:tpm/tpm2.adoc[TPM 2.0]. Optionally the
+xref:tpm/tpm2.adoc[TPM 2.0] can be enabled as a true random number source.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-tpm
+
+== Configuration
+
+The `*tpm*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_tpm[`*charon.plugins.tpm*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/tpm.adoc[]
+|===

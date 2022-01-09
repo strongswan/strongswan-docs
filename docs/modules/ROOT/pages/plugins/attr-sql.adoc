@@ -1,0 +1,53 @@
+= attr-sql Plugin
+
+:GITHUB: https://github.com/strongswan/strongswan/blob/master
+
+== Purpose
+
+The `*attr-sql*` plugin for `*libcharon*` is similar to the
+xref:./attr.adoc[`*attr*`] plugin but stores the attributes in an SQL database
+instead of xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-attr-sql
+
+Also required is support for either `MySQL`/`MariaDB` (`*--enable-mysql*`) or
+`SQLite` (`*--enable-sqlite*`) which enables the `*mysql*` or `*sqlite*` plugin,
+respectively.
+
+== Behavior
+
+Configured attributes are assigned to peers via `CP` configuration payloads (IKEv2)
+or via `Mode Config` (IKEv1). Attributes are only assigned to peers if they
+request a xref:features/vip.adoc[virtual IP].
+
+== Configuration
+
+The `*attr-sql*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_attr_sql[`*charon.plugins.attr-sql*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key |Default |Description
+
+include::partial$config/plugins/attr-sql.adoc[]
+|===
+
+=== Database Setup
+
+To setup the database use the schema defined in the following SQL scripts:
+
+* MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*source:src/pool/mysql.sql*`]
+
+* SQLite tables: {GITHUB}/src/pool/sqlite.sql[`*source:src/pool/sqlite.sql*`]
+
+These files contain the complete database schema, which also includes tables
+that are required by the xref:./sql.adoc[`*sql*`] plugin, only.
+
+=== ipsec pool Tool
+
+Attributes stored in the database can be managed using the
+xref:tools/pool.adoc[`*ipsec pool*`] utility.

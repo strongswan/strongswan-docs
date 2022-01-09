@@ -1,0 +1,10 @@
+|max_batch_size             |
+|Maximum size of a PB-TNC batch (upper limit via PT-EAP = `*65529*`).
+ `*[65522]*`
+
+|max_message_size           |
+|Maximum size of a PA-TNC message (upper limit via PT-EAP = `*65497*`).
+ `*[65490]*`
+
+|mutual                     |`no`
+|Enable PB-TNC mutual protocol

@@ -1,0 +1,135 @@
+= forecast Plugin
+
+:TESTS: https://www.strongswan.org/testing/testresults
+:EX:    {TESTS}/ikev2/forecast
+
+== Purpose
+
+The `*forecast*` plugin for `*libcharon*` uses Linux Netfilter marks to allow
+identical IPsec policies having multicast or broadcast selectors and uses a
+listen-and-forward mechanism to forward such traffic over all matching SAs. It
+supports forwarding of multi/broadcast traffic between multiple connected clients
+and between clients and a LAN attached to the IPsec gateway.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-forecast
+
+Building the plugin requires `*iptables*` development headers to be installed.
+
+== Configuration
+
+The `*forecast*` plugin currently is used on any SA negotiated that uses a
+unique mark. To configure such a connection as responder, set a unique mark and
+don't forget to include the broadcast/multicast selectors that you want to forward:
+----
+connections {
+
+  mc-bc {
+    # ...
+    children {
+      mc-bc {
+        local_ts  = 10.1.0.0/16,224.0.0.0/4
+        remote_ts = dynamic,224.0.0.0/4,10.1.255.255
+        mark = %unique
+      }
+    }
+  }
+}
+----
+
+The `*local_ts*` shall include the local network and any multicast address to
+tunnel but can also be `*0.0.0.0/0*`. The `*remote_ts*` can include multicast
+addresses as well and the required broadcast addresses. Don't forget to include
+the default `*dynamic*` selector if a virtual IP address is assigned to the client.
+
+A unique mark per negotiated SA is required, so the SAs can be distinguished.
+The plugin automatically configures Netfilter rules in the `*mangle*` table to
+send multicast/broadcast packets over multiple SAs.
+
+Some additional global xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+options are used by the `*forecast*` plugin:
+
+[cols="1,3"]
+|===
+
+|charon.plugins.forecast.groups
+|224.0.0.1,224.0.0.22,224.0.0.251,224.0.0.252,239.255.255.250
+|===
+
+_Comma-separated list of multicast groups to join locally. The local host receives
+and forwards packets in the local LAN for joined multicast groups only. Packets
+matching the list of multicast groups get forwarded to connected clients. The
+default group includes host multicasts, IGMP, mDNS, LLMNR and SSDP/WS-Discovery
+and is usually a good choice for Windows clients._
+
+[cols="1,3"]
+|===
+
+|charon.plugins.forecast.interface
+|
+|===
+
+_Name of the local interface to listen for broadcasts messages to forward. If no
+interface is configured, the first usable interface is used, which is usually
+just fine for single-homed hosts. If your host has multiple interfaces, set this
+option to the local LAN interface you want to forward broadcasts from/to._
+
+[cols="1,3"]
+|===
+
+|charon.plugins.forecast.reinject
+|
+|===
+
+_Comma-separated list of `CHILD SA` configuration names for which to perform
+multi/broadcast reinjection. For clients connecting over such a configuration,
+any multi/broadcast received over the tunnel gets reinjected to all active tunnels.
+This makes the broadcasts visible to other peers, and for examples allows clients
+to see others shares. If disabled, multi/broadcast messages received over a tunnel
+are injected to the local network only, but not to other IPsec clients._
+
+== Netfilter Rules and Marks
+
+In `PREROUTING` a gateway applies the unique mark assigned to the SA to the
+packet. This makes sure the IPsec policy actually matches, as we require the
+correct mark for a policy match. For non-NAT situations, ESP matching is used to
+`*MARK*` packets, for NAT situations the packets get selected based on UDP
+encapsulation ports.
+
+Additionally, `PREROUTING` rules get installed to set the mark on decapsulated
+traffic matching any policy.
+
+On the `OUTPUT` chain, the `*MARK*` target is used to set the mark to match the
+appropriate IPsec policy.
+
+The rules installed by the plugin for two clients looks something like:
+----
+Chain PREROUTING (policy ACCEPT 55 packets, 8648 bytes)
+ pkts bytes target  prot opt in out  source          destination
+    1   112 MARK    all  --  *  *    0.0.0.0/0       10.1.0.130   MARK set 0x2
+    3   488 MARK    esp  --  *  *    192.168.0.200   192.168.0.1  esp spi:3242273483 MARK set 0x2
+    1   112 MARK    all  --  *  *    0.0.0.0/0       10.1.0.129   MARK set 0x1
+    3   488 MAR     esp  --  *  *    192.168.0.100   192.168.0.1  esp spi:3416575175 MARK set 0x1
+
+Chain INPUT (policy ACCEPT 50 packets, 8172 bytes)
+ pkts bytes target  prot opt in out  source          destination
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target  prot opt in out  source          destination
+
+Chain OUTPUT (policy ACCEPT 65 packets, 10840 bytes)
+ pkts bytes target  prot opt in out  source          destination
+    0     0 MARK    all  --  *  *    0.0.0.0/0       10.1.0.130   MARK set 0x2
+    0     0 MARK    all  --  *  *    0.0.0.0/0       10.1.0.129   MARK set 0x1
+----
+
+In certain situations (e.g. if there is NAT on the host itself), it might be
+necessary to manually add rules that use the `*CONNMARK*` target to properly
+mark return traffic.
+
+== Example
+
+image:a-m-c-w-d.png[topology,252,129,link={EX},title=forecast example]
+strongSwan {EX}[example] using the `*forecast*` mechanism

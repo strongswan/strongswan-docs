@@ -1,0 +1,83 @@
+= certexpire Plugin
+
+:CRONTAB:  https://man7.org/linux/man-pages/man5/crontab.5.html
+:STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
+
+== Purpose
+
+The `*certexpire*` plugin for `*libcharon*` collects expiration dates of all
+certificates and their trustchain used for authentication. It currently can
+export these dates to _Comma Separated Value_ (CSV) files, either periodically
+or directly after authentication.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-certexpire
+
+== Configuration
+
+The `*certexpire*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_certexpire[`*charon.plugins.certexpire*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key|Default|Description [Default]
+
+include::partial$config/plugins/certexpire.adoc[]
+|===
+
+=== Cron Scheduling
+
+If no `*cron*` string is specified, expiration dates are exported for each
+trustchain used. This also means that if a trustchain is used twice, it gets
+exported twice. If cron style scheduling is used, each run exports all
+trustchains seen since the last export, and duplicates get eliminated.
+
+The `*cron*` string takes numeric arguments only, but supports ranges (1-5) and
+selections (1,3,5), or a combination, space separated:
+----
+minute hour day month weekday
+   minute, 0-59
+   hour, 0-23
+   day, 1-31
+   month, 1-12
+   weekday, 0-7 (0 == 7 == sunday)
+----
+See {CRONTAB}[`*man crontab(5)*`] for details.
+
+=== Export Files
+
+The `*local*` and `*remote*` options specify the CSV file to export trustchain
+expiration dates. The `*local*` file receives expiration dates used by us to
+authenticate against the remote peer, the `*remote*` node contains the same
+information for certificates used by the remote peer to authenticate against us.
+If an option is not specified, no file of this kind gets generated.
+
+Arbitrary {STRFTIME}[`*strftime()*`] format specifiers can be used to include
+the date of generation into the filename. Files get created if they do not exist.
+If the same filename is used for multiple exports, additional entries get
+appended to the file.
+
+=== CSV Format
+
+The `*separator*` attribute specifies the CSV field separator. The `*format*`
+attribute defines the date format used for expiration dates using
+{STRFTIME}[`*strftime()*`] specifiers.
+
+Each CSV line contains information about the used trustchain, in the form:
+
+ subject,subjectExpiration,ImCa1Expiration,ImCa2Expiration,RootCaExpiration
+
+ * `*subject*` defines the end entity certificate owner, extracted from the
+   certificate. Currently a `FQDN` subjectAltName is preferred. If none is found,
+   the `CN` field of the subjectDistinguishedName is used.
+
+* The expiration dates of the trustchain follow, starting at the subjects
+  certificate, up to the root CA.
+
+If the `*fixed_fields*` attribute is set to `*yes*` (default), a fixed field
+count for intermediate CAs is used (currently 5):
+
+ subject,subjectExpiration,ImCa1Expiration,ImCa2Expiration,,,,RootCaExpiration

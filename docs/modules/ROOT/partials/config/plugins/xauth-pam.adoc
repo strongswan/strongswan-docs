@@ -1,0 +1,10 @@
+|pam_service   |[->]
+|PAM service to use for authentication.
+ `*[login]*`
+
+|session       |`no`
+|Open/close a PAM session for each active IKE_SA
+
+|trim_email    |`yes`
+|If an email address is received as an XAuth username, trim it to just the
+username part

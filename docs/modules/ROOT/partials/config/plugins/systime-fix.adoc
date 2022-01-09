@@ -1,0 +1,15 @@
+|interval  |`0`
+|Interval in seconds to check system time for validity. `*0*` disables the check
+
+|reauth    |`no`
+|Whether to use reauth or delete if an invalid cert lifetime is detected
+
+|threshold |
+|Threshold date where system time is considered valid. Disabled if not specified
+
+|threshold_format |%Y
+|{STRFTIME}[`*strftime(3)*`] format used to parse threshold option
+
+|timeout  |`0`
+|How long to wait for a valid system time if an interval is configured.
+ `*0*` to recheck indefinitely

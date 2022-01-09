@@ -1,0 +1,2 @@
+|loglevel    |`1`
+|Log level for logging to Android specific logger

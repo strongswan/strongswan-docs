@@ -1,0 +1,7 @@
+|interfaces_ignore |
+|A comma-separated list of network interfaces for which connected subnets
+ should be ignored. If `*interfaces_use*` is specified this option has no effect
+
+|interfaces_use    |
+|A comma-separated list of network interfaces for which connected subnets should
+ be considered. All other interfaces are ignored

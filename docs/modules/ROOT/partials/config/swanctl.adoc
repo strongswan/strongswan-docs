@@ -1,0 +1,6 @@
+|load                                       |
+|Plugins to load in xref:swanctl/swanctl.adodc[`*swanctl*`]
+
+|socket                                     |[->]
+|VICI socket to connect to by default.
+ `*[unix://$\{piddir}/charon.vici]*`

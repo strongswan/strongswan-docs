@@ -1,0 +1,36 @@
+= eap-simaka-sql Plugin
+
+
+:SQLITE: https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/eap_simaka_sql/sqlite.sql
+:TEST:   https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/eap_simaka_sql/test.sql
+
+== Purpose
+
+The `*eap-simaka-sql*` plugin for `*libcharon*` provides a backend for EAP-SIM
+and EAP-AKA to read triplets/quintuplets from a relational database.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-eap-simaka-sql
+
+Don't forget to enable actual either the `*eap-sim*` or `*eap-aka*` plugin.
+
+== Configuration
+
+The SQL schema has two tables, one for triplets (EAP-SIM) and one for quintuplets
+(EAP-AKA). Each table maps EAP-Identities to triplets/quintuplets. There is a
+{SQLITE}[SQLite schema] available. Create the database and fill the database as
+in the {TEST}[example].
+
+The `*eap-simaka-sql*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_eap_simaka_sql[`*charon.plugins.eap-simaka-sql*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/eap-simaka-sql.adoc[]
+|===
+

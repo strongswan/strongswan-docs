@@ -1,0 +1,36 @@
+= radattr Plugin
+
+== Purpose
+
+The `*radattr*` plugin for `*libcharon*` provides and prints RADIUS attributes
+forwarded via strongSwan specific, private IKEv2 notify payloads (`*40969*`).
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-radattr
+
+== Behavior
+
+RADIUS attributes to be forwarded to a peer are defined in files named after the
+local EAP-Identity (or IKE-Identity) used during authentication. Received
+attributes are written to the log.
+
+== Configuration
+
+The `*radattr*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_radattr[`*charon.plugins.radattr*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/radattr.adoc[]
+|===
+
+=== Attribute Files
+
+The files stored in the directory configured with `*dir*`
+have to be named after the peers local EAP-Identity (or IKE-Identity).
+They contain the RADIUS attribute to be forwarded as binary blob.

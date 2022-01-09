@@ -1,0 +1,89 @@
+= xauth-eap Plugin
+
+:TESTS:   https://www.strongswan.org/testing/testresults
+:EX:     {TESTS}/ikev1/xauth-rsa-eap-md5-radius
+
+== Purpose
+
+The `*xauth-eap*` plugin for `*libcharon*` is an IKEv1 XAuth server backend. It
+requests username/password XAuth credentials and verifies them against any
+password based IKEv2 EAP plugin. By default it uses the
+xref:./eap-radius.adoc[`*eap-radius*`] plugin. This enables the client to
+authenticate against an AAA using EAP, as it is done with IKEv2. The server acts
+as EAP client to the AAA:
+
+ Client <--- IKEv1/Xauth ---> Server <--- RADIUS/EAP ---> AAA
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-xauth-eap
+
+Additionally the `*eap-radius*` plugin (`--enable-eap-radius`) and and an EAP
+method like for example `*eap-md5*` (`--enable-eap-md5`) are needed on the Server.
+
+
+The xref:./eap-radius.adoc[`*eap-radius*`] in itself has an integrated
+xref:./eap-radius.adoc#_xauth_via_radius[`*XAuth*`] that can directly verify
+XAuth credentials using `*User-Name*` and `*User-Password*` RADIUS attributes,
+which is sufficient for most setups. Some installations might still prefer
+the `*xauth-eap* + *eap-radius*` combination, e.g. to have a single RADIUS
+configuration for both IKEv1 and IKEv2, or to add additional protection to
+passwords between the NAS and the AAA.
+
+== Configuration
+
+The `*xauth-eap*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_xauth_eap[`*charon.plugins.xauth-eap*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/xauth-eap.adoc[]
+|===
+
+Any EAP backend could be used but xref:./eap-radius.adoc[`*eap-radius*`] is what
+this plugin was designed for. The AAA server will select the EAP method used for
+authentication. The server needs support for this EAP method, as it acts as an
+EAP client on behalf of the IKE client.
+
+== Connections
+
+To authenticate clients with this backend, set:
+----
+connections {
+  <conn>: {
+    remote-rsa {
+      auth = pubkey
+    }
+    remote-xauth {
+      auth = xauth-eap
+    }
+    version = 1
+    # ...
+  }
+}
+----
+for traditional `*XAuth*` plus RSA. For Hybrid authentication, use
+----
+connections {
+  <conn>: {
+    remote {
+      auth = xauth-eap
+    }
+    version = 1
+    # ...
+  }
+}
+----
+
+=== Example
+
+image:a-m-c.png[topology,187,129,link={EX},title=xauth-rsa-eap-md5-radius example]
+strongSwan {EX}[example] showing the use of `*XAuth*` with the `*xauth-eap*`
+plugin.
+
+== Example
+

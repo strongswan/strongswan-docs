@@ -1,0 +1,3 @@
+|tnc_config                                |[->]
+|TNC IMC/IMV configuration file.
+ `*[/etc/tnc_config]*`

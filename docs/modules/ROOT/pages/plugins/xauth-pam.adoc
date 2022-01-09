@@ -1,0 +1,66 @@
+= xauth-pam Plugin
+
+== Purpose
+
+The `*xauth-pam*` plugin for `*libcharon*` is an IKEv1 XAuth server backend. It
+requests username/password XAuth credentials and verifies them against Pluggable
+Authentication Modules (`PAM`). It may be used for IKEv2 connections via
+the xref:./eap-gtc.adoc[`*eap-gtc*`] plugin.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-xauth-pam
+
+== Configuration
+
+The `*xauth-pam*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_xauth_pam[`*charon.plugins.xauth-pam*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/xauth-pam.adoc[]
+|===
+
+By default the plugin uses the PAM service `*login`* which should be available
+on most systems. But you may create your own service, e.g in `/etc/pam.d/ipsec`:
+----
+#%PAM-1.0
+auth        required      /lib/security/pam_env.so
+auth        sufficient    /lib/security/pam_unix.so likeauth nullok
+auth        required      /lib/security/pam_deny.so
+----
+To use that service, set the `*pam_service*` option above to `*ipsec*`.
+
+== Connections
+
+To authenticate clients with this backend, set:
+----
+connections {
+  <conn>: {
+    remote-rsa {
+      auth = pubkey
+    }
+    remote-xauth {
+      auth = xauth-pam
+    }
+    version = 1
+    # ...
+  }
+}
+----
+for traditional `*XAuth*` plus RSA. For Hybrid authentication, use
+----
+connections {
+  <conn>: {
+    remote {
+      auth = xauth-pam
+    }
+    version = 1
+    # ...
+  }
+}
+----

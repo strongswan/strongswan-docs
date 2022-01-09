@@ -1,1 +1,793 @@
 = Autoconf Options
+
+:BLISS:     https://eprint.iacr.org/2017/490.pdf
+:BOTAN:     https://botan.randombit.net/
+:GMP:       https://gmplib.org/
+:NISTPQC:   https://csrc.nist.gov/projects/post-quantum-cryptography/round-3-submissions
+:OPENSSL:   https://openssl.org/
+:PQ:        https://github.com/strongX509/docker/tree/master/pq-strongswan
+:TKM:       https://www.codelabs.ch/tkm/
+:UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
+:WIRESHARK: https://www.wireshark.org/
+:WOLFSSL:   https://github.com/wolfSSL/wolfssl
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC3779:   {IETF}/rfc3779
+:RFC4034:   {IETF}/rfc4034
+:RFC7651:   {IETF}/rfc7651
+
+:SINCE: footnote:SINCE[First strongSwan version to support this option]
+:SINCE_ref: footnote:SINCE[]
+
+*Please note:* This page documents the `*./configure*` options for the latest
+strongSwan release. Therefore, you should always use
+
+ ./configure --help
+
+to check which options are actually available for the release you are using.
+
+== --dir options
+
+Some directories can be configure through xref:#--with-options[--with options].
+
+[cols="2,1,4"]
+|===
+|Option                  |Default |Description
+
+|--prefix=PREFIX         |`/usr/local`
+|where to put installation. Most Linux distributions use `/usr`
+
+|--libexecdir=LIBEXECDIR |`PREFIX/libexec`
+|program executables
+
+|--libdir=LIBDIR         |`PREFIX/lib`
+|shared libraries
+
+|--sysconfdir=SYSCONFDIR |`PREFIX/etc`
+|where to put configuration files. We strongly recommend `/etc`
+|===
+
+== --enable Options
+
+The xref:plugins/plugins.adoc[plugin list] provides more information on specific
+plugins.
+
+[cols="4,1,8"]
+|===
+|Option |Since{SINCE} |Description
+
+|--enable-acert                                              |5.1.3
+|enable X.509 attribute certificate checking plugin
+
+|xref:plugins/addrblock.adoc[--enable-addrblock]             |
+|enable {RFC3779}[RFC 3779] address block constraint support plugin
+
+|--enable-aesni                                              |5.3.1
+|enable Intel AES-NI crypto plugin
+
+|--enable-af-alg                                             |
+|enable AF_ALG crypto interface to Linux Crypto API
+
+|--enable-agent                                              |
+|enable ssh-agent signing plugin
+
+|--enable-aikgen                                             |5.2.0
+|enable AIK generator for TPM 1.2
+
+|--enable-all                                                |5.1.3
+|enable all optional plugins and features
+ (they can be disabled with their respective --disable options)
+ Mainly intended for testing
+
+|--enable-android                                            |
+|enable Android specific plugin
+
+|--enable-android-log                                        |
+|enable Android specific logger plugin
+
+|xref:plugins/attr-sql.adoc[--enable-attr-sql]               |
+|enable SQL-based configuration attributes. This is a plugin for VPN gateways
+ only, serving virtual IP addresses
+
+|--enable-bfd-backtraces                                     |5.0.1
+|use binutil's libbfd to resolve backtraces for memory leaks and segfaults
+
+|--enable-bliss                                              |5.2.2
+|enable deprecated Bimodal Lattice Signature Scheme (BLISS) software
+ implementation plugin. Since a {BLISS}[side-channel attack] on our BLISS
+ implementation has been reported, please use the {NISTPQC}[NIST PQC Round 3]
+ signature algorithms offered by the post-quantum {PQ}[strongSwan 6.0] version
+ instead.
+
+|--enable-blowfish                                           |
+|enable Blowfish software implementation plugin
+
+|--enable-botan                                              |5.7.0
+|enable Botan crypto plugin. Requires {BOTAN}[Botan] 2.8.0 or newer
+
+|xref:plugins/bypass-lan.adoc[--enable-bypass-lan]           |5.5.2
+|enable plugin to automatically install bypass policies for local subnets
+
+|--enable-ccm                                                |
+|enable CCM AEAD wrapper crypto plugin
+
+|--enable-chapoly                                            |5.3.3
+|enables the ChaCha20/Poly1305 AEAD plugin
+
+|xref:plugins/certexpire.adoc[--enable-certexpire]           |
+|enable CSV export of expiration dates of used certificates
+
+|--enable-cmd                                                |5.1.0
+|enable command line IKE client charon-cmd
+
+|--enable-conftest                                           |
+|enable IKE conformance test framework
+
+|xref:plugins/connmark.adoc[--enable-connmark]               |5.3.0
+|enable conntrack based marks to select return path SA
+
+|xref:plugins/counters.adoc[--enable-counters]               |5.6.1
+|enable plugin that collects several performance counters
+
+|xref:plugins/coupling.adoc[--enable-coupling]               |
+|enable IKEv2 plugin to couple peer certificates permanently to authentication
+
+|--enable-coverage                                           |5.1.0
+|enable lcov coverage report generationfootnote:[
+ This disables any optimization, so it shouldn't be enabled when building
+ production releases]
+
+|--enable-ctr                                                |
+|enable counter mode wrapper crypto plugin
+
+|xref:plugins/curl.adoc[--enable-curl]                       |
+|enable plugin to fetch files (CRL/OCSP) via `libcurl`.
+ Requires the `libcurl` library
+
+|--enable-dbghelp-backtraces                                 |5.2.0
+|use dbghlp.dll on Windows to create and print backtraces for memory leaks and
+ segfaults
+
+|xref:plugins/dhcp.adoc[--enable-dhcp]                       |
+|enable DHCP based attribute provider plugin
+
+|--enable-dnscert                                            |5.1.1
+|enable plugin authenticating peers based on DNS CERT resource records protected
+ by DNSSEC
+
+|xref:plugins/duplicheck.adoc[--enable-duplicheck]           |
+|enable advanced duplicate checking plugin using liveness checks
+
+|--enable-eap-aka                                            |
+|enable EAP AKA authentication plugin
+
+|--enable-eap-aka-3gpp                                       |5.6.0
+|enable EAP AKA backend plugin implementing 3GPP MILENAGE algorithms in software
+
+|--enable-eap-aka-3gpp2                                      |
+|enable EAP AKA backend plugin implementing 3GPP2 algorithms in software.
+ Requires `libgmp` library
+
+|xref:plugins/eap-dynamic.adoc[--enable-eap-dynamic]         |5.0.1
+|enable dynamic EAP proxy plugin
+
+|xref:plugins/eap-gtc.adoc[--enable-eap-gtc]                 |
+|enable EAP GTC authentication plugin
+
+|--enable-eap-identity                                       |
+|enable EAP plugin providing EAP-Identity helper
+
+|--enable-eap-md5                                            |
+|build EAP MD5 (CHAP) authentication plugin
+
+|--enable-eap-mschapv2                                       |
+|enable EAP MS-CHAPv2 authentication plugin
+
+|--enable-eap-peap                                           |
+|enable EAP PEAP authentication plugin
+
+|xref:plugins/eap-radius.adoc[--enable-eap-radius]           |
+|enable RADIUS proxy authentication plugin for EAP
+
+|--enable-eap-sim                                            |
+|enable EAP-SIM authentication plugin
+
+|--enable-eap-sim-file                                       |
+|enable EAP-SIM backend based on a triplets file
+
+|--enable-eap-sim-pcsc                                       |
+|enable EAP-SIM backend based on a smartcard reader.
+ Requires `libpcsclite` library
+
+|--enable-eap-simaka-pseudonym                               |
+|enable EAP-SIM/AKA pseudonym storage
+
+|--enable-eap-simaka-reauth                                  |
+|enable EAP-SIM/AKA reauthentication data storage
+
+|xref:plugins/eap-simaka-sql[--enable-eap-simaka-sql]        |
+|enable EAP-SIM/AKA backend based on a triplet/quintuplet SQL database
+
+|xref:plugins/eap-tls.adoc[--enable-eap-tls]                 |
+|enable EAP TLS authentication plugin
+
+|--enable-eap-tnc                                            |
+|enable EAP TNC trusted network connect plugin
+
+|--enable-eap-ttls                                           |
+|enable EAP TTLS authentication plugin
+
+|xref:plugins/error-notify.adoc[--enable-error-notify]       |5.0.2
+|enable error notification plugin
+
+|xref:plugins/ext-auth.adoc[--enable-ext-auth]               |5.2.1
+|enable plugin calling an external authorization script
+
+|xref:plugins/farp.adoc[--enable-farp]                       |
+|enable ARP faking plugin that responds to ARP requests for virtual IPs
+ assigned to peers
+
+|--enable-fast                                               |
+|build `libfast` (FastCGI Application Server w/ templates)
+
+|--enable-files                                              |5.3.0
+|enable simple `file://` URI fetcher
+
+|xref:plugins/forecast.adoc[--enable-forecast]               |5.3.0
+|enable plugin that forwards broadcast/multicast messages
+
+|xref:devel/fuzzing.adoc[--enable-fuzzing]                   |5.5.3
+|enable fuzzing scripts (found in directory `fuzz` and intended for use on the
+ OSS-Fuzz infrastructure)
+
+|--enable-gcm                                                |
+|enable GCM AEAD wrapper crypto plugin
+
+|--enable-gcrypt                                             |
+|enable gcrypt plugin. Requires the GNU *libgcrypt* library
+
+|--enable-git-version                                        |
+|use output of `git describe` as version information in executables
+
+|xref:plugins/ha.adoc[--enable-ha]                           |
+|enable xref:features/highAvailability.adoc[high availability] cluster plugin
+
+|--enable-imc-attestation                                    |
+|enable xref:tnc/tnc.adoc[TNC] Attestation IMC
+
+|--enable-imc-hcd                                            |5.3.3
+|enable xref:tnc/tnc.adoc[TNC] Hardcopy Device Integrity (HCD) IMC
+
+|--enable-imc-os                                             |
+|enable xref:tnc/tnc.adoc[TNC] Operating System (OS) IMC
+
+|--enable-imc-scanner                                        |
+|enable xref:tnc/tnc.adoc[TNC] Port Scanner IMC
+
+|--enable-imc-swima                                          |5.6.0
+|enable xref:tnc/tnc.adoc[TNC] SWIMA IMC
+
+|--enable-imc-test                                           |
+|enable xref:tnc/tnc.adoc[TNC] Test IMC
+
+|--enable-imv-attestation                                    |
+|enable xref:tnc/tnc.adoc[TNC] Attestation IMV
+
+|--enable-imv-hcd                                            |5.3.3
+|enable xref:tnc/tnc.adoc[TNC] Hardcopy Device Integrity (HCD) IMV
+
+|--enable-imv-os                                             |
+|enable xref:tnc/tnc.adoc[TNC] Operating System (OS) IMV
+
+|--enable-imv-scanner                                        |
+|enable xref:tnc/tnc.adoc[TNC] Port Scanner IMV
+
+|--enable-imv-swima                                          |5.6.0
+|enable xref:tnc/tnc.adoc[TNC] SWIMA IMV
+
+|--enable-imv-test                                           |
+|enable xref:tnc/tnc.adoc[TNC] Test IMV
+
+|--enable-integrity-test                                     |
+|enable xref:features/IntegrityTest.adoc[integrity testing] of the daemon,
+ libraries and loaded plugins
+
+|--enable-ipseckey                                           |5.0.3
+|enable authentication plugin authenticatomg peers based on IPSECKEY DNS
+ resource records protected by DNSSEC
+
+|xref:plugins/kernel-iph.adoc[--enable-kernel-iph]           |5.2.0
+|enable Windows IP Helper based networking backend
+
+|xref:plugins/kernel-libipsec.adoc[--enable-kernel-libipsec] |5.1.0
+|enable `libipsec`-based user-space "kernel" interface
+
+|--enable-kernel-pfkey                                       |
+|enable PF_KEYv2 NETKEY kernel interface
+
+|--enable-kernel-pfroute                                     |
+|enable PF_ROUTE kernel interface. Required for FreeBSD and Mac OSX
+
+|--xref:plugins/kernel-wfp.adoc[--kernel-wfp]                |5.2.0
+|enable Windows Filtering Platform IPsec backend
+
+|--enable-keychain                                           |5.1.0
+|enable Mac OS X Keychain Services credential set
+
+|--enable-libipsec                                           |
+|enable user space IPsec implementation
+
+|--enable-ldap                                               |
+|enable LDAP fetcher to fetch files (CRLs) from an LDAP server.
+ Requires OpenLDAP
+
+|--enable-leak-detective                                     |
+|enable malloc hooks to find memory leaks
+
+|--enable-led                                                |
+|enable plugin to control LEDs on IKEv2 activity using the Linux kernel LED
+ subsystem
+
+|xref:plugins/load-tester.adoc[--enable-load-tester]         |
+|enable load testing plugin for IKEv2 daemon
+
+|--enable-lock-profiler                                      |
+|enable lock/mutex profiling code
+
+|--enable-log-thread-ids                                     |5.4.0
+|use thread ID if available instead of an incremented value starting from 1
+ to identify threads
+
+|xref:plugins/lookip.adoc[--enable-lookip]                   |
+|enable fast xref:features/vip.adoc[virtual IP] lookup and notification plugin
+
+|--enable-manager                                            |
+|build the deprecated strongSwan manager web application
+
+|--enable-md4                                                |
+|enable MD4 software implementation plugin. Required for `eap-mschapv2` plugin
+
+|--enable-medcli                                             |
+|enable deprecated mediation client web front end and daemon plugin
+
+|--enable-mediation                                          |
+|enable IKEv2 Mediation Extension
+
+|--enable-medsrv                                             |
+|enable deprecated mediation server web front end and daemon plugin
+
+|--enable-mgf1                                               |5.5.1
+|enable MGF1 software implementation plugin
+
+|--enable-monolithic                                         |
+|build monolithic versions of `libstrongswan` and `libcharon` that include
+ all enabled plugins
+
+|--enable-mysql                                              |
+|enable MySQL database support. Requires `libmysqlclient_r`
+
+|--enable-newhope                                            |5.5.1
+|enable deprecated NewHope post-quantum key exchange plugin.
+ Use the post-quantum {PQ}[strongSwan 6.0] version instead
+
+|--enable-nm                                                 |
+|enable xref:features/networkManager.adoc[NetworkManager] backend
+
+|--enable-ntru                                               |5.1.2
+|enable deprecated `NTRUEncrypt` key exchange plugin.
+ Use the post-quantum {PQ}[strongSwan 6.0] version instead
+
+|--enable-openssl                                            |
+|enable [OpenSSL] crypto plugin. Requires `libcrypto` library
+
+|--enable-osx-attr                                           |5.1.0
+|enable Mac OS X SystemConfiguration attribute handler
+
+|--enable-p-cscf                                             |5.4.0
+|enable plugin to request P-CSCF server addresses from an ePDG
+ ({RFC7651}[RFC 7651])
+
+|--enable-padlock                                            |
+|enable padlock crypto plugin. Requires a VIA Padlock crypto engine
+
+|--enable-perl-cpan                                          |5.4.0
+|enable build of provided perl CPAN modules e.g. for the
+ xref:plugins/vici.adoc[`*vici*`] protocol
+
+|--enable-perl-cpan-install                                  |5.4.0
+|enable installation of provided CPAN modules
+
+|xref:plugins/pkcs11.adoc[--enable-pkcs11]                   |
+|enable PKCS#11 crypto token support plugin
+
+|--enable-python-eggs                                        |5.3.0
+|enable build of provided python eggs e.g. for the
+ xref:plugins/vici.adoc[`*vici*`] protocol
+
+|--enable-python-eggs-install                                |5.3.1
+|enable local installation of provided python eggs
+
+|xref:plugins/radattr.adoc[--enable-radattr]                 |
+|enable plugin to inject and process custom RADIUS attributes as IKEv2 client
+
+|--enable-rdrand                                             |
+|enable Intel RDRAND random generator plugin
+
+|--enable-ruby-gems                                          |5.2.1
+|enable build of provided ruby gems e.g. for the
+ xref:plugins/vici.adoc[`*vici*`] protocol
+
+|--enable-ruby-gems-install                                  |5.3.1
+|enable local installation of provided ruby gems
+
+|--enable-save-keys                                          |5.6.2
+|enable development/debugging plugin that saves IKE and ESP keys in
+ {WIRESHARK}[Wireshark] format
+
+|--enable-sha3                                               |5.3.4
+|enable SHA3 and SHAKE software implementation plugin
+
+|--enable-smp                                                |
+|enable deprecated XML configuration and control interface. Requires
+ `libxml` library.
+
+|--enable-socket-dynamic                                     |
+|enable dynamic socket implementation for charon
+
+|xref:plugins/socket-win.adoc[--enable-socket-win]           |5.2.0
+|enable Winsock2 based socket implementation for `*charon*`
+
+|--enable-soup                                               |
+|enable fetcher plugin to fetch from HTTP URIs. Requires `libsoup` library
+
+|xref:plugins/sql.adoc[--enable-sql]                         |
+|enable SQL database configuration backend
+
+|--enable-sqlite                                             |
+|enable SQLite database support. Requires `libsqlite3` library
+
+|--enable-svc                                                |5.2.0
+|enable xref:daemons/charonSvc.adoc[charon Windows service]
+
+|--enable-systemd                                            |5.2.1
+|enable `systemd` specific IKE daemon
+ xref:daemons/charonSystemd.adoc[charon-systemd]
+
+|xref:plugins/systime-fix.adoc[--enable-systime-fix]         |5.0.3
+|enable plugin to handle cert lifetimes with invalid system time gracefully
+
+|xref:plugins/test-vectors.adoc[--enable-test-vectors]       |
+|enable crypto test vectors plugin
+
+|--enable-tkm                                                |5.0.3
+|enable `charon-tkm` an IKEv2 daemon that is backed by a
+ {TKM}[Trusted Key Manager] (TKM).
+
+|--enable-tnccs-11                                           |
+|enable xref:tnc/tnc.adoc[TNC] Client Server (TNCCS) 1.1 protocol plugin.
+ Requires `libxml2` library
+
+|--enable-tnccs-20                                            |
+|enable xref:tnc/tnc.adoc[TNC] Client Server (TNCCS) 2.0 protocol plugin
+
+|--enable-tnccs-dynamic                                       |
+|enable xref:tnc/tnc.adoc[TNC] Client Server (TNCCS) dynamic protocol discovery
+ plugin
+
+|--enable-tnc-ifmap                                           |
+|enable xref:tnc/tnc.adoc[TNC] IF-MAP 2.0 client plugin
+
+|--enable-tnc-imc                                             |
+|enable xref:tnc/tnc.adoc[TNC] Integrity Measurement Collector (IMC) manager
+ plugin
+
+|--enable-tnc-imv                                             |
+|enable xref:tnc/tnc.adoc[TNC] Integrity Measurement Validator (IMV) manager
+ plugin
+
+|--enable-tnc-pdp                                             |
+|enable xref:tnc/tnc.adoc[TNC] Policy Decision Point plugin
+ plugin
+
+|xref:plugins/tpm.adoc[--enable-tpm]                          |5.5.2
+|enable plugin to access persistent RSA and ECDSA private keys bound to
+ xref:tpm/tpm2.adoc[Trusted Platform Module 2.0]
+
+|--enable-tss-trousers                                        |5.5.0
+|enable TPM 1.2 TrouSerS library. Requires `libtspi` library
+
+|--enable-tss-tss2                                            |5.5.0
+|enable TPM 2.0 TSS2 library. Requires `libtss2` library
+
+|--enable-uci                                                 |
+|enable OpenWRT UCI configuration plugin
+
+|--enable-unbound                                             |
+|DNSSEC-enabled resolver plugin based on {UNBOUND}[libunbound]
+
+|xref:plugins/unity.adoc[--enable-unity]                      |
+|enable Cisco Unity extension plugin
+
+|--enable-unwind-backtraces                                   |5.1.0
+|use libunwind to create backtraces for memory leaks and segfaults
+
+|xref:plugins/whitelist.adoc[--enable-whitelist]              |
+|enable peer identity whitelisting plugin
+
+|xref:plugins/winhttp.adoc[--enable-winhttp]                  |5.2.0
+|enable WinHTTP based HTTP/HTTPS fetching plugin
+
+|--enable-wolfssl                                             |5.8.0
+|enable {WOLFSSL}[wolfSSL] crypto plugin. Requires `libwolfssl` library
+
+|xref:plugins/xauth-eap.adoc[--enable-xauth-eap]              |
+|enable XAuth backend using EAP methods to verify password
+
+|xref:plugins/xauth-noauth.adoc[--enable-xauth-noauth]        |5.0.3
+|enable XAuth pseudo-backend that does not actually verify or even request
+ any credentials
+
+|xref:plugins/xauth-pam.adoc[--enable-xauth-pam]              |
+|enable XAuth backend using PAM to verify passwords
+|===
+
+== --disable Options
+
+The xref:plugins/plugins.adoc[plugin list] provides more information on
+specific plugins.
+
+[cols="4,1,8"]
+|===
+|Option |Since{SINCE_Ref} |Description
+
+|--disable-aes                                                |
+|disable default AES software implementation plugin
+
+|xref:plugins/attr.adoc[--disable-attr]                       |
+|disable xref:config/strongswanConf.adoc[`*strongswan.conf*`] based
+ configuration of DNS and WINS server attributesfootnote:[
+ This is a plugin for VPN gateways only, serving internal DNS and WINS
+ nameserver information]
+
+|--disable-charon                                             |
+|disable the build of the IKEv1/IKEv2 keying `charon` daemon
+
+|--disable-cmac                                               |
+|disable CMAC crypto implementation plugin
+
+|xref:plugins/constraints.adoc[--disable-constraints]         |
+|disable advanced X.509 constraint checking plugin
+
+|--disable-curve25519                                         |5.5.2
+|disable plugin providing X25519 DH group and Ed25519 public key authentication
+
+|--disable-defaults                                           |5.0.3
+|disable all features that are enabled by default. Basically it's short for
+ removing all options listed in this section.
+
+|--disable-des                                                |
+|disable default DES/3DES software implementation plugin
+
+|--disable-dnskey                                             |
+|disable {RFC4034}[DNS Resource Records] key decoding plugin
+
+|--disable-drgb                                               |5.8.2
+|disable the NIST Deterministic Random Bit Generator plugin
+
+|--disable-fips-prf                                           |
+|disable default FIPS PRF software implementation plugin
+
+|--disable-gmp                                                |
+|disable default {GMP}[GNU Multi Precision] based public key cryptography
+ implementation plugin. Requires `libgmp` library.
+
+|--disable-hmac                                               |
+|disable default HMAC crypto implementation plugin
+
+|--disable-ikev1                                              |
+|disable IKEv1 protocol support in `charon` daemon
+
+|--disable-ikev2                                              |
+|disable IKEv2 protocol support in `charon` daemon
+
+|--disable-kernel-netlink                                     |
+|disable default Netlink kernel interface
+
+|--disable-load-warning                                       |
+|disable the `charon` plugin load option warning in starter
+
+|--disable-md5                                                |
+|disable default MD5 software implementation plugin
+
+|--disable-nonce                                              |
+|disable nonce generation plugin
+
+|--disable-pem                                                |
+|disable PEM decoding plugin
+
+|--disable-pgp                                                |
+|disable PGP key decoding plugin
+
+|--disable-pkcs1                                              |
+|disable PKCS#1 key decoding plugin
+
+|--disable-pkcs7                                              |
+|disable PKCS#7 container support plugin
+
+|--disable-pkcs8                                              |
+|disable PKCS#8 private key decoding plugin
+
+|--disable-pkcs12                                             |5.1.0
+|disable PKCS#12 container support plugin
+
+|xref:pki/pki.adoc[--disable-pki]                             |5.2.0
+|disable xref:pki/pki.adoc[`*pki*`] public key and certificate utility
+
+|--disable-pubkey                                             |
+|disable default RAW public key support plugin
+
+|--disable-random                                             |
+|disable default RNG implementation using the raw `/dev/[u]random` devices
+
+|--disable-rc2                                                |5.1.0
+|disable RC2 software implementation plugin
+
+|xref:plugins/resolve.adoc[--disable-resolve]                 |
+|disable writing DNS information received via configuration payload to
+ `/etc/resolv.conf`. This is a plugin for VPN clients only
+
+|--disable-revocation                                         |
+|disable X.509 CRL/OCSP revocation check plugin
+
+|--disable-scepclient                                         |5.2.0
+|disable tools/scepClient.adoc[SCEP client] tool
+
+|--disable-scripts                                            |
+|disable the build of additional utilities found in `scripts` directory
+
+|--disable-sha1                                               |
+|disable default SHA-1 software implementation plugin
+
+|--disable-sha2                                               |
+|disable default SHA-256/SHA-384/SHA-512 software implementation plugin
+
+|--disable-socket-default                                     |
+|disable default socket implementation for `charon` daemon
+
+|--disable-sshkey                                             |5.1.0
+|disable SSH key decoding plugin
+
+|--disable-stroke                                             |
+|disable legacy `stroke` configuration backend for `charon` daemon
+
+|xref:swanctl/swanctl.adoc[--disable-swanctl]                 |5.2.0
+|disable xref:swanctl/swanctl.adoc[`*swanctl*`] configuration and control tool
+
+|xref:plugins/updown.adoc[--disable-updown]                   |
+|disable updown firewall script plugin
+
+|xref:plugins/vici.adoc[--disable-vici]                       |5.2.0
+|disable the xref:plugins/vici.adoc[Versatile IKE Control Interface] (VICI)
+ plugin for `charon` daemon
+
+|--disable-x509                                               |
+|disable default X.509 certificate implementation plugin
+
+|--disable-xauth-generic                                      |
+|disable generic XAauth backend
+
+|--disable-xcbc                                               |
+|disable default XCBC crypto implementation plugin
+|===
+
+== --with Options
+
+[cols="1,2"]
+|===
+|Option |Description [Default]
+
+|--with-capabilities=LIBCAP
+|set capability dropping library. Currently supported values are `libcap` and
+ `native` [no]
+
+|--with-charon-udp-port=PORT
+|UDP port used by `charon` daemon locally. Set to `0` to allocate randomly.
+ [`500`]
+
+|--with-charon-natt-port=PORT
+|UDP port used by `charon` daemon locally in case a NAT situation is detected
+ (must be different from `charon-udp-port`). Set to `0` to allocate randomly.
+ [`4500`]
+
+|--with-dbuspolicydir=DIR
+|directory for D-Bus policies for the
+ xref:features/networkManager.adoc[NetworkManager] backend `charon-nm`.
+ [`/usr/share/dbus-1/system.d`]
+
+|--with-dev-headers=DIR
+|install strongSwan development headers to `DIR` []
+
+|--with-fips-mode=MODE
+|set OpenSSL FIPS mode: disabled (`0`), enabled (`1`), Suite B enabled (`2`).
+ [`0`]
+
+|--with-libfuzzer=FILE
+|`-fsanitize=fuzzer` or path to `libFuzzer.a`. A local driver is used if not
+ specified
+
+|--with-group=GROUP
+|xref:features/reducedPrivileges.adoc[change group] of `charon` daemon to `GROUP`
+ after startup. [`root`]
+
+|--with-imcvdir=IMCVDIR
+|set the installation path of `IMC` and `IMV` dynamic libraries.
+ [`IPSECLIBDIR/imcvs`]
+
+|--with-ipsecdir=IPSECDIR
+|installation path for ipsec tools. [`LIBEXECDIR/ipsec`]
+
+|--with-ipseclibdir=IPSECLIBDIR
+|installation path for ipsec libraries `libstrongswan`, `libcharon`, etc.
+ [`LIBDIR/ipsec`]
+
+|--with-ipsec-script=NAME
+|change the name of the ipsec script. [`ipsec`]
+
+|--with-linux-headers=DIR
+|linux header files to be used. [`../include`]
+
+|--with-mpz_powm_sec= YES\|NO
+|use the more side-channel resistant `mpz_powm_sec` in `libgmp` if available.
+ [yes]
+
+|--with-nm-ca-dir=NMCADIR
+|directory the NetworkManager backend uses to look up trusted root certificates.
+ [`/usr/share/ca-certificates`]
+
+|--with-piddir=DIR
+|path for PID and UNIX socket files. [`/var/run`]
+
+|--with-plugindir=PLUGINDIR
+|installation path for plugins. [`IPSECLIBDIR/plugins`]
+
+|--with-printf-hooks=IMPL
+|force the use of a specific printf()-hook implementation
+ (auto, builtin, glibc, vstr). [`auto`]
+
+|--with-pythoneggdir=ARG
+|path to install python eggs to. [`main site-packages directory`]
+
+|--with-random-device=DEV
+|set the device for true random data. [`/dev/random`]
+
+|--with-resolv-conf=FILE
+|set the file to store DNS server information. [`SYSCONFDIR/resolv.conf`]
+
+|--with-routing-table=NUM
+|routing table for IPsec source routes (set to `0` to use default routing table).
+ [`220`]
+
+|--with-routing-table-prio=PRIO
+|priority for IPsec routing table [`220`].
+
+|--with-rubygemdir=ARG
+|path to install ruby gems to. [`gem environment gemdir`]
+
+|--with-strongswan-conf=FILE
+|set the `strongswan.conf` file location. [`SYSCONFDIR/strongswan.conf`]
+
+|--with-systemdsystemunitdir=ARG
+|directory for systemd service files.
+ [`pkg-config --variable=systemdsystemunitdir systemd`]
+
+|--with-swanctldir=ARG
+|xref:swanctl/swanctlDir.adoc[`swanctl` directory] for
+ xref:swanctl/swanctlConf.adoc[`swanctl.conf`] configuration files and
+ credentials. [`SYSCONFDIR/swanctl`]
+
+|--with-urandom-device=DEV
+|set the device for pseudo random data. [`/dev/urandom`]
+
+|--with-user=USER
+|xref:features/reducedPrivileges.adoc[change user] of `charon` daemon to USER
+ after startup. [`root`]
+|===

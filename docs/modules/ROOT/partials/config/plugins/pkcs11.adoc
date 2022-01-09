@@ -1,0 +1,31 @@
+|modules                             |
+|This section lists available `PKCS#11` modules
+
+|modules.<name>.path                 |
+|Full path to the shared object file of this `PKCS#11` module
+
+|modules.<name>.os_locking           |`no`
+|Whether OS locking should be enabled for this module
+
+|modules.<name>.load_certs           |`yes`
+|Whether the `PKCS#11` modules should load certificates from tokens
+
+|reload_certs                        |`no`
+|Whether the `PKCS#11` modules should reload all certificates if `*charon*` receives a `SIGHUP`
+
+|use_dh                              |`no`
+|Whether the `PKCS#11` modules should be used for `DH` and `ECDH`
+
+|use_ecc                             |`no`
+|Whether the PKCS#11 modules should be used for `ECDH` and `ECDSA` public key operations.
+ `ECDSA` private keys can be used regardless of this option
+
+|use_hasher                          |`no`
+|Whether the `PKCS#11` modules should be used to hash data
+
+|use_pubkey                          |`no`
+|Whether the `PKCS#11` modules should be used for public key operations,
+ even for keys not stored on tokens
+
+|use_rng                             |`no`
+|Whether the `PKCS#11` modules should be used as `RNG`

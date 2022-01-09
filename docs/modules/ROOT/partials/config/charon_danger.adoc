@@ -1,0 +1,22 @@
+[cols="7,1"]
+|===
+|Key |Default
+
+|accept_unencrypted_mainmode_messages                   |no
+|===
+WARNING: _Accept unencrypted ID and HASH payloads in IKEv1 Main Mode. Some
+  implementations send the third Main Mode message unencrypted, probably to find
+  the PSKs for the specified ID for authentication. This is very similar to
+  Aggressive Mode and has the same security implications: A passive attacker can
+  sniff the negotiated identity and can start brute forcing the PSK using the
+  `HASH` payload. Don't enable this option unless you know exactly what the
+  implications are and compatibility to such devices is required (e.g. some
+  SonicWall boxes)._
+
+[cols="9,1"]
+|===
+|i_dont_care_about_security_and_use_aggressive_mode_psk |no
+|===
+WARNING: _If enabled, *IKE Responders* are allowed to use IKEv1 Aggressive Mode
+  with Pre-Shared Keys (PSKs). This is strongly discouraged due to security
+  concerns (offline attacks on the openly transmitted hash of the PSK)._

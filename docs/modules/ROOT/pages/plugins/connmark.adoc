@@ -1,0 +1,108 @@
+= connmark Plugin
+
+:XL2TPD: https://github.com/xelerance/xl2tpd/issues/82
+:TESTS:  https://www.strongswan.org/testing/testresults
+:EX:     {TESTS}/ikev2/host2host-transport-connmark
+
+== Purpose
+
+The `*connmark*` plugin for `*libcharon*` uses Linux Netfilter conntrack marks
+on transport mode connections to separate flows between clients. As two transport
+mode clients behind the same NAT use identical IPsec policies, some special
+binding of upper layer protocols is required to return data over the correct SA.
+While any client-initiated protocol supported by conntrack can be separated, the
+main purpose is to differentiate multiple `L2TP` sessions. The plugin only works
+for transport mode connections.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-connmark
+
+Building the plugin requires `*iptables*` development headers to be installed.
+
+== Configuration
+
+The `*connmark*` plugin currently is used on any transport mode SA negotiated
+that uses a unique mark. To configure such a connection as responder, use the
+following options in your connection definition:
+----
+connections {
+
+  transport-connmark {
+    # ...
+    children {
+      transport-connmark {
+        mode = transport
+        mark = %unique
+        #...
+      }
+    }
+  }
+----
+
+A unique mark per negotiated SA is required so that the SAs can be distinguished.
+The plugin automatically configures Netfilter rules in the `*mangle*` table to
+apply and restore the marks.
+
+== Netfilter Rules and connmark
+
+To find the correct return path for a protected upper layer connection,
+Netfilter connmarks in the `*mangle*` table are used.
+
+In `*PREROUTING*` a gateway applies the unique mark assigned to the SA to the
+packet. This makes sure the IPsec policy actually matches, as we require the
+correct mark for a policy match. For non-NAT situations, ESP matching is used
+to MARK packets, for NAT situations the packets get selected based on UDP
+encapsulation ports.
+
+In the `*INPUT*` chain IPsec policy matching is used to apply the IPsec policy
+mark as a `*CONNMARK*`. This basically copies the IPsec policy mark to the
+conntrack entry, so it can later be restored.
+
+On the `*OUTPUT*` chain the `*CONNMARK*` target is used to to restore the mark
+from the conntrack entry to the packet. This ensures that the correct mark is
+applied to select the SA from the same pair that has been used during inbound
+processing.
+
+The rules installed by the plugin for two clients behind the same NAT router
+looks something like:
+----
+Chain PREROUTING (policy ACCEPT 82 packets, 16106 bytes)
+ pkts bytes target    prot opt in out  source       destination
+   19  3920 MARK      udp  --  *  *    192.168.0.1  192.168.0.2  udp spt:1024 dpt:4500 MARK set 0x2
+   16  3584 MARK      udp  --  *  *    192.168.0.1  192.168.0.2  udp spt:4500 dpt:4500 MARK set 0x1
+
+Chain INPUT (policy ACCEPT 82 packets, 16106 bytes)
+ pkts bytes target    prot opt in out  source       destination
+   19  2803 CONNMARK  all  --  *  *    192.168.0.1  192.168.0.2  policy match dir in pol ipsec spi 0xb05370cd CONNMARK set 0x2
+   16  2647 CONNMARK  all  --  *  *    192.168.0.1  192.168.0.2  policy match dir in pol ipsec spi 0x8ab8f2c3 CONNMARK set 0x1
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target    prot opt in out  source       destination
+
+Chain OUTPUT (policy ACCEPT 91 packets, 17770 bytes)
+ pkts bytes target    prot opt in out  source       destination
+   73 14634 CONNMARK  all  --  *  *    192.168.0.2  192.168.0.1  CONNMARK restore
+   75 16755 CONNMARK  all  --  *  *    192.168.0.2  192.168.0.1  CONNMARK restore
+----
+
+== Windows L2TP
+
+The Windows L2TP client always uses `udp/1701` as source and destination ports.
+Unfortunately conntrack can't properly track these udp streams when clients are
+behind the same NAT. Because all streams have identical `*src/dst*` tuples, the
+flow can't be separated and only one conntrack entry will exist. Only traffic to
+the client that last sent an inbound packet is active as all outbound packets
+will be set to the same mark (and thus be returned over the same SA). A solution
+might be for a L2TP daemon to track which mark belongs to which client and set
+correct marks on the outgoing packets. Together with Connmark plugin this would
+make 2 Windows hosts behind the same NAT successfully use L2TP.
+
+An experimental patch for `*xl2tpd*` can be found in the
+{XL2TPD}[xl2tpd Github issue 82]
+
+== Example
+
+image:a-m-w-s-b.png[topology,340,129,link={EX},title=host2host-transport-connmark example]
+strongSwan {EX}[example] showing the use of the `*connmark*` plugin.

@@ -1,0 +1,2 @@
+|enable   |`no`
+|Enable fetching of CERT RRs via DNS

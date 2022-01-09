@@ -1,0 +1,210 @@
+= kernel-wfp Plugin
+
+:KB2502685: http://support.microsoft.com/kb/2502685/en-us
+
+== Purpose
+
+The `*kernel-wfp*` plugin for `*libcharon*` is an interface to the IPsec backend
+in the Windows Filter Platform on xref:os/windows.adoc[Windows]. It installs and
+maintains Security Associations and Policies to the Windows Kernel.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-kernel-wfp
+
+== Supported ciphers
+
+This kernel backend supports both `AH`, `ESP` and `ESP-in-UDP` for both tunnel
+and transport mode Security Associations.
+
+The following integrity algorithms are supported for both `AH` and `ESP`:
+----
+md5
+sha1
+sha256
+aes128gmac
+aes192gmac
+aes256gmac
+----
+The following encryption algorithms for `ESP`:
+----
+null
+des
+3des
+aes128
+aes192
+aes256
+----
+and these `AEAD` mode ciphers for `ESP`:
+----
+aes128gcm16
+aes192gcm16
+aes256gcm16
+----
+
+== Behavior
+
+The Windows Filtering platform is a firewalling framework on the Windows
+operating system. It supports the installation of arbitrary filters from userland
+applications. Windows native IPsec is managed through the WFP API by
+associating filters to IPsec SA information.
+
+The `*kernel-wfp*` plugin implements an IPsec backend using the WFP API. As it
+seems that there is no support to register custom keying modules in Windows 7,
+$ the backend installs SA and policy information directly after negotiation.
+This means that strongSwan does not install Main Mode or Quick Mode policies in
+WFP in a way the Windows native keying modules do. Instead we maintain such
+information locally in our IKE daemon and just install negotiated information.
+
+The Windows kernel handles the IPsec ruleset using so called SA contexts,
+managed by _IPsecSaContextCreate0_ and associated functions. An SA context knows
+exactly one inbound and one outbound IPsec SA bundle for processing traffic,
+associated using the `*IPsecSaContextAddInbound0*` and `*IPsecSaContextAddOutbound0*`
+functions. Each SA bundle contains algorithm and other configurations and the
+associated encryption and integrity protection keys.
+
+=== Transport Mode
+
+In Transport mode, an SA context is directly tied to an outbound filter rule
+during construction. The inbound filter rule is associated to the SA context by
+calling `*IPsecSaContextGetSpi0*`. Filter rules get installed using the
+`*FwpmFilterAdd0*` function.
+
+Together with the inbound and outbound filters acting as policies, the SA context
+with the inbound and the outbound SA bundles form the kernel-level object that
+got negotiated for a `CHILD SA`.
+
+=== Tunnel Mode
+
+Configuring tunnel mode in WFP works very similarly to transport mode. An SA
+context is used to attach inbound and outbound SA bundles.
+
+A tunnel mode, however, usually has more than just an inbound and an outbound
+IPsec policy. It also needs forward policies, and multiple different in, out and
+forward policies for different selectors are desirable.
+
+To install the required filter set for a tunnel mode SA, the WFP API provides a
+`*FwpmIPsecTunnelAdd0*` function. This function implicitly creates multiple
+filter rules from the passed traffic selectors, which can be associated to an SA
+context. The internals of this function, however, are somewhat unclear and it
+limits the flexibility of policy installation.
+
+To allow the installation of multiple selectors and policies, the `*kernel-wfp*`
+plugin installs filter rules manually for tunnel mode. To do so, a provider
+context is required to associate an arbitrary number of filters to it. The
+provider context is then referenced by the SA context to link all filters to the
+SA bundles.
+
+=== State and SPI Management
+
+The strongSwan IPsec kernel abstraction layer is loosely defined for the `PF_KEY`
+and similar interfaces, working on SA and policy granular level. It usually
+installs in- and outbound Security Associations, and then attaches IPsec policies
+using a unique `*reqid*` identifier.
+
+For the WFP interface, this paradigm does not work very well. It expects the
+policy information first, followed by the SA context and the in- and outbound
+Security Associations. The WFP interface can't allocate SPIs without creating
+policy entries and an SA context first. In strongSwan, however, we must allocate
+SPIs before installing policies, as this information is negotiated in IKEv2.
+
+To work around these interface differences, the `*kernel-wfp*` plugin caches any
+policy or SA addition. Once all this information has been collected, it installs
+it in a single batch. Instead of using kernel allocated SPIs using
+`*IPsecSaContextGetSpi0*`, it allocates SPIs in userland pseudo-randomly and uses
+`*IPsecSaContextSetSpi0*` to set it.
+
+All policy and SA information installed by strongSwan is non-persistent. A system
+reboot or a restart of the Base Filtering Engine service removes any rule
+installed by the plugin.
+
+=== Bypass Policies
+
+When installing IPsec policies, an IKE daemon must ensure that the policies
+don't cover IKE packets. This makes sure that IKE packets are never encapsulated
+in ESP.
+
+While WFP has built-in support for IKE bypass filters, these cover policies
+installed by `*FwpmIpsecTunnelAdd0*` only. We therefore install global bypass
+filter rules for the IKE socket. These filter use a high priority to have
+precedence over any IPsec policy negotiated.
+
+=== Trap Policies and Events
+
+strongSwan can install IPsec policies not having Security Associations attached
+to it, the trap policies. If the kernel layer processes a packet matching such a
+policy, it raises an event to strongSwan. strongSwan then negotiates an SA for
+this policy, protecting traffic on demand.
+
+In WFP, strongSwan uses drop firewall rules for trap policies and registers for
+firewalling events using `*FwpmNetEventSubscribe0*` to register for drop events.
+If the Windows kernel raises an event for a drop rule, it informs strongSwan
+which in turn looks for the corresponding trap policy and starts SA negotiation.
+
+The firewall event subscription is also used to catch other IPsec related
+rocessing errors, which get logged by strongSwan.
+
+== ipsecdump Utility
+
+For development and debugging purposes, the plugin comes with an `*ipsecdump.exe*`
+utility. By default it dumps Security Associations currently installed on the
+system. When invoked with a `*filters*` argument, it dumps any IPsec related
+firewall filters.
+
+== Known Issues and Limitations
+
+The following limitations apply to the `*kernel-wfp*` plugin:
+
+=== Accessing Gateway Internal Address in a net-to-net Tunnel
+
+When a Windows Gateway offers IPsec protected access to an internal subnet in
+tunnel mode, an IPsec client is currently unable to access any internal IP
+address of the gateway itself, even if it is part of the covered subnet. The
+kernel raises a `STATUS_IPSEC_CLEAR_TEXT_DROP` event if such a packet is received.
+The Microsoft Knowledge Base entry {KB2502685}[KB2502685] exactly describes this
+issue and provides a hotfix, but is related to a Forefront TMG server. It is
+currently not clear if the same issue applies to the Windows 7 product family or
+if it can be worked around from userland.
+
+=== Protocol/Port Restrictions on Forwarding net-to-net Connections
+
+The Windows Kernel does not parse transport layer IP packet headers when
+forwarding packets. Therefore it does not support protocol or port selectors in
+IPsec forwarding policies, but only in policies for a local address. In practice
+strongSwan currently just ignores protocol/port restrictions in forwarding
+policies, but enforces them for inbound/outbound policies. Forwarding policies
+therefore may cover more traffic than negotiated in IKE.
+
+=== Unsolicited Inbound Traffic in UDP-Encapsulated ESP Packets
+
+When receiving traffic on an UDP-encapsulated ESP tunnel mode connection, any
+unsolicited inbound traffic gets dropped by the kernel with a
+`STATUS_INTERNAL_ERROR` event. This applies to UDP-encapsulated connections only
+and does not affect traffic that the kernel can associate to a known connection.
+For example, the return path works fine if the Windows host initiates a TCP
+connection over such a tunnel.
+
+It is currently unknown if this is a kernel related issue or if it can be worked
+around by configuring UDP encapsulation in a slightly different fashion.
+
+=== Multiple Traffic Selectors for Transport Mode Connections
+
+Due the design of SA context information in the Windows kernel, in transport
+mode only a single inbound and outbound filter can be applied. This means that a
+single `CHILD SA` can have a single selector only. In practice, this is usually
+not much of a problem, as transport mode SAs can cover a single host pair only.
+Defining multiple protocols or address ranges is currently not possible, though.
+
+=== SA Usage, Lifetime and Volumes
+
+The Windows kernel does not seem to provide any means of getting per-SA statistics.
+`*IPsecGetSaStatistics0*` works on a global level only and the `*IPsecSaEnum0*`
+and `*IPsecSaContextEnum0*` return configured lifetime values only.
+
+For strongSwan this implies that no usage counters are available, and that DPD
+checking and keep-alive messages can't be reduced based on IPsec SA activity.
+
+It is currently not possible to configure volume based rekeying. Time based
+rekeying is managed by strongSwan in userland, but hard SA lifetimes ensure that
+the kernel rejects packets even if userland does not renew connections as expected.

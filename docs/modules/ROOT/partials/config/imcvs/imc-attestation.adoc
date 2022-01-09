@@ -1,0 +1,33 @@
+|aik_blob            |
+|AIK encrypted private key blob file
+
+|aik_cert            |
+|AIK certificate file
+
+|aik_handle          |
+|AIK object handle, e.g. `*0x81010003*`
+
+|aik_pubkey          |
+|AIK public key file
+
+|hash_algorithm      |[->]
+|Preferred measurement hash algorithm.
+ `*[sha384]*`
+
+|mandatory_dh_groups |`yes`
+|Enforce mandatory Diffie-Hellman groups
+
+|nonce_len           |`20`
+|DH nonce length
+
+|pcr_info            |`no`
+|Whether to send pcr_before and pcr_after info
+
+|pcr_padding         |`no`
+|Whether to pad IMA SHA1 measurements values when extending into SHA256 PCR banks
+
+|use_quote2          |`yes`
+|Use Quote2 AIK signature instead of Quote signature
+
+|use_version_info    |`no`
+|Version Info is included in Quote2 signature

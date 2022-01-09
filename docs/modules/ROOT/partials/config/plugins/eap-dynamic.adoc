@@ -1,0 +1,8 @@
+|prefer_user |`no`
+|If enabled the order of the EAP methods in an `*EAP-NAK*` message sent by a
+ client is preferred over the one configured locally
+
+|preferred   |
+|The preferred EAP method(s) to be used. If not set, the first registered method
+ will be used initially. If a comma separated list is specified, the methods are
+ tried in the given order before trying the rest of the registered methods

@@ -1,0 +1,75 @@
+= lookip Plugin
+
+:GITHUB:      https://github.com/strongswan/strongswan/blob/master
+:LOOKIP_DEF:  src/libcharon/plugins/lookip/lookip_msg.h
+:LOOKIP_TOOL: src/libcharon/plugins/lookip/lookip.c
+
+== Purpose
+
+The `*lookip*` (lookup by IP) plugin for `*libcharon*` provides a fast and simple
+interface to query specific information about tunnels by the remote peer's
+xref:features/vip.adoc[virtual IP] address. This allows a gateway administrator
+to get client information of an IP acting in the protected network.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-lookip
+
+== Implementation
+
+If the plugin is enabled, it collects information about each
+xref:features/vip.adoc[virtual IP] in a fast data structure.
+
+A UNIX socket allows to query the data structure and receive additional
+information to this IP, such as outer IP, peer identity and connection name.
+
+== Configuration
+
+The `*lookip*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_lookip[`*charon.plugins.lookip*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="1,2,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/lookip.adoc[]
+|===
+
+== Query Tool
+
+The `*lookip`* ipsec utility usually invoked by
+
+ /usr/libexec/ipsec/lookip ...
+
+can be used to query the virtual IP database. It can take multiple arguments to
+run multiple queries. If invoked without arguments, it runs interactively.
+
+[cols="1,2"]
+|===
+|Command|Description
+
+|`lookip --dump`
+|Dump all active virtual IPs with associated data
+
+|`lookip --lookup`
+|Query an entry for a specific virtual IP
+
+|`lookup --listen-up`
+|Listen for new virtual IP entries
+
+|`lookup --listen-down`
+|Listen for virtual IP entries disappearing
+|===
+
+If one or more of the `*listen* arguments is used, the tool blocks and prints
+out notifications for the registered events.
+
+== Socket interface
+
+The `*lookip*` socket interface definition can be found here:
+{GITHUB}/{LOOKIP_DEF}[`source:{LOOKIP_DEF}`].
+
+The `*lookip*` tool demonstrating how the interface can be used:
+{GITHUB}/{LOOKIP_TOOL}[`source:{LOOKIP_TOOL}`]

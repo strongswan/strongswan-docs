@@ -1,0 +1,98 @@
+|accounting                 |`no`
+|Enable EAP-RADIUS accounting
+
+|accounting_close_on_timeout|`yes`
+|Close the IKE_SA if there is a timeout during interim RADIUS accounting updates
+
+|accounting_interval        |`0`
+|Interval in seconds for interim RADIUS accounting updates, if not specified by
+ the RADIUS server in the Access-Accept message
+
+|accounting_requires_vip    |`no`
+|If enabled, accounting is disabled unless an IKE_SA has at least one virtual IP
+
+|accounting_send_class      |`no`
+|If enabled, adds the Class attributes received in Access-Accept message to the
+ RADIUS accounting messages
+
+|class_group                |`no`
+|Use the class attribute sent in the Access-Accept message as group membership
+ information.
+
+|close_all_on_timeout       |`no`
+|Closes all IKE_SAs if communication with the RADIUS server times out. If it is
+ not set only the current IKE_SA is closed
+
+|dae.enable                 |`no`
+|Enables support for the Dynamic Authorization Extension
+
+|dae.listen                 |[->]
+|Address to listen for DAE messages from the RADIUS server.
+ `*[0.0.0.0]*`
+
+|dae.port                   |`3799`
+|Port to listen for DAE requests
+
+|dae.secret                 |
+|Shared secret used to verify/sign DAE messages.If set, make sure to adjust the
+ permissions of the config file accordingly
+
+|eap_start                  |`no`
+|Send EAP-Start instead of EAP-Identity to start RADIUS conversation
+
+|filter_id                  |`no`
+|Use the filter_id attribute sent in the RADIUS-Accept message as group
+ membership if the RADIUS tunnel_type attribute is set to ESP
+
+|forward.ike_to_radius      |
+|RADIUS attributes to be forwarded from IKEv2 to RADIUS (can be defined by name
+ or attribute number, a colon can be used to specify vendor-specific attributes,
+ e.g. `*Reply-Message*`, or `*11*`, or `*36906:12*`)
+
+|forward.radius_to_ike      |
+|Same as above but from RADIUS to IKEv2, a strongSwan specific private notify
+ (`*40969*`) is used to transmit the attributes
+
+|id_prefix                  |
+|Prefix to EAP-Identity, some AAA servers use a IMSI prefix to select the EAP method
+
+|nas_identifier             |[->]
+|NAS-Identifier to include in RADIUS messages.
+ `*[strongSwan]*`
+
+|port                       |`1812`
+|Port of RADIUS server (authentication)
+|retransmit_base            |`1.4`
+|Base to use for calculating exponential back off
+|retransmit_timeout         |`2.0`
+|Timeout in seconds before sending first retransmit
+
+|retransmit_tries           |`4`
+|Number of times to retransmit a packet before giving up
+
+|secret                     |
+|Shared secret between RADIUS and NAS. If set, make sure to adjust the permissions
+ of the config file accordingly
+
+|server                     |
+|IP/Hostname of RADIUS server
+
+|servers                    |
+|Section to specify multiple RADIUS servers. The `*nas_identifier*`, `*secret*`,
+ `*sockets*` and `*port*` (or `*auth_port*`) options can be specified for each
+ server. The `*retransmit*` settings can also be changed for each server.  A
+ server's IP/Hostname can be configured using the `*address*` option. The
+ `*acct_port*` [1813] option can be used to specify the port used for RADIUS
+ accounting. For each server a priority can be specified using the `*preference*` [0]
+ option
+|sockets                    |`1`
+|Number of sockets (ports) to use. Increase for high load
+
+|station_id_with_port       |`yes`
+|Whether to include the UDP port in the `*Called-Station_ID*` and
+ `*Calling-Station-Id*` attributes
+
+|xauth                      |
+|Section to configure
+ xref:plugins/eap-radius.adoc#_multiple_rounds[multiple XAuth authentication rounds]
+ via RADIUS

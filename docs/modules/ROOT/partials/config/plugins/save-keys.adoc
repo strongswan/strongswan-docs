@@ -1,0 +1,11 @@
+|esp                       |`no`
+|Whether to save ESP keys
+
+|ike                       |`no`
+|Whether to save IKE keys
+
+|wireshark_keys            |
+|Directory where the keys are stored in the format supported by Wireshark. IKEv1
+keys are stored in the `*ikev1_decryption_table*` file. IKEv2 keys are stored in
+the `*ikev2_decryption_table`* file. Keys for ESP CHILD_SAs are stored in the
+`*esp_sa*` file

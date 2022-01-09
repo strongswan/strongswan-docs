@@ -1,0 +1,33 @@
+|force_server_address |`no`
+|Always use the configured server addressfootnote:[
+ If the DHCP server runs on the same host as the daemon with DHCP plugin, you
+ may need to enable `*dhcp.force_server_address*` and then set `*dhcp.server*`
+ to the local broadcast address, e.g. `192.168.0.255`. That's because some `DHCP`
+ daemons do not listen on the loopback interface and thus can't be reached via
+ unicast (or even broadcast `255.255.255.255`) from the same host.]
+
+|identity_lease       |`no`
+|Derive user-defined MAC address from hash of IKE identity. The client identity
+ `DHCP` option containing the IKE identity is only sent if this option is enabled
+
+|interface            |
+|Interface name the plugin uses for address allocation. The default is to bind
+ to any (`0.0.0.0`) and let the system decide which way to route the packets
+ to the DHCP server
+
+|server               |[->]
+|`DHCP` server unicast or broadcast IP address.
+ `*[255.255.255.255]*`
+
+|use_server_port      |`no`
+|Use the `DHCP` server port `67` as source port instead of the `DHCP` client port
+ `68` when a unicast server address is configured and the plugin acts as relay
+ agentfootnote:[
+ When replying in this mode the `DHCP` server will always send packets to the
+ `DHCP` server port and if no process binds that port an `ICMP port unreachable`
+ message will be sent back that might be problematic for some `DHCP` servers. To
+ avoid that, enabling this option will cause the plugin to bind the `DHCP` server
+ port to send its requests when acting as relay agent. This is not necessary if
+ a DHCP server is already running on the same host and might even cause conflicts
+ and since the server port is already bound, `ICMP` messages should not be an
+ issue.]

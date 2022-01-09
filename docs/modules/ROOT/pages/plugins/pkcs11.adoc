@@ -14,44 +14,15 @@ xref:install/autoconf.adoc[`*./configure*`] option
 
 == Configuration
 
-To use the plugin, the available `PKCS#11` modules have to be configured in
-xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+The `*pkcs11*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_pkcs11[`*charon.plugins.pkcs11*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
 [cols="9,1,10"]
 |===
 |Key|Default|Description
 
-|libstrongswan.plugins.pkcs11.modules                             |
-|This section lists available `PKCS#11` modules
-
-|libstrongswan.plugins.pkcs11.modules.<name>.path                 |
-|Full path to the shared object file of this `PKCS#11` module
-
-|libstrongswan.plugins.pkcs11.modules.<name>.os_locking           |no
-|Whether OS locking should be enabled for this module
-
-|libstrongswan.plugins.pkcs11.modules.<name>.load_certs           |yes
-|Whether the `PKCS#11` modules should load certificates from tokens
-
-|libstrongswan.plugins.pkcs11.reload_certs                        |no
-|Whether the `PKCS#11` modules should reload all certificates if `*charon*` receives a `SIGHUP`
-
-|libstrongswan.plugins.pkcs11.use_dh                              |no
-|Whether the `PKCS#11` modules should be used for `DH` and `ECDH`
-
-|libstrongswan.plugins.pkcs11.use_ecc                             |no
-|Whether the PKCS#11 modules should be used for `ECDH` and `ECDSA` public key operations.
- `ECDSA` private keys can be used regardless of this option
-
-|libstrongswan.plugins.pkcs11.use_hasher                          |no
-|Whether the `PKCS#11` modules should be used to hash data
-
-|libstrongswan.plugins.pkcs11.use_pubkey                          |no
-|Whether the `PKCS#11` modules should be used for public key operations,
- even for keys not stored on tokens
-
-|libstrongswan.plugins.pkcs11.use_rng                             |no
-|Whether the `PKCS#11` modules should be used as `RNG`
+include::partial$config/plugins/pkcs11.adoc[]
 |===
 
 Example:

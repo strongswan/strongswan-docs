@@ -1,0 +1,5 @@
+|mtu                  |`1400`
+|MTU to set on TUN devices created for virtual IPs
+
+|vip_wait             |`1000`
+|Time in ms to wait until virtual IP addresses appear/disappear before failing

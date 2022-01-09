@@ -1,0 +1,47 @@
+= eap-gtc Plugin
+
+:ID: https://datatracker.ietf.org/doc/html/draft-sheffer-ipsecme-ikev2-gtc
+
+== Purpose
+
+The `*eap-gtc*` plugin for `*libcharon*` is an IKEv2 EAP backend as specified in
+{ID}[`draft-sheffer-ipsecme-ikev2-gtc`]. It exchanges a plaintext password in
+the secure IKEv2 channel and only after verifying the server's identity.
+This password can be verified using any `*XAuth*` password backend. By default
+it uses xref:./xauth-pam.adoc[`*xauth-pam*`].
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-eap-gtc
+
+You also need an `*XAuth*` backend to verify the password, such as
+xref:./xauth-pam.adoc[`*xauth-pam*`] (`*--enable-xauth-pam*`).
+
+== Server Configuration
+
+Any `*XAuth*` backend may be used to verify the credentials provided by the
+client. As an alternative to xref:./xauth-pam.adoc[`*xauth-pam*`] the
+`*xauth-generic*` plugin can be used instead, which allows to verify the
+credentials against `*XAUTH*` and `*EAP*` secrets defined in the `*secrets*`
+section of xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] or can be provided by
+any other credential set.
+
+The `*eap-gtc*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_eap_gtc[`*charon.plugins.eap-gtc*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,9"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/eap-gtc.adoc[]
+|===
+
+== Client Configuration
+
+The client implementation of this module directly fetches shared secrets from
+the credential manager. Use `*eap*` or `*eap-gtc*` as authentication method and
+make sure the appropriate `*EAP*` or `*XAUTH*` secret is available through the
+credential manager e.g. via the `*secrets*` section of
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].

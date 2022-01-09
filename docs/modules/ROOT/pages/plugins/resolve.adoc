@@ -4,7 +4,7 @@
 
 == Purpose
 
-The `*resolve*` plugin writes name servers to `*resolv.conf*`.
+The `*resolve*` plugin for `*libcharon*` writes name servers to `*resolv.conf*`.
 It is enabled by default but may be disabled with the
 xref:install/autoconf.adoc[`*./configure*`] option
 
@@ -19,20 +19,15 @@ removed again.
 
 == Configuration
 
-The plugin is configured using the following
-xref:config/strongswanConf.adoc[strongswan.conf] options.
+The `*resolve*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_resolve[`*charon.plugins.resolve*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="4,1,8"]
+[cols="2,1,8"]
 |===
 |Key|Default|Description
 
-|charon.plugins.resolve.file
-|/etc/resolv.conf|
-File where name servers are written to
-
-|charon.plugins.resolve.resolv_conf.iface_prefix
-|lo.inet.ipsec.
-|Prefix to be used for interface names provided to `*resolvconf(8)*`
+include::partial$config/plugins/resolve.adoc[]
 |===
 
 === Support for resolvconf(8)

@@ -1,0 +1,9 @@
+|crash_recovery |`yes`
+|Release all online leases during startup. Disable this to share the database
+ between multiple VPN gateways
+
+|database       |
+|Database URI used to access the database
+
+|lease_history  |`yes`
+|Enable logging of IP pool leases

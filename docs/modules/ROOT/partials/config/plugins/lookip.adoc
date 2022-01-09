@@ -1,0 +1,3 @@
+|socket |[->]
+|Socket provided by the lookip plugin.
+ `*[unix://$\{piddir}/charon.lkp]*`

@@ -1,0 +1,25 @@
+= socket-win Plugin
+
+== Purpose
+
+The `*socket-win*` pluginfor `*libcharon*`  is a replacement for `*socket-default*`
+on the xref:os/windows.adoc[Windows] platform. It provides an IPv4/IPv6 IKE socket
+backend based on the Winsock2 API.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-socket-win
+
+== Behavior
+
+The plugin opens two IPv4/IPv6 dual protocol sockets for both IKE ports 500 and
+4500. Custom ports can be specified using the `*charon-svc.port*` and
+`*charon-svc.port_nat_t`* xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+options. `*charon-svc.max_packet*` configures the maximum IKE packet size.
+
+== Port Conflicts with IKEEXT Service
+
+When using the default ports, the plugin conflicts with the Windows _IKE and
+AuthIP IPsec Keying Module_ service `IKEEXT`. The service has to be stopped and
+disabled to properly receive IKE packets in strongSwan.

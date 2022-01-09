@@ -1,0 +1,12 @@
+|set_source           |`yes`
+|Set source address on outbound packets, if possible
+
+|set_sourceif         |`no`
+|Force sending interface on outbound packets, if possible. This allows using IPv6
+ link-local addresses as tunnel endpoints
+
+|use_ipv4             |`yes`
+|Listen on IPv4, if possible
+
+|use_ipv6             |`yes`
+|Listen on IPv6, if possible

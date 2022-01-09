@@ -1,0 +1,6 @@
+|database                        |
+|Database URI. If it contains a password, make sure to adjust the permissions of
+ the config  file  accordingly
+
+|loglevel                        |`-1`
+|Loglevel for logging to SQL database

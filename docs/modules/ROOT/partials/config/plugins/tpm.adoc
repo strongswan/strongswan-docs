@@ -1,0 +1,23 @@
+|ek_handle                       |
+|Handle of the RSA or ECC Endorsement Key (EK) to be used to set up an
+ authenticated session with a TPM 2.0 (e.g. `*0x81010001)*`
+
+|fips_186_4                      |`no`
+|Is the TPM 2.0 FIPS-186-4 compliant, which forces e.g. the use of the default
+ salt length instead of maximum salt length with RSA-PSS padding
+
+|tcti.name                       |[->]
+|Name of TPM 2.0 TCTI library. Valid values: `*device*`, `*tabrmd*` or `*mssim*`.
+ Defaults are `*device*` if the `*/dev/tpmrm0*` in-kernel TPM 2.0 resource manager
+ device exists and `*tabrmd*` otherwise, requiring the D-Bus based TPM 2.0 access
+ broker and resource manager to be available.
+`*[device\|tabrmd]*`
+
+|tcti.opts                       |[->]
+|Options for the TPM 2.0 TCTI library. Defaults are `*/dev/tpmrm0*` if the TCTI
+ library name is `*device*` and no options otherwise.
+ `*[/dev/tpmrm0\| ]*`
+
+|use_rng                         |`no`
+|Whether the TPM 2.0 should be used as RNG. For security reasons enable
+ only if an authenticated session can be set up (see `*ek_handle*` option)

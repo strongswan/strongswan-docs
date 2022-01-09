@@ -1,0 +1,20 @@
+= ha Plugin
+
+== Purpose
+
+The `*ha*` plugin for `*libcharon*` supports active/passive
+xref:features/highAvailability.adoc[High Availability] and active/active Load
+Sharing capabilities using a cluster of two nodes.
+
+== Configuration
+
+The `*ha*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_ha[`*charon.plugins.ha*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="3,1,5"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/ha.adoc[]
+|===

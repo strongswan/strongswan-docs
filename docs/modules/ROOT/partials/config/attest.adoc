@@ -1,0 +1,6 @@
+|database                                    |
+|File measurement information database URI. If it contains a password, make sure
+ to adjust the access permissions of the config file accordingly
+
+|load                                        |
+|Plugins to load in xref:tn/attest.adoc[`*attest*`] tool

@@ -1,0 +1,3 @@
+|socket        |[->]
+|URI the plugin listens for client connections.
+ `*[unix://$\{piddir}/charon.vici]*`

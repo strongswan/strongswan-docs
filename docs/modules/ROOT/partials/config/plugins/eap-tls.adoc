@@ -1,0 +1,8 @@
+|fragment_size               |`1024`
+|Maximum size of an EAP-TLS packet
+
+|include_length              |`yes`
+|Include length in non-fragmented EAP-TLS packets
+
+|max_message_count           |`32`
+|Maximum number of processed EAP-TLS packets (`*0*` = no limit)

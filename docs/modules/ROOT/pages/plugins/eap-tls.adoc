@@ -1,0 +1,257 @@
+= eap-tls Plugin
+
+:TESTS:   https://www.strongswan.org/testing/testresults
+:EX1:     {TESTS}/ikev2/rw-eap-tls-only
+:EX2:     {TESTS}/ikev2/rw-eap-tls-radius
+
+== Purpose
+
+The `*eap-tls*` plugin for `*libcharon*`  supports EAP-TLS authentication.
+EAP-TLS uses a TLS handshake to mutually authenticate client and server (or an
+AAA backend) based on X.509 certificates.
+
+While EAP-TLS is a secure and very flexible protocol, it is rather slow when
+used over IKE. Depending on the fragment and certificate size, it requires 6-10
+additional IKE exchanges compared to traditional IKEv2 certificate authentication.
+But there are other reasons to use EAP-TLS, such as Windows 7 smartcard based
+authentication or if you require certificate authentication against a
+centralized AAA backend server.
+
+As EAP-TLS authenticates the client and the EAP server mutually, it is possible
+to skip IKEv2 server authentication and use the EAP-only authentication mechanism.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-eap-tls
+
+== Compatibility
+
+The EAP-TLS backend uses its own TLS stack shipped with strongSwan. This stack
+supports TLS versions 1.0, 1.1, 1.2, and 1.3 and has been tested against:
+
+- OpenSSL 0.9.8 server via FreeRADIUS EAP-TLS (TLS 1.0)
+- Windows 7 client via IKEv2 EAP-TLS (TLS 1.0)
+- Windows 7 client via IE9 (TLS 1.0, 1.1, 1.2)
+- GnuTLS server via Apache mod_gnutls (TLS 1.1)
+- NSS client via Firefox 3.6.8 (TLS 1.0)
+- Self (TLS 1.0, 1.1, 1.2, 1.3)
+
+== Configuration
+
+=== Connections
+
+EAP-TLS is configured as any other EAP method. The client uses
+
+ connections.<conn>.local.auth = eap
+
+and the server selects EAP-TLS for the client using
+
+ connections.<conn>.remote.auth = eap-tls
+
+strongSwan supports AAA servers via xref:./eap-radius.adoc[RADIUS], i.e.
+
+ connections.<conn>.remote.auth = eap-radius
+
+also works in conjunction with EAP-TLS.
+
+By default the VPN gateway uses IKEv2 certificate authentication to prove its
+identity to the clients. But as EAP-TLS is a mutual authentication protocol,
+`EAP-only` authentication can be used by specifying
+
+ connections.<conn>.local.auth = eap
+
+on the gateway side.
+
+Certificates for EAP-TLS are configured the same way as for traditional IKEv2
+certificate-based authentication, using the
+xref:swanctl/swanctlDir.adoc[*`swanctl*`] certificate and key directories as
+well as the xref:swanctl/swanctlConf.adoc['*swanctl.conf*'] definitions
+
+ connections.<conn>.local.certs
+
+and
+
+ connections.<conn>.remote.certs
+
+on VPN client and gateway, respectively. CRL and OCSP revocation is supported by
+TLS, too.
+
+For authentication against an AAA backend server, the VPN gateway usually uses a
+different identity via IKE than the AAA backend via EAP. To specify a different
+AAA identity on the client use the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+attribute
+
+ connections.<conn>.local.aaa_id
+
+It defaults to the IKEv2 identity defined by
+
+ connections.<conn>.remote.id
+
+A VPN gateway terminating the EAP-TLS authentication locally may use the
+`*aaa_id*` within EAP-TLS but requires a certificate with such a subject or
+subjectAltName.
+
+=== EAP-TLS Options
+
+The `*eap-tls*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_eap_tls[`*charon.plugins.eap-tls*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/eap-tls.adoc[]
+|===
+
+=== TLS Stack Options
+
+There is usually no cipher suite configuration required, the TLS stack enables
+all secure algorithms that it has registered crypto backends for. Depending on
+the xref:plugins/plugins.adoc[plugin] configuration, the TLS stack supports the
+following cipher suites:
+
+*Cipher suites supported since version 5.9.2*
+
+[%collapsible]
+====
+*TLS 1.3*
+----
+TLS_AES_256_GCM_SHA384,
+TLS_AES_128_GCM_SHA256,
+TLS_CHACHA20_POLY1305_SHA256,
+TLS_AES_128_CCM_SHA256,
+TLS_AES_128_CCM_8_SHA256
+----
+
+*TLS 1.2 and older*
+----
+TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
+TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256,
+TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
+TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,
+TLS_RSA_WITH_AES_256_GCM_SHA384,
+TLS_RSA_WITH_AES_256_CBC_SHA256,
+TLS_RSA_WITH_AES_256_CBC_SHA,
+TLS_RSA_WITH_AES_128_GCM_SHA256,
+TLS_RSA_WITH_AES_128_CBC_SHA256,
+TLS_RSA_WITH_AES_128_CBC_SHA,
+TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256,
+TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,
+TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+TLS_RSA_WITH_CAMELLIA_128_CBC_SHA,
+TLS_ECDHE_ECDSA_WITH_NULL_SHA,
+TLS_ECDHE_RSA_WITH_NULL_SHA,
+TLS_RSA_WITH_NULL_SHA256,
+TLS_RSA_WITH_NULL_SHA
+----
+====
+
+*Cipher suites supported before version 5.9.2*
+
+[%collapsible]
+====
+
+*TLS 1.2 and older*
+----
+TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
+TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,
+TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
+TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256,
+TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA,
+TLS_RSA_WITH_AES_128_CBC_SHA,
+TLS_RSA_WITH_AES_128_CBC_SHA256,
+TLS_RSA_WITH_AES_256_CBC_SHA,
+TLS_RSA_WITH_AES_256_CBC_SHA256,
+TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,
+TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256,
+TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA,
+TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
+TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+TLS_ECDHE_ECDSA_WITH_NULL_SHA,
+TLS_ECDHE_RSA_WITH_NULL_SHA,
+TLS_RSA_WITH_NULL_SHA,
+TLS_RSA_WITH_NULL_SHA256,
+TLS_RSA_WITH_NULL_MD5
+----
+====
+
+ECDHE and ECDSA require a third-party crypto backend. Since version 5.9.2, EdDSA
+$ may also be used with ECDSA cipher suites. ECDHE support is limited to the
+named curves `*SECP256R1*`, `*SECP384R1*`, `*SECP521R1*`, `*SECP224R1*` and
+`*SECP192R1*` with uncompressed points. Since version 5.9.2, `*Curve25519*` and
+`*Curve448*` are also supported. `CAMELLIA` encryption requires either the
+`*openssl*` or `*gcrypt*` plugin. `NULL` encryption is automatically disabled if
+the stack is used for purposes other than EAP-TLS where only the handshake of
+TLS is used.
+
+The minimum and maximum TLS versions may be configured in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] via the attributes
+----
+libtls.version_min
+libtls.version_max
+----
+There are three xref:config/strongswanConf.adoc[`*strongswan.conf*`] options
+to limit the cipher suites by algorithms:
+----
+libtls {
+  key_exchange = ecdhe-ecdsa, ecdhe-rsa, dhe-rsa, rsa
+  cipher = aes256gcm, aes128gcm, chacha20poly1305, aes256, aes128, camellia256, camellia128, null
+  mac = sha384, sha256, sha1
+}
+----
+To specify the list of suites directly, use the `*suites*` option and a comma-
+separated list of the cipher suites above:
+----
+libtls {
+  suites = TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+}
+----
+Since version 5.9.2 the ECDH groups and signature schemes may be configured with:
+----
+libtls {
+  ke_group = curve448, curve25519, ecp521, ecp384, ecp256, ecp224, ecp192
+  signature = ed448, ed25519, ecdsa_sha521, ecdsa_sha384, ecdsa_sha256, rsa_pss_rsae_sha512, rsa_pss_rsae_sha384, rsa_pss_rsae_sha256, rsa_pkcs1_sha512, rsa_pkcs1_sha384, rsa_pkcs1_sha256
+}
+----
+
+== Examples
+
+image:a-m-c.png[topology,187,129,link={EX1},title=rw-eap-tls-only example]
+strongSwan {EX2}[example] showing the use of EAP-TLS only authentication.
+
+image:a-m-c.png[topology,187,129,link={EX2},title=rw-eap-tls-radius example]
+strongSwan {EX2}[example] showing the use of EAP-TLS with AAA server.
+

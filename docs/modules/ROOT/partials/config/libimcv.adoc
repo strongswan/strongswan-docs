@@ -1,0 +1,20 @@
+|assessment_result                      |`yes`
+|Whether IMVs send a standard IETF Assessment Result attribute
+
+|database                               |
+|Global IMV policy database URI. If it contains a password, make sure to adjust
+ the access permissions of the config file accordingly
+
+|debug_level                            |`1`
+|Debug level for a stand-alone `*libimcv*` library
+
+|load                                   |[->]
+|Plugins to load in IMC/IMVs with stand-alone `*libimcv*` library.
+ `*[random nonce gmp pubkey x509]*`
+
+|policy_script                          |[->]
+|Script called for each TNC connection to generate IMV policies.
+ `*[ipsec _imv_policy]*`
+
+|stderr_quiet                           |`no`
+|Disable output to stderr with a stand-alone `*libimcv*` library.

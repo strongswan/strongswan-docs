@@ -1,0 +1,14 @@
+|dlv_anchors                 |
+|File to read trusted keys for `DLV` (DNSSEC Lookaside Validation) from. It uses
+ the same format as `*trust_anchors*`. Only one `DLV` can be configured, which is
+ then used as a root trusted `DLV`, this means that it is a lookaside for the root
+
+|resolv_conf                 |[->]
+|File to read DNS resolver configuration from.
+ `*[/etc/resolv.conf]*`
+
+|trust_anchors               |[->]
+|File to read DNSSEC trust anchors from (usually root zone KSK). The format of
+ the file is the standard DNS Zone file format, anchors can be stored as DS or
+ DNSKEY entries in the file.
+ `*[/etc/ipsec.d/dnssec.keys]*`

@@ -1,0 +1,10 @@
+|random                       |[->]
+|File to read random bytes from.
+ `*[/dev/random]*`
+
+|urandom                      |[->]
+|File to read pseudo random bytes from.
+ `*[/dev/urandom]*`
+|strong_equals_true           |no
+|If enabled the `RNG_STRONG` class reads random bytes from the same source as
+ the `RNG_TRUE` class

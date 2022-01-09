@@ -1,0 +1,45 @@
+= dhcp Plugin
+
+== Purpose
+
+The `*dhcp*` plugin for `*libcharon*` allows to forward requests for
+xref:features/vip.adoc[`*virtual IP*`] addresses to a `DHCPv4` server.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-dhcp
+
+== Behavior
+
+When an IKEv2 client requests a xref:features/vip.adoc[`*virtual IP*`] address
+via a `CP` configuration payload, the plugin allows the daemon to forward this
+request to a `DHCP` server. By default the plugin uses broadcasts, but a
+designated `DHCP` server can be configured in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+
+The `MAC` address used in the `DHCP` request is either randomly generated or can
+optionally be based on the IKEv2 identity of the client. `DNS`/`WINS` server
+information is additionally served to clients if the `DHCP` server provides
+such information.
+
+In combination with the xref:./farp.adoc[`*farp*`] plugin this plugin lets a
+road-warrior fully act as a client on the local `LAN` of the responder.
+
+== Configuration
+
+The following entry in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] enables
+the plugin for a connection:
+
+ connections.<conn>.pools = dhcp
+
+The `*dhcp*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_dhcp[`*charon.plugins.dhcp*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,9"]
+|===
+|Key |Default |Description [Default]
+
+include::partial$config/plugins/dhcp.adoc[]
+|===

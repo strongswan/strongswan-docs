@@ -1,0 +1,2 @@
+|<attribute> |
+|Attribute assigned to a peer via `CP` configuration payload or `ModeConfig`

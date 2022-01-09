@@ -1,0 +1,18 @@
+|database                                   |
+|Credential database URI for  If it contains a password, make sure to adjust the
+ access permissions of the config file accordingly
+
+|debug                                      |`no`
+|Enable debugging in `*manager*`
+
+|load                                       |
+|Plugins to load in `*manager*`
+
+|socket                                     |
+|FastCGI socket of `*manager*`, to run it statically
+
+|threads                                    |`10`
+|Threads to use for request handling
+
+|timeout                                    |`15m`
+|Session timeout for `*manager*`

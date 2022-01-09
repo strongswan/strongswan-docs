@@ -16,8 +16,10 @@ for specific needs.
 :UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
 :WIRESHARK: https://www.wireshark.org/
 :WOLFSSL:   https://github.com/wolfSSL/wolfssl
-:RFC3779:   https://datatracker.ietf.org/doc/html/rfc3779
-:RFC4034:   https://datatracker.ietf.org/doc/html/rfc4034
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC3779:   {IETF}/rfc3779
+:RFC4034:   {IETF}/rfc4034
+:RFC7651:   {IETF}/rfc7651
 
 :E: footnote:E[E = Enabled by default (plugins can be enabled/disabled using their respective xref:install/autoconf.adoc[./configure] options)]
 :E_ref: footnote:E[]
@@ -79,7 +81,7 @@ for specific needs.
 |DES/3DES cipher software implementation
 
 |dnskey                                   |x|s
-|Parse {RFC4034}[RFC 4034] public keys
+|Parse {RFC4034}[DNS] public keys
 
 |drbg                                     |x|s
 |NIST Deterministic Random Bit Generator based on AES-CTR and HMAC-SHA2 modes.
@@ -236,6 +238,10 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./certexpire.adoc[certexpire]       | |s
 |Export expiration dates of used certificates
 
+|xref:./connmark.adoc[connmark]           | |e
+|Plugin using Netfilter conntrack marks to handle multiple transport mode
+ clients (for L2TP)
+
 |xref:./counters.adoc[counters]           | |s
 |Provides IKE performance counters (queryable via xref:./vici.adoc[vici] and
  e.g. the xref:swanctl/swanctlCounters.adoc[`*swanctl --counters*`] command
@@ -245,9 +251,6 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 
 |xref:./dhcp.adoc[dhcp]                   | |s
 |Request xref:features/vip.adoc[virtual IP] address from a DHCP server
-
-|xref:./connmark.adoc[conmark]            | |e
-|Plugin using Netfilter conntrack marks to handle multiple transport mode clients (for L2TP)
 
 |dnscert                                  | |s
 |Provides authentication via CERT RRs protected by DNSSEC
@@ -300,7 +303,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |eap-simaka-reauth                        | |s
 |EAP-SIM/AKA in-memory reauthentication identity database
 
-|xref:./eap-simaka-sql.adoc[eap-simaka]   | |s
+|xref:./eap-simaka-sql.adoc[eap-simaka-sql]   | |s
 |EAP-SIM/AKA backend reading triplets/quintuplets from a SQL database
 
 |xref:./eap-tls.adoc[eap-tls]             | |s
@@ -326,12 +329,12 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |Multicast and broadcast forwarding plugin
 
 |xref:./ha.adoc[ha]                       | |s
-|High-Availability clustering
+|xref:features/highAvailability.adoc[High Availability] clustering
 
 |ipseckey                                 | |s
 |Provides authentication via IPSECKEY RRs protected by DNSSEC
 
-|xref:./kernel-libipsec.adoc[kernel-lilbipec] | |e
+|xref:./kernel-libipsec.adoc[kernel-libipsec] | |e
 |IPsec "kernel" interface in user-space using libipsec
 
 |kernel-netlink                           |x|s
@@ -352,11 +355,11 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |led                                      | |s
 |Let Linux LED subsystem LEDs blink on IKE activity
 
-|xref:./lookip.adoc[lookip]               | |s
-|Virtual IP lookup facility using a UNIX socket
-
 |xref:./load-tester.adoc[load-tester]     | |s
 |Perform IKE load tests against self or a gateway
+
+|xref:./lookip.adoc[lookip]               | |s
+|Virtual IP lookup facility using a UNIX socket
 
 |medcli                                   | |d
 |Web interface based mediation client interface
@@ -368,7 +371,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |Mac OS X SystemConfiguration attribute handler
 
 |p-cscf                                   | |s
-|Plugin that requests P-CSCF server addresses from an ePDG via IKEv2
+|Plugin that requests P-CSCF server addresses from an ePDG ({RFC7651}[RFC 7651])
 
 |xref:./radattr.adoc[radattr]             | |s
 |Plugin to inject and process custom RADIUS attributes as IKEv2 client
@@ -379,7 +382,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |save-keys                                | |s
 |Development/Debugging plugin that saves IKE and/or ESP keys to files compatible with {WIRESHARK}[Wireshark]
 
-|xref:./smp.adoc[smp]                     | |d
+|smp                                      | |d
 |XML based strongSwan Management Protocol
 
 |socket-default                           |x|s
@@ -397,11 +400,11 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |stroke                                   |x|s
 |Deprecated stroke configuration/control backend, to use with ipsec script and starter
 
-|xref:./tnc-ifmap.adoc[tnc-ifmap]        | |s
-|Trusted Network Connect IF-MAP 2.0 client
+|xref:./tnc-ifmap.adoc[tnc-ifmap]         | |s
+|xref:tnc/tnc.adoc[TNC] IF-MAP 2.0 client
 
-|xref:./tnc-pdp.adoc[tnc-pdp]             | |s
-|Trusted Network Connect Policy Decision Point with RADIUS server interface
+|tnc-pdp                                  | |s
+|xref:tnc/tnc.adoc[TNC] Policy Decision Point with RADIUS server interface
 
 |xref:./systime-fix.adoc[systime-fix]     | |s
 |Handle invalid system time when checking certificates

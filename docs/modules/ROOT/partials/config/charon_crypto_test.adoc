@@ -1,0 +1,21 @@
+|bench                           |`no`
+|Benchmark crypto algorithms and order them by efficiency
+
+|bench_size                      |`1024`
+|Buffer size used for crypto benchmark
+
+|bench_time                      |`50`
+|Time in ms during which crypto algorithm performance is measured
+
+|on_add                          |`no`
+|Test crypto algorithms during registration (requires test vectors provided by
+ the xref:plugins/test-vectors.adoc[`*test-vectors*`] plugin)
+
+|on_create                       |`no`
+|Test crypto algorithms on each crypto primitive instantiation
+
+|required                        |`no`
+|Strictly require at least one test vector to enable an algorithm
+
+|rng_true                        |`no`
+|Whether to test RNG with TRUE quality. Requires a lot of entropy

@@ -1,0 +1,6 @@
+|config_file                                |[->]
+|Location of the [[ipsec.conf]] file.
+ `*[$\{sysconfdir}/ipsec.conf]*`
+
+|load_warning                               |`yes`
+|Show `*charon.load*` setting warning, see xref:pluginLoad.adoc[Plugin Load]

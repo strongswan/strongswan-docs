@@ -1,0 +1,16 @@
+|engine_id                   |[->]
+|ENGINE ID to use in the OpenSSL plugin.
+`*[pkcs11]*`
+
+|fips_mode                   |`0`
+|Set OpenSSL FIPS mode.  With OpenSSL before 3.0, the supported values are
+ disabled(`*0*`), enabled(`*1*`) and Suite B enabled(`*2*`).  With OpenSSL 3+,
+ any value other than `*0*` will explicitly load the fips and base providers
+ (`*load_legacy*` will be ignored). The latter still requires the config in
+ `*fipsmodule.cnf*` (e.g. for the module's MAC), but allows explicitly loading
+ the provider if it's not activated in that config
+
+|load_legacy                 |`yes`
+|Load the legacy provider in OpenSSL 3+ for algorithms like MD4, DES, or Blowfish
+(the first two are required for EAP-MSCHAPv2). If disabled, the default provider
+ is loaded, or those configured in the OpenSSL config (e.g. the fips provider)

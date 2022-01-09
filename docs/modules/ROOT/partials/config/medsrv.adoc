@@ -1,0 +1,27 @@
+|database                                    |
+|Mediation server database URI. If it contains a  password, make sure to adjust
+ the access permissions of the config file accordingly
+
+|debug                                       |`no`
+|Debugging in mediation server web application
+
+|dpd                                         |`5m`
+|DPD timeout to use in mediation server plugin
+
+|load                                        |
+|Plugins to load in mediation server plugin
+
+|password_length                             |`6`
+|Minimum password length required for mediation server user accounts
+
+|rekey                                       |`20m`
+|Rekeying time on mediation connections in mediation server plugin
+
+|socket                                      |
+|Run Mediation server web application statically on socket
+
+|threads                                     |`5`
+|Number of threads for mediation service web application
+
+|timeout                                     |`15m`
+|Session timeout for mediation service

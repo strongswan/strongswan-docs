@@ -1,0 +1,38 @@
+= xauth-noauth Plugin
+
+== Purpose
+
+The `*xauth-noauth*` plugin for `*libcharon*` is an IKEv1 XAuth server backend.
+It does actually not send a username/password request, but directly sends
+`*XAuth-Succcess*` to skip XAuth authentication. It is useful for clients that
+insist on doing XAuth but it is actually not intended by the administrator.
+Authentication relies on the client RSA private key, only. The plugin is also
+useful for iOS / OS X clients, where it can be used to
+xref:os/osx.adoc#_isakmp-reauthenticaton_issues[survive ISAKMP reauthentication].
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-xauth-noauth
+
+== Configuration
+
+To authenticate clients with this backend, set:
+----
+connections {
+  <conn>: {
+    remote-rsa {
+      auth = pubkey
+    }
+    remote-xauth {
+      auth = xauth-noauth
+    }
+    version = 1
+    # ...
+  }
+}
+----
+
+Please note that setting `*remote-xauth = xauth*` does not use the
+`*xauth-noauth*` plugin for security reasons, even if it is the only available
+`*XAuth*` backend.

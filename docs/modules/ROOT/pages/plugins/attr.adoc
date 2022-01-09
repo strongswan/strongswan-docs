@@ -4,7 +4,7 @@
 
 == Purpose
 
-The `*attr*` plugin provides IKE attributes configured in
+The `*attr*` plugin for `*libcharon*` provides IKE attributes configured in
 xref:config/strongswanConf.adoc[strongswan.conf] to peers.
 It is enabled by default but may be disabled with the
 xref:install/autoconf.adoc[`*./configure*`] option
@@ -19,15 +19,15 @@ request a xref:features/vip.adoc[virtual IP address].
 
 == Configuration
 
-The plugin is configured using the following
-xref:config/strongswanConf.adoc[strongswan.conf] options.
+The `*attr*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_attr[`*charon.plugins.attr*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="4,1,8"]
+[cols="2,1,10"]
 |===
 |Key|Default|Description
 
-|charon.plugins.attr.<attribute> |
-|Attribute assigned to a peer via `CP` configuration payload or `Mode Config`
+include::partial$config/plugins/attr.adoc[]
 |===
 
 === Attribute Types

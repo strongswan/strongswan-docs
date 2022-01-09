@@ -1,0 +1,5 @@
+|enable_crl               |`yes`
+|Whether CRL validation should be enabled
+
+|enable_ocsp              |`yes`
+|Whether OCSP validation should be enabled

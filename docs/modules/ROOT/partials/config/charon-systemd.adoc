@@ -1,0 +1,3 @@
+|journal                             |
+|Section to configure native systemd journal logger, very similar to the syslog
+ logger as described in xref:loggerConfiguration.adoc[Logger Configuration]

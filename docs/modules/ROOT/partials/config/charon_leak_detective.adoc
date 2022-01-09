@@ -1,0 +1,9 @@
+|detailed                     |`yes`
+|Includes source file names and line numbers in leak detective output
+
+|usage_threshold              |[->]
+|Threshold in bytes for leaks to be reported (`*0*` to report all).
+ `*[10240]*`
+
+|usage_threshold_count        |`0`
+|Threshold in number of allocations for leaks to be reported (`*0*` to report all)

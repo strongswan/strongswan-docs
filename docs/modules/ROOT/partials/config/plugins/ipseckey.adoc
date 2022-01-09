@@ -1,0 +1,2 @@
+|enable                     |`no`
+|Enable fetching of `IPSECKEY` Resource Records via DNS

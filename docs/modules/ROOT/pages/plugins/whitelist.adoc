@@ -1,0 +1,91 @@
+= whitelist Plugin
+
+:GITHUB:     https://github.com/strongswan/strongswan/blob/master
+:WHITE_DEF:  src/libcharon/plugins/whitelist/whitelist_msg.h
+:WHITE_TOOL: src/libcharon/plugins/whitelist/whitelist.c
+
+== Purpose
+
+The `*whitelist*` plugin for `*libcharon*` checks a successfully authenticated
+peer identity against an in-memory whitelist. Only identities listed are allowed
+to connect wheras connection attempts with other identities get rejected using
+`AUTHENTICATION_FAILED`.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-whitelist
+
+== Implementation
+
+Any identity successfully authenticated using any authentication method in every
+authentication round gets checked against a whitelist. Only whitelisted
+identities get accepted. The whitelist is held in-memory in a hashtable to have
+good lookup times. The whitelist is volatile and listed identities get lost
+during a daemon restart.
+
+To manipulate the whitelist, a UNIX socket exports an interface to add/list/remove
+whitelisted identities. A simple command line frontend is provided to manipulate
+the whitelist.
+
+== Configuration
+
+The `*whitelist*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_whitelist[`*charon.plugins.whitelist*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/whitelist.adoc[]
+|===
+
+This `*enabled*` option can be changed during runtime using the
+`whitelist enable|disable` commands (see below).
+
+== Manage Whitelist
+
+The `*whitelist*` ipsec utility usually invoked by
+
+  /usr/libexec/ipsec/whitelist ...
+
+can be used to manipulate the whitelist while the daemon is running. It supports
+the following operations:
+
+[cols="3,4"]
+|===
+|Command|Description
+
+|`whitelist add <identity>`
+|Add a single identity to the whitelist
+
+|`whitelist remove <identity>`
+|Remove a single identity from the whitelist
+
+|`whitelist add-from [<file>]`
+|Add identities read from a newline separated file, by default stdin
+
+|`whitelist remove-from [<file>]`
+|Remove identities read from a newline separated file, by default stdin
+
+|`whitelist flush [<pattern>]`
+|Flush identities from the whitelist, optionally matching an identity with wildcards
+
+|`whitelist list [<pattern>]`
+|List whitelisted identities, optionally matching an identity with wildcards
+
+|`whitelist enable`
+|Enable whitelist checking
+
+|`whitelist disable`
+|Disable whitelist checking
+|===
+
+== Socket interface
+
+The `*whitelist*` socket interface definition can be found here:
+{GITHUB}/{WHITE_DEF}[`source:{WHITE_DEF}`].
+
+The `*whitelist*` tool demonstrating how the interface can be used:
+{GITHUB}/{WHITE_TOOL}[`source:{WHITE_TOOL}`]

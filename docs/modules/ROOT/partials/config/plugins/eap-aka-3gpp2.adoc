@@ -1,0 +1,3 @@
+|seq_check   |
+|Enable to activate sequence check of the AKA SQN values in order to trigger
+ resync cycles

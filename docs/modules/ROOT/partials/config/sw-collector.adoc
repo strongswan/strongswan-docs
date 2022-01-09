@@ -1,0 +1,25 @@
+|database                              |
+|URI to software collector database containing event timestamps,
+ software creation and deletion events and collected software identifiers. If it
+ contains a password, make sure to adjust the access permissions of the config
+ file accordingly
+
+|first_file                            |[->]
+|Path pointing to file created when the Linux OS was installed.
+ `*[/var/log/bootstrap.log]*`
+
+|first_time                            |[->]
+|Time in UTC when the Linux OS was installed.
+ `*[0000-00-00T00:00:00Z]*`
+
+|history                               |
+|Path pointing to apt `*history.log*` file
+
+|load                                  |
+|Plugins to load in xref:tools/sw-collector.adoc[`*sw-collector*`] tool
+
+|rest_api.timeout                      |`120`
+|Timeout in seconds of `REST API` `HTTP POST` transaction
+
+|rest_api.uri                          |
+|HTTP[S] URI of the central collector's `REST API`

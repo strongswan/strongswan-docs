@@ -1,0 +1,15 @@
+|load                                   |
+
+|Plugins to load in xref:tools/sec-updater.adoc[`*sec-updater*`] tool
+
+|tmp.deb_file                           |[->]
+|Temporary storage for downloaded deb package file.
+ `*[/tmp/deb]*`
+
+|tmp.tag_file                           |[->]
+|Temporary storage for generated SWID tags.
+ `*[/tmp/tag]*`
+
+|tnc_manage_command                     |[->]
+|strongTNC manage.py command used to import SWID tags.
+ `*[/var/www/tnc/manage.py]*`

@@ -1,0 +1,5 @@
+|database    |
+|Database URI
+
+|remove_used |`no`
+|Remove triplets/quintuplets after use

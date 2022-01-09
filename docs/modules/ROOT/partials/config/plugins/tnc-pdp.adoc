@@ -1,0 +1,24 @@
+|pt_tls.enable               |`yes`
+|Enable PT-TLS protocol on the strongSwan PDP
+
+|pt_tls.port                 |`271`
+|PT-TLS server port the strongSwan PDP is listening on
+
+|radius.enable               |`yes`
+|Enable RADIUS protocol on the strongSwan PDP
+
+|radius.method               |`ttls`
+|EAP tunnel method to be used
+
+|radius.port                 |`1812`
+|RADIUS server port the strongSwan PDP is listening on
+
+|radius.secret               |
+|Shared RADIUS secret between strongSwan PDP and NAS. If set, make  sure  to
+ adjust the permissions of the config file accordingly
+
+|server                      |
+|Name of the strongSwan PDP as contained in the AAA certificate
+
+|timeout                     |
+|Timeout in seconds before closing incomplete connections

@@ -1,0 +1,11 @@
+|command                       |[->]
+|SWID generator command to be executed.
+ `*[/usr/local/bin/swid_generator]*`
+
+|tag_creator.name              |[->]
+|Name of the `*tagCreator*` entity.
+ `*[strongSwan Project]*`
+
+|tag_creator.regid             |[->]
+|regid of the `*tagCreator*` entity.
+ `*[strongswan.org]*`

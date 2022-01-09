@@ -1,0 +1,6 @@
+|dir        |
+|Directory where RADIUS attributes are stored in client-ID specific files
+
+|message_id |`*-1*`
+|RADIUS attributes are added to all IKE_AUTH messages by default [`*-1*`]
+ or only to the IKE_AUTH message with the given IKEv2 message ID

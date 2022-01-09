@@ -1,0 +1,4 @@
+|dns_handler                  |`no`
+|Whether the updown script should handle DNS servers assigned via IKEv1
+ `ModeConfig` or IKEv2 CP Config Payloads. If enabled they can't be handled by
+ other plugins, like xref:plugins/resolve.adoc[`*resolve*`]

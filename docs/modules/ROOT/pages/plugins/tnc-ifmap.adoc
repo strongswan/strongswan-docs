@@ -1,0 +1,100 @@
+= tnc-ifmap Plugin
+
+:TCG:      https://trustedcomputinggroup.org/wp-content/uploads
+:MAP_IF:   {TCG}/TNC_IFMAP_v2_2r10.pdf
+:MAP_META: {TCG}/TNC_IFMAP_Metadata_For_Network_Security_v1_1r9.pdf
+:HSH:      https://github.com/trustathsh
+
+== Purpose
+
+The `*tnc-ifmap*` plugin for `*libcharon*` enables a strongSwan VPN gateway to
+act as a Metadata Access Point (MAP) Client sending its
+{MAP_META}[Network Security Metadata] via the SOAP 1.2 based TNC
+{MAP_IF}[IF-MAP 2.2] interface to a MAP Server.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-tnc-ifmap
+
+== Configuration
+
+The `*tnc-ifmap*` plugin is configured using the options defined in the
+xref:config/strongswanConf.adoc#_charon_plugins_tnc_ifmap[`*charon.plugins.tnc-ifmap*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+
+[cols="3,1,8"]
+|===
+|Key|Default|Description [Default]
+
+include::partial$config/plugins/tnc-ifmap.adoc[]
+|===
+
+=== Examples
+
+==== MAP Client with Public Key Authentication
+----
+charon {
+  plugins {
+    tnc-ifmap {
+      device_name = strongswan-gw
+      server_uri = \https://localhost:8444/
+      server_cert = /etc/swanctl/x509/server.pem
+      client_cert = /etc/swanctl/x509/client.pem
+      client_key  = /etc/swanctl/rsa/client_key_file.pem
+    }
+  }
+}
+----
+
+==== MAP Client with HTTP Basic Authentication
+----
+charon {
+  plugins {
+    tnc-ifmap {
+      device_name = strongswan-gw
+      server_uri = \https://localhost:8443/
+      server_cert = /etc/swanctl/x509/server.pem
+      username_password = strongswan:strongswan
+    }
+  }
+}
+----
+
+== Metadata
+
+Currently a strongSwan VPN gateway acting as a Police Enforcement Point (PEP)
+and additionally as a Policy Decision Point (PDP) provides the following
+metadata to a MAP server:
+
+[cols="1,4"]
+|===
+|Metadata|Description
+
+|device-ip
+|All IPv4 and IPv6 network interfaces the IPsec PEP listens on
+
+|access-request-ip
+|The IPv4 or IPv6 address of the remote access peer
+
+|authenticated-as
+|Identity of the remote access peer
+
+|authenticated-by
+|Device name of the PDP authenticating the remote access peer
+
+|capability
+|Group memberships of the remote access peer (assigned by RADIUS or TNCS)
+
+|enforcement-report
+|Report failed authentication of a remote access peer
+|===
+
+== Visualization
+
+The strongSwan MAP client sends its {MAP_META}[metadata] via the TNC
+{MAP_IF}[IF-MAP 2.2] interface to an {HSH}/irond[`*irond*`] MAP server. The
+{HSH}/irongui[`*irongui*`] MAP client is attached to the {HSH}/irond[`*irond*`]
+MAP server and visualizes the collected metadata.
+
+image::irongui.png[irongui]

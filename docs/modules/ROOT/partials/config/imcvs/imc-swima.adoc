@@ -1,0 +1,22 @@
+|eid_epoch                |[->]
+|Set 32 bit epoch value for event IDs manually if software collector database is
+ not available.
+ `*[0x11223344]*`
+
+|subscriptions            |`no`
+|Accept SW Inventory or SW Events subscriptions
+
+|swid_database            |
+|URI to  software  collector database containing event timestamps, software
+ creation and deletion events and collected software identifiers. If it contains
+ a password, make sure to adjust the access permissions of the config file
+ accordingly
+
+|swid_directory           |[->]
+|Directory where SWID tags are located.
+ `*[$\{prefix}/share]*`
+|swid_full                |`no`
+|Include file information in the XML-encoded SWID tags
+
+|swid_pretty              |`no`
+|Generate XML-encoded SWID tags with pretty indentation

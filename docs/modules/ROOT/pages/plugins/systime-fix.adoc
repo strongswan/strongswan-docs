@@ -1,0 +1,63 @@
+= systime-fix Plugin
+
+:STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
+
+== Purpose
+
+The `*systime-fix*` plugin for `*libcharon*` is designed for embedded systems
+that don't have a valid system time just after boot. It detects if the system
+time is incorrect and disables certificate lifetime validation during this period.
+This allows the device to establish tunnels even if the system time is out of
+sync and for example connect to an NTP server.
+
+Once the system time gets corrected, the plugin can detect it and verify the
+lifetimes of all certificates used for active tunnels. If any certificate in the
+trust-chain is not valid for the given system time, the tunnel gets either closed
+or reestablished.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-systime-fix
+
+== Configuration
+
+The `*systime-fix*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_systime_fix[`*charon.plugins.systime-fix*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/systime-fix.adoc[]
+|===
+
+=== Configuring a Threshold
+
+Embedded systems often don't have a valid system time after boot, but set it to
+a default time, such as January 1st 1970 or 2000. Once the system time gets
+adjusted (e.g. using NTP), the system time jumps to the current year.
+
+By configuring a `*threshold*` the plugin can decide if the current system time
+is valid. If the boot up time is always year 2000 for this system, setting
+`*threshold = 2001*` allows the plugin to detect corrected and valid system times
+reliably.
+
+If a more accurate date format is required, the `*threshold_format*` option can
+be used to define any `*strptime(3)*` time format. The `*threshold*` option can
+then be configured to a valid date string for the custom format.
+
+=== Periodical System Time Check
+
+If an `*interval*` is configured, the plugin checks periodically if a system time
+got valid. If this happens, the certificate chains of all active connections get
+re-evaluated using the now valid system time.
+
+The plugin can either close connections or reestablish them if an expired (or
+not yet valid) certificate is detected. To reauthenticate, set the `*reauth*`
+option to `*yes*`.
+
+Once a valid system time is detected, system time polling is disabled completely.
+To stop waiting for a valid system time after a while and enforcing a certificate
+check, a `*timeout*` may be specified.

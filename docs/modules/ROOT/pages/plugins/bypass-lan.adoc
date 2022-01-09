@@ -1,0 +1,41 @@
+= bypass-lan Plugin
+
+== Purpose
+
+The `*bypass-lan*` plugin for `*libcharon*` automatically installs and updates
+passthrough/bypass policies for locally attached subnets.  This is useful for
+mobile hosts that are used in different networks that want to access local
+devices in these networks (e.g. printers or NAS) while connected to a VPN that
+would otherwise cover that traffic too (e.g. if the remote traffic selector is
+`0.0.0.0/0`).
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-bypass-lan
+
+== Behavior
+
+When the plugin is initialized it enumerates all enabled interfaces (see below)
+and installs passthrough/bypass policies for the subnets that are attached
+directly to these interfaces. Whenever interfaces/addresses/routes are changed
+the local subnets are again enumerated and, if necessary, policies are added
+and/or removed.
+
+NOTE: The plugin's default behavior is incompatible with
+      xref:features/routeBasedVpn.adoc[route-based VPNs], so you might have to
+      disable it or configure interfaces (see below).
+
+== Configuration
+
+By default, the `*bypass-lan*` plugin considers all interfaces. To restrict it
+to selected interfaces only, the following options may be used in the
+xref:config/strongswanConf.adoc#_charon_plugins_bypass_lan[`*charon.plugins.bypass-lan*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key |Default|Description
+
+include::partial$config/plugins/bypass-lan.adoc[]
+|===
