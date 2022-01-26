@@ -1,0 +1,49 @@
+= strongswan.d Directory
+
+== Modular Configuration
+
+The `*/etc/strongswan.d/*` directory contains commented configuration snippets
+that are included by the default
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] file,
+which basically looks like this
+----
+charon {
+    load_modular = yes
+    plugins {
+        include strongswan.d/charon/*.conf
+    }
+}
+
+include strongswan.d/*.conf
+----
+
+where the `*charon.load_modular*` option allows plugins to be
+xref:plugins/pluginLoad.adoc[loaded and unloaded] with individual
+
+ charon.plugins.<plugin>.load
+
+options that can be set in the plugin-specific configuration snippets in
+`*strongswan.d/charon*`.
+
+*Existing configuration files are never replaced.* The current defaults are also
+installed in the `*$\{prefix}/share/strongswan/templates*` directory.
+
+== strongswan.d/charon
+
+This subdirectory contains commented configuration snippets for all enabled and
+installed plugins.
+
+=== Example
+
+This is the  `*strongswan.d/charon/vici.conf*` template:
+----
+vici {
+
+    # Whether to load the plugin. Can also be an integer to increase the
+    # priority of this plugin.
+    load = yes
+
+    # Socket the vici plugin serves clients.
+    # socket = unix://${piddir}/charon.vici
+}
+----

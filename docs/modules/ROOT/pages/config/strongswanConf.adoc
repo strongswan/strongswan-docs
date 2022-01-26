@@ -30,7 +30,7 @@ The default `*strongswan.conf*` file is installed under `*$\{sysconfdir}*`, i.e.
 the path usually  is `*/etc/strongswan.conf*`.
 
 Since version 5.1.2 the default config file may be split up and separate files
-are placed in the xref:config/strongSwanDir.adoc[`*/etc/strongswan.d*`] directory.
+are placed in the xref:config/strongswanDir.adoc[`*/etc/strongswan.d*`] directory.
 
 The location in which `*strongswan.conf*` is looked for can be overwritten at
 start time of the process using libstrongswan by setting the `*STRONGSWAN_CONF*`

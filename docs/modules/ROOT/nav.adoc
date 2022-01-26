@@ -3,6 +3,7 @@
 
 .Configuration
 ** xref:config/strongswanConf.adoc[strongswan.conf]
+** xref:config/strongswanDir.adoc[strongswan.d]
 ** xref:swanctl/swanctlConf.adoc[swanctl.conf]
 
 .Features
