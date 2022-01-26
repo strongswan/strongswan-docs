@@ -27,7 +27,7 @@ to check which options are actually available for the release you are using.
 
 == --dir options
 
-Some directories can be configure through xref:#--with-options[--with options].
+Some directories can be configure through xref:#_with_options[--with options].
 
 [cols="2,1,4"]
 |===
