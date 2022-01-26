@@ -3,4 +3,5 @@
  `*[$\{sysconfdir}/ipsec.conf]*`
 
 |load_warning                               |`yes`
-|Show `*charon.load*` setting warning, see xref:pluginLoad.adoc[Plugin Load]
+|Show `*charon.load*` setting warning, see
+ xref:plugins/pluginLoad.adoc[Plugin Load]

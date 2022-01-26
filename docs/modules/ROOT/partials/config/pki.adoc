@@ -1,2 +1,2 @@
-load                                           |
+|load                                           |
 |Plugins to load in xref:/pki/pki.adoc[`*pki*`] tool

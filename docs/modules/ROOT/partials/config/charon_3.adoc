@@ -1,10 +1,11 @@
 |load                                        |
-|Plugins to load in IKEv2 charon daemon, see xref:pluginLoad.adoc[plugin load]
+|Plugins to load in IKEv2 charon daemon, see
+ xref:plugins/pluginLoad.adoc[Plugin Load]
 
 |load_modular                                |`no`
 |If enabled the list of plugins to load is determined by individual `*load*`
  settings for each plugin, see
- xref:pluginLoad.adoc#Modular_Configuration[Modular Configuration]
+ xref:plugins/pluginLoad.adoc#_modular_configuration[Modular Configuration]
 
 |make_before_break                           |`no`
 |Initiate IKEv2 reauthentication with a make-before-break instead of a

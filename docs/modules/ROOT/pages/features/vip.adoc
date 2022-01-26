@@ -234,6 +234,6 @@ If multiple pools are defined from *different* backends, for instance
  pools.v4pool.addrs = 10.3.0.0/24
 
 the order in which they are queried for virtual IPs depends on the
-xref:pluginLoad.adoc[plugin load order]. In-memory pools are provided by the
-xref:plugins/vici.adoc[`*vici*`] plugins. The order `*pools*` is irrelevant
+xref:plugins/pluginLoad.adoc[plugin load order]. In-memory pools are provided by
+the xref:plugins/vici.adoc[`*vici*`] plugins. The order `*pools*` is irrelevant
 unless multiple in-memory pools from the same backend are defined.

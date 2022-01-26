@@ -57,6 +57,7 @@
 ** xref:plugins/xauth-eap.adoc[]
 ** xref:plugins/xauth-noauth.adoc[]
 ** xref:plugins/xauth-pam.adoc[]
+* xref:plugins/pluginLoad.adoc[]
 
 .Platform Security
 * xref:tpm/tpm2.adoc[TPM 2.0]
