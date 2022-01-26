@@ -86,22 +86,27 @@
 
 == Remote Access with Virtual IP Adresses
 
-[cols="4,3"]
+[cols="4,1,2"]
 |===
 |RAM-based server-side virtual IP pool
 |{TESTS}/ikev2/ip-pool[IPv4]
+|
 
 |DB-based server-side virtual IP pool
 |{TESTS}/ikev2/ip-pool-db[IPv4]
+|
 
 |Static server-side virtual IP addresses
 |{TESTS}/ikev2/config-payload[IPv4]
+|
 
 |Two RAM-based server-side virtual IP pools
 |{TESTS}/ikev2/ip-two-pools[IPv4]
+|{TESTS}/ikev2/ip-two-pools-v4v6[IPv4/IPv6]
 
 |Two DB-based server-side virtual IP pools
 |{TESTS}/ikev2/ip-two-pools-db[IPv4]
+|{TESTS}/ikev2/ip-two-pools-v4v6-db[IPv4/IPv6]
 |===
 
 == Site-to-Site
