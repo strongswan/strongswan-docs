@@ -1,1 +1,239 @@
 = Virtual IP Addresses
+
+:TESTS: https://www.strongswan.org/testing/testresults
+:EX:    {TESTS}/ikev2/ip-two-pools-v4v6
+
+IKEv1 and IKEv2 both know the concept of *virtual IP* addresses. This means that
+the initiator requests an additional IP address from the responder to use as the
+inner IPsec tunnel address.
+
+In IKEv1, virtual IPs are exchanged using the `ModeConfig` extension. IKEv2 has
+full support for virtual IPs in the core standard using `CP` Configuration Payloads.
+
+strongSwan currently implements one scenario with IKEv2 configuration payloads,
+where a virtual IP address is requested by the *initiator* and one or several
+IPv4 and/or IPv6 addresses are assigned from multiple pools by the *responder*.
+
+An alterantive approach is possible by the IKEv2 protocol where the *responder*
+would propose virtual IP addresses to the *initiator* but this is an uncommon
+setup and therefore not supported. It is supported for IKEv1, though, with
+`ModeConfig` in `*push*` mode.
+
+
+== Initiator Configuration
+
+To request an *arbitrary* virtual IP from the responder the client configures the
+following in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]:
+
+[cols="6,7"]
+|===
+|IPv4|IPv6
+
+|`connections.<conn>.vips = 0.0.0.0`
+|`connections.<conn>.vips = ::`
+|===
+
+It is possible to request a specific address by setting:
+
+[cols="6,7"]
+|===
+|IPv4|IPv6
+
+|`connections.<conn>.vips = 10.3.0.5`
+|`connections.<conn>.vips = 2001:db8::1`
+|===
+
+However the responder may return a *different address*, or may *not return* one
+at all.
+
+To use a *specific and static* virtual IP (i.e. without exchanging any
+configuration payloads) it may simply be added to any local interface (even `*lo*`)
+and referenced in the client's local traffic selector (`*local_ts*`).
+Configuring such an IP as in the example above will not have the intended effect
+because the IP won't get xref:#_implementation[installed on the system] unless
+the server actually assigns that IP to the client with a configuration payload.
+
+The traffic selectors in `*local_ts*` and `*remote_ts*` default to the value
+`*dynamic*`. If virtual IPs are used this value gets dynamically replaced by the
+received or assigned virtual IP, respectively. Therefore, no local traffic selector
+*must be* configured on the client and no remote traffic selector on the server
+when using virtual IPs. This ensures the client's traffic selector is correctly
+narrowed to the assigned virtual IP.
+
+A client may request *multiple* IP addresses by listing multiple IP addresses in
+`*connections.<conn>.vips*`. The main use case is for dual-stack hosts to request
+a virtual IP of each address family:
+----
+connections.<conn>.vips = 0.0.0.0, ::
+----
+
+=== Example
+
+image:a-m-c-w.png[topology,192,129,link={EX},title=ip-two-pools-v4v6 example]
+strongSwan {EX}[example] illustrates the use dual IPv4/IPv6 address pools.
+
+=== DNS servers
+
+VPN clients cannot explicitly request DNS servers via a special DNS option in
+xref:swanctl/swanctl.adoc[`*swanctl.conf*`]. But DNS server information received
+from the VPN gateway through the `IKEv2` `CP` or `IKEv1` `ModeConfig` payloads
+are handled for instance by the xref:plugins/resolve.adoc[`*resolve*`] plugin
+which in turn uses either the `*resolvconf(8)*` utility to add the DNS server
+information on the host or write it directly to `*/etc/resolv.conf`* or to an
+alternative file specified with the `*--with-resolve-conf*`
+xref:install/autoconf.adoc#_with_options[`*./configure*`] directive.
+
+=== Implementation
+
+On Linux the virtual IP addresses will be installed on the outbound interface by
+default. The interface may be changed with the `*charon.install_virtual_ip_on*`
+option. Source routes will be installed in the routing table configured with
+`*charon.routing_table*` in
+xref:config/strongswanConf.adoc#_charon[`*strongswan.conf*`] or via the
+xref:install/autoconf.adoc#_with_options[`*./configure*`] option
+`*--with-routing-table*`. The source routes force the use of the virtual IP when
+sending packets to the subnets defined as remote traffic selector (if the physical
+IP were used, the IPsec policies wouldn't match and the packets wouldn't get
+tunneled).
+
+== Responder Configuration
+
+As already documented above, the remote traffic selector `*remote_ts*` defaults
+to the value `*dynamic*`. This placeholder gets dynamically replaced by the
+virtual IP assigned to a client. Therefore *no remote traffic selector must be
+configured* on the server when using virtual IPs. This ensures the client's
+traffic selector is correctly narrowed to the assigned virtual IP (otherwise,
+every client would get the same traffic selector assigned, resulting in conflicting
+policies).
+
+To serve a specific IP address (even if the initiator requests a different address)
+to a single client, the following may be configured:
+
+[cols="6,7"]
+|===
+|IPv4|IPv6
+
+|`connections.<conn>.pools = <name>`
+|`connections.<conn>.pools = <name>`
+
+
+|`pools.<name>.addrs = 10.3.0.5`
+|`pools.<name>.addrs = 2001:db8::1`
+|===
+
+To serve *multiple clients*, define an address pool in CIDR notation
+
+[cols="6,7"]
+|===
+|IPv4|IPv6
+
+|`connections.<conn>.pools = <name>`
+|`connections.<conn>.pools = <name>`
+
+|`pools.<name>.addrs = 10.3.0.0/24`
+|`pools.<name>.addrs = 2001:db8::3.0/24`
+|===
+
+or as an IP address range
+
+[cols="6,7"]
+|===
+|IPv4|IPv6
+
+|`connections.<conn>.pools = <name>`
+|`connections.<conn>.pools = <name>`
+
+|`pools.<name>.addrs = 10.3.0.1-10.3.0.100`
+|`pools.<name>.addrs = 2001:db8::3.1-2001:db8::3.100`
+|===
+
+As address pools are explicitly assigned to connections defined in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`], multiple connections can easily
+share the same pool.
+
+It's also possible to use an external pool provided by a plugin by specifying a
+pool name to request addresses from (see further below for details on these
+backends):
+
+ connections.<conn>.pools = poolname
+
+This queries registered plugins for an IP address from a pool named `*poolname*`
+(below are two examples that use the
+xref:plugins/dhcp.adoc[`*dhcp*`] and xref:plugins/eap-radius.adoc[`*eap-radius*`]
+plugins, respectively).
+
+Multiple pools may be defined. Note that the order in which they are queried
+primarily depends on the plugin order. Only if pools are provided by the same
+backend, does the order defined in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+matter:
+
+ connections.<conn>.pools = v4pool, v6pool
+ pools.v4pool.addrs = 10.3.0.0/24
+ pools.v6pool.addrs = 2001:db8::3:0/24
+
+=== DNS servers
+
+DNS servers and other attributes can be assigned by plugins (e.g. by the
+xref:plugins/attr.adoc[`*attr*`] plugin. In
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] each pool in the `*pools*`
+section may define a list of attributes to assign to clients.
+
+=== In-memory backend
+
+A non-persistent memory-based backend is the default as described for
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. Such a backend is suitable for
+environments where pools are not shared across multiple gateways, server restarts
+are rare and direct administration of the pools is not needed (though there are
+some provisions for non-destructively reloading pool configurations in a running
+server when using xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]).  To preserve
+IP address affinity, the remote IKE identity (as defined for the connection in
+question) is used.  This maintains the same IP for a client (most of the time)
+even across brief teardowns of connections, approximating the behavior of a DHCP
+server without the stricture of lease expiry timers but prevents clients from
+intentionally attempting to get a different IP address as there is no
+corresponding release mechanism.
+
+=== Database backend
+
+The xref:tools/pool.adoc[`*pool*`] utility allows easy management of IP address
+pools and other attributes, like DNS servers, stored in an SQL database using the
+xref:plugins/attr-sql.adoc[`*attr-sql*`] plugin.
+
+=== DHCP backend
+
+With the xref:plugins/dhcp.adoc[`*dhcp*`] plugin the responder can request
+virtual IP addresses for clients from a DHCP server using broadcasts or from a
+designated server.
+
+DNS/WINS server information is additionally served to clients if the DHCP server
+provides such information.
+
+The plugin is used by setting
+
+ connections.<conn>.pools = dhcp
+
+The xref:plugins/farp.adoc[`*farp*`] plugin might also be of use when using the
+xref:plugins/dhcp.adoc[`*dhcp*`] plugin. It allows the responder to fake ARP
+responses for virtual IP addresses handed out to clients. This lets a road-warrior
+act as a client on the local LAN of the responder.
+
+=== RADIUS backend
+
+The xref:plugins/eap-radius.adoc[`*eap-radius*`] plugin can provide virtual IP
+addresses assigned to RADIUS clients via the `*Framed-IP-Address*` attribute.
+xref:plugins/eap-radius.adoc#_radius_attribute_forwarding[Forwarding of other RADIUS attributes]
+is also supported. The plugin is used by setting
+
+ connections.<conn>.pools = radius
+
+=== Multiple pools, Different Backends
+
+If multiple pools are defined from *different* backends, for instance
+
+ connections.<conn>.pools = radius, v4pool
+ pools.v4pool.addrs = 10.3.0.0/24
+
+the order in which they are queried for virtual IPs depends on the
+xref:pluginLoad.adoc[plugin load order]. In-memory pools are provided by the
+xref:plugins/vici.adoc[`*vici*`] plugins. The order `*pools*` is irrelevant
+unless multiple in-memory pools from the same backend are defined.
