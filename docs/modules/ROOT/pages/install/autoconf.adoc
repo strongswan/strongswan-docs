@@ -450,7 +450,7 @@ plugins.
 
 |--enable-systemd                                            |5.2.1
 |enable `systemd` specific IKE daemon
- xref:daemons/charonSystemd.adoc[charon-systemd]
+ xref:daemons/charon-systemd.adoc[charon-systemd]
 
 |xref:plugins/systime-fix.adoc[--enable-systime-fix]         |5.0.3
 |enable plugin to handle cert lifetimes with invalid system time gracefully

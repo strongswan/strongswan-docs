@@ -11,6 +11,9 @@
 .Features
 ** xref:features/vip.adoc[]
 
+.Daemons
+** xref:daemons/charon-systemd.adoc[]
+
 .Tools
 ** xref:swanctl/swanctl.adoc[]
 ** xref:pki/pki.adoc[]

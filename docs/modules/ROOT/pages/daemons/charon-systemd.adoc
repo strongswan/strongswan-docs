@@ -1,0 +1,110 @@
+= charon-systemd
+
+The `*charon-systemd*` daemon implements the IKE daemon very similar to `*charon*`
+but is specifically designed for use with `*systemd*`. It uses the `*systemd*`
+libraries for a native integration and comes with a simple `*systemd*` service file.
+The daemon is directly managed by `*systemd*` and configured by the
+xref:swanctl/swanctl.adoc[`*swanctl*`] configuration backend.
+
+== Build Options
+
+To build the daemon, add
+
+ --enable-systemd --enable-swanctl
+
+to the xref:install/autoconf.adoc[`*./configure*`] options. In order to disable
+the legacy `*ipsec*` backend, additionally add
+
+ --disable-charon --disable-stroke --disable-scepclient
+
+to build a lightweight and clean IKE daemon using modern tools.
+
+The `*systemd*` unit file directory is detected automatically using `*pkg-config*`
+but may be set manually using the `*--with-systemdsystemunitdir=*`
+xref:install/autoconf.adoc#_with_options[`*./configure*`] option.
+
+== Behavior
+
+`*charon-systemd*` gets installed as native `*systemd*` daemon and the service
+unit is named `*strongswan*`. The service unit has to be enabled  once once with
+the command
+
+ sudo systemctl enable strongswan
+
+The daemon can then be manually started with
+
+ sudo systemctl start strongswan
+
+and stopped at any time with
+
+ sudo systemctl stop strongswan
+
+Usually after a reboot `*systemd*` automatically starts the `*strongswan*`
+service and uses xref:swanctl/swanctl.adoc[`*swanctl*`] to load the IPsec
+configuration including connections, pools and credentials. If you are not sure
+whether the `*charon-systemd*` daemon is running you can check with
+----
+systemctl status strongswan
+
+strongswan.service - strongSwan IPsec IKEv1/IKEv2 daemon using swanctl
+     Loaded: loaded (/lib/systemd/system/strongswan.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2022-01-26 16:53:41 CET; 5 days ago
+    Process: 1354 ExecStartPost=/usr/sbin/swanctl --load-all --noprompt (code=exited, status=0/SUCCESS)
+   Main PID: 1308 (charon-systemd)
+     Status: "charon-systemd running, strongSwan 6.0dr13, Linux 5.13.0-27-generic, x86_64"
+      Tasks: 17 (limit: 18891)
+     Memory: 113.1M
+     CGroup: /system.slice/strongswan.service
+             └─1308 /usr/sbin/charon-systemd
+----
+
+== Logging
+
+By default the `*charon-systemd*` backend logs to the `*systemd*` journal that
+can be inspected using  `*journalctl*`. Log levels can be configured very
+similar to the other `*charon*` xref:config/logging.adoc[logger configuration]
+but using a `*journal*` section:
+----
+charon-systemd {
+  journal {
+    default = 1
+    ike = 2
+    knl = 3
+    # ...
+  }
+}
+----
+Of course one may define traditional `*syslog*` and `*filelog*` loggers in the
+`*charon-systemd*` section of `*strongswan.conf*`, refer to the
+xref:config/logging.adoc[logger configuration] for details. To disable the
+`*journal*` logger and make it silent, set
+
+ default = -1
+
+The `*journal*`-based logger provides some additional metadata in custom
+`*journal*` fields:
+
+[cols="1,4"]
+|===
+|Field  |Description
+
+|LEVEL
+|Numerical strongSwan log level
+
+|GROUP
+|Logging subsystem string
+
+|THREAD
+|Numerical thread identifier issuing the journal entry
+
+|IKE_SA_UNIQUE_ID
+|IKE_SA unique identifier, if available
+
+|IKE_SA_NAME
+|Name of the IKE_SA configuration, if available
+|===
+
+The `*MESSAGE*` field contains the log message, `*MESSAGE_ID*` uses a unique
+identifier specific to each log message type. The log levels are also mapped to
+values stored in the `*PRIORITY*` field (`*0*` to `*LOG_NOTICE*`, `*1*` to
+`*LOG_INFO*`, everything above to `*LOG_DEBUG*`, see `*syslog(3)*`).
