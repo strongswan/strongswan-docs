@@ -6,7 +6,7 @@
 ** xref:config/strongswanDir.adoc[strongswan.d Directory]
 ** xref:config/logging.adoc[]
 ** xref:swanctl/swanctlConf.adoc[swanctl.conf]
-** xref:swanctl/swanctlDir.adoc[swanctl Directory]
+** xref:swanctl/swanctlDir.adoc[]
 
 .Features
 ** xref:features/vip.adoc[]

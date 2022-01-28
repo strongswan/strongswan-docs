@@ -1,1 +1,66 @@
-= swanctl Configuration Directory
+= swanctl Directory
+
+The `*swanctl*` configuration directory (usually `*/etc/swanctl*`) contains
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] and a predefined set of
+sub-directories that provide file-based credentials such as private keys and
+certificates that are read by the
+xref:swanctl/swanctlLoadCreds.adoc[`*swanctl --load-creds*`] command.
+
+Since version 5.7.2 these directories are accessed relative to the loaded
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file (in particular when
+loading it from a custom location via the `*--file*` option supported by the
+xref:swanctl/swanctl.adoc[`*swanctl --load-...*`] commands. The location of the
+`*swanctl*` directory may also be specified at runtime via the `*SWANCTL_DIR*`
+environment variable.
+
+Each sub-directory is used for a specific kind of credential:
+
+[cols="1,5"]
+|===
+|Directory |Contents
+
+|`conf.d`
+|Config snippets included via `*include conf.d/***.conf*` in the default
+ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file since version 5.6.0
+
+|`x509`
+|Trusted X.509 end entity certificates
+
+|`x509ca`
+|Trusted X.509 Certificate Authority certificates
+
+|`x509aa`
+|Trusted X.509 Attribute Authority certificates
+
+|`x509ocsp`
+|Trusted X.509 OCSP signer certificates
+
+|`x509crl`
+|Certificate Revocation Lists
+
+|`x509ac`
+|Attribute Certificates
+
+|`rsa`
+|PKCS#1 encoded RSA private keys
+
+|`ecdsa`
+|Plain ECDSA private keys
+
+|`bliss`
+|BLISS private keys
+
+|`pkcs8`
+|PKCS#8 encoded private keys of any type
+
+|`pkcs12`
+|PKCS#12 containers
+
+|`private`
+|Private keys in any format
+
+|`pubkey`
+|Raw public keys
+|===
+
+All files may be either DER or PEM encoded.
