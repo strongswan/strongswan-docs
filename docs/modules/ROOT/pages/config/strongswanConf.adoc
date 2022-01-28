@@ -44,7 +44,7 @@ daemon) or can be triggered via either the xref:plugins/vici.adoc[`*vici*`]
 `*reload-settings*` or the xref:swanctl/swanctl.adoc[`*swanctl*`]
 `*--reload-settings*` commands.
 
-This reloads the xref:loggerConfiguration.adoc[logger settings] and some plugins
+This reloads the xref:config/logging.adoc[logger settings] and some plugins
 also support reloading their configuration (e.g. the
 xref:plugins/attr.adoc[*`attr*`], the xref:plugins/pkcs11.adoc[`*pkcs11*`] or the
 xref:plugins/eap-radius.adoc[`*eap-radius*`] plugins) and many settings are always

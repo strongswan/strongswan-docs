@@ -1,0 +1,282 @@
+= Logging
+
+:STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
+:GITHUB:   https://github.com/strongswan/strongswan/blob/master
+:SRC1:     src/libcharon/bus/listeners/logger.h
+:SRC2:     src/libcharon/bus/bus.h#L214
+:SRC3:     src/libcharon/bus/listeners/custom_logger.h
+:SRC4:     src/libcharon/daemon.h#L402
+
+By default, the IKE `*charon*` daemon logs via `*syslog(3)*` using the facilities
+`*LOG_AUTHPRIV*` (only messages on log level `*0*`) and `*LOG_DAEMON*` (all log
+levels). The default log level for all subsystems is `*1*`.
+
+Where the log messages eventually end up depends on how `*syslog*` is configured
+on your system. Common places are `*/var/log/daemon*`, `*/var/log/syslog*` or
+`*/var/log/messages*`.
+
+Unlike `*charon*`, xref:daemons/charon-systemd.adoc[`*charon-systemd*`] by default
+logs to the `*systemd*` journal and not to `*syslog*` by default. The log levels
+are configurable in a xref:daemons/charon-systemd.adoc#_logging[separate section]
+in xref:config/strongswanConf.adoc[`*strongswan.conf*`] which is not described here.
+
+== Levels and Subsystems/Groups
+
+The IKE daemon knows different numerical levels of logging ranging from `*-1*`to
+`*4*`:
+
+[cols="1,8"]
+|===
+
+|-1 |Absolutely silent
+
+| 0 |Very basic auditing logs, (e.g. SA up/SA down)
+
+| 1 |Generic control flow with errors, a good default to see whats going on
+
+| 2 |More detailed debugging control flow
+
+| 3 |Including RAW data dumps in hex
+
+| 4 |Also include sensitive material in dumps, e.g. keys
+|===
+
+Each logging message also has a source from which subsystem in the daemon the
+log came from:
+
+[cols="1,8"]
+|===
+
+|`app` |applications other than daemons
+
+|`asn` |Low-level encoding/decoding (ASN.1, X.509 etc.)
+
+|`cfg` |Configuration management and plugins
+
+|`chd` |CHILD_SA/IPsec SA
+
+|`dmn` |Main daemon setup/cleanup/signal handling
+
+|`enc` |Packet encoding/decoding encryption/decryption operations
+
+|`esp` |libipsec library messages
+
+|`ike` |IKE_SA/ISAKMP SA
+
+|`imc` |Integrity Measurement Collector
+
+|`imv` |Integrity Measurement Verifier
+
+|`job` |Jobs queuing/processing and thread pool management
+
+|`knl` |IPsec/Networking kernel interface
+
+|`lib` |libstrongswan library messages
+
+|`mgr` |IKE_SA manager, handling synchronization for IKE_SA access
+
+|`net` |IKE network communication
+
+|`pts` |Platform Trust Service
+
+|`tls` |libtls library messages
+
+|`tnc` |Trusted Network Connect
+|===
+
+== Configuration in strongswan.conf
+
+strongSwan provides a flexible configuration of the loggers in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]. There currently are two
+types:
+
+[cols="2,6"]
+|===
+
+|*File loggers*
+|Log directly into a file. Configured in `*charon.filelog*` section
+
+|*Syslog loggers*
+|Log into a syslog facility. Configured in `*charon.syslog*` section
+|===
+
+Multiple loggers can be set up for each type, with different log verbosity for
+the different subsystems of the daemon.
+
+The logger configuration is reloaded if the daemon receives a `*SIGHUP*` signal
+which causes the daemon to reload
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] and the plugins (since
+version 5.5.2 this also works for
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`]). Besides changing the
+configuration this allows to easily rotate log files created by file loggers
+without having to restart the daemon. Since version 5.5.2 the
+xref:swanctl/swanctlReloadSettings.adoc[`*swanctl --reload-settings*`] command
+also reloads the loggers, thus having the same functionality as sending a
+`*SIGHUP*` signal.
+
+The following options are supported for each logger:
+
+=== File Loggers
+
+NOTE: Since version 5.7.0 section names can't contain dots or colons. To specify
+      such paths use the *path* setting in an arbitrarily named section.
+
+*charon.filelog*
+
+[cols="3,1,9"]
+|===
+|Key |Default |Description
+
+|<name>.path          |
+|The absolute path to the log file or stderr/stdout (since version 5.7.0).
+
+|<name>.default       |`1`
+|Specifies the default loglevel to be used for subsystems for which no specific
+ loglevel is defined
+
+|<name>.<subsystem>   |<default>
+|Log level for a specific subsystem
+
+|<name>.append        |`yes`
+|If this option is enabled log entries are appended to the existing file
+
+|<name>.flush_line    |`no`
+|Enabling this option disables block buffering and enables line buffering, i.e.
+ a flush to disk is enforced for each logged line
+
+|<name>.ike_name      |`no`
+|Prefix each log entry with the connection name and a unique numerical identifier
+ for each IKE_SA
+
+|<name>.log_level     |`no`
+|Add the log level of each message after the subsystem (since version 5.9.1)
+
+|<name>.time_format   |
+|Prefix each log entry with a timestamp. The option accepts a format string as
+ passed to {STRFTIME}[`*strftime(3)*`]
+
+|<name>.time_add_ms   |`no`
+|Adds the milliseconds within the current second after the timestamp (separated
+ by a dot so `*time_format*` should end with `*%S*` or `*%T*`)
+|===
+
+_The placeholder `*<name>*` is an arbitrary name if `*path*` is specified and
+otherwise either an absolute file path in the filesystem or one of `*stdout*`
+or `*stderr*`._
+
+=== Syslog Loggers
+
+*charon.syslog*
+
+[cols="3,1,9"]
+|===
+|Key |Default |Description
+
+|identifier                |
+|Global identifier used for an `*openlog(3)*` call prepended to each log message
+ by `*syslog*`. If not configured, `*openlog(3)*` is not called. Thus the value
+ will depend on system defaults (often the program name)
+
+|<facility>.default        |`1`
+|Specifies the default loglevel to be used for subsystems for which no specific
+ loglevel is defined
+
+|<facility>.<subsystem>    |<default>
+|Log level for a specific subsystem
+
+|<facility>.ike_name       |`no`
+|Prefix each log entry with the connection name and a unique numerical identifier
+ for each IKE_SA
+
+|<facility>.log_level      |`no`
+|Add the log level of each message after the subsystem (since version 5.9.1)
+|===
+
+_The placeholder `*<facility>*` is one of `*auth*` or `*daemon*`._
+
+=== Example
+
+An example configuration might look like this:
+----
+charon {
+
+  # two defined file loggers
+  filelog {
+    charon {
+      # path to the log file, specify this as section name in versions prior to 5.7.0
+      path = /var/log/charon.log
+      # add a timestamp prefix
+      time_format = %b %e %T
+      # prepend connection name, simplifies grepping
+      ike_name = yes
+      # overwrite existing files
+      append = no
+      # increase default loglevel for all daemon subsystems
+      default = 2
+      # flush each line to disk
+      flush_line = yes
+    }
+    stderr {
+      # more detailed loglevel for a specific subsystem, overriding the
+      # default loglevel.
+      ike = 2
+      knl = 3
+    }
+  }
+
+  # and two loggers using syslog
+  syslog {
+    # prefix for each log message
+    identifier = charon-custom
+    # use default settings to log to the LOG_DAEMON facility
+    daemon {
+    }
+    # very minimalistic IKE auditing logs to LOG_AUTHPRIV
+    auth {
+      default = -1
+      ike = 0
+    }
+  }
+ # ...
+}
+----
+
+== Compile Time Configuration
+
+Debug statements can be stripped from the binaries during compile time. Define
+`*DEBUG_LEVEL*` to the maximum level you want to include, for instance
+
+ CFLAGS="-DDEBUG_LEVEL=1"
+
+to include logging messages of level `*0*` and `*1*` only.
+
+== Other Logging Backends
+
+* xref:daemons/charon-systemd.adoc[`*charon-systemd*`] logs to the
+  xref:daemons/charon-systemd.adoc#_logging[systemd journal] by default.
+
+* The xref:plugins/vici.adoc[`*VICI*`] plugin provides a `*log*` event that
+  delivers log messages (xref:swanctl/swanctlLog.adoc[`*swanctl --log*`]
+  subscribes to it.
+
+* The xref:plugins/sql.adoc[`*sql*`] plugin supports logging to a database if
+  enabled via `*charon.plugins.sql.loglevel*`.
+
+* Custom plugins may register their own implementation of the `*logger_t*`
+  interface ({GITHUB}/{SRC1}[`source:{SRC1}`]) with the bus
+  ({GITHUB}/{SRC2}[`source:{SRC2}`]).
+
+* In applications using `*libcharon`*, custom loggers
+  ({GITHUB}/{SRC3}[`source:{SRC3}`]) may also be registered early from code via
+  `*register_custom_logger()*` ({GITHUB}/{SRC4}[`source:{SRC4}`]).
+  xref:daemons/charon-systemd.adoc[`*charon-systemd*`] uses this mechanism for
+  its `*journald*` logger.
+
+== Performance Considerations
+
+Some parts of the logging system of `*charon*` are currently synchronized (e.g.
+to ensure multi-line log messages are logged together). If performance is critical,
+reduce the compiled-in debugging level and reduce loggers to a minimum. Depending
+on your `*syslog*` configuration, `*syslog*` calls are very expensive if they
+flush everything to disk. Logging directly to a file might be a lot faster,
+especially if you are running `*charon*` on multiple cores.

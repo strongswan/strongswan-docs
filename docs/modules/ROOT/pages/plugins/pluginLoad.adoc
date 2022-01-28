@@ -10,7 +10,7 @@ the footprint small while adding new functionality.
 
 == Currently Loaded Plugins
 
-The list of loaded plugins is xref:loggerConfiguration.adoc[logged] by the IKE
+The list of loaded plugins is xref:config/logging.adoc[logged] by the IKE
 daemon and can also be seen in the output of
 xref:swanctl/swanctlStats.adoc[`*swanctl --stats*`]. Other tools often list the
 plugins they load in the output of the `*--help*` option like e.g.

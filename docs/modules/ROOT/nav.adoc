@@ -2,9 +2,11 @@
 ** xref:install/autoconf.adoc[]
 
 .Configuration
-** xref:config/strongswanConf.adoc[strongswan.conf]
-** xref:config/strongswanDir.adoc[strongswan.d]
+** xref:config/strongswanConf.adoc[]
+** xref:config/strongswanDir.adoc[strongswan.d Directory]
+** xref:config/logging.adoc[]
 ** xref:swanctl/swanctlConf.adoc[swanctl.conf]
+** xref:swanctl/swanctlDir.adoc[swanctl Directory]
 
 .Features
 ** xref:features/vip.adoc[]

@@ -31,7 +31,7 @@
 
 |filelog                                     |
 |Section to define file loggers, see
-xref:loggerConfiguration.adoc[logger configuration]
+xref:config/logging.adoc[logger configuration]
 
 |flush_auth_cfg                              |`no`
 |If enabled objects used during authentication (certificates, identities etc.)
