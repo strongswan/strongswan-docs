@@ -791,3 +791,23 @@ specific plugins.
 |xref:features/reducedPrivileges.adoc[change user] of `charon` daemon to USER
  after startup. [`root`]
 |===
+
+== Example
+
+The following configuration example builds a strongSwan IKEv2
+xref:daemons/charon-systemd[`*charon-systemd*`] daemon supporting the
+authentication methods `*pubkey*`, `*psk*`, `*eap-md5*` and `*eap-tls*`.
+All crypto functions are based on the `*openssl*` plugin. Private keys and
+X.509 certificates can be securely stored in a xref:tpm/tpm2.adoc[TPM 2.0]
+device. Additionally the xref:swanctl/swanctl.adoc[`*swanctl*`] and
+xref:pki/pki.adoc[`*pki*`] tools are built. Also support for the
+xref:plugins/updown.adoc[`*updown*`] firewall script support is enabled.
+----
+./configure --prefix=/usr --sysconfdir=/etc --disable-defaults --enable-silent-rules  \
+    --enable-charon --enable-systemd --enable-ikev2 --enable-vici --enable-swanctl    \
+    --enable-nonce --enable-random --enable-drbg --enable-openssl --enable-curl       \
+    --enable-pem --enable-x509 --enable-constraints --enable-revocation --enable-pki  \
+    --enable-pubkey --enable-socket-default --enable-kernel-netlink --enable-resolve  \
+    --enable-eap-identity --enable-eap-md5 --enable-eap-dynamic --enable-eap-tls      \
+    --enable-updown --enable-tss-tss2 --enable-tpm
+----
