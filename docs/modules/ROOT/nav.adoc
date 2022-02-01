@@ -13,6 +13,7 @@
 
 .Daemons
 ** xref:daemons/charon-systemd.adoc[]
+** xref:daemons/charon-cmd.adoc[]
 
 .Tools
 ** xref:swanctl/swanctl.adoc[]
