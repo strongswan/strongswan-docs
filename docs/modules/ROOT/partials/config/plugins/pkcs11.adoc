@@ -11,7 +11,8 @@
 |Whether the `PKCS#11` modules should load certificates from tokens
 
 |reload_certs                        |`no`
-|Whether the `PKCS#11` modules should reload all certificates if `*charon*` receives a `SIGHUP`
+|Whether the `PKCS#11` modules should reload all certificates if
+ xref:daemons/charon.adoc[`*charon*`] receives a `SIGHUP` signal
 
 |use_dh                              |`no`
 |Whether the `PKCS#11` modules should be used for `DH` and `ECDH`

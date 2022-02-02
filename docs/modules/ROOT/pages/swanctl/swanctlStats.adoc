@@ -12,7 +12,7 @@ swanctl --stats --help
 == Description
 
 This xref:./swanctl.adoc[`*swanctl*`] subcommand shows infos and statistics of
-the `*charon*` daemon.
+the xref:daemons/charon.adoc[`*charon*`] daemon.
 
 == Options
 

@@ -1,10 +1,11 @@
 = charon-systemd
 
-The `*charon-systemd*` daemon implements the IKE daemon very similar to `*charon*`
-but is specifically designed for use with `*systemd*`. It uses the `*systemd*`
-libraries for a native integration and comes with a simple `*systemd*` service file.
-The daemon is directly managed by `*systemd*` and configured by the
-xref:swanctl/swanctl.adoc[`*swanctl*`] configuration backend.
+The `*charon-systemd*` daemon implements the IKE daemon very similar to
+xref:daemons/charon.adoc[`*charon*`] but is specifically designed for use with
+`*systemd*`. It uses the `*systemd*` libraries for a native integration and comes
+with a simple `*systemd*` service file. The daemon is directly managed by
+`*systemd*` and configured by the xref:swanctl/swanctl.adoc[`*swanctl*`]
+configuration backend.
 
 == Build Options
 
@@ -62,8 +63,8 @@ strongswan.service - strongSwan IPsec IKEv1/IKEv2 daemon using swanctl
 
 By default the `*charon-systemd*` backend logs to the `*systemd*` journal that
 can be inspected using  `*journalctl*`. Log levels can be configured very
-similar to the other `*charon*` xref:config/logging.adoc[logger configuration]
-but using a `*journal*` section:
+similar to the xref:daemons/charon.adoc[`*charon*`]
+xref:config/logging.adoc[logger configuration] but using a `*journal*` section:
 ----
 charon-systemd {
   journal {

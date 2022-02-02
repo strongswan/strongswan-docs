@@ -434,7 +434,8 @@ plugins.
 |enable dynamic socket implementation for charon
 
 |xref:plugins/socket-win.adoc[--enable-socket-win]           |5.2.0
-|enable Winsock2 based socket implementation for `*charon*`
+|enable Winsock2 based socket implementation for
+ xref:daemons/charon.adoc[`*charon*`]
 
 |--enable-soup                                               |
 |enable fetcher plugin to fetch from HTTP URIs. Requires `libsoup` library

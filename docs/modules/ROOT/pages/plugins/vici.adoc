@@ -10,7 +10,7 @@
 The `*vici*` [ˈvitʃi] plugin for `*libcharon*` provides the
 {VICI}[Versatile IKE Control Interface] (VICI). As its name indicates, it
 provides an interface for external applications to not only configure, but also
-to control and monitor the IKE daemon `*charon*`.
+to control and monitor the IKE daemon xref:daemons/charon.adoc[`*charon*`].
 
 strongSwan is often used to provide IKE service functionality in a tailored
 system for specific needs. Developers of such systems often have a need to
@@ -30,9 +30,10 @@ and control the IKE daemon.
 
 The most prominent user of the {VICI}[VICI] interface is
 xref:swanctl/swanctl.adoc[swanctl], a command line application to configure and
-control `*charon*`. It is the driving force to develop, extend and maintain the
-{VICI}[VICI] interface, and currently provides almost all functionality to run
-strongSwan installations without the need for `*ipsec.conf*` and friends.
+control xref:daemons/charon.adoc[`*charon*`]. It is the driving force to develop,
+extend and maintain the {VICI}[VICI] interface, and currently provides almost all
+functionality to run strongSwan installations without the need for `*ipsec.conf*`
+and friends.
 
 The `*vici*` plugin is enabled by default but may be disabled with the
 xref:install/autoconf.adoc[`*./configure*`] option

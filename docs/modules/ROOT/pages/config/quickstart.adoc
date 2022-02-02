@@ -261,7 +261,7 @@ In our example the virtual IP address is chosen from the address pool
     }
 
 to the gateway's xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] from where they
-are loaded into the `*charon*` daemon using the command
+are loaded into the xref:daemons/charon.adoc[`*charon*`] daemon using the command
 
     swanctl --load-pools
 

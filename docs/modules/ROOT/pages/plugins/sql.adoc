@@ -5,9 +5,10 @@
 == Purpose
 
 The `*sql*` plugin for `*libcharon*` allows to store the complete connection
-configuration in a relational database. Further, the `*charon*` daemon reads
-credentials such as certificates, private keys or passwords from the database
-to do all kinds of authentication. Logging to the database is also possible.
+configuration in a relational database. Further, the
+xref:daemons/charon.adoc[`*charon*`] daemon reads credentials such as certificates,
+private keys or passwords from the database to do all kinds of authentication.
+Logging to the database is also possible.
 
 The plugin is disabled by default and can be enabled with the
 xref:install/autoconf.adoc[`*./configure*`] option

@@ -12,7 +12,8 @@ swanctl --list-version --help
 == Description
 
 This xref:./swanctl.adoc[`*swanctl*`] subcommand lists the either the version
-of the installed strongSwan software or the currently running `*charon*` daemon.
+of the installed strongSwan software or the currently running
+xref:daemons/charon.adoc[`*charon*`] daemon.
 
 == Options
 
@@ -36,7 +37,8 @@ $ swanctl --version
 strongSwan swanctl 5.9.5dr2
 ----
 
-* List software and kernel version of running `*charon*` daemon
+* List software and kernel version of running xref:daemons/charon.adoc[`*charon*`]
+  daemon
 ----
 $ swanctl 5.9.4 --version --daemon
 

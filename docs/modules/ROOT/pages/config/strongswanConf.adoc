@@ -38,11 +38,11 @@ environmental variable to the desired location.
 
 == Reloading
 
-The IKE `*charon*` daemon and some of its derivatives reloads `*strongswan.conf*`
-if it receives a `*SIGHUP*` signal (that has to be sent manually to the `*charon*`
-daemon) or can be triggered via either the xref:plugins/vici.adoc[`*vici*`]
-`*reload-settings*` or the xref:swanctl/swanctl.adoc[`*swanctl*`]
-`*--reload-settings*` commands.
+The IKE xref:daemons/charon.adoc[`*charon*`] daemon and some of its derivatives
+reloads `*strongswan.conf*` if it receives a `*SIGHUP*` signal (that has to be
+sent manually to the xref:daemons/charon.adoc[`*charon*`] daemon) or can be
+triggered via either the xref:plugins/vici.adoc[`*vici*`] `*reload-settings*` or
+the xref:swanctl/swanctl.adoc[`*swanctl*`] `*--reload-settings*` commands.
 
 This reloads the xref:config/logging.adoc[logger settings] and some plugins
 also support reloading their configuration (e.g. the
@@ -253,8 +253,8 @@ include::partial$config/attest.adoc[]
 Many of the options in this section also apply to
 xref:daemons/charon-cmd.adoc[`*charon-cmd*`],
 xref:daemons/charon-systemd.adoc[*`charon-systemd*`] and other derivatives of
-the `*charon*` daemon. Just use their respective name (e.g. `*charon-systemd*`
-instead of `*charon*`).
+the xref:daemons/charon.adoc[`*charon*`] daemon. Just use their respective name
+(e.g. `*charon-systemd*` instead of `*charon*`).
 
 [{COLS}]
 |===

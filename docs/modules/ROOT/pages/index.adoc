@@ -31,6 +31,6 @@ These scenarios use the deprecated `*stroke*` interface as implemented by the
 == Tools
 
 * xref:swanctl/swanctl.adoc[`*swanctl*`] configures, controls and monitors the
-  `*charon*` IKE daemon
+  xref:daemons/charon.adoc[`*charon*`] IKE daemon
 * xref:pki/pki.adoc[`*pki*`] generates and analyzes RSA, ECDSA or EdDSA private
   keys and X.509 certificates

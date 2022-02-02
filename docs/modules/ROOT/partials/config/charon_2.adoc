@@ -119,16 +119,17 @@ connection attempts are blocked
  outbound interface
 
 |integrity_test                              |`no`
-|Check `*charon*` daemon, `*libcharon*`, `*libstrongswan*` and other strongSwan
- libraries as well as and plugin integrity at startup
+|Check xref:daemons/charon.adoc[`*charon*`] daemon, `*libcharon*`, `*libstrongswan*`
+ and other strongSwan libraries as well as and plugin integrity at startup
 
 |interfaces_ignore                           |
 |A comma-separated list of network interfaces that should be ignored by the
- `*charon*` daemon. If `*interfaces_use*` is specified, this option has no effect
+ xref:daemons/charon.adoc[`*charon*`] daemon. If `*interfaces_use*` is specified,
+ this option has no effect
 
 |interfaces_use                              |
 |A comma-separated list of network interfaces that should be used by the
- `*charon*` daemon. All other interfaces are ignored
+ xref:daemons/charon.adoc[`*charon*`] daemon. All other interfaces are ignored
 
 |keep_alive                                  |`20s`
 |NAT keep alive interval in seconds

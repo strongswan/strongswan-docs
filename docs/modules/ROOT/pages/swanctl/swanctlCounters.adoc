@@ -13,7 +13,7 @@ swanctl --list-counters --help
 
 This xref:./swanctl.adoc[`*swanctl*`] subcommand lists the current state of the
 `IKE` message counters and requires the xref:plugins/counters.adoc[`*counters*`]
-plugin to be loaded by the `*charon*` daemon.
+plugin to be loaded by the xref:daemons/charon.adoc[`*charon*`] daemon.
 
 == Options
 

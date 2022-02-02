@@ -10,16 +10,16 @@ xref:install/autoconf.adoc[`*./configure*`] option
 
 == Client Behavior
 
-As a client the IKEv1 `*charon*` daemon will narrow traffic selectors to the
-received `*Split-Include*` attributes and will automatically install IPsec bypass
-policies for received `*Local-LAN*` attributes.
+As a client the IKEv1 xref:daemons/charon.adoc[`*charon*`] daemon will narrow
+traffic selectors to the received `*Split-Include*` attributes and will
+automatically install IPsec bypass policies for received `*Local-LAN*` attributes.
 
 == Server Behavior
 
-As a server the IKEv1 `*charon*` daemon will send `*Split-Include*` attributes
-for `*local_ts*` definitions containing multiple subnets to Unity-aware clients.
-Alternatively Unity-attributes may be assigned via the xref:./attr.adoc[`*attr*`]
-or xref:./attr-sql.adoc[`*attr-sql*`] plugins.
+As a server the IKEv1 xref:daemons/charon.adoc[`*charon*`] daemon will send
+`*Split-Include*` attributes for `*local_ts*` definitions containing multiple
+subnets to Unity-aware clients. Alternatively Unity-attributes may be assigned
+via the xref:./attr.adoc[`*attr*`] or xref:./attr-sql.adoc[`*attr-sql*`] plugins.
 
 == Configuration
 

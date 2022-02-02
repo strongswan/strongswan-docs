@@ -11,16 +11,16 @@
 
 `*charon-cmd*` is a command-line program for setting up IPsec VPN connections
 using the Internet Key Exchange protocol (IKE) in version 1 and 2. It supports a
-number of different road-warrior scenarios. Like the IKE `*charon*` daemon,
-`*charon-cmd*` has to be run as `*root*` (or more specifically as a user with
-`*CAP_NET_ADMIN*` capability).
+number of different road-warrior scenarios. Like the IKE
+xref:daemons/charon.adoc[`*charon*`] daemon, `*charon-cmd*` has to be run as
+`*root*` (or more specifically as a user with `*CAP_NET_ADMIN*` capability).
 
 Of the options below at least `*--host*` and `*--identity*` are required.
 Depending on the selected *authentication profile*, credentials also have to be
 provided with their respective options.
 
-Many of the `*charon*`-specific configuration options in
-xref:config/strongswanConf.adoc[`*strongswan.conf*`] also apply to `*charon-cmd*`.
+Many of the xref:daemons/charon.adoc[`*charon*`]-specific configuration options
+in xref:config/strongswanConf.adoc[`*strongswan.conf*`] also apply to `*charon-cmd*`.
 For instance, to configure customized logging to `*stdout*` the following snippet
 can be used:
 ----

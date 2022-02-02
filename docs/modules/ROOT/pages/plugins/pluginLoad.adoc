@@ -59,9 +59,9 @@ priority is `*1*` and can also be negative to simplify move a plugin to the end
 of the list.
 
 The `*load_modular*` option can also be enabled for other components, but only
-for `*charon*` the default configuration snippets are installed in
-xref:config/strongswanDir.adoc[`*strongswan.d/charon*`] and included in the
-default xref:config/strongswanConf.adoc[`*strongswan.conf*`] file.
+for xref:daemons/charon.adoc[`*charon*`] the default configuration snippets are
+installed in xref:config/strongswanDir.adoc[`*strongswan.d/charon*`] and included
+in the default xref:config/strongswanConf.adoc[`*strongswan.conf*`] file.
 Additionally the default snippets are also installed in the
 `*$\{prefix}/share/strongswan/templates*` directory for reference.
 
@@ -84,8 +84,8 @@ completely dynamically based on the explicitly enabled plugins.
 
 Most components can read the plugin list from
 xref:config/strongswanConf.adoc[`*strongswan.conf*`]. For example the IKE
-`*charon*` daemon reads the `*charon.load*` key to load plugins but only if the
-`*charon.load_modular*` option is disabled (see above).
+xref:daemons/charon.adoc[`*charon*`] daemon reads the `*charon.load*` key to load
+plugins but only if the `*charon.load_modular*` option is disabled (see above).
 
 WARNING: It is *not* recommended to specify the plugin list manually unless you
          exactly know the implications!

@@ -7,18 +7,21 @@
 :SRC3:     src/libcharon/bus/listeners/custom_logger.h
 :SRC4:     src/libcharon/daemon.h#L402
 
-By default, the IKE `*charon*` daemon logs via `*syslog(3)*` using the facilities
-`*LOG_AUTHPRIV*` (only messages on log level `*0*`) and `*LOG_DAEMON*` (all log
-levels). The default log level for all subsystems is `*1*`.
+By default, the IKE xref:daemons/charon.adoc[`*charon*`] daemon logs via
+`*syslog(3)*` using the facilities `*LOG_AUTHPRIV*` (only messages on log level
+`*0*`) and `*LOG_DAEMON*` (all log levels). The default log level for all
+subsystems is `*1*`.
 
 Where the log messages eventually end up depends on how `*syslog*` is configured
 on your system. Common places are `*/var/log/daemon*`, `*/var/log/syslog*` or
 `*/var/log/messages*`.
 
-Unlike `*charon*`, xref:daemons/charon-systemd.adoc[`*charon-systemd*`] by default
-logs to the `*systemd*` journal and not to `*syslog*` by default. The log levels
-are configurable in a xref:daemons/charon-systemd.adoc#_logging[separate section]
-in xref:config/strongswanConf.adoc[`*strongswan.conf*`] which is not described here.
+Unlike xref:daemons/charon.adoc[`*charon*`],
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] by default logs to the
+`*systemd*` journal and not to `*syslog*` by default. The log levels are
+configurable in a xref:daemons/charon-systemd.adoc#_logging[separate section]
+in xref:config/strongswanConf.adoc[`*strongswan.conf*`] which is not described
+here.
 
 == Levels and Subsystems/Groups
 
@@ -274,9 +277,10 @@ to include logging messages of level `*0*` and `*1*` only.
 
 == Performance Considerations
 
-Some parts of the logging system of `*charon*` are currently synchronized (e.g.
-to ensure multi-line log messages are logged together). If performance is critical,
-reduce the compiled-in debugging level and reduce loggers to a minimum. Depending
-on your `*syslog*` configuration, `*syslog*` calls are very expensive if they
-flush everything to disk. Logging directly to a file might be a lot faster,
-especially if you are running `*charon*` on multiple cores.
+Some parts of the logging system of xref:daemons/charon.adoc[`*charon*`] are
+currently synchronized (e.g. to ensure multi-line log messages are logged together).
+If performance is critical, reduce the compiled-in debugging level and reduce
+loggers to a minimum. Depending on your `*syslog*` configuration, `*syslog*` calls
+are very expensive if they flush everything to disk. Logging directly to a file
+might be a lot faster, especially if you are running
+xref:daemons/charon.adoc[`*charon*`] on multiple cores.

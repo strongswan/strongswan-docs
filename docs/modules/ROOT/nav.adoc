@@ -12,6 +12,7 @@
 ** xref:features/vip.adoc[]
 
 .Daemons
+** xref:daemons/charon.adoc[]
 ** xref:daemons/charon-systemd.adoc[]
 ** xref:daemons/charon-svc.adoc[]
 ** xref:daemons/charon-cmd.adoc[]

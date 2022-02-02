@@ -2,7 +2,7 @@
 
 `*charon-svc*` is the strongSwan IKE service to run on the
 xref:os/windows.adoc[Windows] platform. It builds upon `*libcharon*` and is the
-Windows counterpart of `*charon*` on Unix systems.
+Windows counterpart of xref:daemons/charon.adoc[`*charon*`] on Unix systems.
 
 == Usage
 
@@ -11,9 +11,10 @@ application and as a system service.
 
 When invoked from the console, the application runs in the foreground and can be
 terminated by hitting `*^C*`. This is mostly useful for testing and debugging
-purposes, e.g. to run `*charon*` in a debugger. Alternatively and better suited
-for productive use, the application can be installed as a Windows service. This
-can be achieved by any appropriate method, e.g using the `*sc*` utility:
+purposes, e.g. to run xref:daemons/charon.adoc[`*charon*`] in a debugger.
+Alternatively and better suited for productive use, the application can be
+installed as a Windows service. This can be achieved by any appropriate method,
+e.g using the `*sc*` utility:
 
  sc create “strongSwan IKE service” binPath= C:\path\to\charon-svc.exe
 

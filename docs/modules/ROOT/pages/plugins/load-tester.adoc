@@ -6,8 +6,9 @@
 == Purpose
 
 The a `*load-tester*` plugin for `*libcharon*` does stability testing and
-performance optimizations of the '*charon*` daemon. This plugin allows to set up
-thousands of tunnels concurrently against the daemon itself or a remote host.
+performance optimizations of the xref:daemons/charon.adoc[`*charon*`] daemon.
+This plugin allows to set up thousands of tunnels concurrently against the daemon
+itself or a remote host.
 
 The plugin is disabled by default and can be enabled with the
 xref:install/autoconf.adoc[`*./configure*`] option

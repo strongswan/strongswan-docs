@@ -3,9 +3,9 @@
 == Purpose
 
 The `*pkcs11*` plugin for `*libstrongswan*` implements the `PKCS#11` smart card
-interface and can be used by both the IKE `*charon*` daemon and the
-xref:pki/pki.adoc[pki] tool. Besides `RSA` keys the plugin also supports `ECDSA`,
-`DH/ECDH` and `RNG`.
+interface and can be used by both the IKE xref:daemons/charon.adoc[`*charon*`]
+daemon and the xref:pki/pki.adoc[pki] tool. Besides `RSA` keys the plugin also
+supports `ECDSA`, `DH/ECDH` and `RNG`.
 
 The plugin is disabled by default and can be enabled with the
 xref:install/autoconf.adoc[`*./configure*`] option

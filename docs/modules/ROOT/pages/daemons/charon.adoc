@@ -1,0 +1,126 @@
+= charon
+
+:GITHUB: https://github.com/strongswan/strongswan/blob/master
+:SRC:    src/libstrongswan/plugins/plugin.h
+
+The `*charon*` daemon was built from scratch to implement the IKEv2 protocol for
+the strongSwan project. Most of its code is located in the `*libcharon*` library
+making the IKE daemon core available to other programs such as
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`],
+xref:daemons/charon-svc.adoc[`*charon-svc*`],
+xref:daemons/charon-cmd.adoc[`*charon-cmd*`] or the
+xref:androidVpnClient.adoc[Android app].
+
+== Architecture
+
+----
+      +---------------------------------+       +----------------------------+
+      |          Credentials            |       |          Backends          |
+      +---------------------------------+       +----------------------------+
+
+       +------------+    +-----------+        +------+            +----------+
+       |  receiver  |    |           |        |      |  +------+  | CHILD_SA |
+       +----+-------+    | Scheduler |        | IKE- |  | IKE- |--+----------+
+            |            |           |        | SA   |--| SA   |  | CHILD_SA |
+    +-------+--+         +-----------+        |      |  +------+  +----------+
+ <->|  socket  |               |              | Man- |
+    +-------+--+         +-----------+        | ager |  +------+  +----------+
+            |            |           |        |      |  | IKE- |--| CHILD_SA |
+       +----+-------+    | Processor |--------|      |--| SA   |  +----------+
+       |   sender   |    |           |        |      |  +------+
+       +------------+    +-----------+        +------+
+
+      +---------------------------------+       +----------------------------+
+      |               Bus               |       |      Kernel Interface      |
+      +---------------------------------+       +----------------------------+
+             |                    |                           |
+      +-------------+     +-------------+                     V
+      | File-Logger |     |  Sys-Logger |                  //////
+      +-------------+     +-------------+
+----
+
+[cols="1,5"]
+|===
+
+|Processor
+|The threading is realized with the help of a thread pool (called processor) which
+ contains a fixed amount of precreated threads. All threads in the daemon
+ originate from the processor. To delegate work to a thread, jobs are queued to
+ the processor for asynchronous execution
+
+|Scheduler
+|The scheduler is responsible to execute timed events. Jobs may be queued to the
+ scheduler to get executed at a defined time (e.g. rekeying). The scheduler does
+ not execute the jobs itself, it queues them to the processor
+
+|IKE_SA Manager
+|The IKE_SA manager manages all IKE_SAs. It further handles the synchronization:
+ Each IKE_SA must be checked out strictly and checked in again after use. The
+ manager guarantees that only one thread may check out a single IKE_SA. This
+ allows us to write the (complex) IKE_SAs routines as non-threadsave
+
+|IKE_SA
+|The IKE_SA contain the state and the logic of each IKE_SA and handle the messages
+
+|CHILD_SA
+|The CHILD_SA contains state about an IPsec security association and manages them.
+ An IKE_SA may have multiple CHILD_SAs. Communication to the kernel takes place
+ here through the kernel interface
+
+|Kernel Interface
+|The kernel interface installs IPsec security associations, policies, routes and
+ virtual addresses. It further provides methods to enumerate interfaces and may
+ notify the daemon about state changes at lower layers
+
+|Bus
+|The bus receives signals from the different threads and relays them to interested
+ listeners. Debugging signals, but also important state changes or error messages
+ are sent over the bus
+
+|Controller
+|The controller provides a simple API for plugins to control the daemon (e.g.
+ initiate IKE_SA, close IKE_SA, ...)
+
+|Backends
+|Backends are pluggable modules which provide configuration. They have to
+ implement an API which the daemon core uses to get configuration
+
+|Credentials
+|Provides trustchain verification and credential serving using registered
+ plugins
+|===
+
+== Plugins
+
+The daemon loads plugins at startup. These implement the
+
+`*plugin_t*` interface ({GITHUB}/{SRC}[`source:{SRC}`]).
+
+Each plugin registers itself with the daemon to hook in its functionality.
+----
+  +-------------------------------------+
+  | charon                  +---+ +-----+------+
+  |                         |   | |   vici     |
+  |                         |   | +-----+------+
+  | +-------------+         |   | +-----+------+
+  | | bus         |  ---->  | p | |   stroke   |
+  | +-------------+         | l | +-----+------+
+  | +-------------+  <----  | u | +-----+------+
+  | | controller  |         | g | |    sql     |
+  | +-------------+  ---->  | i | +-----+------+
+  | +-------------+         | n | +-----+------+
+  | | credentials |  <----  |   | |  eap_aka   |
+  | +-------------+         | l | +-----+------+
+  | +-------------+  ---->  | o | +-----+------+
+  | | backends    |         | a | |  eap_sim   |
+  | +-------------+  <----  | d | +-----+------+
+  | +-------------+         | e | +-----+------+
+  | | eap         |  ---->  | r | |  eap_md5   |
+  | +-------------+         |   | +-----+------+
+  |                         |   | +-----+------+
+  |                         |   | |eap_identity|
+  |                         +---+ +-----+------+
+  +-------------------------------------+
+----
+There is a growing xref:plugins/plugins.adoc[list] of available `*libcharon*`
+xref:plugins/plugins.adoc[plugins].

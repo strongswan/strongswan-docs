@@ -12,7 +12,7 @@ swanctl --log --help
 == Description
 
 This xref:./swanctl.adoc[`*swanctl*`] subcommand traces logging output from the
-`*charon*` daemon via the `*vici*` interface.
+xref:daemons/charon.adoc[`*charon*`] daemon via the `*vici*` interface.
 
 == Options
 

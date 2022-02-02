@@ -34,7 +34,8 @@ swanctl --initiate         (-i)  initiate a connection
 == Description
 
 `*swanctl*` is a command line utility to configure, control and monitor the IKE
-`*charon*` daemon via the xref:plugins/vici.adoc[`*vici*`] interface plugin.
+xref:daemons/charon.adoc[`*charon*`] daemon via the
+xref:plugins/vici.adoc[`*vici*`] interface plugin.
 
 == Subcommands
 
