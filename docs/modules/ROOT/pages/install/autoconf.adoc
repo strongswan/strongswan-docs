@@ -446,7 +446,7 @@ plugins.
 |enable SQLite database support. Requires `libsqlite3` library
 
 |--enable-svc                                                |5.2.0
-|enable xref:daemons/charonSvc.adoc[charon Windows service]
+|enable xref:daemons/charon-svc.adoc[charon Windows service]
 
 |--enable-systemd                                            |5.2.1
 |enable `systemd` specific IKE daemon

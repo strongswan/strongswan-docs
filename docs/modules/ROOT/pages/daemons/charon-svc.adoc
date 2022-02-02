@@ -1,0 +1,69 @@
+= charon-svc
+
+`*charon-svc*` is the strongSwan IKE service to run on the
+xref:os/windows.adoc[Windows] platform. It builds upon `*libcharon*` and is the
+Windows counterpart of `*charon*` on Unix systems.
+
+== Usage
+
+`*charon-svc*` is a hybrid application that can run both as a command line
+application and as a system service.
+
+When invoked from the console, the application runs in the foreground and can be
+terminated by hitting `*^C*`. This is mostly useful for testing and debugging
+purposes, e.g. to run `*charon*` in a debugger. Alternatively and better suited
+for productive use, the application can be installed as a Windows service. This
+can be achieved by any appropriate method, e.g using the `*sc*` utility:
+
+ sc create “strongSwan IKE service” binPath= C:\path\to\charon-svc.exe
+
+After creating the service, it can be controlled using the `*sc*` utility or
+the _Services_ Management Console Snap-In.
+
+== Configuration
+
+Windows uses the xref:swanctl/swanctl.adoc[`*swanctl*`] configuration backend
+based on the xref:plugins/vici.adoc[`*vici*`] protocol. The application itself
+currently does not have any xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+options. However, all options for `*libcharon*`, `*libstrongswan*` and the
+related plugins apply. Instead of the `*charon*` section, configuration keys are
+located under the `*charon-svc*` root section.
+
+To configure logging, the following xref:config/logging.adoc[instructions] apply.
+Unless explicitly built against a `*syslog*` client library, under Windows no
+default logging to syslog is performed. A simple logger configuration example is:
+----
+charon-svc {
+  filelog {
+    log.txt {
+      flush_line = yes
+    }
+    stdout {
+    }
+  }
+}
+----
+
+All configured file paths are relative to the application binary, as `*charon-svc*`
+changes its working directory after startup.
+
+== Automatic Configuration Loading
+
+A Windows build usually uses xref:swanctl/swanctl.adoc[`*swanctl*`] as configuration
+backend. When running `*charon-svc*` as a service, there is no init script that
+could take care of loading configurations and credentials after service startup.
+Therefore `*libcharon*` has the capability of invoking start and stop scripts to
+perform these (and other) tasks. To load a xref:swanctl/swanctl.adoc[`*swanctl*`]
+configuration, the following xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+section can be used:
+----
+charon-svc {
+  start-scripts {
+    swanctl-creds = swanctl --load-creds --noprompt
+    swanctl-conns = swanctl --load-conns
+  }
+}
+----
+
+Credentials should be loaded before connections as connections may reference
+credentials.
