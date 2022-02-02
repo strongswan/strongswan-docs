@@ -1,0 +1,218 @@
+= strongSwan on Windows
+
+:MINGW:      http://mingw-w64.sourceforge.net/
+:MINGW_SF:   https://sourceforge.net/projects/mingw-w64/files
+:MINGW_INST: {MINGW_SF}/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download
+:MINGW_MSYS: {MINGW_SF}/External%20binary%20packages%20(Win64%20hosted)/MSYS%20(32-bit)/
+:APPVEYOR1:  https://ci.appveyor.com/api/projects/status/186bfuup38t9pu4k?svg=true
+:APPVEYOR2:  https://ci.appveyor.com/project/tobiasbrunner/strongswan-52lo9
+:GITHUB:     https://github.com/strongswan/strongswan
+:GITHUB1:    {GITHUB}/workflows/Windows/badge.svg
+:GITHUB2:    {GITHUB}/actions?query=workflow%3AWindows
+
+strongSwan can be built for the Windows platform using the {MINGW}[MinGW] toolchain.
+Supported are Windows 7 / Server 2008 R2 and newer releases.
+
+== Important Notes
+
+* Beside some other limitations, the xref:plugins/kernel-iph.adoc[`*kernel-iph*`]
+  networking backend currently does not support the installation of virtual IP
+  addresses. Such addresses are usually assigned to road-warrior clients, making
+  the strongSwan Windows port not usable as client for this particular scenario.
+
+* The xref:plugins/socket-win.adoc[`*socket-win*`] socket plugin by default binds
+  to UDP ports 500 and 4500. To receive any packets, the Windows native IKE service
+  must be disabled by stopping/disabling the `*IKEEXT*` service. If you see any
+  `WFP MM failure` errors, the `*IKEEXT*` service is probably running.
+
+== Ported Functionality
+
+strongSwan has a large codebase and not all functionality has been ported to
+Windows. Beside the `*libstrongswan*` and `*libcharon*` core libraries the
+`*libtls*` and `*libtnccs*` libraries are known to work under Windows.
+
+The following plugins are supported in the Windows build:
+
+* xref:plugins/test-vectors.adoc[`*test-vectors*`]
+
+* `*acert*`
+
+* xref:plugins/constraints.adoc[`*constraints*`]
+
+* `*eap-identity*`
+
+* `*eap-tnc*` using xref:tnc/tnc.adoc[`*tnccs-2.0*`]
+
+* xref:plugins/eap-tls.adoc[`*eap-tls*`]
+
+* `*eap-ttls*`
+
+* xref:plugins/ext-auth.adoc[`*ext-auth*`]
+
+* `*mysql*`
+
+* `*nonce*`
+
+* `*openssl*`
+
+* `*pem*`
+
+* `*pkcs1*`
+
+* `*pkcs8*`
+
+* `*pubkey*`
+
+* `*rdrand*`
+
+* `*revocation*`
+
+* `*sqlite*`
+
+* xref:tnc/tnc.adoc[`*tnc-imv*`] with `*imv-os*` and `*imv-attestation*`
+
+* xref:tnc/tnc.adoc[`*tnc-imc*`] with `*imc-os*` and `*imc-attestation*`
+
+* xref:plugins/vici.adoc[`*vici*`]
+
+* `*x509*`
+
+* xref:plugins/updown.adoc[`*updown*`]
+
+Many more plugins might work without or with minor modifications, but have
+not yet been tested extensively. The following additional components are also
+supported:
+
+* xref:pki/pki.adoc[`*pki*`] tool
+
+* xref:swanctl/swanctl.adoc[`*swanctl*`] tool
+
+* `*leak-detective*` optionally using `*bfd-backtraces*` using `*libbfd*`
+
+== Windows-Specific Components
+
+Specifically for the Windows port, the following components have been introduced:
+
+[cols="1,5"]
+|===
+
+|xref:daemons/charon-svc.adoc[`*charon-svc*`]
+|Windows IKE service using `*libcharon*`
+
+|xref:plugins/socket-win.adoc[`*socket-win*`]
+|IKE socket implementation using Winsock2 API
+
+|xref:plugins/winhttp.adoc[`*winhttp*`]
+|HTTP/HTTPS CRL/OCSP fetcher using WinHTTP API
+
+|xref:plugins/kernel-iph.adoc[`*kernel-iph*`]
+|Networking backend using IP Helper API
+
+|xref:plugins/kernel-wfp.adoc[`*kernel-wfp*`]
+|Interface to native Windows IPsec backend in the Windows Filtering Platform
+|===
+
+The xref:plugins/kernel-iph.adoc[`*kernel-iph*`] and
+xref:plugins/kernel-wfp.adoc[`*kernel-wfp*`] plugins currently have some
+limitations and known issues, please consult their wiki pages.
+
+== Dependencies
+
+There are no hard third party dependencies on the Windows platform, as strongSwan
+uses a native (non-pthread) threading backend on Windows. You'll need a working
+crypto backend, though, and OpenSSL is known to work fine. Other crypto backends
+have not yet been tested, future releases might include a native Windows crypto
+backend.
+
+== Toolchain
+
+There are two ways how to build strongSwan for the Windows platform:
+
+* Using {MINGW}[MinGW] on Unix to cross-compile strongSwan for Windows
+
+* Using {MINGW}[MinGW] on Windows to build a native strongSwan
+
+The first option is usually simpler and recommended when building from Git sources.
+
+The port has been done using the {MINGW}[MinGW-W64] toolchain. Other compilers are
+currently not supported. Using Visual C compilers is not an option in the near
+future as we heavily use some C99 features which MSVC does not support.
+
+
+In strongSwan only monolithic builds are supported, hence pass
+
+ --enable-monolithic
+
+to xref:install/autoconf.adoc[`*./configure*`]. Both `*x86_64*` and `*i686*` build
+variants are supported. The 32-bit build variants have been tested less extensively,
+though. As many of the strongSwan default plugins are not supported, it is
+recommended to pass
+
+ --disable-defaults
+
+to xref:install/autoconf.adoc[`*./configure*`] and enable the specific options as
+required. A minimal set of xref:install/autoconf.adoc[`*./configure*`] options
+could look like:
+----
+CFLAGS="-g -O2 -Wall -Wno-pointer-sign -Wno-format-security \
+        -Wno-format -mno-ms-bitfields \
+        -I/c/path/to/openssl/include" \
+LDFLAGS="-L/c/path/to/openssl/lib" \
+./configure --disable-defaults --enable-monolithic --enable-static \
+            --enable-svc --enable-ikev2 --enable-ikev1  \
+            --enable-nonce --enable-pem --enable-pkcs1 \
+            --enable-x509 --enable-openssl --enable-socket-win \
+            --enable-kernel-wfp --enable-kernel-iph --enable-pubkey \
+            --enable-swanctl --with-swanctldir=swanctl \
+            --with-strongswan-conf=strongswan.conf
+----
+It is usually a good idea to specify relative paths for
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] and the
+xref:swanctl/swanctlDir.adoc[`*swanctl*`] directory as it allows you to move these
+files freely along with your binaries.
+
+=== Windows Native Build
+
+image::{APPVEYOR1}[build, link={APPVEYOR2}, float="left", align="left"]
+
+First install {MINGW}[MinGW-W64], preferably using the {MINGW_INST}[installer].
+The 4.8.1 version is known to work fine using the `*x64*` Architecture and native
+`*win32*` threading.
+
+To run xref:install/autoconf.adoc[`*./configure*`] you'll need `*MSYS*`, e.g. by
+using the {MINGW_MSYS}[MinGW-W64 MSYS builds]. After extracting the `*.zip*` file
+invoke `*msys.bat*` and run:
+
+ sh /postinstall/pi.sh
+
+to complete the installation. Use this shell to
+xref:install/autoconf.adoc[`*./configure*`] and build strongSwan.
+
+=== Unix Cross-Compile Build
+
+image::{GITHUB1}[build, link={GITHUB2}, float="left", align="left"]
+
+After installing the {MINGW}[MinGW-W64] toolchain and the Windows system headers
+for your distribution, add
+
+ --host=x86_64-w64-mingw32
+
+or for 32-bit builds
+
+ --host=i686-w64-mingw32
+
+to xref:install/autoconf.adoc[`*./configure*`] to enable cross-compilation.
+
+== Installation
+
+To extract the binaries, you may use `*make install*` using a specific `*DESTDIR*`
+or manually copy the requires binaries from the `*.libs*` subdirectories. A
+future version hopefully provides a more convenient way to create a
+redistributable binary package.
+
+== Next Steps
+
+Refer to xref:daemons/charon-svc.adoc[`*charon-svc*`] for instructions how to
+install the IKE service or run it in a console window.
+xref:swanctl/swanctl.adoc[`*swanctl*`] has more information about configuring the
+IKE service accordingly.

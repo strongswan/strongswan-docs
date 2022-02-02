@@ -17,6 +17,9 @@
 ** xref:daemons/charon-svc.adoc[]
 ** xref:daemons/charon-cmd.adoc[]
 
+.OS
+** xref:os/windows.adoc[Windows]
+
 .Tools
 ** xref:swanctl/swanctl.adoc[]
 ** xref:pki/pki.adoc[]

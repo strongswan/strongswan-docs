@@ -2,7 +2,7 @@
 
 == Purpose
 
-The `*socket-win*` pluginfor `*libcharon*`  is a replacement for `*socket-default*`
+The `*socket-win*` plugin for `*libcharon*`  is a replacement for `*socket-default*`
 on the xref:os/windows.adoc[Windows] platform. It provides an IPv4/IPv6 IKE socket
 backend based on the Winsock2 API.
 
