@@ -1,0 +1,27 @@
+#!/bin/bash
+
+export DROID_ROOT=/path/to/android/source
+export DROID_TARGET=generic
+
+INSTALLDIR=${DROID_ROOT}/external/strongswan-support/libcurl
+
+OPTIONS="\
+  --host=arm-none-linux-gnueabi \
+  --disable-shared \
+  "
+
+CC=droid-gcc \
+LD=droid-ld \
+CFLAGS="-Wall -O2" \
+./configure ${OPTIONS}
+make
+
+mkdir -p ${INSTALLDIR}
+cp lib/.libs/libcurl.a ${INSTALLDIR}
+cp -u ../curl.mk ${INSTALLDIR}/Android.mk
+
+mkdir -p ${INSTALLDIR}/include/curl
+pushd include/curl
+cp *.h ${INSTALLDIR}/include/curl
+popd
+

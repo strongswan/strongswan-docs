@@ -1,0 +1,174 @@
+= strongSwan on Android
+
+:ANDROID:      https://www.android.com
+:ANDROID_SRC:  https://source.android.com/setup/build/downloading
+:ANDROID_DEV:  https://developer.android.com/studio/command-line/adb
+:ANDROID_PLAY: https://play.google.com/store/apps/details?id=org.strongswan.android
+:ANDROID_NDK:  https://developer.android.com/ndk
+:LIBCURL:      https://curl.haxx.se/libcurl/
+:DROID:        https://github.com/tmurakam/droid-wrapper
+:DROID_WEB:    {DROID}/raw/master/droid-gcc
+:DROID_GIT:    git://github.com/tmurakam/droid-wrapper.git
+
+== strongSwan VPN Client for Android
+
+We maintain the {ANDROID_PLAY}[strongSwan VPN Client for Android], an App that
+can be downloaded directly from {ANDROID_PLAY}[Google Play]. More details can be
+found on a xref:androidVpnClient.adoc[separate page].
+
+== Native Build
+
+Using a standalone toolchain from the {ANDROID_NDK}[Android NDK] strongSwan can
+be built to run as a console application/daemon on rooted Android systems.
+
+=== Standalone Toolchain
+
+Detailed instructions on how to create a standalone toolchain can be found in the
+{ANDROID_NDK}[Android NDK] docs. Something like the following will do:
+
+ $NDK/build/tools/make-standalone-toolchain.sh --arch=<arm|x86|mips> \
+     --platform=android-<API level> --install-dir=<path/to/toolchain>
+
+For the instructions in the next section let's assume the toolchain was created
+like this:
+
+ $NDK/build/tools/make-standalone-toolchain.sh --arch=arm \
+     --platform=android-21 --install-dir=/tmp/strongswan-toolchain
+
+=== Build strongSwan
+
+Using the standalone toolchain created before strongSwan can be built from a
+source tree (or the repository) pretty much as usual. Therefore, refer to the
+xref:install/install.adoc#_building_strongswan[installation documentation] for a
+general instruction on how to build strongSwan from sources.
+
+To cross-compile strongSwan for Android use the following when running
+xref:install/autoconf.adoc[`*./configure*`] (`*--host*` has to be adapted
+according to the selected architecture/toolchain):
+----
+export PATH=/tmp/strongswan-toolchain/bin:$PATH
+./configure --host=arm-linux-androideabi <other options as needed>
+----
+
+NOTE: Depending on the API level, the older Linux headers included in the toolchain
+      might make it necessary to add some additional headers in source:src/include
+      or to revert the headers there to versions closer to the ones included in
+      the toolchain.
+
+== System Image
+
+strongSwan can also be built for inclusion in an {ANDROID}[Android] system image,
+i.e. directly within the Android source tree. The rest of this document describes
+how to do so.
+
+NOTE: These instructions are quite old and might not work anymore.
+
+=== Android Source Tree
+
+You will need the complete Android source tree to build strongSwan. Instructions
+on how to download and build it can be found on the {ANDROID_SRC}[Android website].
+To checkout a specific branch or tag of the sources, specify it with the `*-b*`
+parameter when using the `*repo init*` command.
+
+Since building the whole source tree takes quite a while you should probably start
+with this first (use `*-j*` to speed this up on multi-core machines):
+----
+cd /path/to/android/source
+. build/envsetup.sh
+lunch <target>
+make -j<jobs>
+----
+
+=== Android Kernel
+
+The prebuilt kernel that is used for the emulator lacks some modules required for
+strongSwan to work correctly. It is therefore required to build a custom kernel.
+To get the current kernel config you can use the {ANDROID_DEV}[Android Debug Bridge]
+to download it from the running emulator. After starting the emulator use
+
+ adb pull /proc/config.gz config.gz
+
+to copy the config to the current directory. Then enable the missing modules,
+this is mainly `*CONFIG_XFRM_USER*` and `*CONFIG_INET_XFRM_MODE_TUNNEL*` but might
+include other modules. Please compare your config to the list of
+xref:install/kernelModules.adoc[required modules]. Please note that some modules,
+especially all the IPv6 related modules, are not really required.
+
+Clone the kernel sources and check out an appropriate tag (check the version of
+the kernel in the emulator). For example (this is for Android 2.2):
+----
+git clone https://android.googlesource.com/kernel/goldfish kernel
+cd kernel
+git checkout -t origin/android-goldfish-2.6.29
+----
+
+You can then copy your config to this directory and compile the kernel sources using
+----
+export ARCH=arm
+export CROSS_COMPILE=/path/to/android/source/prebuilt/linux-x86/toolchain/arm-eabi-4.4.0/bin/arm-eabi-
+make oldconfig
+make -j<jobs>
+----
+To start the emulator using your custom kernel use the following command.
+
+ emulator -kernel /path/to/kernel/source/arch/arm/boot/zImage &
+
+=== libcURL
+
+Optionally {LIBCURL}[`*libcurl*`] can be used to fetch CRLs. The library is also
+required if you intend to build xref:tools/scepclient.adoc[`*scepclient*`]. You
+can build the `*libcurl*` library with *droid-gcc*.
+
+==== droid-gcc
+
+Since `*droid-gcc*` is written in Ruby you'll obviously need *Ruby* installed on
+your build system. Then download `*droid-gcc*` by either cloning the Git tree
+({DROID}[`clone {DROID_GIT}`]) or by downloading it {DROID_WEB}[directly].
+
+If you used Git you can install `*droid-gcc*` using `*make install*`. If you
+downloaded it directly, you have to manually create two symlinks to `*droid-gcc*`
+named `*droid-gcc*` and `*droid-ld*` in a directory that is included in your
+`*PATH*` environment variable.
+
+==== Build the Library
+
+To simplify building the `*libcurl*` library, a
+link:../_attachments/curl.build[build script] and an
+link:../_attachments/curl.mk[Android Makefile] are attached to this page. Download
+the two helper files to an appropriate working directory and then download and
+extract the current source tarball of `*libcurl*`.
+
+Adjust the variables in the build script (`*DROID_ROOT*` and optionally
+`*DROID_TARGET*` and `*INSTALLDIR*`). Make sure you specify `*DROID_ROOT@` as an
+absolute path. Then build and install `*libcurl*` using
+----
+cd curl-x.x.x
+. ../curl.build
+----
+
+=== strongSwan
+
+Now you are ready to build strongSwan. Download the current tarball and extract
+it in `*DROID_ROOT/external*`. A symlink to the strongSwan source tree also works
+with newer Android releases.
+
+If you build directly from the strongSwan Git repository instead of a tarball,
+the sources have to be prepared properly, otherwise the build will fail. In the
+root of the strongSwan sources run the following to create the required files
+(this has some external dependencies, see `source:HACKING` for details):
+
+  ./autogen.sh && ./configure && make dist && rm strongswan-*.tar.gz
+
+If you changed `*INSTALLDIR*` in the build scripts above, you will have to change
+the top `*Android.mk*` (or `*Android.mk.in*`) accordingly. You can also adjust
+the plugin list in the that file or enable/disable executables.
+
+The executable you want to include in the system image (charon, scepclient) have
+to be added to `*PRODUCT_PACKAGES*` in `*build/target/product/core.mk*`. The
+libraries are automatically installed.
+
+Now just build the Android source tree.
+----
+cd /path/to/android/source
+make
+----

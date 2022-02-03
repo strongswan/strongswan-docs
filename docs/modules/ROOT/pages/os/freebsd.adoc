@@ -1,0 +1,86 @@
+= strongSwan on FreeBSD
+
+:FREEBSD:   https://www.freebsd.org
+:BSD_FORUM: https://forums.freebsd.org/threads/strongswan-doesnt-follow-network-ip-changes.40671/#post-226838
+:BSD_DOCS:  https://docs.freebsd.org/en/books/handbook/kernelconfig/#kernelconfig-building
+:BSD_PORT:  https://www.freshports.org/security/strongswan
+:TARBALL:   https://www.strongswan.org/download.html
+
+The IKE xref:daemons/charon.adoc[`*charon*`] daemon also runs on {FREEBSD}[FreeBSD].
+
+== Prepare FreeBSD
+
+* Starting with FreeBSD 11, IPsec is now enabled in the kernel by default. However,
+  if you need NAT Traversal you will still have to enable the `*IPSEC_NAT_T*`
+  option and build your own kernel (see xref:#_build_the_kernel[below]).
+
+* FreeBSD 11.1 and above now has NAT-T included as well and GENERIC kernel will
+  work.
+
+* In versions older than FreeBSD 11.0 the generic kernel does not come with IPsec
+  support enabled. So you will have to compile your own kernel.
+
+* The NAT Traversal patch is included in the kernel sources since FreeBSD 8, so
+  you don't have to apply any patches yourself if you need that feature.
+
+=== Build the Kernel
+
+Basic documentation on how to build a custom kernel can be found in the
+{BSD_DOCS}[FreeBSD Handbook]. To enable IPsec you'll need to add the following
+options to your kernel configuration file:
+----
+options   IPSEC
+device    crypto
+----
+You can verify that your kernel has IPsec support using the following command
+which should print a list of ipsec specific kernel state.
+
+ /sbin/sysctl -a | grep ipsec
+
+If you need NAT Traversal, add the following option to your kernel config:
+
+ options   IPSEC_NAT_T
+
+== Install FreeBSD Port / Package
+
+The easiest way to install strongSwan on FreeBSD is to use the
+{BSD_PORT}[security/strongswan] port
+
+ cd /usr/ports/security/strongswan/ && make install clean
+
+or to install the binary package with
+
+ pkg install strongswan
+
+or in earlier FreeBSD releases with
+
+ pkg_add -r strongswan
+
+== Manual Installation
+
+=== Install Packages
+
+Our test-system was installed using the Developer and Kern-Developer distributions
+in `*sysinstall*`. So there are maybe additional packages required on your system.
+
+The packages required to build strongSwan are as follows:
+
+* `*libgmp*` (optional, depending on configuration)
+* `*openssl*` (optional, depending on configuration)
+
+=== Building strongSwan
+
+Get the latest {TARBALL}[tarball] and configure strongSwan as follows (this
+compiles the GMP plugin, so `*libgmp*` is required). For details refer to the
+xref:install/install.adoc[Installation Documentation].
+----
+./configure --enable-kernel-pfkey --enable-kernel-pfroute --disable-kernel-netlink \
+            --disable-scripts --with-group=wheel
+----
+
+== Limitations
+
+Because there is currently no way to change the IP addresses of an installed
+`IPsec SA` in the FreeBSD kernel, `IPsec SAs` are rekeyed when a client's IP
+address changes. This {BSD_FORUM}[discussion] on the FreeBSD forums has more on
+this.
