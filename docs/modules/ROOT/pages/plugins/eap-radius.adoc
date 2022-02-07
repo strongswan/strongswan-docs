@@ -703,5 +703,5 @@ connections {
   }
 }
 ----
-The native iOS and OS X clients are known to work fine with multiple
+The native iOS and macOS clients are known to work fine with multiple
 authentication rounds.

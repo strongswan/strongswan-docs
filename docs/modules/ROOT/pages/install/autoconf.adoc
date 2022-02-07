@@ -311,7 +311,7 @@ plugins.
 |enable Windows Filtering Platform IPsec backend
 
 |--enable-keychain                                           |5.1.0
-|enable Mac OS X Keychain Services credential set
+|enable macOS Keychain Services credential set
 
 |--enable-libipsec                                           |
 |enable user space IPsec implementation
@@ -380,7 +380,7 @@ plugins.
 |enable [OpenSSL] crypto plugin. Requires `libcrypto` library
 
 |--enable-osx-attr                                           |5.1.0
-|enable Mac OS X SystemConfiguration attribute handler
+|enable macOS SystemConfiguration attribute handler
 
 |--enable-p-cscf                                             |5.4.0
 |enable plugin to request P-CSCF server addresses from an ePDG

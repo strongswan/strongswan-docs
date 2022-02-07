@@ -15,7 +15,7 @@ implementation, see {GITHUB}/src/libipsec/[`source:src/libipsec`].
 Both other kernel interfaces, `*kernel-netlink*` (the default) and `*kernel-pfkey*`,
 install IPsec SAs in the operating system's IPsec stack. This plugin provides an
 alternative, for instance, if the OS implementation does not support a required
-algorithm (e.g. AES-GCM on Mac OS X). However, it generally performs worse than
+algorithm (e.g. AES-GCM on macOS). However, it generally performs worse than
 the OS kernel's IPsec stack. In particular, when handling a lot of SAs and/or
 traffic, thus it is **not recommended to be used on security gateways**.
 
@@ -46,7 +46,7 @@ NOTE: `*libipsec*` is not intended for scenarios with high amounts of traffic or
       device. SA and policy lookups are also not particularly optimized.
 
 On systems that use the `*kernel-pfroute*` plugin (xref:os/freebsd.adoc[FreeBSD]
-or xref:os/osx.adoc[Mac OSX]) a separate TUN device will be created for each
+or xref:os/macos.adoc[macOS]) a separate TUN device will be created for each
 xref:features/vip.adoc[virtual IP]. On Linux this is not required.
 
 == Configuration

@@ -62,7 +62,7 @@ be specified as a comma-separated list.
 
 |subnet   |INTERNAL_IP4_SUBNET |13
 |The protected sub-networks that this edge-device protects (in `CIDR` notation).
- Usually ignored in deference to `*local_ts*`, though Mac OS X clients will use
+ Usually ignored in deference to `*local_ts*`, though macOS clients will use
  this for routes
 |===
 
@@ -128,7 +128,7 @@ the attribute value.
 |28675        |UNITY_SPLITDNS_NAME |28675
 |If split tunneling is used clients might not install the assigned DNS servers
  globally. This space-separated list of domain names allows clients, such as
- Mac OS X, to selectively query the assigned DNS servers. Seems Mac OS X uses
+ macOS, to selectively query the assigned DNS servers. Seems Mac OS X uses
  only the first item in the list
 
 |split-include|UNITY_SPLIT_INCLUDE |28676

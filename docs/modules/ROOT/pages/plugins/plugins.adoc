@@ -106,7 +106,7 @@ for specific needs.
 |HMAC wrapper using various hashers
 
 |keychain                                 | |e
-|Mac OS X Keychain Services credential set
+|macOS Keychain Services credential set
 
 |ldap                                     | |s
 |LDAP fetching plugin based on libldap
@@ -368,7 +368,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |Web interface based mediation server interface
 
 |osx-attr                                 | |e
-|Mac OS X SystemConfiguration attribute handler
+|macOS SystemConfiguration attribute handler
 
 |p-cscf                                   | |s
 |Plugin that requests P-CSCF server addresses from an ePDG ({RFC7651}[RFC 7651])

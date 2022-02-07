@@ -21,6 +21,7 @@
 ** xref:os/android.adoc[Android]
 ** xref:os/windows.adoc[Windows]
 ** xref:os/freebsd.adoc[FreeBSD]
+** xref:os/macos.adoc[macOS]
 
 .Tools
 ** xref:swanctl/swanctl.adoc[]

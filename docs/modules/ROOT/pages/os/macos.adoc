@@ -1,0 +1,128 @@
+= strongSwan on macOS
+
+:MACOS:    https://www.apple.com/macos/monterey/
+:MACPORTS: https://www.macports.org/
+:SUPPORT:  https://support.apple.com/guide/mac-help/set-up-a-vpn-connection-on-mac-mchlp2963/mac
+:BREW:     https://brew.sh/
+:OSX:      https://download.strongswan.org/osx/
+:GITHUB:   https://github.com/strongswan/strongswan
+
+The IKE xref:daemons/charon.adoc[`*charon*`] daemon also runs on {MACOS}[macOS].
+
+== Homebrew
+
+strongSwan can be installed via {BREW}[Homebrew]. The `*strongswan*` Formula makes
+installing and updating the current release very simple. The plugin configuration
+is most suitable for road-warrior access,i.e. plugins specifically designed for
+use on gateways are disabled (e.g. xref:plugins/attr.adoc[`*attr*`] or
+xref:plugins/eap-radius.adoc[`*eap-radius*`]).
+
+ $ brew install strongswan
+
+`*sudo*` is not required to install strongSwan but is later needed when running
+xref:swanctl/swanctl.adoc[`*swanctl*`] or
+xref:daemons/charon-cmd.adoc[`*charon-cmd*`].
+
+== Building from the Git Repository
+
+It's also possible to build strongSwan manually from the Git repository or a
+source tarball. Build dependencies can be installed via Homebrew or e.g.
+{MACPORTS}[MacPorts].
+
+NOTE: When building from a tarball on *macOS 11 or newer*, it's necessary to patch
+      *configure* so libraries are  built correctly. When building from the
+      repository, a patched version of libtool can avoid that. Please refer to
+      {GITHUB}/issues/683[#683] for details.
+
+=== Requirements
+
+If you build from the Git repository the tools/packages listed in
+{GITHUB}/blob/master/HACKING[`source:HACKING`] have to be installed. Depending on
+your plugin configuration, other packages may be required, such as the GMP library
+or a newer release of the OpenSSL library.
+
+=== Building strongSwan
+
+The regular xref:install/install.adoc[installation instructions] may be followed
+to build strongSwan. The following xref:install/autoconf.adoc[`*./configure*`]
+options are either required or recommended:
+
+[cols="1,2"]
+|===
+
+|`*--disable-kernel-netlink*`
+|Required to disable the Linux-specific kernel interface
+
+|`*--enable-kernel-pfroute*`
+|Required to enable the interface to the macOS network stack
+
+|`*--enable-kernel-pfkey*`
+|Required to enable the interface to the macOS IPsec stack. Alternatively the
+ `*--enable-kernel-libipsec*` option may be used to enable strongSwan's
+ xref:plugins/kernel-libipsec.adoc[userland IPsec implementation] that provides
+ support for AES-GCM (depending on plugin configuration) in IPsec processing
+ which older macOS kernels don't.
+
+|`*--disable-gmp +
+   --enable-openssl*`
+|Recommended to avoid additional dependencies by using the system's OpenSSL
+ library instead of the GMP library for public key cryptography
+
+|`*--enable-osx-attr*`
+|Recommended to enable DNS server installation via `*SystemConfiguration*`
+
+|`*--disable-scripts*`
+|Required because these scripts are not fully portable
+|===
+
+When building with Homebrew, it's necessary to adjust environment variables such
+as `*PATH*`, `*ACLOCAL_PATH*`, `*PKG_CONFIG_PATH*`, `*CPPFLAGS*` and `*LDFLAGS*`
+depending on the libraries that are used. See the `*macos*` case in
+{GITHUB}/blob/master/scripts/test.sh[`source:scripts/test.sh`] for details.
+
+With MacPorts using `*--with-lib-prefix=/opt/local*` might be enough as all
+libraries and header files are located in `*/opt/local*`.
+
+== Native Application
+
+We previously maintained a native application for macOS 10.7 and newer. It allowed
+easy road-warrior access in a similar fashion as the
+xref:features/networkManager.adoc[NetworkManager] integration does on Linux.
+
+With the availability of the standard IKEv1/IKEv2 client integration in more
+recent versions of macOS, we have decided that continuing maintenance of a native
+application build is no longer required. For information on using the integrated
+VPN client in `*macOS*` see {SUPPORT}[Mac support].
+
+It featured:
+
+* An easy to deploy unprivileged strongSwan.app, providing a simple graphical
+  user interface to manage and initiate connections
+
+* Automatic installation of a privileged helper tool (IKE daemon)
+
+* Gateway/CA certificates get fetched from the macOS Keychain service
+
+* Currently supported are IKEv2 connections using EAP-MSCHAPv2 or EAP-MD5 client
+  authentication
+
+* *The app does not send certificate requests*. So unless the gateway's certificate
+  is installed in the client's Keychain, the server has to be configured with
+  `*connections.<conn>.send_cert  = always*`. Otherwise the client won't have the
+  gateway's certificate available, causing the authentication to fail.
+
+* Requires a 64-bit Intel processor and OS X 10.7 or higher
+
+Archived builds of strongSwan for OS X can be found on http://download.strongswan.org/osx.
+
+
+== Limitations
+
+* macOS 10.5 doesn't provide any means (e.g. `*IP_PKTINFO*` or `*IP_SENDSRCADDR*`)
+  to set the source address of IPv4 UDP packets sent over wildcard sockets.
+  This could be a problem for multihomed gateways.
+
+* The `*kernel-pfroute*` interface lacks some final tweaks to fully support MOBIKE.
+  Due to a limitation of the macOS kernel (IPsec SAs can't be updated if an IP
+  address changes) IPsec SAs have to be rekeyed instead of updated with a simple
+  MOBIKE message.

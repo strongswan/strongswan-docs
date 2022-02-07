@@ -20,8 +20,8 @@ The IKE xref:daemons/charon.adoc[`*charon*`] daemon also runs on {FREEBSD}[FreeB
 * In versions older than FreeBSD 11.0 the generic kernel does not come with IPsec
   support enabled. So you will have to compile your own kernel.
 
-* The NAT Traversal patch is included in the kernel sources since FreeBSD 8, so
-  you don't have to apply any patches yourself if you need that feature.
+* Since FreeBSD 8, the NAT Traversal patch is included in the kernel sources,
+  so you don't have to apply any patches yourself if you need that feature.
 
 === Build the Kernel
 
@@ -72,7 +72,7 @@ The packages required to build strongSwan are as follows:
 
 Get the latest {TARBALL}[tarball] and configure strongSwan as follows (this
 compiles the GMP plugin, so `*libgmp*` is required). For details refer to the
-xref:install/install.adoc[Installation Documentation].
+xref:install/install.adoc[installation documentation].
 ----
 ./configure --enable-kernel-pfkey --enable-kernel-pfroute --disable-kernel-netlink \
             --disable-scripts --with-group=wheel
