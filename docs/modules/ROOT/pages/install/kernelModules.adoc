@@ -1,0 +1,106 @@
+= Required Kernel Modules
+
+Include the following modules:
+----
+Networking  --->
+  Networking options  --->
+    Transformation user configuration interface [CONFIG_XFRM_USER]
+    TCP/IP networking [CONFIG_INET]
+      IP: advanced router [CONFIG_IP_ADVANCED_ROUTER]
+      IP: policy routing [CONFIG_IP_MULTIPLE_TABLES]
+      IP: AH transformation [CONFIG_INET_AH]
+      IP: ESP transformation [CONFIG_INET_ESP]
+      IP: IPComp transformation [CONFIG_INET_IPCOMP]
+    The IPv6 protocol ---> [CONFIG_IPV6]
+      IPv6: AH transformation [CONFIG_INET6_AH]
+      IPv6: ESP transformation [CONFIG_INET6_ESP]
+      IPv6: IPComp transformation [CONFIG_INET6_IPCOMP]
+      IPv6: Multiple Routing Tables  [CONFIG_IPV6_MULTIPLE_TABLES]
+    Network packet filtering framework (Netfilter) ---> [CONFIG_NETFILTER]
+      Core Netfilter Configuration --->
+        Netfilter Xtables support [CONFIG_NETFILTER_XTABLES]
+          IPsec "policy" match support [CONFIG_NETFILTER_XT_MATCH_POLICY]
+----
+
+NOTE: For kernel versions before 5.2, the required IPsec modes have to be enabled
+      explicitly (they are built-in for newer kernels).
+
+----
+Networking  --->
+  Networking options  --->
+    TCP/IP networking [CONFIG_INET]
+      IP: IPsec transport mode [CONFIG_INET_XFRM_MODE_TRANSPORT]
+      IP: IPsec tunnel mode [CONFIG_INET_XFRM_MODE_TUNNEL]
+      IP: IPsec BEET mode [CONFIG_INET_XFRM_MODE_BEET]
+    The IPv6 protocol ---> [CONFIG_IPV6]
+      IPv6: IPsec transport mode [CONFIG_INET6_XFRM_MODE_TRANSPORT]
+      IPv6: IPsec tunnel mode [CONFIG_INET6_XFRM_MODE_TUNNEL]
+      IPv6: IPsec BEET mode [CONFIG_INET6_XFRM_MODE_BEET]
+----
+
+NOTE: For kernel versions 4.2-4.5, you will have to select
+      *Encrypted Chain IV Generator* manually in order to use any encryption
+      algorithm in CBC mode.
+
+----
+Cryptographic API
+   Select algorithms you want to use...
+   Encrypted Chain IV Generator [CRYPTO_ECHAINIV]
+----
+
+== Name List of Required Modules
+
+Make sure you have the following modules loaded when you try to establish a tunnel:
+----
+ah4
+ah6
+esp4
+esp6
+xfrm4_tunnel
+xfrm6_tunnel
+xfrm_user
+ip_tunnel
+tunnel
+tunnel6
+xfrm4_mode_tunnel
+xfrm6_mode_tunnel
+----
+
+== Optional Modules
+
+----
+pcrypt
+xfrm_ipcomp
+deflate
+----
+For information about `*pcrypt*` see [[Pcrypt|the page about pcrypt]].
+If you want to use compression (`*compress=yes*`), you need the `*xfrm_ipcomp*`
+module and the `*deflate*` module for the compression algorithm.
+
+== Shell Script Checking Required Kernel Modules
+
+----
+#!/bin/sh
+grep '\<CONFIG_XFRM_USER\>' /boot/config-`uname -r`
+grep '\<CONFIG_NET_KEY\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET\>' /boot/config-`uname -r`
+grep '\<CONFIG_IP_ADVANCED_ROUTER\>' /boot/config-`uname -r`
+grep '\<CONFIG_IP_MULTIPLE_TABLES\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET_AH\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET_ESP\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET_IPCOMP\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET_XFRM_MODE_TRANSPORT\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET_XFRM_MODE_TUNNEL\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET_XFRM_MODE_BEET\>' /boot/config-`uname -r`
+grep '\<CONFIG_IPV6\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET6_AH\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET6_ESP\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET6_IPCOMP\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET6_XFRM_MODE_TRANSPORT\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET6_XFRM_MODE_TUNNEL\>' /boot/config-`uname -r`
+grep '\<CONFIG_INET6_XFRM_MODE_BEET\>' /boot/config-`uname -r`
+grep '\<CONFIG_IPV6_MULTIPLE_TABLES\>' /boot/config-`uname -r`
+grep '\<CONFIG_NETFILTER\>' /boot/config-`uname -r`
+grep '\<CONFIG_NETFILTER_XTABLES\>' /boot/config-`uname -r`
+grep '\<CONFIG_NETFILTER_XT_MATCH_POLICY\>' /boot/config-`uname -r`
+----

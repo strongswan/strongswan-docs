@@ -1,6 +1,7 @@
 .Installation
 ** xref:install/install.adoc[]
 ** xref:install/autoconf.adoc[]
+** xref:install/kernelModules.adoc[]
 
 .Configuration
 ** xref:config/strongswanConf.adoc[]
