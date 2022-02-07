@@ -1,4 +1,5 @@
 .Installation
+** xref:install/install.adoc[]
 ** xref:install/autoconf.adoc[]
 
 .Configuration

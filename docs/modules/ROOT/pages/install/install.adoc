@@ -1,0 +1,145 @@
+= Installation Documentation
+
+:ARCH:    https://www.archlinux.org/packages/?sort=&q=strongswan
+:DEBIAN:  https://packages.debian.org/search?keywords=strongswan&searchon=names&suite=all&section=all
+:UBUNTU:  https://packages.ubuntu.com/search?keywords=strongswan&searchon=names&suite=all&section=all
+:SUSE:    https://software.opensuse.org/search?utf8=%E2%9C%93&baseproject=ALL&q=strongswan
+:GENTOO:  https://packages.gentoo.org/packages/search?q=strongswan
+:FEDORA:  https://apps.fedoraproject.org/packages/strongswan/overview/
+:REDHAT:  https://pkgs.org/download/strongswan
+:FREEBSD: https://www.freshports.org/security/strongswan/
+:BREW:    https://formulae.brew.sh/formula/strongswan#default
+:TARBALL: https://www.strongswan.org/download.html
+:GITHUB:  https://github.com/strongswan/strongswan
+:CHEF:    https://supermarket.chef.io/cookbooks
+:PUPPET:  https://forge.puppet.com/
+
+== Distribution Packages
+
+There are currently packages for:
+
+* {ARCH}[Arch Linux]
+
+* {DEBIAN}[Debian]
+
+* {UBUNTU}[Ubuntu]
+
+* {SUSE}[openSUSE]
+
+* {GENTOO}[Gentoo]
+
+* {FEDORA}[Fedora]
+
+* {REDHAT}[Red Hat Enterprise Linux and CentOS via EPEL]
+
+* {FREEBSD}[FreeBSD]
+
+* {BREW}[Homebrew] (macOS)
+
+== Compile strongSwan Yourself
+
+=== Linux Kernel Requirements
+
+strongSwan should run on most distros' kernels. If you build your own kernel,
+include the required xref:install/kernelModules.adoc[kernel modules].
+
+=== Building strongSwan
+
+The GNU build system (Autotools) is used to build strongSwan. There is an ever
+growing list of xref:install/autoconf.adoc[`*./configure*`] options available.
+
+NOTE: Many of these configuration options are enabled by default. Thus please
+      use *./configure --help* to check which options are actually available for
+      your strongSwan release.
+
+Refer to the xref:plugins/plugins.adoc[list of plugins] to learn more about the
+plugins enabled with the above options.
+
+NOTE: Some plugins have *dependencies on third-party libraries*. To compile these
+      plugins the header files of those libraries are required. Make sure these
+      are installed on your system, e.g. by installing the appropriate *-dev*
+      package on Debian-based systems. Otherwise the configure script will
+      complain that it can't find the library or header files.
+
+The build procedure is as with any autotools project:
+
+. {TARBALL}[Download strongSwan]:
++
+----
+wget https://download.strongswan.org/strongswan-x.x.x.tar.bz2
+----
+
+. Unpack the tarball and navigate into the directory:
++
+----
+tar xjf strongswan-x.x.x.tar.bz2; cd strongswan-x.x.x
+----
+
+. Configure strongSwan using the xref:install/autoconf.adoc[available options]:
++
+----
+./configure --prefix=/usr --sysconfdir=/etc --<your-options>
+----
+
+. Build the sources and install the binaries as root:
++
+----
+make
+sudo make install
+----
+
+=== Building from the Git Repository
+
+To build strongSwan from the Git repository, additional tools and steps are
+required. Check {GITHUB}/blob/master/HACKING[`source:HACKING`] for details.
+
+=== Building on Other Platforms
+
+* xref:os/freebsd.adoc[strongSwan on FreeBSD]
+
+* xref:os/macos.adoc[strongSwan on macOS]
+
+* xref:os/android.adoc[strongSwan on Android]
+
+* xref:os/windows.adoc[strongSwan on Windows]
+
+=== Monolithic Builds
+
+xref:plugins/plugins.adoc[Plugins] can be included in their associated library in
+a so called monolithic build (`*--enable-monolithic*`). That way it's not necessary
+to distribute separate shared object files for each plugin but only the major
+libraries and executables. The plugins that are loaded at runtime may still
+be controlled with the options described xref:plugins/pluginLoad.adoc[here].
+
+==== Static Builds
+
+Since version 5.5.3 a static build that only relies on third-party libraries, i.e.
+in which our own libraries and plugins are all statically linked into the
+executables can be achieved by configuring with
+
+ --disable-shared --enable-static --enable-monolithic
+
+Including third-party static libraries requires manual modification of the Makefiles
+due to limitations of our build system (see e.g. the Makefile for the fuzzing
+targets {GITHUB}//blob/master/fuzz/Makefile.am[`source:fuzz/Makefile.am`]).
+
+== Configuration Management
+
+If you use CM to manage software, there are some options available to help
+configure strongSwan.
+
+=== Chef
+
+Useful cookbooks include:
+
+* {CHEF}/strongswanaws[`*strongswanaws*`]
+
+* {CHEF}/strongswan-base[`*strongswan-base*`]
+
+=== Puppet
+
+Useful modules include:
+
+* {PUPPET}/Nextdoor/strongswan[`*Nextdoor/strongswan*`]
+
+* {PUPPET}/jpds/strongswan[`*jpds/strongswan*`]
