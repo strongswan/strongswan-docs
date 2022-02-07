@@ -75,3 +75,7 @@
 .Platform Security
 * xref:tpm/tpm2.adoc[TPM 2.0]
 * xref:tnc/tnc.adoc[]
+
+.Support
+* xref:support/free.adoc[]
+* xref:support/commercial.adoc[]
