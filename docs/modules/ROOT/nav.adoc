@@ -12,6 +12,7 @@
 
 .Features
 ** xref:features/vip.adoc[]
+** xref:features/networkManager.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]
