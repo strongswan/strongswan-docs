@@ -1,0 +1,271 @@
+= ipsec pool Tool
+
+:COLS: cols="1,6"
+
+== Synopsis
+
+----
+ipsec pool --status|--add|--del|--replace|--resize|--leases|--purge|--batch [options]
+
+ipsec pool --showattr|--statusattr|--addattr|--delattr [options]
+----
+
+== Description
+
+The `*ipsec pool*` utility manages virtual IP address pools and attributes stored
+in an SQL database and provided to peers by the
+xref:plugins/attr-sql.adoc[`*attr-sql*`] plugin.
+
+The auxiliary `*ipsec*` command, if available, sets the execution path to
+`*$\{libexecdir}/ipsec/*` which is usually `*/usr/libexec/ipsec/*` or
+`*/usr/local/libexec/ipsec/*`. The `*$\{libexecdir}*` directory can be configured
+with the `*--libexecdir*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
+option defaulting to `*$\{prefix}/libexec*`).
+
+The `*ipsec pool*` utility is automatically enabled with one of the
+xref:install/autoconf.adoc[`*./configure*`] options
+
+`--enable-attr-sql` or `--enable-sql`
+
+and can be configured with the following
+xref:config/strongswanConf.adoc#_pool[`*strongswan.conf*`] options
+
+[cols="4,1,8"]
+|===
+|Key |Default |Description
+
+include::partial$config/pool.adoc[]
+|===
+
+== Options
+
+`--status`::
+Show a list of installed pools with statistics plus nameserver info.
+
+`--showattr`::
+Show a keyword list of the major attribute types.
+
+`--statusattr [--hexout]`::
++
+[{COLS}]
+|===
+
+|`hexout`
+|Output all values in hex format
+|===
+Show a list of all attributes stored in the database with the values displayed in
+the native format if the type is known by --showattr, or in hex format otherwise.
+
+`--add <name> --start <start> --end <end> [--timeout <timeout>]`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool as used in `*connections.<conn>.pools*` in
+ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+|`start`
+|Start address of the pool
+
+|`end`
+|End address of the pool
+
+|`timeout`
+|Lease time in hours (use `*d*`, `*m*`, or `*s*` to alternatively configure the
+ time in days, minutes or seconds, respectively), `*0*` for static leases
+|===
+Add a new pool to the database.
+
+`--add <name> --addresses <file> [--timeout <timeout>]`::
++
+[{COLS}]
+|===
+
+|`*name*`
+|Name of the pool as used in `*connections.<conn>.pools*` in
+ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+|`*file*`
+|File where newline-separated pool addresses for are read from +
+ Optionally each address can be pre-assigned to a roadwarrior identity, e.g.
+ `*10.231.14.2=\alice@strongswan.org*`. If a `*-*` (hyphen) is given instead of a
+ file name, the addresses are read from `*STDIN*`. Reading addresses stops at the
+ end of file or an empty line. Pools created with this command can not be resized.
+
+|`*timeout*`
+|Lease time in hours (use `*d*`, `*m*`, or `*s*` to alternatively configure the
+ time in days, minutes or seconds, respectively), `*0*` for static leases
+|===
+Add a list of pool addresses to the database.
+
+`--addattr <type> --addr|--mask|--server|--subnet|--string|--hex <value>`::
++
+[{COLS}]
+|===
+
+|`type`
+|A keyword from `--showattr` or a number from the range `*1..32767*`
+
+|`addr`
+|IPv4 or IPv6 address
+
+|`mask`
+|IPv4 or IPv6 netmask (synonym for `--addr`)
+
+|`server`
+|IPv4 or IPv6 address of a server (synonym for --addr)
+
+|`subnet`
+|IPv4 subnet[s] given by network/mask[,network/mask,...]
+
+|`string`
+|Value of a string-type attribute
+
+|`hex`
+|Hex value of any attribute
+|===
+Add a new attribute to the database.
+
+`--del <name>`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool to delete
+|===
+Delete a pool from the database.
+
+`--delattr <type> [--addr|--mask|--server|--subnet|--string|--hex <value>]`::
++
+[{COLS}]
+|===
+
+|`type`
+|A keyword from `--showattr` or a number from the range `*1..32767*`
+
+|`addr`
+|IPv4 or IPv6 address
+
+|`mask`
+|IPv4 or IPv6 netmask (synonym for `--addr`)
+
+|`server`
+|IPv4 or IPv6 address of a server (synonym for `--addr`)
+
+|`subnet`
+|IPv4 subnet[s] given by network/mask[,network/mask,...]
+
+|`string`
+|Value of a string-type attribute
+
+|`hex`
+|Hex value of any attribute
+|===
+Delete a specific or all attributes of a given type from the database.
+
+`--replace <name> --start <start> --end <end> [--timeout <timeout>]`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool as used in `*connections.<conn>.pools*` in
+ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+|`start`
+|Start address of the new pool
+
+|`end`
+|End address of the new pool
+
+|`timeout`
+|Lease time in hours (use `*d*`, `*m*`, or `*s*` to alternatively configure the
+ time in days, minutes or seconds, respectively), `*0*` for static leases
+|===
+Replace an existing pool in the database.
+
+`--replace <name> --addresses <file> [--timeout <timeout>]`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool as used in `*connections.<conn>.pools*` in
+ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+|`*file*`
+|File where newline-separated pool addresses for are read from +
+ Optionally each address can be pre-assigned to a roadwarrior identity, e.g.
+ `*10.231.14.2=alice\@strongswan.org*`. If a `*-*` (hyphen) is given instead of a
+ file name, the addresses are read from `*STDIN*`. Reading addresses stops at the
+ end of file or an empty line. Pools created with this command can not be resized.
+
+|`timeout`
+|Lease time in hours (use `*d*`, `*m*`, or `*s*` to alternatively configure the
+ time in days, minutes or seconds, respectively), `*0*` for static leases
+|===
+Replace a list of pool addresses in the database.
+
+`--resize <name> --end <end>`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool to resize
+
+|`end`
+|New end address for the pool
+|===
+Grow or shrink an existing pool.
+
+`--leases <name> [--filter <filter>] [--utc]`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool to show leases from
+
+|`filter`
+|Filter string containing comma separated key=value filters: +
+ - `pool`: Name of the pool +
+ - `id`: Assigned identity of the lease +
+ - `addr`: Lease IP address +
+ - `tstamp`: UNIX timestamp when lease was valid, as integer +
+ - `status`: Status of the lease: online|valid|expired
+
+|`utc`
+|Show times in UTC instead of local time
+|===
+Show lease information using filters.
+
+`--purge <name>`::
++
+[{COLS}]
+|===
+
+|`name`
+|Name of the pool to purge
+|===
+Delete expired leases of a pool.
+
+`--batch <file>`::
++
+[{COLS}]
+|===
+
+|`file`
+|File to read the newline separated commands from +
+ Commands appear as they are written on the command line, e.g. +
+ `--replace mypool --start 10.0.0.1 --end 10.0.0.254` +
+ `--del dns` +
+ `--add dns --server 10.1.0.1` +
+ `--add dns --server 10.1.1.1` +
+ If a `*-*` (hyphen) is given as a file name, the commands are read from `*STDIN*`.
+ Reading commands stops at the end of file. Empty lines are ignored.
+ In order to avoid recursion the file may not contain a `--batch` command.
+|===
+Read commands from a file and execute them atomically.

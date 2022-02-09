@@ -29,6 +29,7 @@
 .Tools
 ** xref:swanctl/swanctl.adoc[]
 ** xref:pki/pki.adoc[]
+** xref:tools/pool.adoc[]
 
 .Plugins
 * xref:plugins/plugins.adoc[]
