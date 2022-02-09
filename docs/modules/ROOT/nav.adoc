@@ -30,6 +30,7 @@
 ** xref:swanctl/swanctl.adoc[]
 ** xref:pki/pki.adoc[]
 ** xref:tools/pool.adoc[]
+** xref:tnc/pt-tls-client.adoc[]
 
 .Plugins
 * xref:plugins/plugins.adoc[]
