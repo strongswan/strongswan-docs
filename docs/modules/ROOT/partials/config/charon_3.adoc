@@ -63,7 +63,7 @@
 
 |processor.priority_threads                  |
 |Subsection to configure the number of reserved threads per priority class,
- see xref:jobPriority.adoc[Job Priority]
+ see xref:config/jobPriority.adoc[Job Priority]
 
 |rdn_matching                                |[->]
 |How the Relative Distinguished Names (RDNs) a certificate's Subject Distinguished
@@ -186,7 +186,7 @@ set lower than `*0x00000100*` (256) as SPIs between 1 and 255 are reserved by IA
  tasks in internal modules and plugins. Therefore, make sure you don't set this
  value too low. The number of idle worker threads listed in `*swanctl --stats*`
  might be used as indicator on the number of reserved threads.
- (see xref:features/jobPriority.adoc[job priorities])
+ (see xref:config/jobPriority.adoc[Job Priority])
 
 |user                                        |
 |Name of the xref:features/reducedPrivileges.adoc[user] the daemon changes to

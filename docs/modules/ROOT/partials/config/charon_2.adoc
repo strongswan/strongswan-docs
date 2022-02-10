@@ -58,7 +58,7 @@ xref:config/logging.adoc[logger configuration]
 
 |half_open_timeout                           |`30`
 |Timeout in seconds for connecting IKE_SAs, also see
- xref:features/jobPriority#IKE_SA_INIT-dropping[IKE_SA_INIT dropping]
+ xref:config/jobPriority.adoc#_ike_sa_init_dropping[IKE_SA_INIT dropping]
 
 |hash_and_url                                |`no`
 |Enable hash and URL support
@@ -96,11 +96,11 @@ connection attempts are blocked
 
 |init_limit_half_open                        |`0`
 |Limit new connections based on the current number of half open IKE_SAs, see
- xref:features/jobPriority.adoc#IKE_SA_INIT-dropping[IKE_SA_INIT dropping]
+ xref:config/jobPriority.adoc#_ike_sa_init_dropping[IKE_SA_INIT dropping]
 
 |init_limit_job_load                         |`0`
 |Limit new connections based on the number of jobs currently queued for processing,
- see xref:features/jobPriority#IKE_SA_INIT-dropping[IKE_SA_INIT dropping]
+ see xref:config/jobPriority.adoc#_ike_sa_init_dropping[IKE_SA_INIT dropping]
 
 |initiator_only                              |`no`
 |Causes charon daemon to ignore IKE initiation requests
