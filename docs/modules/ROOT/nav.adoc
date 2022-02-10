@@ -32,6 +32,7 @@
 ** xref:tools/pool.adoc[]
 ** xref:tools/scepclient.adoc[]
 ** xref:tnc/pt-tls-client.adoc[]
+** xref:tnc/sw-collector.adoc[]
 
 .Plugins
 * xref:plugins/plugins.adoc[]

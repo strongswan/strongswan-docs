@@ -16,7 +16,7 @@
 |Path pointing to apt `*history.log*` file
 
 |load                                  |
-|Plugins to load in xref:tools/sw-collector.adoc[`*sw-collector*`] tool
+|Plugins to load in xref:tnc/sw-collector.adoc[`*sw-collector*`] tool
 
 |rest_api.timeout                      |`120`
 |Timeout in seconds of `REST API` `HTTP POST` transaction

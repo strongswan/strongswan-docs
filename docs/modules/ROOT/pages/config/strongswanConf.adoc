@@ -948,7 +948,7 @@ include::partial$config/scepclient.adoc[]
 include::partial$config/sec-updater.adoc[]
 |===
 
-=== xref:tnc/sec-collector.adoc[sw-collector]
+=== xref:tnc/sw-collector.adoc[sw-collector]
 [{COLS}]
 |===
 
