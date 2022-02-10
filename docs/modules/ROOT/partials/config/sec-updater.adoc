@@ -1,6 +1,6 @@
 |load                                   |
 
-|Plugins to load in xref:tools/sec-updater.adoc[`*sec-updater*`] tool
+|Plugins to load in xref:tnc/sec-updater.adoc[`*sec-updater*`] tool
 
 |tmp.deb_file                           |[->]
 |Temporary storage for downloaded deb package file.

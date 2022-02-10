@@ -1,0 +1,120 @@
+= sec-updater Tool
+
+:SWID:     https://www.iso.org/standard/65666.html
+:SWID_GEN: https://github.com/strongswan/swidGenerator
+
+== Synopsis
+
+----
+sec-updater [--debug level] [--quiet] [--security] --os string --arch string --uri uri \
+            --file filename
+
+sec-updater -h | --help
+----
+
+== Description
+
+The `*sec-updater*` tool extracts information about security updates and backports
+of Linux repositories (e.g. Debian or Ubuntu). This information is used to update
+the package version information stored in the  strongTNC  SQLite database. The
+`*dpkg --compare-versions*` command is used to determine which package versions
+are affected by a given security update.
+
+== Options
+
+[cols="1,3,10"]
+|===
+
+|`-h`
+|`--help`
+|Prints usage information and a short summary of the available commands
+
+|`-v`
+|`--debug level`
+|Set debug level, default: `*1*`
+
+|`-q`
+|`--quiet`
+|Disable debug output to `*stderr*`
+
+|`-s`
+|`--security`
+|Set when parsing a distributions file with security updates.
+
+|`-o`
+|`--os <string>`
+|Name of operating system (OS). eg. `Ubuntu 16.04`
+
+|`-a`
+|`--arch <string>>
+|Name of HW architecture. eg. `x86_64`
+
+|`-u`
+|`--uri <uri>`
+|URI where to download `*deb*` package from
+
+|`-f`
+|`--file <filename>`
+|Linux package information file to parse
+|===
+
+== Configuration
+
+The following parameters can be configured in the
+xref:config/strongswanConf.adoc#_sec_updater[`*sec-updater*`] section of
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key |Default |Description
+
+include::partial$config/sec-updater.adoc[]
+|===
+
+=== SWID Tag Generation
+
+The parameters of the {SWID_GEN}[`*swid_generator*`] used when a
+{SWID}[ISO 19770-2:2015 SWID] tag has to be derived from a downloaded `*deb*`
+package can be changed in the
+xref:config/strongswanConf.adoc#_libimcv_swid_gen[`*libimcv*`] section of
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key |Default |Description
+
+include::partial$config/libimcv_swid_gen.adoc[]
+|===
+
+=== Example
+
+----
+sec-updater {
+  database = sqlite:///etc/pts/config.db
+  tnc_manage_command = /var/www/tnc/manage.py
+  tmp {
+    deb_file = /tmp/sec-updater.deb
+    tag_file = /tmp/sec-updater.tag
+  }
+}
+
+libimcv {
+  swid_gen {
+    command = /usr/local/bin/swid_generator
+    tag_creator {
+      name = strongSwan Project
+      regid = strongswan.org
+    }
+  }
+}
+----
+
+== Command Use
+
+Here is an example how the `*sec-updater*` command can be used in a script
+file
+
+----
+sec-updater --os "Ubuntu 16.04" --arch "x86_64" --uri http://security.ubuntu.com/ubuntu \
+            --security --file xenial-security/binary-amd64/Packages-main
+----
