@@ -1,0 +1,26 @@
+= scepclient Tool
+
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC8894:  {IETF}/rfc8894
+:IDSCEP:   {IETF}/draft-nourse-scep-11
+
+== Synopsis
+
+----
+ipsec scepclient [argument ...]
+
+ipsec scepclient --help
+----
+
+== Description
+
+The `*scepclient*` tool is a client implementation of the _Simple Certificate
+Enrollment Protocol_ (SCEP).
+
+NOTE: This tool was written in 2005 and only got marginal updates since then.
+      Hence it implements an old version of the SCEP Internet Draft (version
+      10/11 of {IDSCEP}[draft-nourse-scep]). The new SCEP {RFC8894}[RFC 8894] was
+      released in September 2020, so the tool might not be compatible with newer
+      SCEP servers. It also uses default algorithms that are really not
+      state-of-the-art anymore (e.g. `MD5` to hash/sign and single `DES` to
+      encrypt).
