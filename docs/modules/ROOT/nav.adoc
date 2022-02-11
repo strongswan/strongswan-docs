@@ -6,10 +6,10 @@
 
 .Configuration
 ** xref:config/strongswanConf.adoc[]
-** xref:config/strongswanDir.adoc[strongswan.d Directory]
+** xref:config/strongswanDir.adoc[]
 ** xref:config/logging.adoc[]
 ** xref:config/jobPriority.adoc[]
-** xref:swanctl/swanctlConf.adoc[swanctl.conf]
+** xref:swanctl/swanctlConf.adoc[]
 ** xref:swanctl/swanctlDir.adoc[]
 
 .Features

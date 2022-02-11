@@ -93,8 +93,9 @@ whereas
 
     swanctl --load-conns
 
-loads the connections defined in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
-With `start_action = trap` the IPsec connection is automatically set up with the
+loads the connections defined in
+xref:swanctl/swanctlConf.adoc#_connections[`*swanctl.conf*`]. With
+`start_action = trap` the IPsec connection is automatically set up with the
 first plaintext payload IP packet wanting to go through the tunnel.
 
 == Host-to-Host Case
@@ -260,8 +261,9 @@ In our example the virtual IP address is chosen from the address pool
         }
     }
 
-to the gateway's xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] from where they
-are loaded into the xref:daemons/charon.adoc[`*charon*`] daemon using the command
+to the gateway's xref:swanctl/swanctlConf.adoc#_pools[`*swanctl.conf*`] from where
+they are loaded into the xref:daemons/charon.adoc[`*charon*`] daemon using the
+command
 
     swanctl --load-pools
 
@@ -377,8 +379,8 @@ Configuration on gateway _moon_:
     }
 ----
 
-The  xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file additionally contains
-a `*secrets*` section defining all client credentials
+The  xref:swanctl/swanctlConf.adoc#_secrets[`*swanctl.conf*`] file additionally
+contains a `*secrets*` section defining all client credentials
 
         secrets {
             eap-carol {
