@@ -189,7 +189,7 @@ set lower than `*0x00000100*` (256) as SPIs between 1 and 255 are reserved by IA
  (see xref:config/jobPriority.adoc[Job Priority])
 
 |user                                        |
-|Name of the xref:features/reducedPrivileges.adoc[user] the daemon changes to
+|Name of the xref:install/reducedPrivileges.adoc[user] the daemon changes to
  after startup
 
 |x509.enforce_critical                       |`yes`

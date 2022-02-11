@@ -1,0 +1,64 @@
+= Running strongSwan with Reduced Privileges
+
+For most setups, strongSwan can run with reduced privileges. Dropping Linux
+capabilities limits the process to networking operations and prevents an attacker
+from doing evil things, such as installing rootkits. Changing user and group to
+non-root protects files on the system.
+
+== Dropping capabilities
+
+strongSwan supports capability dropping. The IKE
+xref:daemons/charon.adoc[`*charon*`] daemon is started as root and most of it's
+privileges are dropped immediately. After the daemon has been initialized, further
+unneeded capabilities are dropped.
+
+To enable capability dropping, you'll need the `*libcap*` library and you have
+to xref:install/autoconf.adoc#_with_options[`*configure*`] strongSwan with
+
+ --with-capabilities=libcap
+
+Alternatively, the Linux-specific interface (`*capset(2)*`) is also supported
+(`*--with-capabilities=native*`).
+
+Depending on the loaded plugins the xref:daemons/charon.adoc[`*charon*`] daemon
+keeps some capabilities (e.g. `*CAP_NET_ADMIN*` or `*CAP_NET_RAW*`) to be able to
+communicate with the kernel's IPsec subsystem or to use RAW sockets. Therefore a
+potential attacker is still able to fetch and change network configuration options
+but he or she is unable to do greater harm to the system such as installing root kits.
+
+== Running strongSwan as Non-Root
+
+strongSwan allows to run its daemon under a non-root user.
+
+NOTE: Running the IKE daemon as non-root user breaks support for the *iptables*
+      updown script.
+
+`*iptables*` is unable to handle capabilities and does not allow non-root users to
+insert rules even if that user has the required capabilities. If you use a non-root
+user, the script indicated in
+xref:swanctl/swanctlConf.adoc#_connections_conn_children[`*swanctl.conf*`] by
+
+ connections.<conn>.children.<child>.updown
+
+won't work unless you customize the `*updown*` script to use `*sudo*` for calls
+to `*iptables*`. Using a non-root *group* does not affect `*updown*` script support.
+
+To use a non-root user, you'll need to create a new user and group for strongSwan,
+e.g.
+----
+groupadd vpn
+useradd -g vpn vpn
+----
+
+The xref:install/autoconf.adoc#_with_options[`*./configure*`] options
+
+ --with-user=vpn --with-group=vpn
+
+build the IKE daemon with non-root user support. `*make install*` will install
+configuration files with this user/group, but double check existing configuration
+file permissions.
+
+It is also possible to change the user and group later using the `*charon.user*`
+and `*charon.group*` xref:config/strongswanConf.adoc[`*strongswan.conf*`] options,
+respectively. File permissions may have to be adjusted. Otherwise the daemon might
+not be able to access e.g. the xref:swanctl/swanctlDir.adoc[`*swanctl*`] directory.

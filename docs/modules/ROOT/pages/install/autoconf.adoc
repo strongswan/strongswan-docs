@@ -716,7 +716,7 @@ specific plugins.
  specified
 
 |--with-group=GROUP
-|xref:features/reducedPrivileges.adoc[change group] of `charon` daemon to `GROUP`
+|xref:install/reducedPrivileges.adoc[change group] of `charon` daemon to `GROUP`
  after startup. [`root`]
 
 |--with-imcvdir=IMCVDIR
@@ -789,7 +789,7 @@ specific plugins.
 |set the device for pseudo random data. [`/dev/urandom`]
 
 |--with-user=USER
-|xref:features/reducedPrivileges.adoc[change user] of `charon` daemon to USER
+|xref:install/reducedPrivileges.adoc[change user] of `charon` daemon to USER
  after startup. [`root`]
 |===
 

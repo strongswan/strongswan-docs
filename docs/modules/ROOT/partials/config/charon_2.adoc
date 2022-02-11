@@ -53,7 +53,7 @@ xref:config/logging.adoc[logger configuration]
  for IPv4). If specified this limit is used for both IPv4 and IPv6
 
 |group                                       |
-|Name of the xref:features/reducedPrivileges.adoc[group] the daemon changes
+|Name of the xref:install/reducedPrivileges.adoc[group] the daemon changes
  to after startup
 
 |half_open_timeout                           |`30`
