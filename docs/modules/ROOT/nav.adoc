@@ -14,8 +14,9 @@
 
 .Features
 ** xref:features/vip.adoc[]
-** xref:features/networkManager.adoc[]
 ** xref:features/mobike.adoc[]
+** xref:features/natTraversal.adoc[]
+** xref:features/networkManager.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]

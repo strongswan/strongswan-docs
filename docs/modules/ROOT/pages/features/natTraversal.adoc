@@ -1,0 +1,98 @@
+= NAT Traversal
+
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC3947: {IETF}/rfc3947
+
+The IKEv2 protocol includes NAT traversal (NAT-T) in the core standard, but it's
+optional to implement. strongSwan implements it and does not require any special
+configuration. The `NAT_DETECTION_SOURCE_IP` and `NAT_DETECTION_DESTINATION_IP`
+notifications included in the `IKE_SA_INIT` exchange indicate the peer's NAT-T
+capability and allow detecting which peer, if any, is behind a NAT device. If a
+NAT situation is detected, the client switches to UDP port 4500 to send the
+`IKE_AUTH` request (only if it used port 500 initially, see below regarding custom
+ports) and UDP encapsulation will be activated for IPsec SAs.
+
+NAT-T cannot be disabled in the xref:daemons/charon.adoc[`*charon*`] IKE daemon.
+If you don't like the automatic port floating to UDP/4500 due to the
+xref:features/mobike.adoc[MOBIKE] protocol which happens even if no NAT situation
+exists, then you can disable xref:features/mobike.adoc[MOBIKE] by disabling the
+`*mobike*` option in the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+connection definition.
+
+== UDP Encapsulation of ESP
+
+Because ESP packets are unidirectional, NAT devices can't map them like they do
+with e.g. TCP/UDP packets by using the source and destination ports in those headers.
+Some NAT devices have a feature, often called something like "IPsec passthrough"
+that detects IKE traffic from a single host behind the NAT router and will forward
+incoming plain ESP packets to that host. But that won't work with multiple clients
+behind the same NAT router that use the same VPN gateway. To allow multiple clients,
+UDP encapsulation is used. Adding a UDP header to the ESP packets allows NAT
+devices to treat them like the IKE packets (or any other UDP packets) and to
+maintain port mappings to forward the packets from/to the correct hosts behind the
+NAT router.
+
+The UDP-encapsulated ESP packets are sent on the same ports used for IKE traffic.
+To distinguish them from IKE packets, the latter are modified so they contain four
+zero bytes right after the UDP header where the SPI is located in ESP packets
+(known as "non-ESP marker"). This means that the UDP socket/port (4500 by default)
+has to handle traffic differently than the default IKE UDP 500 socket/port. This
+has some implications when using a custom server port (see below).
+
+UDP encapsulation may also be forced, even if no NAT situation is detected by
+using the `*encap = yes*` option in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+If enabled, the daemon will send a manipulated `*NAT_DETECTION_SOURCE_IP*` notify
+payload so that it looks to the peer as if there were a NAT situation.
+
+== NAT-T Keepalives
+
+strongSwan starts sending keepalive packets if it is behind a NAT to keep the
+mappings in the NAT device intact. The interval for these small packets (a single
+`*0xff*` byte after the UDP header) may be configured with the `*charon.keep_alive*`
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] option (set to `*0*` to disable
+sending keepalives, e.g. behind a static DNAT aka port forwarding).
+
+== Custom Server Ports
+
+When using custom server ports, the client for simplicity only uses a single remote
+port configured with `*remote_port*` in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. This means that there will not be
+a port switch while establishing the connection. As described above, if UDP
+encapsulation is used, the ESP packets are sent on the ports already used for IKE
+traffic. Therefore, the server must be prepared to process UDP-encapsulated ESP
+packets on that custom port and consequently is only able to accept IKE packets
+with non-ESP marker on it. That in turn forces the client to send all its IKE
+packets (including the initial `IKE_SA_INIT` request) with a non-ESP marker.
+Otherwise they would be treated as UDP-encapsulated ESP packets.
+
+This has implications for the client and the server configuration:
+
+Server::
+Because the client has to connect to a socket/port that is prepared to process
+UDP-encapsulated ESP packets, the correct setting to specify a custom port is
+`*charon.port_nat_t*`. The `*charon.port*` setting is not relevant in this scenario
+(i.e. the default socket/port will not be used, hence inbound traffic to port 500
+could be blocked).
+
+Client::
+The client must add a non-ESP marker when sending IKE packets to a custom server
+port or port 4500. strongSwan adds one if neither source nor destination port is 500.
+This means the client can't use port 500 in order to already add a non-ESP
+marker when sending the initial `IKE_SA_INIT` request. This can be achieved by
+either setting the local port used for IKE (`*local_port*` in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]) to 4500 or by setting
+`*charon.port*` on the client to either `*0*` to allocate a random port or any
+number != 500 (if that port is not used by any other process), so that the source
+port won't be 500 and does not have to be set explicitly in the connection config.
+If the latter is done, the client will, however, switch to the second source port
+configured via `*charon.port_nat_t*` if a NAT situation is detected or MOBIKE is
+enabled, so setting both to `*0*` usually makes most sense for mobile clients that
+connect to a custom server port (but leaving that at 4500 is usually not a problem,
+either).
+
+== IKEv1
+
+IKEv1 traffic is automatically handled by the xref:daemons/charon.adoc[`*charon*`]
+daemon which supports NAT traversal according to {RFC3947}[RFC 3947] and some of
+its early drafts without having to enable NAT traversal explicitly but it can't
+be disabled either, though.
