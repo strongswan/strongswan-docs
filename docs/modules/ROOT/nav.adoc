@@ -16,6 +16,7 @@
 ** xref:features/vip.adoc[]
 ** xref:features/mobike.adoc[]
 ** xref:features/natTraversal.adoc[]
+** xref:features/integrityTests.adoc[]
 ** xref:features/networkManager.adoc[]
 
 .Daemons

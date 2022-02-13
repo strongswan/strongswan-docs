@@ -1,0 +1,68 @@
+= Integrity Tests
+
+:GITHUB:  https://github.com/strongswan/strongswan/blob/master
+:DIE:     https://linux.die.net
+:PRELINK: {DIE}/man/8/prelink
+:STRIP:   {DIE}/man/1/strip
+
+To detect misconfigurations or non-malicious file manipulations, strongSwan
+supports integrity checking of the executables, libraries (libstrongswan,
+libcharon, etc.) and all loaded plugins. This prevents the IKE daemon from using
+old, incompatible and/or corrupted libraries and plugins.
+
+NOTE: Integrity testing can not detect malicious manipulations by an attacker.
+      This is not the intention, and doing so would require a trusted computing
+      environment.
+
+The used checksums are not cryptographically secure and only have a length of 32
+bits. This is good enough to detect non-malicious errors, FIPS 140-2 actually
+requires only 16 bit for error detection codes.
+
+== Building Checksums
+
+To build strongSwan with integrity checking support, add
+
+ --enable-integrity-test
+
+to your xref:install/autoconf.adoc[`*./configure*`] options. This will create
+checksums of executables like `*charon*`, the libraries and all plugins during
+the build/installation process. The `*checksum_builder*` in
+{GITHUB}/src/checksum[`src/checksum`] will create a `*libchecksum.so*` shared
+library containing all checksums.
+
+== Verifiying Checksums
+
+To enable integrity checking, you additionally have to enable the
+----
+libstrongswan {
+  integrity_test = yes
+}
+----
+option in xref:config/strongswanConf.adoc[`*strongswan.conf*`]. The following
+checks are performed:
+
+library checksums::
+ For the libraries, checksums are created both for on-disk integrity and in-memory
+ code integrity. During library initialization both checksums are checked. Library
+ initialization fails if at least one of the checksums does not match.
+
+executable checksums::
+ If integrity checking is enabled, the executables check their integrity by
+ calculating the checksum of the file named `*argv[0]*` on disk. In-memory checks
+ are currently not implemented.
+
+plugin checksums::
+ The plugin loader checks each plugin on-disk before loading the shared library.
+ If the check was successful, the `plugin gets loaded. Before the plugin gets
+ initialized, the in-memory checksum is verified.
+
+== Portability
+
+Integrity testing has been tested on `*i386*` platforms using `ELF32` and on
+`*x86_64*` platforms using `ELF64` binaries.
+
+== Conflicts
+
+Please be aware that utilities like {STRIP}[`*strip*`] or {PRELINK}[`*prelink*`]
+change `ELF` executables and libraries and therefore cause the integrity test to
+fail miserably.
