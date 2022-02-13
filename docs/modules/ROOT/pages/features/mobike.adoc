@@ -1,0 +1,20 @@
+= MOBIKE
+
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC4555:  {IETF}/rfc4555
+
+The MOBIKE IKEv2 extension ({RFC4555}[RFC 4555]) allows an initiator to change its
+network attachement point (e.g. roam to an other interface/address).
+
+strongSwan implements MOBIKE by watching interfaces, addresses and routes. If the
+configuration changes, route lookups are done to find a better path than the
+current one and, if necessary, the path is changed using a MOBIKE update
+(`UPDATE_SA_ADDRESS`).
+
+strongSwan is running the MOBIKE protocol per default. MOBIKE can be disabled on
+a per-connection basis, though, by adding the parameter `*mobike = no*` to the
+corresponding connection definition in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. Please be aware that with MOBIKE
+enabled, strongSwan will switch to UDP port 4500 starting with the IKE_AUTH request,
+which includes a `MOBIKE_SUPPORTED` notification, even if no NAT has been detected.
+Thus make sure to open the NAT-traversal port UDP/4500 on any firewalls en route.
