@@ -96,20 +96,24 @@
 
 |retransmit_base                             |`1.8`
 |Base to use for calculating exponential back off, see
- xref:retransmission.adoc[Retransmission]
+ xref:config/retransmission.adoc[Retransmission]
 
 |retransmit_jitter                           |`0`
 |Maximum jitter in percent to apply randomly to calculated retransmission timeout
- (`*0*` to disable)
+ (`*0*` to disable), see
+ xref:config/retransmission.adoc[Retransmission]
 
 |retransmit_limit                            |`0`
-|Upper limit in seconds for calculated retransmission timeout (`*0*` to disable)
+|Upper limit in seconds for calculated retransmission timeout (`*0*` to disable),
+ see xref:config/retransmission.adoc[Retransmission]
 
 |retransmit_timeout                          |`4.0`
-|Timeout in seconds before sending first retransmit
+|Timeout in seconds before sending first retransmit, see
+ xref:config/retransmission.adoc[Retransmission]
 
 |retransmit_tries                            |`5`
-|Number of times to retransmit a packet before giving up
+|Number of times to retransmit a packet before giving up, see
+ xref:config/retransmission.adoc[Retransmission]
 
 |retry_initiate_interval                     |`0`
 |Interval in seconds to use when retrying to initiate an `IKE SA` e.g. if DNS

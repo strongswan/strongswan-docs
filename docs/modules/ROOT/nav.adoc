@@ -10,6 +10,7 @@
 ** xref:config/logging.adoc[]
 ** xref:config/jobPriority.adoc[]
 ** xref:config/lookupTuning.adoc[]
+** xref:config/retransmission.adoc[]
 ** xref:swanctl/swanctlConf.adoc[]
 ** xref:swanctl/swanctlDir.adoc[]
 

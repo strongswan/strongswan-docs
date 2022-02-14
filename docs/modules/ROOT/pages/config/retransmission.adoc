@@ -1,0 +1,59 @@
+= Retransmission
+
+Retransmission timeouts in the IKE xref:daemons/charon.adoc[`*charon*`] daemon
+can be configured globally via xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+options.
+
+The following keys are used to configure retransmission behavior:
+
+[cols="3,1,1,6"]
+|===
+|Key |Type |Default |Description
+
+|charon.retransmit_tries   |Integer |`5`
+|Number of retransmissions to send before giving up
+
+|charon.retransmit_timeout |Double  |`4.0`
+|Timeout in seconds
+
+|charon.retransmit_base    |Double  |`1.8`
+|Base of exponential backoff
+
+|charon.retransmit_jitter  |Integer |`0`
+|Maximum jitter in percent to apply randomly to calculated retransmission timeout
+ (`*0*` to disable)
+
+|charon.retransmit_limit   |Integer |`0`
+|Upper limit in seconds for calculated retransmission timeout (`*0*` to disable)
+|===
+
+The following formula is used to calculate the timeout:
+
+ relative timeout = retransmit_timeout * retransmit_base ^ (n-1)
+
+Where `*n*` is the current retransmission count. The calculated timeout can't
+exceed the configured `*retransmit_limit*` (if any) which is useful if the number
+of retries is high.
+
+If a jitter in percent is configured, the timeout is modified as follows:
+
+ relative timeout = relative timeout - random(0, retransmit_jitter * relative timeout)
+
+Using the default values, packets are retransmitted as follows:
+
+[cols="1,1,1,1"]
+|===
+|Retransmission |Formula |Relative timeout |Absolute timeout
+
+|1         |4 * 1.8 ^ 0 | 4s |  4s
+
+|2         |4 * 1.8 ^ 1 | 7s | 11s
+
+|3         |4 * 1.8 ^ 2 |13s | 24s
+
+|4         |4 * 1.8 ^ 3 |23s | 47s
+
+|5         |4 * 1.8 ^ 4 |42s | 89s
+
+|giving up |4 * 1.8 ^ 5 |76s |165s
+|===

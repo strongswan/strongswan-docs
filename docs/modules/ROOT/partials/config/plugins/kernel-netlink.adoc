@@ -79,5 +79,5 @@
  Indirectly controls the delay between XFRM acquire messages triggered by the
  kernel for a trap policy. The same value is used as timeout for SPIs allocated
  by the kernel. The default value equals the default total
- xref:retransmission.adoc[retransmission timeout] for IKE messages (since
+ xref:config/retransmission.adoc[retransmission timeout] for IKE messages (since
  version 5.5.3 this value is determined dynamically based on the configuration)
