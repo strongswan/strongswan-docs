@@ -1,0 +1,70 @@
+= Tuning IKE SA Lookup
+
+:GITHUB: https://github.com/strongswan/strongswan/blob/master
+:SRC:    src/libcharon/sa/ike_sa_manager.c
+
+The `IKE SA` storage that was initially implemented using a linked list, can
+optionally be replaced with a more efficient hash table. However, linear search
+is just fine for clients and small gateways and is therefore still the default
+method. But if you are running a gateway with several thousand active IKE SAs,
+you should consider optimizing the lookup by using the hash table approach.
+
+== Hash Table Size
+
+Each entry in the hash table contains a linear list of IKE SAs. In the default
+configuration only one list is used and lookups are performed by searching the list.
+
+The optimal size of the hash table depends on your setup and the number of IKE SAs
+you usually have installed on the box. A hash table entry for each IKE SA is
+probably overkill as each entry contains additional overhead. 5 to 20 IKE_SAs in
+each hash table entry is probably a good value. So if you expect to have 20000
+clients connected simultaneously, you might choose a hash table size between
+500 and 4000. If performance is really critical, you should do some tests to get
+the best value for your setup.
+
+The hash table size is configured in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] and should be a power of two.
+Otherwise the table size will be rounded up to the next higher power of two anyway:
+----
+charon {
+  ikesa_table_size = 1024
+}
+----
+
+== Locking
+
+In addition to the hash table size, you can define the number of locks to use for
+the hash table. If e.g. the hash table is divided in sixteen segments, an IKE_SA
+lookup will only lock one sixteenth of the table. This becomes important if
+strongSwan is running on multiple cores. The more segments you have, the more
+unlikely it gets that a core is blocked until an other one has done the lookup.
+
+You may choose the number of locks depending on the number of cores you have but
+you could theoretically use a lock for each hash table entry. But keep in mind
+that additional locks will use additional resources. Using more than 512 segments
+has lead to src/libcharon/sa/ike_sa_manager.c on some systems!
+
+The number of segments is at least one and at most the size of the hash table and
+should also be a power of two. In
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] set:
+----
+charon {
+  ikesa_table_segments = 16
+}
+----
+
+== Implementation Details
+
+The lookup using the hash table is optimized for IKE responders, as an initiator
+does usually not set up several thousand tunnels. Initiators search for existing
+IKE SAs to check if there is one to reuse. As this lookup is not optimized you'll
+benefit only from less locking conflicts due to more segments. To disable the
+reuse of IKE_SAs (and skip that search) set:
+----
+charon {
+  reuse_ikesa = no
+}
+----
+This should speed up the lookup for `IKE SA` initiation. For more information and
+implementation details, have a look at the `IKE SA` Manager implementation
+({GITHUB}/{SRC}[`source:{SRC}`]).

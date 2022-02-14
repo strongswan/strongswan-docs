@@ -86,10 +86,11 @@ connection attempts are blocked
 
 |ikesa_table_segments                        |`1`
 |Number of exclusively locked segments in the hash table, see
- xref:ikeSaTable.adock[IKE_SA lookup tuning]
+ xref:config/lookupTuning.adoc[IKE_SA lookup tuning]
 
 |ikesa_table_size                            |`1`
-|Size of the `IKE SA` hash table, see xref:ikeSaTable[IKE_SA lookup tuning]
+|Size of the `IKE SA` hash table, see
+ xref:config/lookupTuning.adoc[IKE_SA lookup tuning]
 
 |inactivity_close_ike                        |`no`
 |Whether to close IKE_SA if the only `CHILD SA` closed due to inactivity
