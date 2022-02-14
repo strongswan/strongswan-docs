@@ -8,6 +8,7 @@
 ** xref:config/strongswanConf.adoc[]
 ** xref:config/strongswanDir.adoc[]
 ** xref:config/logging.adoc[]
+** xref:config/identityParsing.adoc[]
 ** xref:config/jobPriority.adoc[]
 ** xref:config/lookupTuning.adoc[]
 ** xref:config/retransmission.adoc[]

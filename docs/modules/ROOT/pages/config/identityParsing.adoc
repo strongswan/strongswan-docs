@@ -1,0 +1,256 @@
+= Identity Parsing
+
+:COLS:    cols="4,5,5,4"
+:ITU:     https://www.itu.int
+:X520:    {ITU}//rec/T-REC-X.520
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC1274: {IETF}/rfc1274
+:RFC2798: {IETF}/rfc2798
+:RFC2985: {IETF}/rfc2985
+:RFC4519: {IETF}/rfc4519
+:RFC5280: {IETF}/rfc5280
+
+== Identification Types
+
+The type and binary encoding of identity strings specified in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] , e.g. the parameters
+`*connections.<conn>.local<suffix>.id*` or '*secrets.eap<suffix>.id<suffix>*` and
+several other identities defined as strings, are parsed as follows:
+
+* If the string value contains an equal sign `*=*`, it is assumed to be a
+  Distinguished Name (`*DN*`) with RDNs separated by commas `*,*` *or* slashes
+  `*/*` where the string must start with a slash to use this syntax.  See the table
+  below for supported RDNs. An attempt is made to create a binary ASN.1 encoding
+  from this string. If that fails the type is set to `*KEY_ID*` with the literal
+  string value adopted as encoding.
+
+* If the string value contains an `*@*` character, the type depends on the position
+   of that character:
+
+** If the string begins with `*@\#*`, the type is set to `*KEY_ID*` and the string
+   following that prefix is assumed to be the hex-encoded binary value of the
+   identity (note that `*#*` is used for comments in config files, so quotes are
+   necessary).
+
+** If the string begins with `*@@*`, the type is set to `*USER_FQDN*` and the
+   encoding is the literal string after that prefix.
+
+** If the string begins with `*@*`, the type is set to `*FQDN*` and the encoding
+   is the literal string after that prefix.
+   In strongSwan versions before 5.0.0 this prefix prevented that a FQDN was
+   resolved into an IP address whereas current versions don't automatically resolve
+   FQDNs when parsing identities.
+
+** All remaining strings containing an `*@*` are assumed to be of type
+   `*USER_FQDN/RFC822*` with the literal string value as encoding.
+
+* If the value does not contain any `*@*` or `*=*` characters, it is parsed as
+  follows:
+
+** If the value is an empty string or equals `*%any*`, `*%any6*`, `*0.0.0.0*`,
+   `*::*`  or `***`, the type is set to `*ID_ANY*` which matches any other identity.
+
+** If the value contains a colon `*:*`, it is assumed to be an `*IPv6*` address.
+   But if parsing the address and converting it to its binary encoding fails, the
+   type is set to `*KEY_ID*` and the encoding is the literal value. Since version
+   5.4.0 subnets in CIDR notation and address ranges (i.e. two addresses separated
+   by a hyphen `*-*` without spaces are parsed too (they can't be used as IKE
+   identities but e.g. to define shared secrets in
+   xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]).
+
+** For all other strings, an attempt at parsing them as `*IPv4*` addresses is made
+   (since version 5.4.0 also as subnets and ranges, see above). If that fails, the
+   type is set to `*FQDN*` and the literal value is adopted as encoding (this is
+   where domain names and simple names end up).
+
+* If the value has the form `<type>:<value>` (supported since version 5.2.2),
+  the type and value are explicitly specified:
+
+** The following types are known: `*ipv4*`, `*ipv6*`, `*ipv4net*`, `*ipv6net*`,
+   `*ipv4range*`, `*ipv6range*`, `*rfc822*`, `*email*`, `*userfqdn*`, `*fqdn*`,
+   `*dns*`, `*asn1dn*`, `*asn1gn*` and `*keyid*`.  Custom type prefixes may be
+   specified by surrounding the numerical type value with curly brackets.
+
+** If the value starts with `*\#*`, the remaining data is interpreted as hex
+   encoding. Otherwise, the string is used as is as the identification data (note
+   that `*\#*` is used for comments in config files, so quotes are necessary).
++
+*Important:* This implies that no conversion is performed for non-string
+identities. For example, `*ipv4:10.0.0.1*` does not create a valid
+`*ID_IPV4_ADDR*` IKE identity, as it does not get converted to binary
+`*0x0a000001*`. Instead, one could use `*ipv4:#0a000001*` to get a valid
+identity, but just using the automatic conversion as described above is usually
+simpler. The same applies to the ASN.1 encoded types (for subject DNs the
+xref:pki/pkiDn.adoc[`*pki --dn*`] command may be useful).
+
+The `<type>:<value>` notation is primarily useful if the auto-detection is
+inadequate or produces the wrong result.  For instance, strongSwan does not nest
+RDNs when generating the binary encoding of an ASN.1 DN, which some PKIs do.
+Another example is the need to encode an `*FQDN*` as a `*KEY_ID*` which is
+rather inconvenient with the `*@#*` syntax, as the binary encoding has to be
+provided.
+
+== Supported RDN Types
+
+These types/identifiers are supported when parsing DNs from strings. Any other
+types are supported for other applications.
+
+Defined by {X520}[X.520] and also described in {RFC4519}[RFC 4519]:
+
+[{COLS}]
+|===
+|Identifier       |OID |Description |Example
+
+|CN               |2.5.4.3
+|Common Name
+|vpn.strongswan.org or John Smith
+
+|SN               |2.5.4.4
+|Surname
+|Smith
+
+|serialNumber     |2.5.4.5
+|Serial Number
+|ZX52376
+
+|C                |2.5.4.6
+|Country (ISO 3166 two-letter code)
+|CH
+
+|L                |2.5.4.7
+|Locality
+|Rapperswil
+
+|ST               |2.5.4.8
+|State or Province
+|St. Gallen
+
+|street           |2.5.4.9
+|Street Address
+|Oberseestrasse 10
+
+|O                |2.5.4.10
+|Organization
+|strongSwan Project
+
+|OU               |2.5.4.11
+|Organizational Unit
+|Research
+
+|T                |2.5.4.12
+|Title
+|Software Engineer
+
+|D                |2.5.4.13
+|Description
+|Main VPN gateway
+
+|postalAddress    |2.5.4.16
+|Postal Address
+|Oberseestrasse 10 +
+ 8640 Rapperswil +
+ Switzerland
+
+|postalCode       |2.5.4.17
+|Postal Code
+|8640
+
+|N                |2.5.4.41
+|Name (not be used directly)
+|
+
+|G                |2.5.4.42
+|Given Name
+|John
+
+|I                |2.5.4.43
+|Initials
+|J. T.
+
+|ID               |2.5.4.45
+|Unique Identifier
+|
+
+|dnQualifier      |2.5.4.46
+|DN Qualifier (e.g. a timestamp or serial number)
+|20190214115113Z or 51314E
+
+|dmdName          |2.5.4.54
+|Directory Management Domain Name
+|
+
+|pseudonym        |2.5.4.65
+|Pseudonym
+|
+|===
+
+Originally defined by {RFC1274}[RFC 1274] and now described in {RFC4519}[RFC 4519]:
+
+[{COLS}]
+|===
+|Identifier       |OID |Description |Example
+
+|UID              |0.9.2342.19200300.100.1.1  |User ID
+|jsmith
+
+|DC               |0.9.2342.19200300.100.1.25 |Domain Component (label of a DNS domain name)
+|strongswan or org but not strongswan.org
+|===
+
+Defined by {RFC2798}[RFC 2798]:
+
+[{COLS}]
+|===
+|Identifier          |OID |Description |Example
+
+|EN +
+employeeNumber       |2.16.840.1.113730.3.1.3
+|Employee Number
+|42
+|===
+
+Defined in PKCS#9 and described in {RFC2985}[RFC 2985]:
+
+[{COLS}]
+|===
+|Identifier          |OID |Description |Example
+
+|E +
+email +
+emailAddress        |1.2.840.113549.1.9.1
+|Email Address (deprecated according to {RFC5280}#section-4.1.2.6[RFC 5280], use
+ SAN instead)
+|\alice@strongswan.org
+
+|UN +
+unstructuredName    |1.2.840.113549.1.9.2
+|Unstructured Name
+|
+
+|UA +
+unstructuredAddress |1.2.840.113549.1.9.8
+|Unstructured Address
+|
+|===
+
+Defined by "Zertifikatsformate im Zertifizierungsbereich PKS II":
+
+[{COLS}]
+|===
+|Identifier         |OID |Description |Example
+
+|ND                 |0.2.262.1.10.7.20
+|Name Distinguisher (Number incremented for equal CNs)
+|
+|===
+
+Siemens Corporate Domain:
+
+[{COLS}]
+|===
+|Identifier         |OID |Description |Example
+
+|TCGID              |1.3.6.1.4.1.1201.1.1.2.2.75
+|Siemens Trust Center Global ID
+|
+|===
