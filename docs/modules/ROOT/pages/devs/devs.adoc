@@ -1,0 +1,312 @@
+= Developer Documentation
+
+:GITHUB:     https://github.com/strongswan/strongswan
+:SRC:        {GITHUB}//tree/master/src
+:DOXYGEN:    https://doxygen.org
+:APIDOC:     https://www.strongswan.org/apidoc
+:TESTS:      https://strongswan.org/testresults.html
+:TKM:        https://www.codelabs.ch/tkm/
+:APPVEYOR:   https://ci.appveyor.com/api/projects
+:CIRRUS:     https://api.cirrus-ci.com/github/strongswan
+:CODECOV:    https://codecov.io/gh/strongswan/strongswan
+:SONARCLOUD: https://sonarcloud.io
+:LGTMGRADE:  https://img.shields.io/lgtm/grade/cpp/github/strongswan/strongswan
+:LGTM:       https://lgtm.com/projects/g/strongswan/strongswan/
+:OSSFUZZ:    https://oss-fuzz-build-logs.storage.googleapis.com/badges/strongswan.svg
+:CHROMIUM:   https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:strongswan
+
+== Contributions / License
+
+Before starting development, please read our
+xref:devs/contributions.adoc[contribution requirements].
+
+== Getting the Source Code
+
+The easiest way to get the source code is checking it out from our
+{GITHUB}[Git repository]:
+
+ git clone https://github.com/strongswan/strongswan.git
+
+== Browsing the Source Code
+
+The Git repository can be browsed directly at {GITHUB}[GitHub].
+
+== Source Code Documentation
+
+strongSwan uses extractable inline documentation extensively. This documentation
+is extracted with {DOXYGEN}[Doxygen] for the latest release and uploaded to
+{APIDOC}[strongswan.org/apidoc]. Use `*make apidoc*` to generate it from the
+sources.
+
+== Code style
+
+For our code we heavily use an
+xref:devs/objectOrientedC.adoc[object oriented programming style] for C. Also
+have a look to our basic xref:devs/programmingStyle.adoc[programming style]
+guidelines.
+
+== Quality Assurance
+
+=== Unit Tests
+
+Our libraries are tested with an increasing number of unit tests. To run them use
+`*make check*`. The following environment variables change the behavior of the
+test runner:
+
+[cols="2,5,1"]
+|===
+|Variable |Description |Since +
+Version
+
+|TESTS_PLUGINS
+|A space-separated list of plugins to load +
+ (not implemented by all test runners)
+|5.3.3
+
+|TESTS_REDUCED_KEYLENGTHS
+|If this is set test cases that generate keys will do so only for reduced key
+ lengths to avoid blocking on hosts with low entropy
+|
+
+|TESTS_STRONGSWAN_CONF
+|Path to a custom xref:config/strongswanConf.adoc[`*strongswan.conf*`] file used
+ for the tests
+|5.2.0
+
+|TESTS_RUNNERS
+|A comma-separated list of test runners to run
+|5.5.0
+
+|TESTS_SUITES
+|A comma-separated list of test suites to run +
+ (all suites are run if this is not specified)
+|
+
+|TESTS_SUITES_EXCLUDE
+|A comma-separated list of test suites excluded from running
+|5.2.1
+
+|TESTS_CASES
+|A comma-separated list of test cases to run +
+ (all cases of selected suites are run if this is not specified)
+|5.9.0
+
+|TESTS_CASES_EXCLUDE
+|A comma-separated list of test cases excluded from running
+|5.9.0
+
+|TESTS_FUNCTIONS
+|A comma-separated list of test functions to run
+ (all functions of selected suites/cases are run if this is not specified)
+|5.9.0
+
+|TESTS_FUNCTIONS_EXCLUDE
+|A comma-separated list of test functions excluded from running
+|5.9.0
+
+|TESTS_VERBOSITY
+|The log level used when running the tests (`*-1*` to `*4*` with a default of
+ `*-1*`), see xref:config/logging.adoc[Logging]
+|
+
+|LEAK_DETECTIVE_DISABLE
+|If our custom memory allocator is enabled with `*--enable-leak-detective*` it
+ can be disabled temporarily by setting this variable in order to speed up
+ running the tests
+|
+|===
+
+Coverage reports can be generated with `*make coverage*` which requires the
+`*--enable-coverage*` xref:install/autoconf.adoc[`*./configure*`] option which
+is not recommended for production builds as it disables all optimizations.
+
+The unit tests also run automatically for every commit:
+
+[cols="1,1,1,1,1,1"]
+|===
+
+|image:{GITHUB}/workflows/Linux/badge.svg[Linux, title=Linux, link={GITHUB}/actions?query=workflow%3ALinux]
+
+|image:{GITHUB}/workflows/Android/badge.svg[Android, title=Android, link={GITHUB}/actions?query=workflow%3AAndroid]
+
+|image:{GITHUB}/workflows/macOS/badge.svg[macOS, title=macOS, link={GITHUB}/actions?query=workflow%3AmacOS]
+
+|image:{GITHUB}/workflows/Windows/badge.svg[Windows, title="Cross-compiled Windows", link={GITHUB}/actions?query=workflow%3AWindows]
+
+|image:{APPVEYOR}/status/186bfuup38t9pu4k?svg=true[Windows, title="Native Windows on AppVeyor", link={APPVEYOR}/tobiasbrunner/strongswan-52lo9]
+
+|image:{CIRRUS}/strongswan.svg?branch=master[FreeBSD, title="FreeBSD on Cirrus CI", link={CIRRUS}/strongswan]
+|===
+
+Information on the code coverage:
+
+image:{CODECOV}/branch/master/graph/badge.svg[Codecov, title="Code Coverage", link={CODECOV}]
+
+And the code base is automatically analyzed:
+
+[cols="1,1,1,1"]
+|===
+
+|image:{GITHUB}/workflows/SonarCloud/badge.svg[SonarCloud, title="SonarCloud", link={GITHUB}/actions?query=workflow%3ASonarCloud]
+
+|image:{SONARCLOUD}/api/project_badges/measure?project=strongswan&metric=alert_status[Sonarcloud, title=SonarCloud, link={SONARCLOUD}/dashboard?id=strongswan]
+
+|image:{GITHUB}/workflows/lgtm.com/badge.svg[LGTM, title=LGTM, link={GITHUB}//actions?query=workflow%3Algtm.com]
+
+|image:{LGTMGRADE}[LGTM Grade, title="LGTM Grade", link={LGTM}]
+|===
+
+Part of the source code is periodicylly fuzzed by Google OSS-Fuzz:
+
+image:{OSSFUZZ}[Fuzzing, title="Fuzzing Status", link={CHROMIUM}]
+
+=== Testing Environment
+
+Our integration and regression
+xref:devs/testingEnvironment.adoc[testing environment] helps us ensure the quality
+of future releases. The test results for the latest strongSwan release are
+published {TESTS}[online].
+
+== Components
+
+The {SRC}[`src`] directory in the strongSwan distribution contains the following components:
+
+[cols="1,4"]
+|===
+|Component |Description
+
+|xref:tpm/aikgen.adoc[`*aikgen*`]
+|Utility to generate an Attestation Identity Key bound to a TPM 1.2
+
+|xref:daemons/charon.adoc[`*charon*`]
+|The IKE keying daemon
+
+|xref:daemons/charon-cmd.adoc[`*charon-cmd*`]
+|A command line IKE client
+
+|xref:features/networkManager.adoc[`*charon-nm*`]
+|The back end for the xref:features/networkManager.adoc[NetworkManager] D-BUS
+ plugin
+
+|xref:daemons/charon-svc.adoc[`*charon-svc*`]
+|The Windows IKE service
+
+|xref:daemons/charon-systemd.adoc[`*charon-systemd]*`
+|An IKE daemon similar to xref:daemons/charon.adoc[`*charon*`] but specifically
+ designed for use with `*systemd*`
+
+|`*charon-tkm*`
+|A variant of xref:daemons/charon.adoc[`*charon*`] that is backed by a
+ Trusted Key Manager ({TKM}[TKM])
+
+|xref:features/integrityTests.adoc[`*checksum*`]
+|Utility to generate checksums of built executables and libraries
+
+|xref:tools/conftest.adoc[`*conftest*`]
+|Conformance test tool
+
+|xref:os/androidVpnClient.adoc[`*frontends/android*`]
+|VPN client for Android
+
+|xref:features/networkManager.adoc[`*frontends/gnome*`]
+|xref:features/networkManager.adoc[NetworkManager] plugin
+
+|xref:os/macos.adoc[`*frontends/osx*`]
+|`*charon-xpc*` helper daemon for the native xref:os/macos.adoc[macOS application]
+
+|`*ipsec*`
+|The legacy ipsec command line tool wrapping commands and other tools
+
+|`*libcharon*`
+|Contains most of the code and the plugins of the
+ xref:daemons/charon.adoc[`*charon*`] daemon
+
+|`*libfast*`
+|A lightweight framework to build native web applications using ClearSilver and
+ FastCGI
+
+|xref:tnc/tnc.adoc[`*libimcv*`]
+|Various Integrity Measurement Collectors (IMCs), Integrity Measuremeent
+ Validators (IMVs) and the library code shared by them
+
+|`*libipsec*`
+|A userland IPsec implementation used by
+ xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`] and the
+ xref:os/androidVpnClient.adoc[Android VPN Client] app
+
+|`*libpts*`
+|Contains code for TPM-based xref:tnc/tnc.adoc[Platform Trust Services] (PTS)
+ and SWID tag handling
+
+|`*libpttls*`
+|Implements the xref:tnc/tnc.adoc[`*PT-TLS*`] protocol
+
+|`*libradius*`
+|RADIUS protocol implementation used by e.g. the
+ xref:plugins/eap-radius.adoc[`*eap-radius*`] and `*tnc-pdp*` plugins
+
+|*`libsimaka*`
+|Contains code shared by several EAP-SIM/AKA plugins
+
+|`*libstrongswan*`
+|The strongSwan library with basic functions used by the daemons and utilities
+
+|xref:plugins/eap-tls.adoc[`*libtls*`]
+|TLS implementation used by the xref:plugins/eap-tls.adoc[`*eap-tls*`], `*eap-ttls*`,
+ `*eap-peap*` and other plugins
+
+|`*libtnccs*`
+|Implements the xref:tnc/tnc.adoc[`IF-TNCCS`] interface
+
+|`*libtncif*`
+|Implmements the xref:tnc/tnc.adoc[`IF-IMC/IF-IMV`] interfaces
+
+|`*manager*`
+|A deprecated graphical management application for
+ xref:daemons/charon.adoc[`*charon*`] based on `*libfast*`
+
+|`*medsrv*`
+|An experimental management front end for mediation servers based on `*libfast*`
+
+|xref:pki/pki.adoc[`*pki*`]
+|Public Key Infrastructure utility
+
+|xref:tools/pool.adoc[`*pool*`]
+|Utility to manage attributes and IP address pools provided by the
+ xref:plugins/attr-sql.adoc[`*attr-sql*`] plugin
+
+|xref:tnc/pt-tls-client.adoc[`*pt-tls-client*`]
+|Integrity measurement client using the `*PT-TLS*` protocol
+
+|xref:tools/scepclient.adoc[`*scepclient*`]
+|Utility to enroll certificates using the SCEP protocol
+
+|xref:tnc/sec-updater.adoc[`*sec-updater*`]
+|Utility extracting information about security updates and backports of Linux
+ repositories (e.g. Debian or Ubuntu)
+
+|`*starter*`
+|Legacy daemon that reads `*ipsec.conf*` and controls the keying daemon charon
+
+|`*stroke*`
+|Legacy command line utility to control xref:daemons/charon.adoc[`*charon*`] via
+ the `*stroke*` protocol
+
+|xref:swanctl/swanctl.adoc[`*swanctl*`]
+|Configuration and control utility that communicates via the
+ xref:plugins/vici.adoc[`*vici*`] interface
+
+|xref:tnc/sw-collector.adoc[`*sw-collector*`]
+|Utility extracting information about software package installation, update or
+ removal events from the `*apt*` history log
+
+|`*tpm_extendpcr*`
+|Tool that extends a digest into a TPM PCR
+
+|`*_updown*`
+|Default script called by the xref:plugins/updown.adoc[`*updown*`] plugin on
+ tunnel up/down events
+
+|`*xfrmi*`
+|Create an `XFRM` interface
+|===
