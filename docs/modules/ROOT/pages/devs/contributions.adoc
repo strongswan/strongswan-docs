@@ -1,0 +1,144 @@
+= Contributions
+
+:MIT:      https://opensource.org/licenses/mit-license.php
+:GITHUB:   https://github.com/strongswan/strongswan
+:DEV:      https://lists.strongswan.org/mailman/listinfo/dev
+:SECUNET:  https://www.secunet.com/en/
+:HSR:      https://en.wikipedia.org/wiki/Hochschule_f%C3%BCr_Technik_Rapperswil
+:FREESWAN: https://www.freeswan.org/
+
+Contributions to the strongSwan project are very welcome. Before you start your
+development, please get in contact with our developers via one of our
+xref:support/free.adoc[support channels]. We might already have some plans for
+such a feature or are even working on it. We can also give you some useful hints
+on how to integrate your work into the strongSwan architecture.
+
+Depending on the form and affected components of your contribution, you *must not*
+submit the code under a GPL license but under the {MIT}[MIT license] (see below
+for details).
+
+Patches may be submitted as *pull requests* on {GITHUB}/pulls/[Github] or as emails
+to our {DEV}[Developer mailing list] (please use `*git format-patch*` or
+`*git send-email*`).
+
+== strongSwan License
+
+strongSwan is an open source project distributed under the GPLv2 license. We
+think the open source model has several advantages over a commercial product:
+
+* You can review the code, which is of utmost importance in security software.
+
+* You can contribute to fix or improve the software.
+
+* You can use the software for free. This allows more users to try and use it,
+  giving feedback and further improve its quality.
+
+We strongly believe in open source and will *always* distribute strongSwan under
+a GPL license.
+
+== Copyright
+
+The IKE xref:daemons/charon.adoc[`*charon*`] daemon and its libraries have
+originally been developed at the {HSR}[HSR University of Applied Sciences Rapperswil]
+in Switzerland. Writing an IKE daemon from scratch is not something you do as a
+hobby over the weekend. We have invested several full-time man years of development.
+While we are open to contributions, they have been rather rare so far. We think
+this is mainly due to the complexity of the topic and the software.
+
+The intellectual property rights of the xref:daemons/charon.adoc[`*charon*`]
+daemon and its related libraries now belong to the German company
+{SECUNET}[secunet Security Networks AG].
+
+The old IKEv1 `*pluto*` daemon (until strongSwan version 5.0.0) and related parts
+have been inherited from the {FREESWAN}[FreeS/WAN] project. The copyright belongs
+to several people.
+
+== Contributing
+
+Depending on the strongSwan components of your contribution, you have to use
+different license for your contribution:
+
+=== Core Libraries, Front Ends and Tools
+
+If your (non-trivial) contributions are targeting
+
+* the core libraries:
+
+** `*libcharon*` daemon core ({GITHUB}/tree/master/src/libcharon[`src/libcharon`]).
+
+** `*libstrongswan*` ({GITHUB}/tree/master/src/libstrongswan[`src/libstrongswan`])
+  and other related libraries.
+
+* the front ends:
+
+** xref:daemons/charon.adoc[`*charon*`]
+   ({GITHUB}/tree/master/src/charon[`src/charon`]) and
+   xref:daemons/charon-systemd.adoc[`*charon-systemd*`]
+   ({GITHUB}/tree/master/src/charon-systemd[`src/charon-systemd`]).
+
+** xref:daemons/charon-cmd.adoc[`*charon-cmd*`] command line utility
+   ({GITHUB}/tree/master/src/charon-cmd[`src/charon-cmd`]).
+
+** the xref:androidVpnClient.adoc[Android app], etc.
+
+* the tools, e.g.:
+
+** xref:pki/pki.adoc[`*pki*`].
+
+** xref:swanctl/swanctl.adoc[`*swanctl*`].
+
+we will require contributions to be under the GPL-compatible {MIT}[MIT license].
+
+This allows us to:
+
+* Integrate your work in our GPLed strongSwan project, keeping your copyright
+
+* To switch the project's license to GPLv3 if required
+
+* Offer partners alternative licensing schemes for these parts
+
+Providing alternative licensing will give us additional revenue to keep the
+project rolling. We cannot improve strongSwan without a constant income.
+
+Other projects require you to assign your copyright to the project/foundation/company.
+We think this is much more complicated or not even possible in some countries.
+With an MIT license, you will keep your copyright.
+
+If you submit non-trivial patches:
+
+ * send new files with the following MIT license in the header (without any GPL
+   header at all)
+
+ * if you extend existing files in a non-trivial way, add the following MIT
+   license below the existing GPL license header
++
+----
+/*
+ * Copyright (C) <year> <copyright holders>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+----
+
+=== Plugins
+
+If you are writing your own plugin, you are free to use a GPL license. We will
+not require you to send it under the MIT license (although, we'd obviously prefer
+it). If you extend existing plugins, contributing under the MIT license will
+usually be required. Contact us if you are unsure about the license.
