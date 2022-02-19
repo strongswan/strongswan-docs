@@ -1,0 +1,130 @@
+= Object Oriented C Programming Style
+
+:XINE: https://sourceforge.net/projects/xine/#id324430
+
+For our strongSwan source code we use an object oriented programming style. This
+allows us to employ modern programming paradigms but still use the standard C
+compiler and toolset.
+
+== Concept
+
+This object oriented design is achieved by heavy use of function pointers.
+*Interfaces* of classes are defined as a struct with function pointers and an
+implementation extends the struct by including the *Interface* as its first struct
+member. The idea is based on the coding style of the {XINE}[`*xine*`] project.
+To get an idea of the whole concept we recommend to examine the code directly.
+
+== Type Safety
+
+To achieve type safety without casting the `*this*` parameter in each method we
+have introduced some special helper macros. The `*METHOD*` macro helps in
+implementing a method that is compatible to both the public and the private
+interfaces automatically. The `*INIT*` macro initializes objects using readable
+*Designated Initializers* which also ensure that all members that are not
+explicitly initialized are set to zero.
+
+== Details and Examples
+
+The following explanations and examples are from the {XINE}[`*xine*`] docs but are
+slightly adapted to better match our code style (refer to our actual code for
+concrete examples).
+
+Classes are structs containing function pointers and public member data. Example:
+----
+typedef struct my_stack_t my_stack_t;
+
+struct my_stack_t {
+
+  /**
+   * Method "push" with one parameter and no return value
+   *
+   * @param i  element to push
+   */
+  void (*push)(my_stack_t *this, int i);
+
+  /**
+   * Method "add" with no parameters and no return value
+   */
+  void (*add)(my_stack_t *this);
+
+  /**
+   * Method "pop" with no parameters (except "this") and a return value
+   *
+   * @return   popped element
+   */
+  int (*pop)(my_stack_t *this);
+};
+
+/**
+ * Constructor
+ *
+ * @return     instance of my_stack_t
+ */
+my_stack_t *my_stack_create();
+----
+
+To derive from such a class, private member variables can be added:
+----
+typedef private_my_stack_t private_my_stack_t;
+
+struct private_my_stack_t {
+
+  /**
+   * Public interface
+   */
+  my_stack_t public;
+
+  /**
+   * Internal stack items
+   */
+  int values[MAX_STACK_SIZE];
+
+  /**
+   * Number of items
+   */
+  int stack_size;
+};
+----
+
+Each method is implemented as a static method (static to prevent namespace pollution)
+using the `*METHOD*` macro (which defines `<method_name>` with the public signature
+for use in the constructor).
+
+Implementation of the `*push*` method:
+----
+METHOD(my_stack_t, push, void,
+  private_my_stack_t *this, int i)
+{
+  this->values[MAX_STACK_SIZE - ++this->stack_size] = i;
+}
+----
+
+Finally the contructor uses the `*INIT*` macro to allocate an instance of the
+private struct and fills the function pointers and default values (using designated
+initializers). Usually the constructor is the only public (i.e. non-static) function
+in the module:
+----
+my_stack_t *my_stack_create()
+{
+  private_my_stack_t *this;
+
+  INIT(this,
+    .public = {
+      .push = _push,
+      .add = _add,
+      .pop = _pop,
+    },
+    /* uninitialized fields are automatically set to zero */
+  );
+
+  /* return public part */
+  return &this->public;
+}
+----
+
+== Gedit Snippets
+
+For `*gedit*` users there are some
+link:../_attachments/gedit-snippets-strongswan.tar.gz[snippets] to create
+interfaces, methods (including implementations and pointer assignement) and
+class implementations.

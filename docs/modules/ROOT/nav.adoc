@@ -91,6 +91,7 @@
 .Devs
 * xref:devs/devs.adoc[]
 * xref:devs/contributions.adoc[]
+* xref:devs/objectOrientedC.adoc[]
 
 .Platform Security
 * xref:tpm/tpm2.adoc[TPM 2.0]
