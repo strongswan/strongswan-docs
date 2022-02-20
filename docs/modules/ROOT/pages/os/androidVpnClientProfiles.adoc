@@ -1,0 +1,279 @@
+= VPN Profile Import for the Android VPN Client
+
+:COLS:    cols="1,3,9"
+:JSON:    https://json.org
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC4122: {IETF}/rfc4122
+:RFC7427: {IETF}/rfc7427
+
+Since version xref:./androidVpnClient.adoc#_1_8_0_2017_01_20[1.8.0] of the
+xref:./androidVpnClient.adoc[strongSwan VPN Client for Android] it is possible to
+import VPN profiles from JSON files.
+
+== Deployment
+
+The app will open `*http[s]://*` URLs to `*.sswan*` files. It also opens any file
+with a media type of `*application/vnd.strongswan.profile*` (the file extension
+doesn't matter in that case). The latter should also work for email attachments
+if the MIME media type is set accordingly.
+
+Whether downloaded files for which the media type is not correct but the extension
+is `*.sswan*` can be opened depends on the app that starts the `*Intent*`. For
+instance from Android's default Downloads app it won't work due to the
+`*content://*` URLs that do not contain the original file name (it works if the
+media type was set correctly by the web server), but when e.g. opening the
+downloaded file from within Chrome's Downloads view it works as these `*Intents*`
+use `*file://*` URLs that contain the complete file name.
+
+Since xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0] it is possible to
+browse for profile files via SAF (Storage Access Framework), which should also
+work if the file extension and/or media type is not correct. Note that after
+importing the profile the user is able to edit it freely.
+
+== File Format
+
+The file format is based on {JSON}[JSON]. The expected encoding is UTF-8. The
+top-level element in the file is an object that may (or must) contain the
+following keys. Keys of sub-objects are separated with dots.
+
+[{COLS}]
+|===
+|Required |Key |Description
+
+|`*x*` |`*uuid*`
+|Unique identifier to identify the VPN profile. The format is defined in
+ {RFC4122}[RFC 4122]. Version 4 UUIDs (random-generated) are recommended and
+ may be created e.g. with the command `*uuid -v4*`. If a VPN profile with the same
+ UUID already exists, its settings are replaced when the profile is imported
+
+|`*x*` |`name`
+|Display name of the profile
+
+|`*x*` |`type`
+|Type of the VPN profile. The following values are currently supported and
+ determine the type of client authentication that is used (the server is always
+ authenticated with a certificate): +
+`*ikev2-eap*`: Username/password-based EAP authentication +
+`*ikev2-cert*`: Certificate authentication +
+`*ikev2-cert-eap*`: Certificate authentication followed by a
+  username/password-based EAP authentication +
+`*ikev2-eap-tls*`: EAP-TLS certificate authentication +
+`*ikev2-byod-eap*`: EAP-TNC with username/password-based EAP authentication +
+Some of the keys described below are only relevant for certain types
+
+|      |`apps`
+|Optional array of package names (e.g. `*com.example.app.name`*) of apps that are
+ able to use this VPN connection. For all other apps it will look as if there was
+ no VPN. Since xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0]
+
+|      |`excluded-apps`
+|Optional array of package names (e.g. `*com.example.app.name*`) of apps that won't
+ be able to use this VPN connection. It will look to them as if there was no VPN.
+ Only relevant if `*apps*` is not set.
+ Since xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0]
+
+|      |`ike-proposal`
+|Optional custom IKE proposal, i.e. a list of crypto algorithm identifiers separated
+ by hyphens. For non-AEAD/classic encryption algorithms an integrity algorithm,
+ a pseudo random function (optional, defaults to one based on the integrity
+ algorithm) and a Diffie-Hellman group are required (e.g. `*aes256-sha256-ecp256*`).
+ For combined-mode/AEAD algorithms the integrity algorithm is omitted but a PRF
+ is required (e.g. `*aes256gcm16-prfsha256-ecp256*`).
+ Since xref:./androidVpnClient.adoc#_1_9_5_2017_11_17[1.9.5]
+
+|      |`esp-proposal`
+|Optional custom ESP proposal, i.e. a list of crypto algorithm identifiers separated
+ by hyphens. For non-AEAD/classic encryption algorithms, an integrity algorithm is
+ required, a Diffie-Hellman group is optional (e.g. `*aes256-sha256*` or
+ `*aes256-sha256-ecp256*`). For combined-mode/AEAD algorithms, the integrity
+ algorithm is omitted (e.g. `*aes256gcm16*` or `*aes256gcm16-ecp256*`). If a DH
+ group is specified IPsec SA rekeying will use a DH key exchange. However, DH groups
+ specified here are not used when the connection is established initially because
+ the keys there are derived from the IKE SA key material. Therefore any configuration
+ mismatch with the server will only cause errors later during rekeying.
+
+|      |`mtu`
+|Optional MTU to use for the TUN device
+
+|      |`nat-keepalive`
+|Optional interval for
+ xref:features/natTraversal.adoc#_nat_t_keepalives[NAT-T keepalive] packets.
+ Since xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0]
+
+|      |`dns-servers`
+|Optional array or space-separated list of DNS server addresses to use instead of
+ those received by the VPN server.
+ Since xref:./androidVpnClient.adoc#_2_1_0_2019_03_14[2.1.0]
+
+|      |`ipv6-transport`
+|Whether to use IPv6 transport addresses for IKE and ESP if available. Requires
+ support for UDP encapsulation for IPv6 on the server (the Linux kernel only
+ supports this since 5.8).
+ Since xref:./androidVpnClient.adoc#_2_3_1_2020_10_29[2.3.1]
+|===
+
+=== remote
+
+Mandatory object containing information about the server. The following attributes
+are defined:
+
+[{COLS}]
+|===
+|Required |Key |Description
+
+|`*x*` |`addr`
+|The server's hostname or IP address. If no remote identity is configured this has
+ to be contained as `*subjectAltName*` extension in the server certificate
+
+|      |`port`
+|Optional server port (default is `*500*`)
+
+|      |`rid`
+|Optional IKE identity of the server. If this is not configured it defaults to
+ `*addr*` and no `*IDr*` is sent in the IKE_AUTH request
+
+|      |`cert`
+|Optional Base64-encoded CA or server certificate. Is imported into the app, not
+ the system keystore. If not set, automatic CA certificate selection is enabled.
+ Thus it's not necessary if the server certificate is issued by a CA the client
+ already trusts or if the PKCS#12-file below contains the complete certificate
+ chain (this might cause warnings on older Android releases, though, see
+ xref:./androidVpnClient.adoc#_client_configuration[Android VPN client configuration]
+ for details)
+
+|      |`certreq`
+|Whether to send certificate requests for all installed or selected CA certificates.
+ Disabling this may reduce the size of the IKE_AUTH message if the server does not
+ support fragmentation. But it only works if the server doesn't require certificate
+ requests to send back the server certificate. Since
+ xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0]
+
+|      |`revocation`
+|Optional object that sets the revocation checking policy for the remote certificate
+
+|      |`revocation.crl`
+|Whether to use CRLs (Certificate Revocation Lists) if available for revocation
+ checking of the remote certificate. CRLs are only used if OCSP doesn't yield a
+ result. Enabled by default. Since
+ xref:./androidVpnClient.adoc#_2_0_0_2018_07_03[2.0.0]
+
+|      |`revocation.ocsp`
+|Whether to use OCSP (Online Certificate Status Protocol) if available for
+ revocation checking of the remote certificate. Enabled by default. Since
+ xref:./androidVpnClient.adoc#_2_0_0_2018_07_03[2.0.0]
+
+|      |`revocation.strict`
+|In strict mode the authentication will fail if the status of the remote certificate
+ is unknown (e.g. because no valid CRL was available). Disabled by default. Since
+ xref:./androidVpnClient.adoc#_2_0_0_2018_07_03[2.0.0]
+|===
+
+=== local
+
+Optional object containing information about the client. The following attributes
+are defined:
+
+[{COLS}]
+|===
+|Required |Key |Description
+
+|      |`eap_id`
+|Optional identity/username for EAP authentication. If this is required (for
+ username/password-based EAP authentication) but not configured here, the user is
+ prompted for it when importing the profile. If it is set the user is not able to
+ change it while importing (but may later do so). In both cases the user may
+ optionally enter the password while importing the profile
+
+|      |`id`
+|Optional IKE identity of the client for certificate authentication and since
+ xref:./androidVpnClient.adoc#_2_2_0_2019_10_15[2.2.0] also for other authentication
+ types. Typically has to match a `*subjectAltName*` contained in the client
+ certificate if one is used. Must not be configured if the certificate's subject
+ DN shall be used as client identity
+
+|      |`p12`
+|Optional Base64-encoded PKCS#12-container with the client certificate and private
+ key and optional certificate chain (the latter might cause warnings on older
+ Android releases, see
+ xref:./androidVpnClient.adoc#_client_configuration[Android VPN client configuration]
+ for details). Not necessary for username/password-based EAP authentication or if
+ the user already has the certificate/key installed as it may be selected while
+ importing the profile
+
+|      |`rsa-pss`
+|Whether to use the stronger PSS encoding instead of the classic PKCS#1 encoding
+ for RSA signatures during {RFC7427}[RFC 7427] signature authentication. Disabled
+ by default. May be enabled if the server supports it. Since
+ xref:./androidVpnClient.adoc#_2_0_0_2018_07_03[2.0.0]
+|===
+
+=== split-tunneling
+
+Optional object containing split-tunneling settings. The following attributes
+are defined:
+
+[{COLS}]
+|===
+|Required |Key |Description
+
+|      |`subnets`
+|An array of subnets (in CIDR notation), IP addresses or ranges (IP-IP) to route
+ via VPN. All other traffic is forwarded as if there was no VPN. This is only
+ relevant locally, these subnets are not sent to the server. Since
+ xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0]
+
+|      |`excluded`
+|An array of subnets (in CIDR notation), IP addresses or ranges (IP-IP) to exclude
+ from the VPN. Matching traffic is forwarded as if there was no VPN. This is only
+ relevant locally. Since xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0]
+
+|      |`block-ipv4`
+|Whether to block IPv4 traffic that's not destined for the VPN. Forces all IPv4
+ traffic via VPN (traffic that does not match the negotiated traffic selector is
+ then just dropped). Thus this is basically equivalent to including `*0.0.0.0/0*`
+ in `*subnets*`
+
+|      |`block-ipv6`
+|Whether to block IPv6 traffic that's not destined for the VPN. Forces all IPv6
+traffic via VPN (traffic that does not match the negotiated traffic selector is
+then just dropped). Thus this is basically equivalent to including `*::/0*` in
+`*subnets*`
+|===
+
+== Example
+
+=== X.509 Certificate-based Authentication
+
+[source, json]
+----
+{
+  "uuid": "a061d140-d3f9-4db7-b2f8-32d6703f4618",
+  "name": "Test Profile Certificate",
+  "type": "ikev2-cert",
+  "remote": {
+    "addr": "10.0.2.2"
+  },
+  "local": {
+    "p12": "MIIN..."
+  }
+}
+----
+
+=== Username/Password-based EAP Authentication
+
+[source, json]
+----
+{
+  "uuid": "559eb893-1cee-4196-8b97-67045e029e91",
+  "name": "Test Profile EAP",
+  "type": "ikev2-eap",
+  "remote": {
+    "addr": "10.0.2.2",
+    "id": "vpn.strongswan.org",
+    "cert": "MIID..."
+  },
+  "local": {
+    "eap_id": "android"
+  }
+}
+----

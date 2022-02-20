@@ -1,0 +1,53 @@
+= Privacy Policy for the Android VPN Client
+
+== Collected Information
+
+The xref:./androidVpnClient.adoc[strongSwan VPN Client for Android] does not
+collect any user data or transmit any data to us.
+
+=== Log Files
+
+The app provides a feature to send the latest log file via email. The default email
+address configured for this is our contact address (the user is of course free to
+change it). Any log file sent to us by this means will be handled with care (log
+files do not contain any highly sensitive information in the first place).
+
+=== Information shared with VPN Server Providers
+
+IMPORTANT: We don't provide any VPN servers ourselves.
+
+The app does not share any information with VPN servers other than what users
+configure in the VPN profiles themselves (username, password, client certificate,
+user/server identities). All this data is sent encrypted. However identities are
+sent before authenticating the server. Hashes of passwords (or the plaintext
+password if xref:plugins/eap-gtc.adoc[`EAP-GTC`] is used) are only sent after
+successfully verifying the server's certificate and identity.
+
+Users using a third-party VPN provider are advised to consult the provider's
+privacy policy for details on what connection information is logged or what the
+log retention time is.
+
+=== CA Certificate Hashes
+
+If the VPN profile is configured for automatic CA certificate selection, hashes
+of the public keys of all CA certificates installed on the device are sent to the
+server over the encrypted IKEv2 connection. If a specific CA certificate is
+selected, only its hash is sent. If a server certificate is selected, no certificate
+hashes are sent. Since
+xref:./androidVpnClient.adoc#_1_9_0_2017_07_03[1.9.0], sending certificate requests
+may be disabled completely in the profile settings.
+
+=== Traffic sent via VPN
+
+When connected to a VPN server, a user's traffic may be analyzed and collected by
+the VPN server provider. Users using a third-party VPN provider are advised to
+consult the provider's privacy policy for details, and to only use encrypted
+connections (e.g. HTTPS) even when connected to the VPN.
+
+=== VPN connections using EAP-TNC
+
+If users connect to a VPN server that requires xref:tnc/tnc.adoc[`EAP-TNC`] (and
+only then), information about the user's device may be shared with the server.
+These are (depending on what the server requests) the Android version, a unique
+device ID, the installed apps (name and version), open network ports, and whether
+non-market apps may be installed on the device.

@@ -1,0 +1,697 @@
+= strongSwan VPN Client for Android
+
+:PLAY:      https://play.google.com/
+:PLAYSTORE: {PLAY}/store/apps/details?id=org.strongswan.android
+:PLAYTEST:  {PLAY}//apps/testing/org.strongswan.android
+:FDROID:    https://f-droid.org/en</packages/org.strongswan.android/
+:DOWNLOAD:  https://download.strongswan.org/Android/
+:GITHUB:    https://github.com/strongswan/strongswan
+:GOOGLE:    https://code.google.com/p/android/issues/detail?id=62644
+:TRACKER:   https://issuetracker.google.com/issues
+:PROJECTFI: https://fi.google.com
+:SAF:       https://developer.android.com/guide/topics/providers/document-provider.html
+:BLOG:      https://strongswan.org/blog
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC4739:   {IETF}/rfc4739
+
+The {PLAYSTORE}[strongSwan VPN Client for Android] is an app that can be installed
+directly from {PLAYSTORE}[Google Play]. The app is also available via
+{FDROID}[F-Droid] and the APKs are also on our {DOWNLOAD}[download server].
+
+== Client Configuration
+
+Since version xref:#_1_8_0_2017_01_20[1.8.0] of the app it is possible to import
+xref:./androidVpnClientProfiles.adoc[VPN profiles] from files.
+
+Client certificates and keys, and CA certificates may be added by
+xref:pki/simpleCa.adoc#_install_certificates_in_other_platforms[bundling them into
+a PKCS#12 file] and then importing that file into the Android system keystore. CA
+certificates and server certificates may also be imported directly into the app
+since xref:#_1_4_0_2014_07_22[1.4.0]. Importing CA certificates into the Android
+system keystore may trigger a warning since Android 4.4
+({GOOGLE}[Network may be monitored by an unknown third party"]) whereas importing
+CA certificates directly into the app will work fine.
+
+Since xref:#_1_9_0_2017_07_03[1.9.0] split tunneling may be configured on the
+client (i.e. to only route specific traffic via VPN and/or to exclude certain
+traffic from the VPN). The client always proposes `*0.0.0.0/0*` as remote traffic
+selector and narrowing performed by the server still applies.
+Since xref:#_1_5_0_2015_07_28[1.5.0] the user may opt to block all traffic not
+destined for the VPN if the server does narrow the traffic selector or split
+tunneling is configured on the client.
+
+Since xref:#_1_9_0_2017_07_03[1.9.0] it is possible to limit a VPN connection to
+specific apps or exclude certain apps from using the VPN (to them it will seem as
+if no VPN is present).
+
+Since xref:#_2_0_0_2018_07_03[2.0.0] an optional Quick Settings tile (Android 7+)
+shows the current connection status and allows connecting/terminating the current
+VPN connection easily. The same version brought support for the Always-on VPN
+feature that may be enabled in the system's VPN settings on Android 7+ and will
+start the VPN profile after a reboot (refer to the
+xref:#_2_0_0_2018_07_03[[changelog] for potential caveats). The default VPN profile
+used for these two features may be configured in the app's global settings (the
+default is to initiate the most recently used profile).
+
+The app allows creating shortcuts on the Android Launcher to quickly initiate
+specific VPN profiles.
+
+Since xref:#_2_0_0_2018_07_03[2.0.0] it's possible to use *Intents* and a VPN
+profile's UUID to connect/terminate it with automation apps such as Llama or
+Tasker e.g. based on location, WiFi hotspots or other events.
+
+How-to use *Intents* to connect or terminate VPN profiles:
+[%collapsible]
+====
+The UUID required for this can be found at the bottom of the advanced settings
+when editing a profile and may be copied from there.
+
+To connect a profile use the following information in the Intent:
+
+* `*Package*: org.strongswan.android`
+
+* `*Action* : org.strongswan.android.action.START_PROFILE`
+
+* `*Extras*` :
+** `*org.strongswan.android.VPN_PROFILE_ID*`: UUID of the profile to start +
+    (a string that looks like this: `7b21d354-52ed-4c14-803a-a3370f575405`)
+
+To disconnect the profile use the following information in the Intent:
+
+* `*Package*: org.strongswan.android`
+
+* `*Action*: org.strongswan.android.action.DISCONNECT`
+
+* `*Extras*`:
+** `*org.strongswan.android.VPN_PROFILE_ID*`: UUID of the profile to disconnect
+
+NOTE: If no profile ID is passed or it doesn't match the ID of the currently
+      connected profile, a dialog is shown that asks confirmation from the user
+      to disconnect the currently connected profile.
+====
+
+== Server Configuration
+
+Since strongSwan version 5.2.1 and version xref:#_1_4_5_2014_11_06[1.4.5] of the
+app, `*connections.<conn>.fragmentation = yes*` may be added to the server
+xref:swanctl/swanctlConf.adoc[configuration] to use IKEv2 fragmentation which
+avoids problems with IP fragmentation during connection establishment (mainly due
+to large certificates or a lot of certificate requests).
+
+NOTE: The hostname/IP of the VPN server as configured in the VPN profile has to
+      be contained as a `*subjectAltName*` extension in the VPN server's
+      certificate. Since xref:#_1_6_0_2016_05_02[1.6.0] the server identity may
+      also be configured explicitly.
+
+== Known Limitations/Issues
+
+ * Only IKEv2 is supported
+
+ * Client authentication is limited to:
+   * EAP authentication based on username/password (EAP-MSCHAPv2, EAP-MD5, EAP-GTC)
+   * RSA/ECDSA authentication with private key/certificate
+   * EAP-TLS with private key/certificate, see xref:#_1_4_5_2014_11_06[1.4.5]
+     for limitations
+
+ * The server always has to be authenticated with RSA/ECDSA (even when using
+   EAP-TLS, see xref:#_1_4_5_2014_11_06[1.4.5]
+
+ * PSK authentication is *not* supported, as it is potentially very dangerous
+   because the client might send the hash of a weak password to a rogue VPN server.
+   Thus we prefer EAP authentication where the server is first authenticated by
+   an X.509 certificate and only afterwards the client uses its password.
+
+ * Only a single tunnel can be established at a time
+
+ * The IPsec default proposals are limited to AES encryption with SHA2/SHA1 data
+   integrity or AES-GCM authenticated encryption. Optionally, using PFS with one
+   of a number of proposed ECP/MODP DH groups. Since xref:#_1_7_0_2016_12_08[1.7.0]
+   `*ChaCha20/Poly1305*` authenticated encryption and `*Curve25519*`-based DH is
+   also supported and proposed. And since xref:#_1_9_5_2017_11_17[1.9.5] a custom
+   ESP proposal may be configured.
+
+ * Since the app runs with reduced privileges (it can't open `RAW/PACKET` sockets),
+   it is limited to use UDP-encapsulated ESP, which it sends/receives via the UDP
+   sockets used for IKE. So UDP-encapsulation is
+   xref:features/natTraversal.adoc#_udp_encapsulation_of_esp[always enforced] even
+   if there is no NAT between client and server, by sending a random NAT-D payload.
+
+ * The app is not compatible with Google's {PROJECTFI}[Project Fi] which provides
+   its own always-on VPN connection. To use the app, the {PROJECTFI}[Project Fi]'s
+   always-on VPN has to be disabled first using the following procedure:
++
+[%collapsible]
+====
+** In `Settings` click `Google`
+** Click `Network`
+** Turn off the `Wi-Fi Assistant` setting
+** Restart the device
+----
+Then turn off the always-on VPN connection:
+----
+** In `Settings` click `More` under `Wireless & Networks`
+** Click `VPN`
+** Click the gear next to the `Wi-Fi Assistant`
+** Make sure `Always On` is not active
+====
+
+ * If you don't get a list of installed apps to exclude/include from the VPN you
+   might have to explicitly allow the strongSwan app to get this list. For instance
+   on the Huawei Mate 9 via `Phone Manager > Permissions`.
+
+ * It might be necessary to exclude the app from any battery saver feature on the
+    system (e.g. on the Xiaomi MIUI8).
+
+ * Apps that create a screen overlay such as `Twilight` or `Night Mode` might
+   interfere with the dialog to grant the app permission to create a VPN connection
+   (unable to tap `OK/Grant`). If that's the case, temporarily disable any such app
+   or if possible, whitelist/exclude the `VPNDialogs` system app from this feature.
+
+ * If you have problems with the app, find bugs or have feature requests you may
+   open a new {GITHUB}/issues[issue report] (please use the search function first
+   to avoid duplicates). You may also send us the log file via email directly from
+   within the app.
+
+== Further Information
+
+* xref:./androidVpnClientProfiles.adoc[File format for VPN profiles]
+
+* xref:./androidVpnClientPrivacyPolicy.adoc[Privacy Policy]
+
+* xref:./androidVpnClientBuild.adoc[How to build the app from sources]
+
+== Beta Testing
+
+Sometimes we publish beta versions of our app on Google Play. If you'd like to try
+new features and provide us with valuable feedback, please {PLAYTEST}[opt-in here]
+or directly from the app's page in the Play store.
+
+== Changelog
+
+=== 2.3.3 (2021-07-13)
+
+* Adds a button to install user certificates (newer Android releases don't provide
+  one in the selection dialog anymore - if no certs are installed, the dialog
+  doesn't even show up).
+
+* DNS servers are now explicitly applied whenever a TUN device is created (instead
+  of only when the IKE_SA is established), this ensures that the correct DNS servers
+  are used if the CHILD_SA gets explicitly deleted by the server and recreated by
+  the client.
+
+* Requests a new permission on Android 11 to get a list of all installed apps in
+  order to exclude/include them from VPNs (and for the EAP-TNC use case).
+
+=== 2.3.2 (2020-12-02)
+
+* Don't mark VPN connections as metered. The default changed when targeting Android
+  10 with the last release.
+
+=== 2.3.1 (2020-10-29)
+
+* Adds support to use IPv6 transport addresses for IKE and ESP. This can only be
+  enabled if UDP encapsulation for IPv6 is supported by the server. Note that the
+  Linux kernel only supports this since version 5.8, so many servers will not
+  support it yet.
+
+* Shows a proper error message if the UUID in a
+  xref:./androidVpnClientProfiles.adoc[profile] is invalid (e.g. contains no
+  dashes).
+
+* Fixes a potential crash with the power whitelist dialog and handles rotation and
+  other Activity restarts better if the information dialog is shown
+
+* Fixes the port scanning IMC (was broken since about
+  xref:#_1_6_1_2016_05_04[1.6.1]).
+
+=== 2.3.0 (2020-06-02)
+
+* Several changes try to improve reachability even in Android's deep sleep phases.
+** An Android-specific scheduler (based on AlarmManager) and whitelisting from
+   the system's battery optimization (the user is automatically asked to do so)
+   ensures the app is woken at the scheduled times, which ensure that events (in
+   particular for NAT keepalives) are triggered accurately.
+** DPDs are sent if no NAT keepalive has been sent for a while.
+** DPDs are sent after address/routing changes even if the path to the peer stays
+   the same.
+** Lifetimes are slightly increased to avoid conflicts even with inaccurate
+   scheduling (IKE_SA overtime is now 30m instead of 10m, CHILD_SA lifetime is 2.5h
+   instead of 1h, rekeyings are initiated ~30m before that).
+
+* Fixes the app icon on Android < 5.0.
+
+* Fixes a possible crash via QuickSettings tile on some devices
+
+=== 2.2.1 (2019-11-19)
+
+* Fixes loading CRL/OCSP via HTTP on Android 9, which defaults to HTTPs only.
+
+=== 2.2.0 (2019-10-15)
+
+* Makes the client identity configurable (via advanced settings and
+  xref:./androidVpnClientProfiles.adoc[profiles]) also when using EAP authentication.
+** The certificate identity is now configured using the same text field (with
+   auto-completion for SANs) instead of a drop-down field (just leave it empty to
+   use the certificate's subject DN as identity).
+
+* Fixes an issue with ECDSA certificate selection on Android 10.
+** Note that Android 10 doesn't show the dialog (with a button to install certs)
+  if no certificates are found. Installation has to happen via
+  xref:./androidVpnClientProfiles.adoc[profile] or externally.
+
+* Fixes an issue with break-before-make reauthentication (used if MOBIKE is not
+  supported) if the server concurrently deletes the IKE_SA.
+
+* Uses a different API (`*ConnectivityManager.registerNetworkCallback*` instead
+  of the deprecated `*ConnectivityManager.CONNECTIVITY_ACTION*`) to detect network
+  changes on Android 7 and newer.
+
+* Fixes a potential crash on Huawei devices
+
+=== 2.1.1 (2019-04-24)
+
+* Authentication via EAP-MSCHPv2 now supports UTF-8 encoded passwords.
+
+* Fixes an issue with upgrades from older versions.
+
+=== 2.1.0 (2019-03-14)
+
+* Adds a copy command to duplicate an existing VPN profile.
+
+* Allows configuring custom DNS servers for each VPN profile.
+
+=== 2.0.2 (2018-10-17)
+
+* Fixes potential DNS leaks caused by a {TRACKER}/116257079[bug] in Android 9.
+
+* Fixes clicking some buttons (certificate selection, app selection) with keyboard
+  navigation (also affects e.g. Fire TV sticks) when running on Android < 8.
+
+* Fixes an issue with the QuickSettings tile on some devices where the callback
+  is called even if no tile is available.
+
+* Fixes profile selection/edit when the device is rotated.
+
+=== 2.0.1 (2018-07-04)
+
+* Removes support for EAP-PEAP/TTLS as it caused major issues with commercial VPN
+  services (one issue was that the server identity was initially enforced as AAA
+  identity, but changing that revealed that some providers use self-signed AAA
+  server certificates - not sure what clients accept that), hopefully proper
+  support can be added in a future version.
+
+* Fixes a possible crash related to Android 8's optional Autofill feature
+  (the {TRACKER}/67675432[bug] that causes it was apparently fixed with Android
+  8.1 but has not been backported).
+
+=== 2.0.0 (2018-07-03)
+
+* Supports the Always-on VPN feature on Android 7+.
+** Android 8 only starts the VPN service after the user has unlocked the device
+   after a reboot.
+** Android 7 immediately starts the VPN service after booting, but that means the
+   app has no access to the KeyChain yet (if certificates are used), so no VPN
+   connection can be established until the user unlocks the device.
+** If password authentication is used and the password is not stored in the profile,
+   the connection is aborted and the user has to manually retry connecting to enter
+   the password.
+** The "Block connections without VPN" system option on Android 8+ blocks all
+   traffic not sent via VPN without considering any subnets/apps that are excluded
+   from a VPN (i.e. that feature is not compatible with split-tunneling).
+
+* Adds a Quick Settings tile on Android 7+ to quickly initiate/terminate the VPN
+  connection.
+** Similar to the Always-on feature, Android 8 doesn't enable the Quick Settings
+   tile until the user unlocked the device after a reboot.
+** Disconnecting via tile from the lock screen requires the user to unlock the
+   device, connecting is possible without (unless a password has to be entered).
+
+* The new settings activity allows specifying a default VPN profile used for the
+  two features above (the default is to initiate the most recently used profile).
+
+* The app automatically tries to reconnect the VPN profile if fatal errors occur
+  (e.g. authentication failures). The retries are delayed by an exponential backoff
+  which is currently capped at 2 minutes.
+** The status screen in the main activity as well as the notification show a
+   countdown until the next automatic retry, manually retrying is possible from
+   both locations.
+
+* On Android 5+ a dummy VPN interface is installed while connecting to a VPN profile
+  or recovering from errors, to block unencrypted traffic while taking excluded
+  subnets/apps configured in the profile into account.
+** Note that this VPN interface is removed when the VPN is disconnected.
+
+* Errors are not shown in a modal dialog anymore in the main activity but in a
+  banner directly above the status information (with buttons to view the log and
+  retry connecting).
+
+* Uses a separate activity to initiate/terminate/retry VPN profiles which avoids
+  having to bring the main Activity to the foreground for these actions.
+
+* Adds options to disable OCSP/CRL fetching (e.g. if it's known the server is not
+  available, or if CRLs are too large).
+
+* Adds an option to enable strict revocation checking via OCSP/CRL. If enabled,
+  the authentication will fail if the revocation status of the server certificate
+  is unknown (e.g. because no valid CRL is available).
+
+* Fetching OCSP/CRL can now be aborted immediately (e.g. to cancel connecting if
+  an OCSP server is not reachable).
+
+* Basic support for EAP-TTLS/EAP-PEAP has been added but had to be removed again
+  with xref:#_2_0_1_2018_07_04[2.0.1].
+
+* Adds an option to use PSS encoding for RSA signatures instead of the classic
+  PKCS#1 encoding.
+
+* The explicit ESP proposals for the deprecated Suite B have been removed.
+
+* Adds more clear error messages if permission for VPNs can't be acquired (e.g.
+  because another app has the Always-on VPN feature enabled).
+
+* The date/time/thread is shown in the log view if enough space is available (e.g.
+  on tablets or even in landscape orientation on phones). It should also be more
+  efficient when displaying large logs.
+
+* Removes the MIME-type filter when importing trusted certificates, allowing the
+  import of certificates even if they don't have an X.509 related MIME-type set.
+
+* All VPN profiles now have a random UUID assigned (its value may be copied from
+  the profile editor e.g. to initiate/terminate a VPN profile via explicit
+  `*Intent*`).
+
+=== 1.9.6 (2018-02-08)
+
+* Always sends the client certificate (if applicable) instead of only after
+  receiving a certificate request (allows servers that accept certificates from a
+  lot of CAs to avoid sending certificate requests).
+
+=== 1.9.5 (2017-11-17)
+
+* Makes the IKE and/or ESP algorithms configurable.
+
+* Removes `*modp1024*` from the default IKEv2 proposal. If the server only allows
+  this DH group, a custom IKE proposal has to be configured in the VPN profile.
+
+=== 1.9.4 (2017-09-18)
+
+* Adds support for delta CRLs.
+
+* Fixes issues with fragmented IP packets ({GITHUB}/pull/80[pull request #80]).
+
+* Ensures expires are triggered for the correct IPsec SA.
+
+* Fixes an issue with multicast addresses when using split tunneling on older
+  Android releases.
+
+* Does not consider a DH group mismatch as failure anymore as responder of a
+  CHILD_SA rekeying
+  ({GITHUB}/commit/e7276f78aae95905d9dfe7ded485d6771c4fcaa0[commit e7276f78aa]).
+
+=== 1.9.3 (2017-09-04)
+
+* Adds support to verify server certificates via OCSP (Online Certificate Status
+  Protocol).
+
+* Caches CRLs in the app directory.
+
+* The CRL cache may be cleared via main menu.
+
+* Adds a button to reconnect the VPN profile to the "currently connected" dialog.
+
+* Don't apply/configure app selection on Android < 5 (the API is not supported
+  there).
+
+* Initiator SPIs are reset when retrying while reconnecting which might avoid
+  issues with `*INVALID_KE_PAYLOAD*` notifies.
+
+* Catches some random exceptions (as seen in Play Console)
+
+=== 1.9.2 (2017-07-04)
+
+* Fixes a crash on Android <= 5.
+
+* Fixes database update when updating from app versions < 1.8.0.
+
+
+=== 1.9.1 (2017-07-03)
+
+* Fixes a crash with pre-existing profiles.
+
+=== 1.9.0 (2017-07-03)
+
+* Adds support for split-tunneling on the client (only route specific traffic via
+  VPN and/or exclude specific traffic from the VPN).
+
+* Adds support for per-app VPN (either allow only specific apps to use the VPN or
+  exclude certain apps from using it).
+
+* Sending of certificate requests may be disabled (while this allows reducing the
+  size of the IKE_AUTH message, e.g. if fragmentation is not supported. It only
+  works if the server also sends its certificate if it didn't receive any
+  certificate requests).
+
+* NAT-T keepalive interval is now configurable.
+
+* xref:./androidVpnClientProfiles.adoc[VPN profiles] may be imported via SAF
+  (Storage Access Framework) and allow the configuration of the new settings.
+
+* CRLs are now fetched with a simple Android-specific HTTP[S] fetcher.
+
+* Adds a disconnect button in the permanent notification.
+
+* The log view should now be more efficient.
+
+* Fixes the handling of backslashes in usernames.
+
+* Adds a Traditional Chinese translation.
+
+=== 1.8.2 (2017-02-20)
+
+* Fixes an issue while disconnecting on certain devices.
+
+=== 1.8.1 (2017-02-07)
+
+* Adds Simplified Chinese translation.
+
+=== 1.8.0 (2017-01-20)
+
+* Adds support to import xref:./androidVpnClientProfiles.adoc[VPN profiles] from
+  JSON-encoded files.
+
+=== 1.7.2 (2016-12-10)
+
+* Re-adds support for the ECC Brainpool DH groups (BoringSSL doesn't provide these).
+
+=== 1.7.1 (2016-12-09)
+
+* Fixes a crash (regarding `*libtpmtss.so*`) on older Android systems.
+
+=== 1.7.0 (2016-12-08)
+
+* Adds a permanent notification while connected (or connecting) that shows the
+  current status and which allows running the VpnService instance as foreground
+  service. This in turn should prevent Android from terminating it when low on
+  memory.
+
+* Supports the `*ChaCha20/Poly1305*` AEAD and `*Curve25519*` DH algorithms.
+
+* Properly validates entered server port and MTU values in the GUI.
+
+* Logs the installed DNS servers.
+
+* Uses BoringSSL instead of OpenSSL.
+
+* Based on strongSwan version 5.5.1.
+
+=== 1.6.2 (2016-05-06)
+
+* Fixes a crash when importing CA/server certificates via SAF (Storage Access
+  Framework).
+
+=== 1.6.1 (2016-05-04)
+
+* Fixes an interoperability issue with Windows Server. strongSwan version 5.4.0
+  changed the order of the algorithms in the default IKE proposal.  Algorithms
+  that provide a security of less than 128-bit were moved to the end of the list.
+  Now Windows Server 2012 R2 (in its default configuration at least) only supports
+  `*modp1024*`. The problem is that Microsoft's IKEv2 implementation only seems to
+  consider the first fifteen algorithms of a specific transform type in the
+  proposal. Because strongSwan supports quite a lot of DH groups and due to the
+  reordering, `*modp1024*` was now at position 17 in the proposal. This meant
+  that Microsoft Server rejected the IKE_SA_INIT message with a
+  `NO_PROPOSAL_CHOSEN` error. This has been fixed by removing some of the weaker
+  and rarely used DH groups from the default proposal
+ ({GITHUB}/commit/fae18fd201eb0b2e9a437a9e1b6faf52afd784f8[commit fae18fd201]).
+
+* Also corrects the label for the password field in the login dialog.
+
+=== 1.6.0 (2016-05-02)
+
+* Based on version:5.4.0, which e.g. adds support for IKEv2 redirection.
+
+* Configuration of the server identity. If it is set the identity is sent as `*IDr*`
+  during authentication and must match the server's identity exactly (i.e. it
+  disables loose identity matching against all `*subjectAltNames*`).
+
+* Selection of the client identity if certificate authentication is used.
+
+* GUI changes:
+** Removed the progress dialogs during connecting/disconnecting.
+** Redesign of the profile editor (reordered, floating labels, helper texts
+   "gateway"->"server").
+** Tabs in CA certificate manager have been updated (sliding tabs with ViewPager).
+** Switched to the AppCompat theme (Material-like).
+
+* Increases the NAT-T keepalive interval to 45s. No attempt to send keepalives is
+  made anymore if there is no connectivity.
+
+* Fixed the font in the log view on Android 5+.
+
+* Native 64-bit build.
+
+=== 1.5.0 (2015-07-28)
+
+* Based on version 5.3.2.
+
+* Roaming between networks on Android 5 and newer has been fixed.
+
+* Adds new advanced profile settings:
+** A custom MTU can be specified (currently between 1280 and 1500).
+** The server port can be changed (default is 500, with a switch to 4500 - there
+   is no switch if a custom port is set).
+** Split tunneling can be disabled by blocking all traffic that is not destined
+   for the VPN.
+*** Only on Android 5 and newer will split tunneling fully work if only one address
+    family is tunneled via VPN.
+
+* Sets the preferred language for remediation instructions to the system language.
+
+* EAP-TNC does not require a client certificate anymore.
+
+* Fixes a linker issue on Android M.
+
+=== 1.4.6 (2015-06-08)
+
+* Fix for
+ {BLOG}/2015/06/08/strongswan-vulnerability-(cve-2015-4171).html[CVE-2015-4171].
+
+=== 1.4.5 (2014-11-06)
+
+* Based on version 5.2.1 including improved MOBIKE handling and support for IKEv2
+  fragmentation.
+
+* Enables optional PFS (Perfect Forward Secrecy) for IPsec SAs. Proposed are cipher
+  suites with and without DH groups, so it's up to the VPN server whether PFS is
+  used or not.
+
+* Adds basic support for EAP-TLS. Limitations are:
+** EAP-only authentication is not allowed because the AAA identity is not
+   configurable. So to prevent anyone with a valid certificate from impersonating
+   the AAA server and thus the VPN server, the server is authenticated with a
+   certificate (like we do with other authentication methods).
+** It's currently not possible to select a specific CA certificate to authenticate
+   the AAA server certificate, so it either must be issued by the same CA as that
+   of the VPN server or automatic CA certificate selection must be enabled in the
+   VPN profile.
+
+=== 1.4.0 (2014-07-22)
+
+* Adds the ability to import CA and server certificates directly into the app. On
+  Android 4.4+ the {SAF}[SAF] (Storage Access Framework) is used to allow users to
+  browse for certificate files (if the MIME-type is not set properly the advanced
+  view has to be used to see all files). On older systems the files may be opened
+  from third-party file managers.
+
+* The GUI indicates if the connection is being reestablished.
+
+* A DNS proxy resolves the VPN server's hostname while reestablishing (plaintext
+ is blocked otherwise).
+
+* Supports ECDSA private keys on recent Android systems (tested on Android 4.4.4)
+
+=== 1.3.4 (2014-04-25)
+
+* Based on version 5.1.3 (fixes a security vulnerability).
+
+* Links `*libcrypto*` (OpenSSL) statically.
+
+* Doesn't limit the number of packets during EAP-TTLS.
+
+=== 1.3.3 (2013-11-13)
+
+* Based on version 5.1.1.
+
+* Fixed issues with IV generation and padding length calculation for AES-GCM.
+
+* Removes the `*Vstr*` dependency.
+
+=== 1.3.2 (2013-09-26)
+
+* Fixed a regression causing remediation instructions to pile up (EAP-TNC).
+
+=== 1.3.1 (2013-09-23)
+
+* Improved recovery after certain connectivity changes.
+
+=== 1.3.0 (2013-07-08)
+
+* Added support for EAP-TNC.
+
+* Disabled listening on IPv6 because the Linux kernel currently does not support
+  UDP encapsulation of ESP packets for IPv6.
+
+=== 1.2.3 (2013-05-03)
+
+* Added support for AES-GCM.
+
+* Support for IPv6-in-IPv4 tunnels.
+
+* Uses `*kernel-netlink*` to handle interface/IP address enumeration.
+
+=== 1.2.2 (2013-03-07)
+
+* Added support for multiple authentication, e.g. based on an X.509 certificate
+  followed by EAP ({RFC4739}[RFC 4739]).
+
+* Added Polish, Ukrainian, and Russian translations.
+
+* Fixed a race condition during reauthentication and a potential freeze while
+  disconnecting.
+
+=== 1.2.1 (2012-11-21)
+
+* Added shortcuts to VPN profiles to quickly start specific connections from the
+  launcher.
+
+* Added a confirmation dialog if a connection is started but one is already
+  established.
+
+* Fixed a few Android 4.2 specific issues.
+
+=== 1.2.0 (2012-10-18)
+
+* Added support for MOBIKE e.g. allows switching between different interfaces
+  (e.g. Wifi and 3G/4G).
+
+* The app tries to keep the connection established until the user disconnects
+  manually.
+
+=== 1.1.3 (2012-09-24)
+
+* Workaround for a private key issue on Android 4.1.
+
+=== 1.1.2 (2012-09-18)
+
+* Added loose ID matching: While the client expects the hostname/IP of the VPN
+  server to be contained as `*subjectAltName*` in the certificate this allows the
+  responder to use a different IDr than that, as long as it is confirmed by the
+  certificate (the client does not send an IDr anymore).
+
+=== 1.1.1 (2012-09-17)
+
+* Fixed a Unicode issue when converting Java to C strings.
+
+=== 1.1.0 (2012-09-06)
+
+* Added certificate authentication and fixed reauthentication.

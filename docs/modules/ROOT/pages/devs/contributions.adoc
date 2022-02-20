@@ -79,7 +79,7 @@ If your (non-trivial) contributions are targeting
 ** xref:daemons/charon-cmd.adoc[`*charon-cmd*`] command line utility
    ({GITHUB}/tree/master/src/charon-cmd[`src/charon-cmd`]).
 
-** the xref:androidVpnClient.adoc[Android app], etc.
+** the xref:os/androidVpnClient.adoc[Android app], etc.
 
 * the tools, e.g.:
 

@@ -14,7 +14,7 @@
 
 We maintain the {ANDROID_PLAY}[strongSwan VPN Client for Android], an App that
 can be downloaded directly from {ANDROID_PLAY}[Google Play]. More details can be
-found on a xref:androidVpnClient.adoc[separate page].
+found on a xref:os/androidVpnClient.adoc[separate page].
 
 == Native Build
 

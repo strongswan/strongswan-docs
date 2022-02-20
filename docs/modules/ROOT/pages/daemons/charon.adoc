@@ -9,7 +9,7 @@ making the IKE daemon core available to other programs such as
 xref:daemons/charon-systemd.adoc[`*charon-systemd*`],
 xref:daemons/charon-svc.adoc[`*charon-svc*`],
 xref:daemons/charon-cmd.adoc[`*charon-cmd*`] or the
-xref:androidVpnClient.adoc[Android app].
+xref:os/androidVpnClient.adoc[Android app].
 
 == Architecture
 
