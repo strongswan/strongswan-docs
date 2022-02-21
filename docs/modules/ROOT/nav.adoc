@@ -95,6 +95,7 @@
 .Devs
 * xref:devs/devs.adoc[]
 * xref:devs/contributions.adoc[]
+* xref:devs/programmingStyle.adoc[]
 * xref:devs/objectOrientedC.adoc[]
 
 .Platform Security

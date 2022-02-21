@@ -1,0 +1,36 @@
+= Programming Style
+
+* Use tabs for indentation, tab width is 4
+
+* Do not exceed a line width of 80 characters
+
+* Statements that span multiple lines are usually indented to the opening bracket
+  (using tabs, then spaces)
+
+* Curly brackets follow on a new line (Allman style), except for structs and enums
+
+* Always explicitly define a block after if/else with curly brackets
+
+* Empty lines should not contain any whitespace
+
+* Add a space between variables and operators
+
+* Add a space between if/while and opening bracket
+
+* No space between function name and opening bracket
+
+* Add a space after a comma, as in natural (English) language
+
+* structs/enums are typedef'd with the same name
+
+* Defined types have a `*_t*` suffix
+
+* No C++ style comments //
+
+* Add the comment on a separate line, above the statement you are commenting
+
+* Declare variables at the beginning of the block
+
+* Function/member declarations use a Doxygen /** comment */
+
+* Use `*@*` as the Doxygen escape character (not `*\*`)
