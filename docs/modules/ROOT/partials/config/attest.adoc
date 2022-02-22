@@ -3,4 +3,4 @@
  to adjust the access permissions of the config file accordingly
 
 |load                                        |
-|Plugins to load in xref:tn/attest.adoc[`*attest*`] tool
+|Plugins to load in xref:tnc/attest.adoc[`*attest*`] tool

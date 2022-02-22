@@ -270,7 +270,8 @@ plugins.
 |enable xref:tnc/tnc.adoc[TNC] Test IMC
 
 |--enable-imv-attestation                                    |
-|enable xref:tnc/tnc.adoc[TNC] Attestation IMV
+|enable xref:tnc/tnc.adoc[TNC] Attestation IMV and the
+ xref:tnc/attest.adoc[`*attest*`] management tool.
 
 |--enable-imv-hcd                                            |5.3.3
 |enable xref:tnc/tnc.adoc[TNC] Hardcopy Device Integrity (HCD) IMV

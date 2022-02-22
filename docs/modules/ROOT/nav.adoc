@@ -46,6 +46,7 @@
 ** xref:tnc/pt-tls-client.adoc[]
 ** xref:tnc/sw-collector.adoc[]
 ** xref:tnc/sec-updater.adoc[]
+** xref:tnc/attest.adoc[]
 
 .Plugins
 * xref:plugins/plugins.adoc[]

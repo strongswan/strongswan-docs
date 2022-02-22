@@ -1,0 +1,104 @@
+= ipsec attest Tool
+
+:STRONGTNC: https://github.com/strongswan/strongTNC/
+
+== Synopsis
+
+----
+ipsec attest --files|--products|--keys|--hashes [options]
+
+ipsec attest --components|--measurements|--add|--del [options]
+----
+
+== Description
+
+The `*ipsec attest*` utility manages measurement reference values used for
+TPM-based remote attestation, e.g. of the Linux Integrity Measurement
+Architecture (IMA). See xref:tnc/tnc.adoc[Trusted Network Connect] for examples.
+
+The auxiliary `*ipsec*` command, if available, sets the execution path to
+`*$\{libexecdir}/ipsec/*` which is usually `*/usr/libexec/ipsec/*` or
+`*/usr/local/libexec/ipsec/*`. The `*$\{libexecdir}*` directory can be configured
+with the `*--libexecdir*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
+option defaulting to `*$\{prefix}/libexec*`).
+
+The `*ipsec attest*` utility is automatically enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+  --enable-imv-attestation
+
+and can be configured with the following
+xref:config/strongswanConf.adoc#_attest[`*strongswan.conf*`] options
+
+[cols="4,1,8"]
+|===
+|Key |Default |Description
+
+include::partial$config/attest.adoc[]
+|===
+
+The simple `*ipsec attest*` tool has been obsoleted by the much more powerful
+capabilities of the {STRONGTNC}[strongTNC] web-based management framework.
+
+== Options
+
+`--files [--product <name>|--pid <id>]`::
+
+Show a list of files with a software product name or its primary key as an
+optional selector.
+
+`--products [--file <path>|--fid <id>]`::
+
+Show a list of supported software products with a file path or its primary key as
+an optional selector.
+
+`--keys [--components <cfn>|--cid <id>]`::
+
+Show a list of AIK key digests with a component or its primary key as an optional
+selector.
+
+`--hashes [--sha1|--sha256|--sha384] [--product <name>|--pid <id>]`::
+
+Show a list of measurement hashes for a given software product or its primary key
+as an optional selector.
+
+`--hashes [--sha1|--sha256|--sha384] [--file <path>|--fid <id>]`::
+
+Show a list of measurement hashes for a given file or its primary key as an
+optional selector.
+
+`--components [--key <digest>|--kid <id>]`::
+
+Show a list of components with an AIK digest or its primary key as an optional
+selector.
+
+`--measurements [--sha1|--sha256|--sha384] [--component <cfn>|--cid <id>]`::
+
+Show a list of component measurements for a given component or its primary key as
+an optional selector.
+
+`--measurements [--sha1|--sha256|--sha384] [--key <digest>|--kid <id>|--aik <path>]`::
+
+Show a list of component measurements for a given AIK or its primary key as an
+optional selector.
+
+`--add --file <path>|--dir <path>|--product <name>|--component <cfn>`::
+
+Add a file, directory, product or component entry Component `<cfn>` entries must
+be of the form `<vendor_id>/<name>-<qualifier>`
+
+`--add [--owner <name>] --key <digest>|--aik <path>`::
+
+Add an AIK public key digest entry preceded by an optional owner name.
+
+`--del --file <path>|--fid <id>|--dir <path>|--did <id>`::
+
+Delete a file or directory entry referenced either by value or primary key.
+
+`--del --product <name>|--pid <id>|--component <cfn>|--cid <id>`::
+
+Delete a product or component entry referenced either by value or primary key.
+
+`--del --key <digest>|--kid <id>|--aik <path>`::
+
+Delete an AIK entry referenced either by value or primary key.
