@@ -175,7 +175,7 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 |===
 |Component |Description
 
-|xref:tpm/aikgen.adoc[`*aikgen*`]
+|`*aikgen*`
 |Utility to generate an Attestation Identity Key bound to a TPM 1.2
 
 |xref:daemons/charon.adoc[`*charon*`]

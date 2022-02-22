@@ -233,7 +233,7 @@ The following list shows all `*strongswan.conf*` keys that are currently defined
   `*--with-nm-ca-dir*` xref:install/autoconf.adoc#_with_options[`*./configure*`]
   option (defaults to `*/usr/share/ca-certificates*`).
 
-=== xref:tpm/aikgen.adoc[aikgen]
+=== aikgen
 [{COLS}]
 |===
 |*Key*|*Default*|*Description [Default]*
