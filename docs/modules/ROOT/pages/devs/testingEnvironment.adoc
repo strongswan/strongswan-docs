@@ -1,0 +1,158 @@
+= Integration and Regression Testing Environment
+
+:KVM:    https://www.linux-kvm.org/
+:TESTS:  https://www.strongswan.org/testresults.html
+:GITHUB: https://github.com/strongswan/strongswan/tree/master
+:REPOS:  https:download.strongswan.org/testing/repos/
+
+Since its beginning the strongSwan project has been using a virtualized integration
+and regression testing environment to ensure the quality of each release. The
+{TESTS}[test results] of the latest release are always published online.
+
+The test environment is based on {KVM}[KVM] and reproducible guest images based
+on Debian. In earlier releases it was based on User-Mode-Linux (UML) and a Gentoo
+base image.
+
+NOTE: Hardware virtualization support is required (Intel VT/AMD-V). This means
+      that running the testing environment in a VM itself generally doesn't work.
+      It might with newer VMware products, though.
+
+== Building the Testing Environment
+
+=== Supported Architectures
+
+The host system currently has to run the same architecture as the guests, whose
+architecture can be changed via `*BASEIMGARCH*` in
+{GITHUB}/testing/testing.conf[`*testing/testing.conf*`] or in
+`*testing/testing.conf.local*` that is not managed by Git. The only fully supported
+architecture currently is `*amd64*`.
+
+=== Required Packages
+
+On Debian/Ubuntu (must be recent, Debian 6.0 `*squeeze*` won't work), the following
+packages are required to build the testing environment:
+----
+* debootstrap
+* e2fsprogs
+* kvm
+* libvirt-bin
+* parted
+* qemu
+* wget
+* gcc
+* make
+----
+
+=== Configuration and Build
+
+All the required scripts, config files and test suites are located in the
+{GITHUB}/testing[`testing`] directory of the Git repository or a release tarball.
+
+Before starting the build you may want to modify some of the variables in the
+`*testing.conf*` file or `*testing.conf.local*` that is not managed by Git.
+For instance, the `*TESTDIR*` variable defines the root directory in which the
+whole testing environment will be built and by setting any of the `*ENABLE_BUILD_**`
+variables to `*no*` you can avoid re-building parts of the environment that have
+already been built earlier.
+
+Building is started by executing the `*make-testing*` script:
+
+ ./make-testing
+
+Several applications are built from sources
+({GITHUB}/testing/scripts/recipes[`testing/scripts/recipes`]) in the root image.
+
+To rebuild and install strongSwan from the current or an arbitrary source tree
+within the root image the
+{GITHUB}/testing/scripts/build-strongswan[`*testing/scripts/build-strongswan*`]
+script is provided since version 5.2.1.
+
+Since version 5.8.0, the
+{GITHUB}/testing/scripts/build-certs[`*testing/scripts/build-certs*`] script
+creates the keys and certificates used in the test scenarios dynamically. The
+scripts has to be run once after the root image has been created (the guest images
+are [re-]built automatically).
+
+=== Platform-Specific Notes
+
+On *Ubuntu with AppArmor* installed (the default) `*libvirt*` uses the latter to
+secure virtual machines. When creating a guest `*libvirt*` automatically creates
+AppArmor profiles. The problem is that these profiles don't reflect the
+multi-layered disk images we use (each guest's image is linked to a common root
+image which in turn is linked to a common base image).  One option to fix this is
+to set `*security_driver = "none"*` in `*/etc/libvirt/qemu.conf*` and execute
+
+ sudo service libvirt-bin restart
+
+== Using the Testing Environment
+
+=== Starting the Environment
+
+When the strongSwan testing environment has been put into place by running the
+`*make-testing*` script, you are ready to start up the KVM instances by calling
+
+ ./start-testing
+
+The virtual topology looks like this:
+
+image::topology.png[topology]
+
+=== Running the Automated Tests
+
+The script
+
+ ./do-tests <testnames>
+
+runs the automated tests. If the `<testnames>` argument is omitted all tests are
+executed. Otherwise only the tests listed will be run as shown in the following
+example:
+
+ ./do-tests ikev2/net2net-psk ikev2/net2net-cert
+
+Each test is divided into the following phases:
+
+* Load the test-specific guest configuration if any is provided.
+
+* Next the `*pretest.dat*` script found in each test directory is executed. Among
+  other commands, strongSwan is started on the IPsec hosts.
+
+* The `*evaltest.dat*` script evaluates if the test has been successful.
+
+* The `*posttest.dat*` script terminates the test e.g. by stopping strongSwan on
+  the IPsec hosts. It is also responsible to clean things up (e.g. firewall rules)
+  that were set up in `*pretest.dat*`.
+
+* Restore the default configuration on every host (new files have to be deleted
+  manually in `*posttest.dat*`).
+
+The test results and configuration files for all tests are stored in a folder
+labeled with the current date and time in directory specified by the
+`*TESTRESULTSDIR*` variable in `*testing.conf*`.
+
+The same results are also automatically transferred to the Apache server running
+on guest winnetou and can be accessed via the URL
+
+ http://192.168.0.150/testresults/
+
+=== Manual Testing
+
+Instead of running tests automatically with `*do-tests*` it is possible to preload
+a test scenario with the script:
+
+ scripts/load-testconfig <testname>
+
+Individual configuration files can be changed and any command can be executed by
+logging on to a guest host directly (via SSH or a console window). No password is
+required to login as root.
+
+Also, the sources for every software built during `*make-testing*` are mounted at
+`*/root/shared*` which allows to change and recompile these components. Please
+note that before being able to successfully compile one of the components inside
+a guest you first have to execute `*make clean*` in the component's source
+directory (the same applies if you later want to rebuild the images with
+`*make-testing*`).
+
+After you finished testing, the default configuration can be restored with the
+following command (newly created files have to be deleted manually):
+
+ scripts/restore-defaults

@@ -97,7 +97,7 @@ instead.
 
 For example, you see a lot of load statements in the `*strongswan.conf*` files
 of the xref:config/IKEv2.adoc[example scenarios] of our
-xref:testingEnvironment.adoc[testing environment] because we enable all
+xref:devs/testingEnvironment.adoc[testing environment] because we enable all
 strongSwan plugins during compile time but use only a small subset of them
 while running an individual test scenario.
 
