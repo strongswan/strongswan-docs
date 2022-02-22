@@ -1,0 +1,26 @@
+= Fuzzing
+
+:OSSFUZZ: https://github.com/google/oss-fuzz
+:CORPORA: https://github.com/strongswan/fuzzing-corpora
+
+Since version 5.5.3 parts of the strongSwan code base are fuzzed on Google's
+{OSSFUZZ}[OSS-Fuzz] infrastructure.
+
+The following fuzz targets are currently in use:
+
+ *fuzz-certs*`::
+  Fuzzes the X.509 certificate parsing framework as provided by the default
+  plugins (`*x509*`, `*pem*`, `*pkcs1*`, `*gmp*`, etc.) and the ASN.1 parser
+  of the `*libstrongswan*` library.
+
+ *fuzz-crls*::
+  Fuzzes the CRL parsing framework provided by the default plugins (`*x509*`,
+  `*pem*`, etc.) and the ASN.1 parser of the `*libstrongswan*` library.
+
+ *fuzz-pa-tnc*::
+  Fuzzes the PA-TNC message parser (`*libimcv*`).
+
+ *fuzz-pb-tnc*:: Fuzzes the PB-TNC batch parser (`*libtnccs*`).
+
+The seed corpora used by the fuzz targets is provided in a
+{CORPORA}[separate repository].

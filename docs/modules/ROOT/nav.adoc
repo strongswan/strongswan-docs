@@ -98,6 +98,7 @@
 * xref:devs/programmingStyle.adoc[]
 * xref:devs/objectOrientedC.adoc[Object Oriented C]
 * xref:devs/testingEnvironment.adoc[Testing Environment]
+* xref:devs/fuzzing.adoc[]
 
 .Platform Security
 * xref:tpm/tpm2.adoc[TPM 2.0]
