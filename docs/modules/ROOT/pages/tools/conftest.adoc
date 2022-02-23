@@ -1,0 +1,63 @@
+= ipsec conftest Tool
+
+:GITHUB: https://github.com/strongswan/strongswan/blob/master/src
+
+== Synopsis
+
+----
+ipsec conftest --help         show usage information
+
+ipsec conftest --version      show conftest version
+
+ipsec conftest --suite <file> global testsuite configuration (default: ./suite.conf)
+
+ipsec conftest --test <file>  test specific configuration
+----
+
+== Description
+
+The `*ipsec conftest*` utility allows you to run preconfigured tests on IKE, based
+on the mainstream strongSwan stack. It can inject or mangle packets to test the
+behavior of other implementations under certain conditions.
+
+The auxiliary `*ipsec*` command, if available, sets the execution path to
+`*$\{libexecdir}/ipsec/*` which is usually `*/usr/libexec/ipsec/*` or
+`*/usr/local/libexec/ipsec/*`. The `*$\{libexecdir}*` directory can be configured
+with the `*--libexecdir*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
+option defaulting to `*$\{prefix}/libexec*`).
+
+To enable the `*ipsec conftest*` utility, add
+
+ --enable-conftest
+ 
+to the xref:install/autoconf.adoc[`*./configure*`] options.
+
+== Configuration
+
+A test suite consists of a suite configuration file (`*--suite parameter*`) and
+individual test configurations (selected by the `*--test parameter*`) which use
+the same structure as xref:config/strongswanConf.adoc[`*strongswan.conf*`]. To
+configure plugins, a `*conftest*` section in 
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] can be used.
+
+The {GITHUB}/conftest/README[`*README*`] file in the `*conftest*` source has
+details on the possible configuration sections and options.
+
+=== Specifying Host IDs
+
+When using certificate DN as `*leftid|rightid*` in `*ipsec.conf*`, the DN is
+enclosed in quotation marks, like in the following example:
+----
+conn sample-with-ca-cert
+  rightid="C=CH, O=Linux strongSwan, CN=peer name"
+----
+However the equivalent options `*lid|rid*` in a conftest suite or test
+configuration *must* be written without quotation marks, otherwise there will be
+authentication errors.
+----
+configs {
+  ike-sample-a {
+    rid = C=CH, O=Linux strongSwan, CN=peer name
+  }
+}
+----
