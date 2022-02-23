@@ -1,0 +1,454 @@
+= High Availability
+
+:CLUSTERIP: https://lwn.net/Articles/108078/
+:DOWNLOAD:  https://download.strongswan.org/testing/
+:TESTS:     https://www.strongswan.org/testing/testresults
+:IPSECME:   https://datatracker.ietf.org/wg/ipsecme/about/
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC6027:   {IETF}/rfc6027
+:RFC6311:   {IETF}/rfc6311
+
+The IKEv2 daemon experimentally supports pseudo active/active High Availability
+and Load Sharing capabilities using a cluster of [initially] two nodes.
+
+== Problem Statement
+
+The IKEv2/IPsec protocol is not well suited for operation in an active/active
+cluster. While it is possible to share the state of IKE_SAs over high-speed links
+in a cluster, sharing the kernel-maintained IPsec ESP SAs is very difficult. Due
+to the strict sequence numbering of ESP packets, the overhead for synchronizing
+ESP sequence numbers would be very high.
+
+In {RFC6027}[RFC 6027] the The IETF IP Security and Maintenance and Extensions
+({IPSECME}[ipsecme)] working group describes the problems in more details. The
+working group then produced with {RFC6311}[RF6311] a standard for a solution that
+relies on the client for state synchronization. This however required an extension
+to the IKEv2 protocol. Clients connecting to a highly available cluster will
+benefit from this features only if they support this extension. Existing clients
+(such as the one shipped with Windows 7) will not be able to take advantage of
+this efforts.
+
+== Possible Approaches
+
+=== Node-to-Node Synchronization
+
+While the synchronization of IKE state including sequence numbers is realistic
+between two nodes, exchanging state information of an ESP security association is
+difficult.
+
+Synchronizing the state for each processed IPsec packet will put a high load on
+the nodes. Synchronization after a certain amount of packets and/or after a certain
+timeout can reduce the load, but will make fail-over handling much more difficult,
+as we have to guess on the taking-over node how many packets the failing node has
+processed but could not synchronize before it failed.
+
+Another problem with such an approach is that there is no way of doing load sharing
+between nodes. An SA is strictly bound to a single node until the event of a failure.
+
+=== Client-to-Cluster Synchronization
+
+Another approach to consider is requesting state information from the client. In
+the event of a failure, the taking-over node can request sequence numbers from the
+client. But this approach has the same deficiencies as previously discussed. Further,
+it requires extensions to the IKE protocol between client and gateway, making
+existing implementations incompatible with this approach.
+
+== Functional Specification
+
+strongSwan uses a slightly different approach. Our solution should provide:
+
+Failure Detection::
+  If a node fails due to power loss, hardware failures, kernel oops or daemon crashes,
+  the node will be removed from the cluster.
+
+State Synchronization::
+  If a node is removed due to failure or administrative purposes, the cluster
+  should already have an up-to-date copy of the nodes state to take over.
+
+Takeover::
+  Node failure detection and state takeover should happen within 1-3 seconds.
+
+Transparent Migration::
+  TCP or application sessions should not be interrupted during take-over.
+
+Load Sharing::
+  Load should be shared across all actives nodes in a cluster.
+
+Reintegration::
+   A repaired node can be (re-)added to an existing cluster, taking over a part
+   of the load.
+
+Legacy Clients::
+  No protocol extension, any IKEv2 client should be able to benefit from High
+  Availability if connected to a cluster.
+
+Migration of clients to another node does not affect the connection. A client usually
+does not detect a takeover. This allows a gateway administrator to e.g. remove a
+node from the load sharing cluster, apply security updates, reboot and reintegrate
+the node.
+
+== Selected Solution
+
+The selected solution is based on the idea of {CLUSTERIP}[ClusterIP], a Linux kernel
+module allowing a set of nodes to provide a service under a single virtual IP.
+
+=== How ClusterIP works
+
+All nodes in a ClusterIP-based setup act under a single virtual IP address. The
+nodes spoof ARP requests with a multicast MAC address. This will make the switch
+forward the packet to each node in the cluster.
+
+The received packet is associated to a segment by calculating a hash value of it.
+In the simplest setup, the source address is hashed and the hash value modulo the
+number of segments results in the responsible segment number. Each segment is
+handled by exactly one node in the cluster.
+
+The node responsible for the packet will pass it to upper layers, whereas all others
+just drop the packet in the netfilter code. Depending on the hash value, e.g. TCP
+connections are kept on the same node. If a node fails, a remaining node will take
+over the segment and process packets for it.
+
+=== IPsec with ClusterIP
+
+While the ClusterIP module itself is not designed to handle IPsec traffic or even
+act as a forwarding router, the principle of ClusterIP is. If the IKE daemons in
+the cluster can synchronize the IKE state and the basic IPsec SA state without
+sequence numbers, a modified ClusterIP module can do the rest:
+
+* For traffic to decrypt, the SPI of the ESP packet is included in the hash
+  calculation, resulting in a spread of the SAs across all nodes. For SAs the local
+  node is not responsible. It picks a packet from time to time and uses it to advance
+  the replay window. Sequence numbers are not mangled if a packet is not verified
+  using the IPsec authentication algorithm. Only the selectively chosen and verified
+  packets mangle the replay window state.
+
+* Earlier patches included the sequence number of the packet into the segment hash
+  calculation. This helped to spread multiple packets in a single SA to multiple
+  nodes thus automatically updating the replay window. But the method had the
+  drawback of reordering packets in a flow.
+
+* For traffic to encrypt on the cluster, the SA is looked up and the hash value is
+  fed with the SPI of the found SA. If the segment matches, the packet is further
+  processed. If not, only the sequence number is incremented. To avoid assigning
+  the same sequence number to different packets on multiple nodes, we currently keep
+  the outbound flow on a single node. One could spread the outgoing packets and
+  assign unique sequence numbers on each node but this will introduce other problems
+  such as a shortened replay window.
+
+== Kernel Implementation
+
+The ClusterIP Netfilter module uses an additional `PREROUTING` hook to mark received
+packets for forwarding. Two new Netfilter hooks are included in the IPsec processing,
+exactly before the decryption/encryption process (`XFRM_IN` and `XFRM_OUT`).
+----
+                 v        PLAIN        ^
+    +------------------------------------------------+
+    |            |                     |             |
+    |     +--------------+      +--------------+     |
+    |  4. |  PREROUTING  |      |   DECRYPT    |  3. |
+    |     +--------------+      +--------------+     |
+    |            |                     ^             |
+    |            v                     |             |
+    |     +--------------+      +--------------+     |
+    |  5. |   XFRM_OUT   |      |   XFRM_IN    |  2. |
+    |     +--------------+      +--------------+     |
+    |            |                     ^             |
+    |            v           ^         | ESP/AH      |
+    |     +--------------+   |  +--------------+     |
+    |  6. |   ENCRYPT    |   +--|    INPUT     |  1. |
+    |     +--------------+      +--------------+     |
+    |            |                     |             |
+    +------------------------------------------------+
+                 v       CRYPTED       ^
+----
+
+. AH, ESP and UDP-Encapsulated ESP packets are all accepted. Other traffic is
+  subject to the ClusterIP selection algorithm based on the source IP address
+  (e.g. IKE traffic).
+
+. Undecrypted IPsec traffic gets dropped using a ClusterIP algorithm, based on
+  the IPsec SA.
+
+. Decryption process is done on the responsible node only. Non-responsible nodes
+  pick every n-th packet and verify it to update the replay window state.
+
+. Traffic is received on ClusterIP multicast MAC and must be tagged as unicast
+  traffic to advance through IP forwarding.
+
+. After IPsec policy lookup, unencrypted traffic gets dropped using a ClusterIP
+  algorithm, based on IPsec SA. Outgoing sequence numbers are assigned before the
+  packed drop, this will keep outgoing sequence numbers in sync on all nodes.
+
+. Encryption process is done on the responsible node only.
+
+The strongSwan {DOWNLOAD}[download site] offers HA patches for many Linux kernel
+versions.
+
+== IKE daemon implementation
+
+A separate high availability plugin implemented for the IKEv2 daemon charon is
+responsible for state synchronization between the nodes in a cluster and simple
+monitoring functionality. It is currently designed for two nodes, but will be
+extended to synchronize larger clusters in the future.
+
+To enable the high availability xref:plugins/ha.adoc[`*ha*`] plugin, build
+strongSwan with the xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-ha
+
+=== Daemon Hooks
+
+The plugin registers itself at several hooks in the daemon. These hooks are used
+for notifications about SA state changes and push information to the plugin. The
+following hooks are used:
+
+`ike_keys()`::
+  Receives IKE key material (DH, nonces, proposals)
+
+`ike_updown() / ike_rekey()`::
+  Monitor state changes of IKE SAs
+
+`message()`::
+  Used to update IKE message IDs
+
+`child_keys()`::
+  Receives CHILD key material
+
+`child_state_change()`::
+  Monitor state changes of CHILD SAs
+
+The plugin registers its hook functions at the daemon bus. These hooks are sufficient
+to synchronize all IKE and CHILD SAs with all the state required to do a fail-over
+of IKE and ESP SAs.
+
+=== Synchronization Messages
+
+The hook functions collect the required synchronization data and prepare messages
+to be sent to other nodes in the cluster. Messages are sent in unencrypted UDP
+datagrams, sent and received on port `*4510*`. As these messages contain sensitive
+key material, securing the messages by IPsec is recommended.
+
+No packet acknowledge/retransmit scheme is currently implemented. The cluster needs
+a reliable network with very few packet losses. It might be necessary to use a more
+reliable transport protocol in the future, especially if nodes start to drop packets
+due to an overloaded CPU.
+
+Messages contain a protocol version, a message type and different attributes. The
+following synchronization message types are currently defined:
+
+`IKE_ADD`::
+  A new IKE_SA has been established. This message contains all information to derive
+  key material. If the message contains a `REKEY` attribute, the IKE_SA inherits all
+  required parameters from the old SA.
+
+`IKE_UPDATE`::
+   Update IKE_SA with newer information (e.g. Identities when authentication is
+   complete).
+
+`IKE_MID_INITIATOR`::
+   Update the initiators IKE message ID.
+
+`IKE_MID_RESPONDER`::
+   Update the responders IKE message ID.
+
+`IKE_DELETE`::
+   Delete an established IKE_SA.
+
+`CHILD_ADD`::
+   CHILD_SA has been established, contains keying material.
+
+`CHILD_DELETE`::
+   CHILD_SA has been deleted.
+
+=== State Synchronization
+
+Received synchronization messages are parsed, mirrored IKE and CHILD_SAs are created
+from this information. Mirrored CHILD_SAs do not differ from normally exchanged ones.
+They are installed in the kernel and handle packets if ClusterIP feels responsible
+for it.
+
+IKE_SAs are installed in a special `PASSIVE` state. They do not handle traffic but
+accept state changes from sync messages only. `PASSIVE` IKE_SAs are managed in the
+IKE_SA manager as any other SA and are accessible e.g. through
+xref:swanctl/swanctlListSas.adoc[`*swanctl --list-sas*`].
+
+Key derivation is repeated on mirrored SAs the same way as it is done on the real
+SAs. This allows the reuse of existing installation routines and the
+xref:plugins/ha.adoc[`*ha*`] plugin to be very unobtrusive.
+
+=== Control messages
+
+In addition to the synchronization messages, the HA plugin uses control messages
+to notify about segment changes and optionally messages for simple monitoring
+functions:
+
+`SEGMENT_DROP`::
+   List of segments the sending node is dropping responsibility.
+
+`SEGMENT_TAKE`::
+   List of segments the sending node is taking responsibility.
+
+`STATUS`::
+  Heartbeat message containing a list of segments the sending node is responsible.
+
+`RESYNC`::
+  Request for resynchronization of a list of segments.
+
+The take/drop messages are sent to notify other nodes about changes done by the
+daemon automatically or the administrator manually. The receiving node will
+automatically do the opposite action to handle all segments exactly once.
+
+If heartbeat monitoring is enabled, the STATUS message is periodically sent. This
+allows to detect the activity of the remote node and take over segments the remote
+node is not serving. It also implements node failure detection for simple errors.
+
+If a replacement of a failing node is installed, reintegration of the node can be
+sped up by sending the resynchronization message. The active node will start
+resyncing all SAs, allowing the administrator to rebalance the load distribution
+in the cluster afterwards.
+
+=== Failover
+
+In the failover case, responsibility for complete ClusterIP segments are moved
+from one node to another. Responsibility for a segment can be enabled or disabled
+on each node. For this purpose the plugin uses the same hashing algorithm to
+calculate responsibility based on the source IP address.
+
+If a segment is activated, the plugin searches for IKE_SAs in this segment and sets
+the state of all `PASSIVE` IKE_SAs to `ESTABLISHED`. No further action is required:
+The daemon handles the IKE_SA as every other one and sends out synchronization
+messages for state changes.
+
+On segment deactivation, the plugin searches for IKE_SAs in the `ESTABLISHED` state
+in these segments and sets the state to `PASSIVE`.
+
+CHILD_SAs are completely unaffected from activation and deactivation: They are
+always active and handle traffic assigned by ClusterIP.
+
+=== Reintegration
+
+To re-integrate a failed node into a cluster, the node needs state information from
+scratch. If all the required state has been synced, the reintegrated node can be
+used as failover node again. Segments can be activated on the reintegrated node
+only after all required state has been exchanged.
+
+Each node caches IKE_SA specific messages locally for all IKE_SAs currently active.
+If a different node wants to reintegrate, the active node pushes the message cache
+to the new node. This allows the reintegrated node to reestablish the state for all
+IKE_SAs.
+
+Synchronizing CHILD_SAs is not possible using the cache, as the messages do not
+contain sequence number information managed in the kernel. To reintegrate a node,
+the active node initiates rekeying on all CHILD_SAs. The new CHILD_SA will be
+synchronized, starting with fresh sequence numbers in the kernel. CHILD_SA rekeying
+is inexpensive, as it usually does not include a DH exchange.
+
+== Building HA Plugin
+
+The xref:plugins/ha.adoc[`*ha*`] plugin must be enabled via
+xref:install/autoconf.adoc[`*./configure*`]. The plugin must use the same hashing
+algorithm for segment calculation as the kernel (`*jhash*`). This algorithm has
+changed for Linux 2.6.37 and may again change in the future. To use the correct
+version of `*jhash*`, build strongSwan against the kernel headers of the kernel
+you're actually running strongSwan on:
+
+ ./configure --enable-ha --with-linux-headers=/path/to/target/kernel/include/linux
+
+== Configuration
+
+Configuration is done in two places. The necessary virtual IPs and the ClusterIP
+rules are installed manually. This is explicitly not done by the daemon, as the
+rules must stay active after daemon shutdown or error conditions.
+
+The HA plugin requires a configuration matching to the installed ClusterIP rules.
+All nodes in the cluster need an identical connection configuration, but *may* use
+different credentials (i.e. different private keys and certificates to authenticate
+the cluster node).
+
+=== ClusterIP
+
+The configuration of the extended ClusterIP module is similar to a default ClusterIP
+setup. For a traffic forwarding IPsec gateway, a cluster usually needs an internal
+virtual IP/MAC address and an external virtual IP/MAC address on each node.
+----
+ip address add 192.168.0.200/24 dev eth0
+iptables -A INPUT -i eth0 -d 192.168.0.200 -j CLUSTERIP --new \
+   --hashmode sourceip --clustermac 01:00:5e:00:00:20 \
+   --total-nodes 2 --local-node 0
+----
+This example installs the virtual IP `192.168.0.200` on interface `*eth0*` and
+adds a corresponding ClusterIP rule. ClusterIP rules are always added to the
+`*iptables*` `INPUT` chain. To get the same result for segment responsibility
+calculation in the kernel and the xref:plugins/ha.adoc[`*ha*`] plugin, the sourceip
+hashmode and a hash init value of 0 must be used (default).
+
+The `*--total-nodes*` option must match the configuration of the
+xref:plugins/ha.adoc[`*ha*`] plugin and all nodes require the same virtual IP/MAC
+address and ClusterIP configuration.
+
+ClusterIP requires the `*--local-node*` option to be present. While the
+xref:plugins/ha.adoc[`*ha*`] plugin reassigns segment responsibility during daemon
+startup, it is recommended to use zero, so that a node booting up does not process
+any packets until the xref:plugins/ha.adoc[`*ha*`] plugin tells it to do so.
+
+=== Address Pools
+
+Using an address pool to assign virtual IP addresses to clients is a little more
+complicated in a cluster. Using a central database based pool should be no problem,
+as long as you have a fail-save MySQL database cluster.
+
+In-memory address pools do not provide any synchronization: you don't want to assign
+the same address from two different nodes to different clients. One option would be
+to split up e.g. a `*10.0.2.0/23*` pool into a `*10.0.2.0/24*` and a `*10.0.3.0/24*`
+pool and use each pool on one node. But this approach has its limitations: If one
+node goes down and gives away an IKE_SA, the pool state is lost. If the failed node
+reintegrates into the cluster and takes over the same IKE_SA, the virtual IP will
+be in use again. But the reset pool will not reflect this fact and may reassign
+the same address to another client.
+
+As an alternative strongSwan provides an HA-enabled in-memory address pool.
+The pool is simple to configure but only hands out addresses the local node is
+responsible for (using segment calculations). Further it reserves addresses in the
+pool for IKE_SAs handled by a different node.
+
+To configure an HA enabled in-memory address pool, add a `*pools*` subsection
+in the xref:config/strongswanConf.adoc#_charon_plugins_ha[`*ha*`] section of
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] and define the required pools.
+Use exactly the `*same*` pool configuration on both nodes. There is no need to
+split up the pools with the HA-enabled implementation!
+----
+# ...
+    ha {
+      # ...
+      pools {
+        sales = 10.0.1.0/24
+        finance = 10.0.2.0/24
+      }
+    }
+----
+To use the pools, reference them in the connections definitions of
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`], e.g.:
+
+  connections.sales_dept.pools = sales
+
+=== Administrating segment responsibility
+
+Changing the segment responsibility is done for the daemon, where it will propagate
+the changes in segment responsibility to the kernel.
+
+The xref:plugins/ha.adoc[`*ha*`] plugin uses a very similar interface for segment
+control as ClusterIP. Instead of a `*proc*` entry, it uses a FIFO located at
+`*/var/run/charon.ha*`. Echoing `*+1/-1*` will activate/deactivate responsibility
+for segment `*1*` while an additional command `**3*` will enforce a
+resynchronization by triggering a rekey of all SAs in segment `*3*`.
+
+== Examples
+
+Two examples are provided in our
+xref:devs/testingEnvironment.adoc[testing environment]:
+
+* {TESTS}/ha/active-passive[`*ha/active-passive*`] -
+  One node active the other passive, but ready to take over immediately
+
+* {TESTS}/ha/both-active[`*ha/both-active*`] -
+  Two active nodes with load sharing for ESP

@@ -21,6 +21,7 @@
 ** xref:features/natTraversal.adoc[]
 ** xref:features/integrityTests.adoc[]
 ** xref:features/networkManager.adoc[]
+** xref:features/highAvailability.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]
@@ -71,6 +72,7 @@
 ** xref:plugins/error-notify.adoc[]
 ** xref:plugins/farp.adoc[]
 ** xref:plugins/forecast.adoc[]
+** xref:plugins/ha.adoc[]
 ** xref:plugins/kernel-iph.adoc[]
 ** xref:plugins/kernel-libipsec.adoc[]
 ** xref:plugins/kernel-wfp.adoc[]

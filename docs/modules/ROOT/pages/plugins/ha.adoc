@@ -18,3 +18,35 @@ section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
 include::partial$config/plugins/ha.adoc[]
 |===
+
+=== Examples
+
+----
+charon {
+    # ...
+  plugins {
+    ha {
+      local = 10.0.0.2
+      remote = 10.0.0.1
+      segment_count = 2
+      # secret = s!ronG-P5K-s3cret
+      fifo_interface = yes
+      monitor = yes
+      resync = yes
+    }
+  }
+}
+----
+
+Define optional HA-enabled virtual IP address pools shared between the
+HA cluster nodes:
+----
+# ...
+    ha {
+      # ...
+      pools {
+        sales = 10.0.1.0/24
+        finance = 10.0.2.0/24
+      }
+    }
+----

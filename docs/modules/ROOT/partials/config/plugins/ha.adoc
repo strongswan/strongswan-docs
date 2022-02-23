@@ -8,30 +8,32 @@
  (the default should be fine up to `*modp4096*`)
 
 |fifo_interface                   |`yes`
-|
+|Enable the segment responsibility administration interface
 
 |heartbeat_delay                  |`1000`
-|
+|Time between heartbeats
 
 |heartbeat_timeout                |`2100`
-|
+|Time after the last received heartbeet after which a failure is declared.
 
 |local                            |
-|
+|IP address on which to receive sync messages
 
 |monitor                          |`yes`
-|
+|Enable the heartbeat based remote node monitoring
 
 |pools                            |
-|
+|Optional HA-enabled virtual IP address pool subsection
 
 |remote                           |
-|
+|IP address to send sync messages to
 
 |resync                           |`yes`
-|
+|Enable automatic state resynchronization if a node joins the cluster
+
 |secret                           |
-|
+|If specified, the nodes automatically establish a pre-shared key authenticated
+ IPsec tunnel for HA sync and control messages
 
 |segment_count                    |`1`
-|
+|Number of ClusterIP segments to use
