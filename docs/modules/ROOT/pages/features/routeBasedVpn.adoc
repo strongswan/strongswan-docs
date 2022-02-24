@@ -1,0 +1,575 @@
+= Route-based VPN
+
+:TESTS:    https://www.strongswan.org/testing/testresults
+:EXGRE:    {TESTS}/route-based/net2net-gre
+:EXVTI:    {TESTS}/route-based/net2net-vti
+:EXXFRM:   {TESTS}/route-based/net2net-xfrmi
+:EXSHVTI:  {TESTS}/route-based/rw-shared-vti
+:EXSHXFRM: {TESTS}/route-based/rw-shared-xfrmi
+:EXMARK:   {TESTS}/ikev2/net2net-psk-dscp
+
+Generally IPsec processing is based on policies. After regular route lookups are
+done the OS kernel consults its SPD (Security Policy Database) for a matching
+policy and if one is found that is associated with an IPsec SA (Security
+Association) the packet is processed (e.g. encrypted and sent as ESP packet).
+
+Depending on the operating system it is also possible to configure route-based
+VPNs. Here IPsec processing does not (only) depend on negotiated policies but may
+e.g. be controlled by routing packets to a specific interface.
+
+Most of these approaches also allow an easy capture of plaintext traffic, which
+depending on the operating system might not be that straight-forward with
+policy-based VPNs, see xref:install/correctTrafficDump.adoc[Correct Traffic Dump].
+Another advantage this approach could have is that the MTU can be specified for
+the tunneling devices, allowing to fragment packets before tunneling them, in case
+PMTU discovery does not work properly.
+
+== VTI Devices on Linux
+
+NOTE: VTI devices are supported since the Linux 3.6 kernel but some important
+      changes were added later (3.15+). The information below might not be accurate
+      for older kernel versions. On newer kernels (4.19+), XFRM interfaces provide
+      a better solution than VTI devices, see xref:#_xfrm_interfaces_on_linux[below]
+      for details._
+
+VTI devices act like a wrapper around existing IPsec policies. This means you can't
+just route arbitrary packets to a VTI device to get them tunneled, the established
+IPsec policies have to match, too. However, you can negotiate `*0.0.0.0/0*` traffic
+selectors on both ends to allow tunneling any traffic that is routed via the VTI
+device.
+
+To make this work, i.e. to prevent packets not routed via the VTI device from matching
+the policies (if `*0.0.0.0/0*` is used every packet would match), *marks* are used.
+Only packets that are marked accordingly will match the policies and get tunneled.
+For other packets the policies are ignored. Whenever a packet is routed to a VTI
+device it automatically gets the configured mark applied, so it will match the
+policy and get tunneled.
+
+It's important to note that VTI tunnel devices are a local feature, no additional
+encapsulation (like with GRE, see xref:#_gre[below]) is added, so the other end
+does not have to be aware that VTI devices are used in addition to regular IPsec
+policies.
+
+=== VTI Device Management
+
+A VTI device may be created with the following command:
+
+ ip tunnel add <name> local <local IP> remote <remote IP> mode vti key <mark>
+
+`<name>` can be any valid device name (e.g. `*ipsec0*`, `*vti0*` etc.). But note
+that the `*ip*` command treats names starting with `*vti*` special in some instances
+(e.g. when retrieving device statistics). The IP addresses are the endpoints of the
+IPsec tunnel. `<mark>` has to match the mark configured for the connection. It is
+also possible to configure different marks for in- and outbound traffic using
+`*ikey* <mark>` and `*okey* <mark>`, but that is usually not required.
+
+After creating the device, it has to be enabled (`*ip link set* <name> *up*`) and
+then routes may be installed (routing protocols may also be used).  To avoid
+duplicate policy lookups it is also recommended to set
+
+ sysctl -w net.ipv4.conf.<name>.disable_policy=1
+
+All of this also works for IPv6.
+
+==== Example: Creation of two VTI Devices (vti0 and ipsec0)
+----
+ip tunnel add vti0   local 192.168.0.1 remote 192.168.0.2 mode vti key 42
+ip tunnel add ipsec0 local 192.168.0.1 remote 192.168.0.2 mode vti key 0x01000201
+sysctl -w net.ipv4.conf.vti0.disable_policy=1
+ip link set vti0 up
+ip route add 10.1.0.0/16 dev vti0
+sysctl -w net.ipv4.conf.ipsec0.disable_policy=1
+ip link set ipsec0 up
+ip route add 10.2.0.0/16 dev ipsec0
+ip route add 10.3.0.0/16 dev ipsec0
+----
+Statistics on VTI devices may be displayed with
+
+ ip -s tunnel show [<name>]
+
+Note that specifying a name will not show any statistics if the device name starts
+with `*vti*`.
+
+A VTI device may be removed again with
+
+ ip tunnel del <name>
+
+=== Configuration
+
+First the route installation by the IKE daemon must be disabled. To do this, set
+in xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+ charon.install_routes = 0
+
+Then configure a regular site-to-site connection, either with the traffic selectors
+set to `*0.0.0.0/0*` on both ends
+----
+local_ts  = 0.0.0.0/0
+remote_ts = 0.0.0.0/0
+----
+in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] or set to specific subnets. As
+mentioned above, only traffic that matches these traffic selectors will then
+actually be forwarded. Other packets routed to the VTI device will be rejected with
+an ICMP error message (`destination unreachable/destination host unreachable`).
+
+The most important configuration optiona are `*mark_in*` and `*mark_out*` in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. After applying the optional mask
+(default is `*0xffffffff*`) to the mark that's set on the VTI device and it applied
+to the routed packets, the value has to match the configured mark.
+
+Referring to the example above, to match the mark on `*vti0*`, configure
+`*mark_in`* = `*mark_out*` = `*42*` and to match the mark on `*ipsec0*`, set the
+value to `*0x01000201*` (but something like `*0x00000200/0x00000f00*` would also
+work).
+
+=== Example
+
+image:a-m-w-s-b.png[topology,340,129,link={EXVTI},title=net2net-vti example]
+strongSwan {EXVTI}[example] showing the use of VTI devices.
+
+=== Sharing VTI Devices
+
+VTI devices may be shared by multiple IPsec SAs (e.g. in roadwarrior scenarios,
+to capture traffic or lower the MTU) by setting the remote endpoint of the VTI
+device to `*0.0.0.0`*. For instance:
+
+ ip tunnel add ipsec0 local 192.168.0.1 remote 0.0.0.0 mode vti key 42
+
+Then assuming xref:features/vip.adoc[virtual IP] addresses for roadwarriors are
+assigned from the `*10.0.1.0/24*` subnet a matching route may be installed with
+
+ ip route add 10.0.1.0/24 dev ipsec0
+
+NOTE: Only one such device with the same local IP may be created.
+
+=== Example
+
+image:a-m-c-w-d.png[topology,252,129,link={EXSHVTI},title=rw-shared-vti example]
+strongSwan {EXSHVTI}[example] showing the use of shared VTI devices.
+
+=== Connection-specific VTI Devices
+
+With a custom xref:plugins/updown.adoc[`*updown*`] script it is also possible to
+set up connection-specific VTI devices. For instance, to create a VTI device on a
+roadwarrrior client that receives a dynamic xref:features/vip.adoc[virtual IP]
+address (courtesy of Endre Szabó):
+
+==== Example Script for Roadwarriors
+----
+#!/bin/bash
+
+# set charon.install_virtual_ip = no to prevent the daemon from also installing the VIP
+
+set -o nounset
+set -o errexit
+
+VTI_IF="vti${PLUTO_UNIQUEID}"
+
+case "${PLUTO_VERB}" in
+    up-client)
+        ip tunnel add "${VTI_IF}" local "${PLUTO_ME}" remote "${PLUTO_PEER}" mode vti \
+            key "${PLUTO_MARK_OUT%%/*}"
+        ip link set "${VTI_IF}" up
+        ip addr add "${PLUTO_MY_SOURCEIP}" dev "${VTI_IF}"
+        ip route add "${PLUTO_PEER_CLIENT}" dev "${VTI_IF}"
+        sysctl -w "net.ipv4.conf.${VTI_IF}.disable_policy=1"
+        ;;
+    down-client)
+        ip tunnel del "${VTI_IF}"
+        ;;
+esac
+----
+If there is more than one subnet in the remote traffic selector this might cause
+conflicts as the xref:plugins/updown.adoc[`*updown*`] script will be called for
+each combination of local and remote subnet.
+
+Dynamically creating such devices on the server could be problematic if two
+roadwarriors are connected from the same IP. The kernel rejects the creation of
+a VTI device if the remote and local addresses are already in use by another VTI
+device.
+
+In the following script, it is assumed that only the roadwarrior's assigned IPv4
+IP is supposed to be reachable over the assigned tunnel.
+
+==== Example Script for Gateways
+----
+#!/bin/bash
+
+# set charon.install_virtual_ip = no to prevent the daemon from also installing the VIP
+
+set -o nounset
+set -o errexit
+
+VTI_IF="vti${PLUTO_UNIQUEID}"
+
+case "${PLUTO_VERB}" in
+    up-client)
+        ip tunnel add "${VTI_IF}" local "${PLUTO_ME}" remote "${PLUTO_PEER}" mode vti \
+            key "${PLUTO_MARK_OUT%%/*}"
+        ip link set "${VTI_IF}" up
+        ip route add "${PLUTO_PEER_SOURCEIP}" dev "${VTI_IF}"
+        sysctl -w "net.ipv4.conf.${VTI_IF}.disable_policy=1"
+        ;;
+    down-client)
+        ip tunnel del "${VTI_IF}"
+        ;;
+esac
+----
+
+NOTE: Using *PLUTO_UNIQUEID* might not be a good idea if IKE_SAs may be rekeyed,
+      as the unique ID will change with each rekeying (i.e. the script won't be
+      able to delete the device anymore). Using some other identifier (e.g. parts
+      of the virtual IP or the mark if it is unique) might be better.
+
+== XFRM Interfaces on Linux
+
+NOTE: strongSwan supports XFRM interfaces since version 5.8.0. They are supported
+      by the Linux kernel since 4.19 and *iproute2* version 5.1.0+.
+
+XFRM interfaces are similar to VTI devices in their basic functionality (see
+xref:#_vti_device_on_linux[above] for details) but offer several advantages:
+
+* No tunnel endpoint addresses have to be configured on the interfaces. Compared
+  to VTIs, which are layer 3 tunnel devices with mandatory endpoints, this resolves
+  issues with wildcard addresses (only one VTI with wildcard endpoints is supported),
+  avoids a 1:1 mapping between SAs and interfaces and easily allows SAs with multiple
+  peers to share the same interface.
+
+* Because there are no endpoint addresses, IPv4 and IPv6 SAs are supported on the
+  same interface (VTI devices only support one address family).
+
+* IPsec modes other than tunnel are supported (VTI devices only support tunnel
+  mode).
+
+* No awkward configuration via GRE keys and XFRM marks. Instead, a new identifier
+ (XFRM interface ID) links policies and SAs with XFRM interfaces.
+
+As mentioned above, the policies and SAs are linked to XFRM interface via a new
+identifier (interface ID). Like XFRM marks they are part of the policy selector.
+That is, policies will only match traffic if it was routed via an XFRM interface
+with a matching interface ID and duplicate policies are allowed as long as the
+interface ID is different. So as with VTI devices it's possible to negotiate
+`*0.0.0.0/0*` as traffic selector on both ends (to tunnel arbitrary traffic) for
+multiple CHILD_SAs as long as the interface IDs are different.
+
+Traffic that's routed to an XFRM interface, while no policies and SAs with matching
+interface ID exist, will be dropped by the kernel. Likewise, as long as no interface
+with a matching interface ID exists, the policies and SAs will not be operational
+(i.e. outbound traffic bypasses the policies and inbound traffic is dropped). So
+it's possible to create interfaces before SAs are created or afterwards (e.g. via
+xref:plugins/vici.adoc[`*vici*`] events or xref:plugins/updown.adoc[`*updown*`]
+scripts which both receive configured or optionally dynamically generated interface
+IDs).
+
+Using trap policies to dynamically create IPsec SAs based on matching traffic that
+has been routed to an XFRM interface is also an option.
+
+It's possible to use separate interfaces for in- and outbound traffic, which is
+why interface IDs may be configured for in- and outbound policies/SAs separately
+(see below).
+
+=== XFRM Interface Management
+
+With `*iproute2*` 5.1.0 and newer an XFRM interface can be created as such:
+
+ ip link add <name> type xfrm dev <underlying interface> if_id <interface ID>
+
+strongSwan also comes with a utility (called `*xfrmi*`) to create XFRM interfaces
+if `*iproute2*` can not create the interface.
+
+ /usr/local/libexec/ipsec/xfrmi --name <name> --id <interface ID> --dev <underlying interface>
+
+`<name>` can be any valid device name (e.g. `*ipsec0*`, `*xfrm0*`, etc.).
+`<interface ID>` is a decimal or hex (`*0x*` prefix) 32-bit number. The underlying
+interface currently is mandatory, but doesn't really matter (it only does if an
+interface is configured on the outbound policy - and it might with hardware IPsec
+offloading, but that has not been tested by us), so it could be anything, even `*lo*`.
+
+The interface can afterwards be managed via `*iproute2*`. So to activate it, use
+
+ ip link set <name> up
+
+Addresses, if necessary, can be added with `*ip addr*` and the interface may
+eventually be deleted with
+
+ ip link del <name>
+
+==== Example: Create XFRM Interface (ipsec0)
+----
+ip link add ipsec0 type xfrm dev eth0 if_id 42
+# or if not supported by iproute2 yet:
+/usr/local/libexec/ipsec/xfrmi --name ipsec0 --id 42 --dev eth0
+
+ip link set ipsec0 up
+ip route add 10.1.0.0/16 dev ipsec0
+ip route add 10.2.0.0/16 dev ipsec0
+----
+Statistics are available via
+
+ ip -s link show [<name>]
+
+The `*xfrmi*` command provides a `*--list*` option to list existing XFRM interfaces
+if using older versions of `*iproute2*` does not list the interface ID of XFRM
+interfaces yet with `*ip -d link*`.
+
+=== Configuration
+
+IMPORTANT: The daemon will not install any routes for CHILD_SAs with outbound
+           interface ID, so it's not necessary to disable the route installation
+           globally.
+
+Keep in mind that traffic routed to XFRM interfaces has to match the negotiated
+IPsec policies. Therefore, connections are configured as they would if no interfaces
+were to be used. However, since policies won't affect traffic that's not routed
+via XFRM interfaces, it's possible to negotiate `*0.0.0.0/0*` or `*::/0*` as traffic
+selector on both ends to tunnel arbitrary traffic.
+
+The most important connection configuration option in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] is the interface ID `*if_id_in*`
+and `*if_id_out*`. To use a single interface for in- and outbound traffic set them
+to the same value (or `*%unique*` to generate a unique ID for each CHILD_SA).
+To use separate interfaces for each direction, configure distinct values (or
+`*%unique-dir*` to generate unique IDs for each CHILD_SA and direction). It's also
+possible to use an XFRM interface only in one direction by setting only one of the
+two settings.
+
+When setting the options on the connection-level, all CHILD_SAs for which the
+settings are not set will inherit the interface IDs of the IKE_SA (use `*%unique*`
+or `*%unique-dir*` to allocate unique IDs for each IKE_SA/direction that are
+inherited by all CHILD_SAs created under the IKE_SA).
+
+It's possible to use transport mode for host-to-host connections between two peers.
+
+=== Example
+
+image:a-m-w-s-b.png[topology,340,129,link={EXXFRM},title=net2net-xfrmi example]
+strongSwan {EXXFRM}[example] showing the use of XFRM interfaces.
+
+=== Sharing XFRM Interfaces
+
+Because no endpoint addresses are configured on the interfaces they can easily be
+shared by multiple SAs as long as the policies don't conflict. Just configure the
+same interface ID for the CHILD_SAs (this also works automatically for roadwarrior
+connections where each client gets an individual IP address assigned - just route
+the subnets used for virtual IPs to the XFRM interface).
+
+=== Example
+
+image:a-m-c-w-d.png[topology,252,129,link={EXSHXFRM},title=rw-shared-xfrmi example]
+strongSwan {EXSHXFRM}[example] showing the use of shared XFRM interfaces.
+
+=== Connection-specific XFRM Interfaces
+
+Using custom xref:plugins/vici.adoc[`*vici*`] or xref:plugins/updown.adoc[`*updown*`]
+scripts allows creating connection-specific XFRM interfaces. The interface ID
+(in particular if `*%unique[-dir]*` is used) is available in the scripts to create
+the XFRM interface dynamically.
+
+Note that xref:plugins/updown.adoc[`*updown*`] scripts are called for each
+combination of of local and remote subnet, so this might cause conflicts if more
+than one subnet is negotiated in the traffic selectors (i.e. this requires some
+kind of refcounting). The `*child-updown*` xref:plugins/vici.adoc[`*vici*`] event,
+however is only triggered once per CHILD_SA. To create connection-level XFRM
+interfaces with dynamic interface IDs, use the `*ike-updown*`
+xref:plugins/vici.adoc[`*vici*`] event.
+
+=== Network Namespaces
+
+XFRM interfaces can be moved to network namespaces to provide the processes there
+access to IPsec SAs/policies that were created in a different network namespace.
+For instance, this allows a single IKE daemon to provide IPsec connections for
+processes in different network namespaces (or full containers) without them having
+access to the keys of the SAs (the SAs won't be visible in the other network
+namespaces, only the XFRM interface).
+
+=== XFRM interfaces in VRFs
+
+XFRM interfaces can be associated to a VRF layer 3 master device, so any tunnel
+terminated by an XFRM interface implicitly is bound to that VRF domain. For example,
+this allows multi-tenancy setups where traffic from different tunnels can be
+separated and routed over different interfaces.
+
+Due to a limitation in XFRM interfaces, inbound traffic fails policy checking in
+kernels prior to version 5.1.
+
+=== Netfilter IPsec Policy Match with XFRM Interfaces
+
+Due to a limitation in the Netfilter IPsec `*policy*` match, output traffic
+forwarded over an XFRM interface does not match (inbound it matches, though).
+`*policy*` matching is not really required anymore when using XFRM interfaces, as
+the Netfilter rules can just match on the interface. So the work-around is to
+filter just on XFRM interface names instead of IPsec `*policy*` matches.
+
+== Marks on Linux
+
+One of the core features of VTI devices or XFRM interfaces, dynamically specifying
+which traffic to tunnel can actually be replicated directly with marks and firewall
+rules. By configuring connections with marks and then selectively marking packets
+directly with Netfilter rules via `*MARK*` target in the `*PREROUTING*` or
+`*FORWARD*` chains only specific traffic will get tunneled.
+
+This may also be used to create multiple identical tunnels for which firewall rules
+dynamically decide which traffic is tunneled through which IPsec SA.
+
+=== Example
+
+image:a-v-m-w-s-b.png[topology,340,129,link={EXMARK},title=net2net-psk-dscp example]
+strongSwan {EXMARK}[example] showing the use of marks for QoS/DiffServ.
+
+== GRE Tunnels
+
+Another alternative is to use GRE (Generic Routing Encapsulation) which is a
+generic point-to-point tunneling protocol that adds an additional encapsulation
+layer (at least 4 bytes).  But it provides a portable way of creating route-based
+VPNs (running a routing protocol on-top is also easy).
+
+While VTI devices depend on site-to-site IPsec connections in tunnel mode (XFRM
+interfaces are more flexible), GRE uses a host-to-host connection that can also be
+run in transport mode (avoiding additional overhead). But while VTI devices and
+XFRM interfaces may be used by only one of the peers, GRE must be used by both of
+them.
+
+=== GRE Tunnel Management
+
+Creating a GRE tunnel on Linux can be done as follows:
+
+ ip tunnel add <name> local <local IP> remote <remote IP> mode gre
+
+`<name>` can be any valid interface name (e.g. `*ipsec0*`, `*gre0*`, etc.). But
+note that the `*ip*` command treats names starting with `*gre*` special in some
+instances (e.g. when retrieving device statistics). The IPs are the endpoints of
+the IPsec tunnel.
+
+After creating the interface it has to be enabled with
+
+ ip link set <name> up
+
+and then routes may be installed.
+
+==== Example: Creation of GRE Tunnel (ipsec0)
+----
+ip tunnel add ipsec0 local 192.168.0.1 remote 192.168.0.2 mode gre
+ip link set ipsec0 up
+ip route add 10.1.0.0/16 dev ipsec0
+ip route add 10.2.0.0/16 dev ipsec0
+----
+
+Statistics on GRE devices may be displayed with
+
+ ip -s tunnel show [<name>]
+
+Note that specifying a name will not show any statistics if the device name starts
+with `*gre*`.
+
+A GRE device may be removed again with
+
+ ip tunnel del <name>
+
+=== Configuration
+
+As mentioned above, a host-to-host IPsec connection in transport mode can be used.
+The traffic selectors may even be limited to just the GRE protocol
+(`*local_ts|remote_ts = dynamic[gre]*` in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+
+=== Example
+
+image:a-m-w-s-b.png[topology,340,129,link={EXGRE},title=net2net-gre example]
+strongSwan {EXGRE}[example] showing the use of GRE tunnels.
+
+=== Automation
+
+Setting up and configuration of GRE tunnels can be automated using `*systemd*`
+units (templates) and a custom updown script to set the correct IP address for
+remote peers using GRE tunnels.
+
+The following files outline fully functional examples for implementing that:
+
+==== systemd Unit
+----
+[Unit]
+Description=GRE Tunnel service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=UNBOUND="127.0.0.2"
+EnvironmentFile=/etc/conf.d/gre-%i.conf
+ExecStart=sh -c '/sbin/ip link add name "$TUNNEL_NAME" type gre key "$KEY" ttl 64 remote "$UNBOUND" dev "$DEVICE"'
+ExecStart=/sbin/ip link set mtu 1350 dev "$TUNNEL_NAME"
+ExecStart=/sbin/ip link set multicast on dev "$TUNNEL_NAME"
+ExecStart=/sbin/ip link set up dev "$TUNNEL_NAME"
+# ExecStart=/sbin/ip addr add "${LOCALSRCIP}/30" dev "$TUNNEL_NAME"
+ExecStart=/sbin/ip addr add "${LOCALSRCIP}/32" dev "$TUNNEL_NAME"
+ExecStop=/sbin/ip link delete dev "$TUNNEL_NAME"
+ExecStopPost=/sbin/ip link delete dev "$TUNNEL_NAME"
+
+[Install]
+WantedBy=network.target
+----
+
+==== updown Script
+----
+#!/bin/bash
+
+PROG="$(basename $0)"
+
+_ip()
+{
+  logger -i -t "$PROG" ip "$@"
+  ip "$@"
+}
+
+logger -i -t "$PROG" "$0 $@"
+
+case "$PLUTO_VERB" in
+
+up-host)
+  TUNNEL_NAME="$PLUTO_CONNECTION"
+  LOCAL="$PLUTO_ME"
+  REMOTE="$PLUTO_PEER"
+
+  _ip link set "$TUNNEL_NAME" type gre local "$LOCAL" remote "$REMOTE"
+
+  # disable martian filtering on unnumbered links; Required for doing OSPF over unnumbered links.
+  sysctl -q -w "net.ipv4.conf.$TUNNEL_NAME.rp_filter=0"
+  ;;
+
+down-host)
+	;;
+
+esac
+
+exit 0
+----
+
+==== gre config File
+
+config file under `*/etc/conf.d/`*, matches the glob `*/etc/conf.d/gre-*.conf*`
+----
+TUNNEL_NAME="tun-EXAMPLE"
+DEVICE="eth0"
+# this is the gre key; It should be unique per GRE tunnel; Maybe generate it by sha256'ing the ip addresses of the peers involved.
+KEY="0xRANDOMNUMBERGOESHERE"
+# local IP address of GRE tunnel; It will be the source IP of the GRE packets sent by the host to the remote IP
+LOCAL=IP_ADDRESS_OF_eth0_GOES_HERE
+# remote peer's IP address of the GRE tunnel
+REMOTE=IP_ADDRESS_OF_OTHER_HOST_GOES_HERE
+LOCALSRCIP="$localsrcip"
+----
+
+== libipsec and TUN Devices
+
+Based on our own userland IPsec implementation and the
+xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`] plugin it is possible to
+create route-based VPNs with TUN devices. Similar to VTI devices or XFRM interfaces
+the negotiated IPsec policies have to match the traffic routed via TUN device.
+In particular because packets have to be copied between kernel and userland it is
+not as efficient as the solutions above (also read the notes on
+xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`]).
+
+== Problems
+
+Make sure to disable the xref:plugins/connmark.adoc[`*connmark*`] plugin when running
+a VTI interface. Otherwise, it will insert Netfilter rules into the `*mangle*` table
+that prevent the VTI from working.

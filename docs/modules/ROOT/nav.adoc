@@ -19,9 +19,10 @@
 ** xref:features/vip.adoc[]
 ** xref:features/mobike.adoc[]
 ** xref:features/natTraversal.adoc[]
-** xref:features/integrityTests.adoc[]
 ** xref:features/networkManager.adoc[]
+** xref:features/routeBasedVpn.adoc[]
 ** xref:features/highAvailability.adoc[]
+** xref:features/integrityTests.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]
