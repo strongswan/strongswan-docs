@@ -1,0 +1,252 @@
+= Taking Traffic Dumps on Linux
+
+:NETFILTER: https://inai.de/images/nf-packet-flow.png
+
+== Abstract
+
+This is a short tutorial on how to get correct IPsec traffic dumps on Linux.
+
+Many users are not aware of the packet capture anomaly that occurs when capturing
+with default settings using `*wireshark*` and `*tcpdump*`. This article will
+explain how to take correct traffic dumps of ...
+
+* xref:#_ingress_ipsec_and_ike_traffic[Ingress IPsec and IKE traffic]
+
+* xref:#_egress_ipsec_and_ike_traffic[Egress IPsec and IKE traffic]
+
+* xref:#_decapsulated_ipsec_traffic[Decapsulated IPsec traffic]
+
+* xref:#_ipsec_traffic_terminated_at_local_host[IPsec traffic terminated at local host]
+  (`*iptables INPUT*` chain)
+
+* xref:#_ipsec_traffic_forwarded_to_remote_hosts[IPsec traffic forwarded to remote hosts]
+  (`*iptables FORWARD*` chain)
+
+* xref:#_outgoing_ipsec_traffic[Outgoing IPsec traffic]
+  (`*iptables OUTPUT*` chain)
+
+== A Word of Warning
+
+In the course of the tutorial, firewall rules will be modified. This approach only
+works with kernel processing of IPsec traffic.
+
+WARNING: If you do not exactly know what you are doing then stop here and read
+         material about the topic first.
+
+Traffic dumps are generally not useful for debugging of IKE, because charon
+optionally logs the complete structure of the IKE packets. However the graphical
+interface provided by Wireshark could be helpful. If you're debugging problems with
+ESP or AH encoding or other fancy things, it isbuseful, though.
+
+This method can only capture traffic before `*nat POSTROUTING*` which is the last
+chain before IPsec processing of outgoing packets happen. To check if packets match
+the SPs, check the traffic counters of the `CHILD_SA`. You can see them in the
+output of xref:swanctl/swanctlListSas.adoc[`*swanctl --list-sas*`].
+
+== Problem Statement
+
+Capturing traffic with `*tcpdump*` or `*wireshark*` by listening on a normal
+network interface shows encapsulated and decapsulated IPsec traffic only for
+inbound traffic. For outbound traffic only the encrypted packets are seen.
+This is because of how the capturing socket of the `*libpcap*` library used by
+the aforementioned tools work.
+
+IPsec processing is usually done in the kernel. strongSwan only handles IKE. If
+you're using userland-encryption based on `*libipsec*` then the
+xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`] plugin in
+xref:daemons/charon.adoc[`*charon*`] handles that traffic.
+
+== The Solution
+
+The solution to the problem is to use the `*nflog*` interface in the `*iptables*`
+framework to get exactly the packets we are interested in. Taking a look at the
+netfilter packet flow
+
+image::{NETFILTER}[netfilter graph, link="{NETFILTER}"]
+
+
+gives a list of possible places to dump traffic at.
+
+`*nflog*` rules log to a kernel internal multicast group which is identified by
+an integer in the `*0 .. 2^16-1*` range. Only the part of the datagram that the
+framework sees will be captured. For `*iptables*` this is an IPv4 packet whereas
+for `*ip6tables*` it is an IPv6 packet. If you use it in `*ebtables*` this is an
+Ethernet frame.
+
+Using `*nflog*` to dump packets, forces you to use a special interface syntax
+of the form `*nflog:*<groupnumber>` with `*tcpdump*` and `*wireshark*`.
+
+ tcpdump -s 0 -n -i nflog:5
+
+== Rules
+
+Because `*nflog*` rules are normal `*iptables*` rules, the rules need a proper
+match and target part so you get exactly the traffic you want. You also must put
+the rule into the correct place for it to get the packets you're interested in.
+The `*policy*` match module of @iptables@ enables you to match packets with a
+matching IPsec policy.
+
+Following are the parameters for the `*nflog*` target in `*iptables*`
+----
+NFLOG
+    This target provides logging of matching packets. When this  target  is
+    set  for  a  rule,  the Linux kernel will pass the packet to the loaded
+    logging backend to log the packet. This is usually used in  combination
+    with  nfnetlink_log as logging backend, which will multicast the packet
+    through a netlink socket to the specified multicast group. One or  more
+    userspace  processes may subscribe to the group to receive the packets.
+    Like LOG, this is a non-terminating target, i.e. rule traversal contin‐
+    ues at the next rule.
+
+    --nflog-group nlgroup
+           The netlink group (0 - 2^16-1) to which packets are (only appli‐
+           cable for nfnetlink_log). The default value is 0.
+
+    --nflog-prefix prefix
+           A prefix string to include in the log message, up to 64  charac‐
+           ters long, useful for distinguishing messages in the logs.
+
+    --nflog-range size
+           The  number  of bytes to be copied to userspace (only applicable
+           for nfnetlink_log). nfnetlink_log instances  may  specify  their
+           own range, this option overrides it.
+
+    --nflog-threshold size
+           Number of packets to queue inside the kernel before sending them
+           to userspace (only applicable for nfnetlink_log). Higher  values
+           result in less overhead per packet, but increase delay until the
+           packets reach userspace. The default value is 1.
+----
+_Source: man page of *iptables-extensions* for *iptables* version 1.4.21._
+
+And the man page of the `*policy*` match module for `*iptables*`.
+----
+policy
+    This modules matches the policy used by IPsec for handling a packet.
+
+    --dir {in|out}
+           Used  to  select  whether  to  match the policy used for decapsulation
+           or the policy that will be used for encapsulation.  in is valid in the
+           PREROUTING, INPUT and FORWARD chains, out is valid in the POSTROUTING,
+           OUTPUT and FORWARD chains.
+
+    --pol {none|ipsec}
+           Matches if the packet is subject to IPsec processing. --pol none cannot
+           be combined with --strict.
+
+    --strict
+           Selects whether to match the exact policy or match if any rule of the
+           policy matches the given policy.
+
+    For each policy element that is to be described, one can use one or more of
+    the following options. When --strict is in effect, at least one must be used
+    per element.
+
+    [!] --reqid id
+           Matches the reqid of the policy rule. The reqid can be specified with
+           setkey(8) using unique:id as level.
+
+    [!] --spi spi
+           Matches the SPI of the SA.
+
+    [!] --proto {ah|esp|ipcomp}
+           Matches the encapsulation protocol.
+
+    [!] --mode {tunnel|transport}
+           Matches the encapsulation mode.
+
+    [!] --tunnel-src addr[/mask]
+           Matches the source end-point address of a tunnel mode SA. Only valid
+           with --mode tunnel.
+
+    [!] --tunnel-dst addr[/mask]
+           Matches the destination end-point address of a tunnel mode SA. Only
+           valid with --mode tunnel.
+
+    --next Start the next element in the policy specification. Can only be used
+           with --strict.
+----
+_Source: manpage of *iptables-extensions* for *iptables* version 1.4.21._
+
+== Examples
+
+The following rules use `*nflog*` group `*5*`. Adjust the value for whatever group
+you're using.
+
+=== Ingress IPsec and IKE Traffic
+
+----
+iptables -t raw -I PREROUTING -p esp -j NFLOG --nflog-group 5
+iptables -t raw -I PREROUTING -p ah -j NFLOG --nflog-group 5
+iptables -t raw -I PREROUTING -p udp -m multiport --dports 500,4500 -j NFLOG --nflog-group 5
+----
+
+=== Egress IPsec and IKE Traffic
+
+----
+iptables -t raw -I OUTPUT -p esp -j NFLOG --nflog-group 5
+iptables -t raw -I OUTPUT -p ah -j NFLOG --nflog-group 5
+iptables -t raw -I OUTPUT -p udp -m multiport --dports 500,4500 -j NFLOG --nflog-group 5
+----
+
+=== Decapsulated IPsec Traffic
+
+----
+iptables -t mangle -I PREROUTING -m policy --pol ipsec --dir in -j NFLOG --nflog-group 5
+iptables -t mangle -I POSTROUTING -m policy --pol ipsec --dir out -j NFLOG --nflog-group 5
+----
+
+=== IPsec Traffic Terminated at Local Host
+
+----
+iptables -t filter -I INPUT -m addrtype --dst-type LOCAL -m policy --pol ipsec --dir in -j NFLOG --nflog-group 5
+----
+
+=== IPsec Traffic Forwarded to Remote Hosts
+
+----
+iptables -t filter -I FORWARD -m addrtype ! --dst-type LOCAL -m policy --pol ipsec --dir in -j NFLOG --nflog-group 5
+----
+
+=== Outgoing IPsec Traffic
+
+----
+iptables -t filter -I OUTPUT -m policy --pol ipsec --dir out -j NFLOG --nflog-group 5
+----
+
+=== Getting the traffic
+
+----
+tcpdump -s 0 -n -i nflog:5
+----
+
+Alternatively use Wireshark. The `*nflog*` group appears in the interface list.
+
+== Special Case: libipsec
+
+If you're using xref:plugins/kernel-libipsec.adoc[`*libipsec*`] then simply make
+`*tcpdump*` listen on the `*tun*` interface to get decapsulated traffic.
+If you want IKE and the IPsec traffic, just listen on the interface that is used
+to communicate with the peers.
+
+== Decrypting IKE/ESP Traffic in Wireshark
+
+It is possible to configure encryption and authenticaton keys in Wireshark in
+order to decrypt and verify IKE and ESP traffic. However, it depends on the
+Wireshark version how well this works. For instance, to decrypt ISAKMP (IKEv1)
+traffic only 3DES was supported until 1.12.0, which added support for AES.
+Similarly, versions before 1.10.9 only supported ISAKMP with PSK authentication.
+
+The IKE encryption and authentication keys can be extracted from the log if the
+xref:config/logging.adoc[log level] is increased to `*4*` for the `*ike*` subsystem.
+When using IKEv1 look for `*SKEYID*` or `*Ka*` to get the final encryption key
+whereas with IKEv2 look for `*Sk*`. The ESP keys are logged on level `*4*` in the
+`*chd*` subsystem but can also be extracted via `*ip xfrm state*`.
+
+Starting with strongSwan version 5.6.2, the `*save-keys*` plugin for `*libcharon*`
+can be used to automatically store IKE and ESP keys in a file in Wireshark format.
+This key file can then be loaded by Wireshark to decrypt the captured IKE and ESP
+packets.
+
+To debug IKEv2 it is also possible to use `*NULL*` encryption via the `*openssl*`
+plugin.

@@ -19,7 +19,7 @@ e.g. be controlled by routing packets to a specific interface.
 
 Most of these approaches also allow an easy capture of plaintext traffic, which
 depending on the operating system might not be that straight-forward with
-policy-based VPNs, see xref:install/correctTrafficDump.adoc[Correct Traffic Dump].
+policy-based VPNs, see xref:install/trafficDumps.adoc[Traffic Dumps].
 Another advantage this approach could have is that the MTU can be specified for
 the tunneling devices, allowing to fragment packets before tunneling them, in case
 PMTU discovery does not work properly.
