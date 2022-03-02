@@ -8,176 +8,236 @@ for use with strongSwan.
 
 == Generating a CA Certificate
 
-The xref:./pki.adoc[`*pki*`] command
+The xref:./pkiGen.adoc[`*pki --gen*`] command
 
-    pki --gen --type ed25519 --outform pem > strongswanKey.pem
+ pki --gen --type ed25519 --outform pem > strongswanKey.pem
 
 generates an elliptic *Edwards-Curve* key with a cryptographic strength of 128
-bits. The corresponding public key is packed into a self-signed `CA` certificate
-with a lifetime of 10 years (3652 days)
+bits. Alternative key types are `*ecdsa*`, classic `*rsa*` and `*ed448*`.
 
-    pki --self --ca --lifetime 3652 --in strongswanKey.pem \
-               --dn "C=CH, O=strongSwan, CN=strongSwan Root CA" \
-               --outform pem > strongswanCert.pem
+WARNING: Never store the private key of the Certification Authority (CA) on a
+         host with constant direct access to the Internet (e.g. a VPN gateway)
+         since a theft of this master signing key will completely compromise your
+         PKI.
 
-which can be listed with the command
+The corresponding public key is packed into a *self-signed* `CA` certificate
+with a lifetime of 10 years (3652 days) using the
+xref:./pkiSelf.adoc[`*pki --self*`] command
+----
+pki --self --ca --lifetime 3652 --in strongswanKey.pem \
+           --dn "C=CH, O=strongSwan, CN=strongSwan Root CA" \
+           --outform pem > strongswanCert.pem
+----
+which can be listed with the xref:./pkiPrint.adoc[`*pki --print*`] command
+----
+pki --print --in strongswanCert.pem
 
-    pki --print --in strongswanCert.pem
-
-    subject:  "C=CH, O=strongSwan, CN=strongSwan Root CA"
-    issuer:   "C=CH, O=strongSwan, CN=strongSwan Root CA"
-    validity:  not before May 18 08:32:06 2017, ok
-               not after  May 18 08:32:06 2027, ok (expires in 3651 days)
-    serial:    57:e0:6b:3a:9a:eb:c6:e0
-    flags:     CA CRLSign self-signed
-    subjkeyId: 2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
-    pubkey:    ED25519 256 bits
-    keyid:     a7:e1:6a:3f:e7:6f:08:9d:89:ec:23:92:a9:a1:14:3c:78:a8:7a:f7
-    subjkey:   2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
-
+subject:  "C=CH, O=strongSwan, CN=strongSwan Root CA"
+issuer:   "C=CH, O=strongSwan, CN=strongSwan Root CA"
+validity:  not before May 18 08:32:06 2017, ok
+           not after  May 18 08:32:06 2027, ok (expires in 3651 days)
+serial:    57:e0:6b:3a:9a:eb:c6:e0
+flags:     CA CRLSign self-signed
+subjkeyId: 2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
+pubkey:    ED25519 256 bits
+keyid:     a7:e1:6a:3f:e7:6f:08:9d:89:ec:23:92:a9:a1:14:3c:78:a8:7a:f7
+subjkey:   2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
+----
 If you prefer the `CA` private key and `X.509` certificate to be in binary `DER`
-format then just omit the `--outform pem` option. The directory `/etc/swanctl/x509ca`
-contains all required `CA` certificates either in binary `DER` or in Base64 `PEM`
-format. Irrespective of the file suffix the correct format will be determined
-by strongSwan automagically.
+format then just omit the `*--outform pem*` option.
 
+The xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509*`] directory stores all
+required `CA` certificates either in binary `DER` or in Base64 `PEM` format.
+Irrespective of the file suffix the correct format will be determined by
+strongSwan automagically.
 
 == Generating an End Entity Certificate
 
 Again we are using the command
 
-    pki --gen --type ed25519 --outform pem > moonKey.pem
+ pki --gen --type ed25519 --outform pem > moonKey.pem
 
 to generate an `Ed25519` private key for the host `moon`. Alternatively you could
 type
 
-    pki --gen --type rsa --size 3072 > moonKey.der
+ pki --gen --type rsa --size 3072 > moonKey.der
 
 to generate a traditional 3072 bit RSA key and store it in binary `DER` format.
-As an alternative a  xref:tpm/tpm2.adoc[`*TPM 2.0*`] _Trusted Platform Module_ available
-on every recent Intel platform could be used as a virtual smartcard to securely
-store an `RSA` or `ECDSA` private key. For details, refer to the xref:tpm/tpm2.adoc[`*TPM 2.0*`]
-tutorial.
+Depending on the key type, the private host or user key is stored in the
+appropriate subdirectory (`*ecdsa*`, `*rsa*`, `*pkcs8*` or `*private*`) of the
+xref:swanctl/swanctlDir.adoc[`*/etc/swanctl*`] directory.
 
-In a next step the command
+As an alternative, a  xref:tpm/tpm2.adoc[`*TPM 2.0*`] _Trusted Platform Module_
+available on every recent Intel platform could be used as a virtual smartcard to
+securely store an `RSA` or `ECDSA` private key. For details, refer to
+the xref:tpm/tpm2.adoc[`*TPM 2.0*`] tutorial.
 
-    pki --req --type priv --in moonKey.pem \
-              --dn "C=CH, O=strongswan, CN=moon.strongswan.org" \
-              --san moon.strongswan.org --outform pem > moonReq.pem
-
+In a next step the xref:./pkiReq.adoc[`*pki --req*`] command
+----
+pki --req --type priv --in moonKey.pem \
+          --dn "C=CH, O=strongswan, CN=moon.strongswan.org" \
+          --san moon.strongswan.org --outform pem > moonReq.pem
+----
 creates a PKCS#10 certificate request that has to be signed by the `CA`.
-Through the [multiple] use of the `--san` parameter any number of desired
-`subjectAlternativeNames` can be added to the request. These can be of the
+Through the [multiple] use of the `*--san*` parameter any number of desired
+`*subjectAlternativeNames*` can be added to the request. These can be of the
 form
-
-    --san sun.strongswan.org     # fully qualified host name
-    --san carol@strongswan.org   # RFC822 user email address
-    --san 192.168.0.1            # IPv4 address
-    --san fec0::1                # IPv6 address
+----
+--san sun.strongswan.org     # fully qualified host name
+--san carol@strongswan.org   # RFC822 user email address
+--san 192.168.0.1            # IPv4 address
+--san fec0::1                # IPv6 address
+----
+It is strongly recommended to include the hostname of a VPN gateway as a
+`*subjectAltName*` in its certificate. Depending on your clients there may be
+additional requirements imposed on gateway certificates, for instance, the
+xref:interop/windowsCertRequirements.adoc[Windows certificate requirements] or those
+for xref:interop/ios.adoc[iOS and macOS] clients.
 
 Based on the certificate request the `CA` issues a signed end entity certificate
-with the following command
-
-    pki --issue --cacert strongswanCert.pem --cakey strongswanKey.pem \
-                --type pkcs10 --in moonReq.pem --serial 01 --lifetime 1826 \
-                --outform pem > moonCert.pem
-
-If the `--serial` parameter with a hexadecimal argument is omitted then a random
+with the xref:./pkiIssue.adoc[`*pki --issue*`] command
+----
+pki --issue --cacert strongswanCert.pem --cakey strongswanKey.pem \
+            --type pkcs10 --in moonReq.pem --serial 01 --lifetime 1826 \
+            --outform pem > moonCert.pem
+----
+If the `*--serial*` parameter with a hexadecimal argument is omitted then a random
 serial number is generated. Some third party VPN clients require that a VPN
 gateway certificate contains the `TLS Server Authentication` Extended Key Usage
 (EKU) flag which can be included with the following option
 
-    --flag serverAuth
+ --flag serverAuth
 
 If you want to use the dynamic `CRL` fetching feature described in one of the
 following sections then you may include one or several `crlDistributionPoints`
-in your end entity certificates using the `--crl` parameter
-
-    --crl  http://crl.strongswan.org/strongswan.crl
-    --crl "ldap://ldap.strongswan.org/cn=strongSwan Root CA, o=strongSwan,c=CH?certificateRevocationList"
-
+in your end entity certificates using the `*--crl*` parameter
+----
+--crl  http://crl.strongswan.org/strongswan.crl
+--crl "ldap://ldap.strongswan.org/cn=strongSwan Root CA, o=strongSwan,c=CH?certificateRevocationList"
+----
 The issued host certificate can be listed with
+----
+pki --print --in moonCert.pem
 
-    pki --print --in moonCert.pem
+subject:  "C=CH, O=strongSwan, CN=moon.strongswan.org"
+issuer:   "C=CH, O=strongSwan, CN=strongSwan Root CA"
+validity:  not before May 19 10:28:19 2017, ok
+           not after  May 19 10:28:19 2022, ok (expires in 1825 days)
+serial:    01
+altNames:  moon.strongswan.org
+flags:     serverAuth
+CRL URIs:  http://crl.strongswan.org/strongswan.crl
+authkeyId: 2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
+subjkeyId: 60:9d:de:30:a6:ca:b9:8e:87:bb:33:23:61:19:18:b8:c4:7e:23:8f
+pubkey:    ED25519 256 bits
+keyid:     39:1b:b3:c2:34:72:1a:01:08:40:ce:97:75:b8:be:ce:24:30:26:29
+subjkey:   60:9d:de:30:a6:ca:b9:8e:87:bb:33:23:61:19:18:b8:c4:7e:23:8f
+----
+End entity certificates are usually stored in the
+xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509*`] directory.
 
-    subject:  "C=CH, O=strongSwan, CN=moon.strongswan.org"
-    issuer:   "C=CH, O=strongSwan, CN=strongSwan Root CA"
-    validity:  not before May 19 10:28:19 2017, ok
-               not after  May 19 10:28:19 2022, ok (expires in 1825 days)
-    serial:    01
-    altNames:  moon.strongswan.org
-    flags:     serverAuth
-    CRL URIs:  http://crl.strongswan.org/strongswan.crl
-    authkeyId: 2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
-    subjkeyId: 60:9d:de:30:a6:ca:b9:8e:87:bb:33:23:61:19:18:b8:c4:7e:23:8f
-    pubkey:    ED25519 256 bits
-    keyid:     39:1b:b3:c2:34:72:1a:01:08:40:ce:97:75:b8:be:ce:24:30:26:29
-    subjkey:   60:9d:de:30:a6:ca:b9:8e:87:bb:33:23:61:19:18:b8:c4:7e:23:8f
+Create a distinct private key and a matching X.509 end entity certificate
+signed by your CA for each peer, i.e. for all VPN clients and VPN gateways in
+your network and store the peer's private key and X.509 certificate in the
+xref:swanctl/swanctlDir.adoc[`*/etc/swanctl*`] directory of the corresponding
+host.
 
-Usually, a Windows, OSX, Android or iOS based VPN client needs its private key,
-its host or user certificate and the `CA` certificate.  The most convenient way
+== PKCS#12 Container
+
+Usually a Windows, Android, macOS or iOS based VPN client needs its private key,
+its host or user certificate and the `CA` certificate. The most convenient way
 to load this information is to put everything into a `PKCS#12` container:
+----
+openssl pkcs12 -export -inkey carolKey.pem \
+               -in carolCert.pem -name "carol" \
+               -certfile strongswanCert.pem -caname "strongSwan Root CA" \
+               -out carolCert.p12
+----
+The strongSwan xref:./pki.adoc[`*pki*`] tool currently is not able to create
+`PKCS#12` containers so that `*openssl*` must be used.
 
-    openssl pkcs12 -export -inkey carolKey.pem \
-                   -in carolCert.pem -name "carol" \
-                   -certfile strongswanCert.pem -caname "strongSwan Root CA" \
-                   -out carolCert.p12
+Omitting the `*-certfile*` argument from the command above is indicated in the
+following situation:
 
-The strongSwan xref:./pki.adoc[`*pki*`] tool currently is not able to create `PKCS#12`
-containers so that `*openssl*` must be used.
+ * On Android 4.4 and later, you may get a warning ("Network may be monitored by
+   an unknown third party") if the PKCS#12 file contains a CA certificate. To avoid
+   that, create the PKCS#12 container without a CA certificate. Then import the
+   PKCS#12 file into the Android trust store as usual and the CA certificate file
+   directly into the  xref:os/androidVpnClient.adoc[strongSwan app]. Or install
+   both files via the xref:os/androidVpnClientProfiles.adoc[configuration profile].
 
+It's also possible to add additional CA certificates with multiple `*-certfile*`
+arguments (e.g. for multi-level X.509 trust chains).
+
+The `*openssl pkcs12*` command requires the certificates and the private key to be
+in PEM format. DER format is not accepted. Either use `*--outform pem*` with the
+xref:pki/pki.adoc[`*pki*`] commands above to generate all files in PEM format
+or convert them later on with the command
+
+ openssl x509 -inform der -outform pem -in cert.der -out cert.pem
+
+for certificates and
+
+ openssl ec -inform der -outform pem -in key.der -out key.pem
+
+for private ECDSA keys or
+
+ openssl rsa -inform der -outform pem -in key.der -out key.pem
+
+for private RSA keys.
 
 == Generating a CRL
 
-An empty `CRL` that is signed by the `CA` can be generated with the command
-
-    pki --signcrl --cacert strongswanCert.pem --cakey strongswanKey.pem \
-                  --lifetime 30 > strongswan.crl
-
-If you omit the `--lifetime` option then the default value of 15 days is used.
+An empty `CRL` that is signed by the `CA` can be generated with the
+xref:./pkiSignCrl.adoc[`*pki --signcrl*`] command
+----
+pki --signcrl --cacert strongswanCert.pem --cakey strongswanKey.pem \
+              --lifetime 30 > strongswan.crl
+----
+If you omit the `*--lifetime*` option then the default value of 15 days is used.
 CRLs can either be uploaded to a `HTTP` or `LDAP` server or put in binary `DER`
-or Base64 `PEM` format into the `/etc/swanctl/x509crl` directory from where they
-are loaded into the xref:daemons/charon.adoc[`*charon*`] daemon with the command
-
-    swanctl --load-creds
+or Base64 `PEM` format into the
+xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509crl*`] directory from where they
+are loaded into the xref:daemons/charon.adoc[`*charon*`] daemon with the
+xref:swanctl/swanctlLoadCreds.adoc[`*swanctl --load-creds*`] command.
 
 == Revoking a Certificate
 
 A specific end entity certificate is revoked with the command
-
-    pki --signcrl --cacert strongswanCert.pem --cakey strongswanKey.pem \
-                  --lifetime 30 --lastcrl strongswan.crl \
-                  --reason key-compromise --cert moonCert.pem > new.crl
-
+----
+pki --signcrl --cacert strongswanCert.pem --cakey strongswanKey.pem \
+              --lifetime 30 --lastcrl strongswan.crl \
+              --reason key-compromise --cert moonCert.pem > new.crl
+----
 Instead of the certificate file (in our example `moonCert.pem`), the serial number
-of the certificate to be revoked can be indicated using the `--serial`
-parameter. The xref:./pkiSignCrl.adoc[`*pki --signcrl*`] `--help` command
-documents all possible revocation reasons but the `--reason` parameter can also
+of the certificate to be revoked can be indicated using the `*--serial*`
+parameter. The xref:./pkiSignCrl.adoc[`*pki --signcrl --help*`] command
+documents all possible revocation reasons but the `*--reason*` parameter can also
 be omitted. The content of the new CRL file can be listed with the command
+----
+pki --print --type crl --in new.crl
 
-    pki --print --type crl --in new.crl
-
-    issuer:   "C=CH, O=strongSwan, CN=strongSwan Root CA"
-    update:    this on May 19 11:13:01 2017, ok
-               next on Jun 18 11:13:01 2017, ok (expires in 29 days)
-    serial:    02
-    authKeyId: 2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
-    1 revoked certificate:
-      01: May 19 11:13:01 2017, key compromise
-
+issuer:   "C=CH, O=strongSwan, CN=strongSwan Root CA"
+update:    this on May 19 11:13:01 2017, ok
+           next on Jun 18 11:13:01 2017, ok (expires in 29 days)
+serial:    02
+authKeyId: 2b:95:14:5b:c3:22:87:de:d1:42:91:88:63:b3:d5:c1:92:7a:0f:5d
+1 revoked certificate:
+  01: May 19 11:13:01 2017, key compromise
+----
 
 == Local Caching of CRLs
 
-The `strongswan.conf` option
-
-    charon {
-        cache_crls = yes
-    }
-
+The xref:config/strongswanConf.adoc[`*strongswan.conf*`] option
+----
+charon {
+  cache_crls = yes
+}
+----
 activates the local caching of `CRLs` that were dynamically fetched from an
-`HTTP` or `LDAP` server.  Cached copies are stored in `/etc/swanctl/x509crl`
-using a unique filename formed from the issuer's `subjectKeyIdentifier` and the
-suffix `.crl`.
+`HTTP` or `LDAP` server.  Cached copies are stored in
+xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509crl*`] using a unique filename
+formed from the issuer's `*subjectKeyIdentifier*` and the `*.crl*` suffix.
 
 With the cached copy the `CRL` is immediately available after startup.  When the
 local copy has become stale, an updated `CRL` is automatically fetched from one

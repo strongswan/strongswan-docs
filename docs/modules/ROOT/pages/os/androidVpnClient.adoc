@@ -23,14 +23,14 @@ directly from {PLAYSTORE}[Google Play]. The app is also available via
 Since version xref:#_1_8_0_2017_01_20[1.8.0] of the app it is possible to import
 xref:./androidVpnClientProfiles.adoc[VPN profiles] from files.
 
-Client certificates and keys, and CA certificates may be added by
-xref:pki/simpleCa.adoc#_install_certificates_in_other_platforms[bundling them into
-a PKCS#12 file] and then importing that file into the Android system keystore. CA
-certificates and server certificates may also be imported directly into the app
-since xref:#_1_4_0_2014_07_22[1.4.0]. Importing CA certificates into the Android
-system keystore may trigger a warning since Android 4.4
-({GOOGLE}[Network may be monitored by an unknown third party"]) whereas importing
-CA certificates directly into the app will work fine.
+Client certificates and keys, and CA certificates may be added by bundling them
+into a xref:pki/pkiQuickstart.adoc#_pkcs12_container[PKCS#12 file] and then
+importing that file into the Android system keystore. CA certificates and server
+certificates may also be imported directly into the app since
+xref:#_1_4_0_2014_07_22[1.4.0].
+Importing CA certificates into the Android system keystore may trigger a warning
+since Android 4.4 ({GOOGLE}[Network may be monitored by an unknown third party])
+whereas importing CA certificates directly into the app will work fine.
 
 Since xref:#_1_9_0_2017_07_03[1.9.0] split tunneling may be configured on the
 client (i.e. to only route specific traffic via VPN and/or to exclude certain

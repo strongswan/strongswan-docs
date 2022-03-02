@@ -25,6 +25,9 @@
 ** xref:features/highAvailability.adoc[]
 ** xref:features/integrityTests.adoc[]
 
+.Howtos
+** xref:pki/pkiQuickstart.adoc[]
+
 .Daemons
 ** xref:daemons/charon.adoc[]
 ** xref:daemons/charon-systemd.adoc[]
