@@ -46,6 +46,7 @@
 
 .Interoperability
 ** xref:interop/windowsCertRequirements.adoc[]
+** xref:interop/ios.adoc[]
 
 .Tools
 ** xref:swanctl/swanctl.adoc[]

@@ -1,0 +1,202 @@
+= iOS and macOS
+
+:SUPPORT:     https://support.apple.com/en-us/HT210176
+:LISTS:       https://lists.strongswan.org/pipermail/users/2015-October/008844.html
+:LETSENCRYPT: https://letsencrypt.org/
+
+== IKEv2 on iOS 9 and macOS 10.11
+
+With the release of iOS 9 and macOS 10.11 ("El Capitan"), IKEv2 is now supported
+by three different methods:
+
+* Manually through the Settings app on iOS or System Preferences on macOS
+
+* With a custom xref:interop/appleIkev2Profile.adoc[configuration profile]
+
+* Through an app that has the NetworkExtension entitlement
+
+The xref:interop/windowsClients.adoc[Windows IKEv2] configurations can be used
+with some small changes.
+
+* For manual configurations, specify only DH group 2 (`*modp1024*`) in the `*ike*`
+  configuration. Although the iOS client claims to support `*modp1536*`, an
+  unfixed bug prevents these connections from succeeding. An appropriate
+  configuration consisting of 3 proposals for iOS, Windows and macOS, respectively
+  might look like
++
+----
+ike=aes256-sha256-modp1024,aes256-sha1-modp1024,3des-sha1-modp1024
+esp=aes256-sha256,aes256-sha1,3des-sha1
+----
++
+As of iOS 14 (maybe earlier) `*modp2048*` and `*sha2*` are supported. Thus use
++
+----
+ike=aes256-sha2_256-modp2048
+esp=aes256-sha2_256
+----
+
+* The client does not send a certificate request (`*CERTREQ*`) unless
+  `*ServerCertificateIssuerCommonName*` is configured in a
+  xref:interop/appleIkev2Profile.adoc[configuration profile] whereas strongSwan
+  does not send certificates without it with the default value of
+  `*connections.<conn>.send_cert = ifasked*`. Therefore explictly set
+  `*connections.<conn>.send_cert = always*`.
+
+* At least macOS clients require that the IKEv2 ID of the server is contained in
+  the CN field of the server certificate's DN, as well as a `*subjectAltName*`
+  (SAN) value. Since iOS 13 and macOS 10.15 a {SUPPORT}[SAN is required]. The CN
+  field is not relevant anymore. Additionally, the `*TLS Server Authentication*`
+  flag has to be set in the server certificate (use `*--flag serverAuth*` with
+  xref:pki/pkiIssue.adoc[`*pki --issue*`]).
+
+* If an IPv6 pool is specified in connections.<conn>.pools, `*local_ts*` must
+  include a default IPv6 route (`*::/0*`) or no routes will be correctly added.
+
+* Under certain hibernation-related conditions, macOS clients may forget a CHILD_SA
+  without closing it. Setting a short `*dpd_delay*` can clear these SAs before the
+  waking client builds another CHILD_SA and thus aid in retaining the same virtual
+  IP address.
+
+* Split-DNS can be implemented for iOS 10.3.1 and newer with the `INTERNAL_DNS_DOMAIN`
+  attribute and the `INTERNAL_IP4_DNS` or `INTERNAL_IP6_DNS` attributes.
+  Support for macOS isn't known at the moment. For older versions, all traffic
+  has to be tunneled (full-tunnel). However, the latter doesn't work for any
+  application because none honor scoped DNS servers. A magic number for the
+  `INTERNAL_DNS_DOMAIN` has been assigned by IANA and is supported by iOS 10.3.1
+  and newer. Alternatively {LISTS}[the DNS domains can be supplied in the client
+  configuration].
+
+* Assigning DNS servers without full-tunnel can only be achieved by sending an
+  `INTERNAL_DNS_DOMAIN` to the responder (for iOS 10.3.1 and newer) or
+  {LISTS}[by supplying it in the client configuration].
+
+* iOS and MacOS support EAP-MSCHAPv2, EAP-TLS, but not EAP-GTC
+
+== IKEv2 on iOS 8
+
+Since iOS 8 (but not macOS 10.10) IKEv2 is natively supported on Apple clients.
+For such devices the xref:config/IKEv2.adoc[IKEv2 configuration examples] for
+roadwarrior responders or the
+xref:interop/windowsClients.adoc[Windows IKEv2 configurations] can be used.
+
+Unfortunately Apple has not yet updated the GUI, so IKEv2 connections have to be
+installed with a xref:interop/appleIkev2Profile.adoc[custom configuration profile].
+
+== IKEv1
+
+iOS 4 and newer, and macOS 10.7 and newer support native IPsec VPN via IKEv1
+(otherwise referred to as Cisco IPSec in these clients) and are able to interoperate
+with strongSwan.
+
+Authentication uses XAuth and X.509 certificates. Authentication without X.509
+certificates using IKEv1 Aggressive Mode is possible but strongly discouraged.
+
+Use the standard
+xref:config/IKEv1.adoc[IKEv1 client and server configuration examples]
+as well the following
+xref:interop/appleClientIkev1.adoc[IKEv1 client and server configuration example].
+
+
+=== Behaviour with Several Subnets
+
+Recent versions of iOS and macOS will only establish SAs for the first subnet.
+The SAs for the other subnets are created on demand with separate Quick Mode
+exchanges, when the traffic matches the traffic selector.
+
+== Certificate Requirements
+
+The domain name or IP address of the server (strongSwan VPN gateway) *MUST* be
+contained either in the `*subjectDistinguishedName*` (DN) of the server certificate
+
+ C=CH, O=strongSwan, CN=vpn.strongswan.org
+
+or in a `*subjectAltName*` extension that can be added with the OpenSSL option
+
+ subjectAltName = DNS:vpn.strongswan.org
+
+where in the above cases `*vpn.strongswan.org*` must exactly match the value
+entered in the *Server* field of the
+xref:interop/appleClientIkev1.adoc#_ios_client_configuration[iOS client configuration].
+If the certificate contains any `*subjectAltNames*` at all, one of them *must*
+match that value (a matching DN is not enough in this case).
+
+macOS appears to *require* the hostname/address as a `*subjectAltName*`. To support
+versions before 10.7.4, the certificate must contain the `*iKEIntermediate*`
+Extended Key Usage (EKU) flag.
+
+Refer to the xref:pki/pkiQuickstart.adoc[certificate quickstart] as a tutorial
+on how to create certificates using the xref:pki/pki.adoc[`*pki*`] tools.
+
+=== Client Configuration
+
+When using IKEv2 with EAP authentication (username/password) the CA certificate
+is required on the clients to verify the server certificate. If a certificate
+issued by CA that the clients already trust is used, e.g. one by
+{LETSENCRYPT}[Let's Encrypt], nothing has to be installed on the clients.
+
+When using certificates to authenticate the clients, with either IKE version,
+the clientsneed a certificate and a private key packaged in a
+xref:pki/pkiQuickstart.adoc#_pkcs12_container[PKCS#12 container] in addition to
+the CA certificate.
+
+These files can either be placed on a web server for download to a client device
+using Safari or sent to it via email. Although the PKCS#12 file may also include
+the CA certificate, not all Apple clients will use it so it must usually be
+installed separately. On iOS devices the installed certificates will reside under
+`Settings > General > Profiles`.
+
+For macOS open `*Keychain.app*` and import the PKCS#12 (or CA certificate) file
+into the *System* keychain (*not login*), then mark as *Always Trusted*. If you're
+running into trouble with the negotiation, make sure that in the Access Control
+tab of the private key, all applications are allowed to access it.
+
+== IKEv1 Reauthentication Issues
+
+NOTE: At least on macOS 10.10 this seems not to be a problem anymore.
+
+Both iOS and macOS trigger an ISAKMP reauthentication after a tunnel is up for
+about 45 minutes. When using XAuth, strongSwan requests username/password during
+ISAKMP reauthentication. The native client in some versions of macOS and iOS does
+not expect that and deletes the ISAKMP SA upon that request. In some versions it
+was caused by the client's inability to access the password originally used for
+XAuth authentication when reauthenticating the SA.
+
+strongSwan insists on redoing XAuth during ISAKMP reauth. There is no cryptographic
+binding between the old and the new ISAKMP SA, so an attacker can take over a
+tunnel easily without knowledge of the XAuth password. One could argue that the
+client RSA private key is sufficient to validate the client, but it then makes no
+sense to use an additional username/password to authenticate the client in the
+first place. Additionally, some scenarios consider the client private key as public
+knowledge, and rely solely on the XAuth exchange, which is encrypted under a session
+securely authenticated by the server certificate.
+
+One feasible solution is to use the xref:plugins/xauth-noauth.adoc[`*xauth-noauth*`]
+plugin. It uses a fake XAuth exchange by sending just a success message which the
+client also accepts during ISAKMP reauthentication. This implies that no password
+is required during the initial setup but only the client RSA private key is used
+for authentication. The preferred solution is to use IKEv2.
+
+== IKEv2 Reauthentication Issues
+
+macOS seems to be unable to deal with responder initiated IKEv2 reauthentications
+if certificate authentication is used. If the responder tries to reauthenticate
+the IKE_SA, the initiator (macOS) will fail to reauthenticate itself, finally
+leading to the IKE_SA being deleted when it expires according to its lifetime.
+In order to work around the issue, reauthentication has to be turned off on the
+responder (it is disabled by default):
+
+ connections.<conn>.reauth_time = 0
+
+== Troubleshooting IKEv1 on macOS
+
+ sudo vi /etc/racoon/racoon.conf
+
+Add the following entry in the top section
+----
+log debug;
+path logfile "/var/log/racoon.log";
+----
+and then trace the logs
+
+ tail -f /var/log/racoon.log
