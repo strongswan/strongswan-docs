@@ -1,0 +1,156 @@
+= Windows Certificate Requirements
+
+:BLOG:    http://www.carbonwind.net/blog/post/VPN-Reconnect-in-Windows-7-RC-redux.aspx
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC4945: {IETF}/rfc4945
+
+The IKEv2 Agile VPN client for Windows 7 and later introduced some requirements
+on VPN gateway certificates.
+
+== Required Fields
+
+A VPN gateway certificate must have:
+
+. An *Extended Key Usage* (EKU) flag explicitly allowing the certificate to be
+  used for authentication purposes. The `*serverAuth*` EKU having the ASN.1 OID
+  `*1.3.6.1.5.5.7.3.1*` (often called _TLS Web server authentication_) will do
+  that. If you are using OpenSSL to generate your certificates then include
+  the option
++
+----
+extendedKeyUsage = serverAuth
+----
++
+Using the xref:pki/pkiIssue.adoc[`*pki --issue*`] command, add the argument
++
+----
+--flag serverAuth
+----
++
+In addition to `*serverAuth*` the *IP Security IKE Intermediate* EKU with ASN.1
+OID `*1.3.6.1.5.5.8.2.2*` does not hurt either and will allow you to use the
+certificate with older xref:interop/ios.adoc[macOS releases], too.
++
+Thus with OpenSSL define
++
+----
+extendedKeyUsage = serverAuth, 1.3.6.1.5.5.8.2.2
+----
++
+and with the xref:pki/pkiIssue.adoc[`*pki --issue*`] command
++
+----
+--flag serverAuth --flag ikeIntermediate
+----
+
+. The hostname of the VPN gateway entered in the clients connection properties
+  *MUST* be contained either in the `*subjectDistinguishedName*` of the server
+  certificate
++
+----
+C=CH, O=strongSwan Project, CN=vpn.strongswan.org
+----
++
+and/or in a `*subjectAltName*` extension that can be added with the OpenSSL option
++
+----
+subjectAltName = DNS:vpn.strongswan.org
+----
++
+or the xref:pki/pkiIssue.adoc[`*pki --issue*`] argument
++
+----
+--san vpn.strongswan.org
+----
++
+*For optimal interoperability* with other client implementations it is recommended
+to include the hostname as `*subjectAltName*` because matching only parts of the
+distinguished name is actually not compliant with {RFC4945}[RFC 4945]. Having the
+hostname encoded as `*subjectAltName*` is essential when using the
+xref:os/androidVpnClient.adoc[strongSwan Android app] or working with
+xref:interop/ios.adoc[macOS clients].
++
+If you intend to use *IP addresses* instead of host names with Windows clients,
+add them in a `*subjectAltName*` of type `*dNSName*` (i.e. `*DNS:x.x.x.x*`) and
+not one of type `*iPAddress*` (i.e. `*IP:x.x.x.x*`). The client will throw a
+`*13801*` error if this is not met. The same applies to some versions of
+xref:interop/ios.adoc[iOS or macOS] when using EAP-TLS which will fail
+with error `*1001 -9807*`.
++
+To do this with xref:pki/pkiIssue.adoc[`*pki --issue*`], prefix the IP address
+with an `*@*` symbol (e.g. `*--san @x.x.x.x*`) or since version 5.2.2 with the
+`*dns:*` prefix (e.g. `*--san dns:x.x.x.x*`). Otherwise the
+xref:pki/pki.adoc[`*pki*`] tool will
+xref:config/identityParsing.adoc[automatically interpret] the field as an IP
+address and encode it as type `*iPAddress*`. For interoperability with other client
+implementations the IP address should probably be added in two `*subjectAltName*`
+extensions, one for each type, i.e. `*dNSName*` and `*iPAddress*`.
+
+== Client Certificates
+
+When using client certificates you may come across *Error 13806*. This happens if
+Windows does not find a suitable client certificate. Besides the certificate being
+installed in the wrong location or problems with the CA certificate, this could be
+due to the properties of the certificate itself. The following table lists
+combinations of CN (i.e. the Common Name, the rest of the DN does not matter),
+SAN and EKU that work:
+
+=== User and Machine Certificates
+
+When using user certificates Windows will not send the subject DN (Distinguished
+Name) as client identity but the CN (Common Name) instead, (e.g. `*user*` for the
+first identity below). If no matching SAN (`*subjectAltName*`) is contained
+in the certificate, strongSwan will reject it because it can't confirm the client
+identity.
+
+[cols="2,1,1,5"]
+|===
+|CN                      |SAN                  |EKU |Comments
+
+|CN="user" +
+ CN="\user@example.com" +
+ CN="host.example.com"   |matching SAN         |none
+|
+
+|CN="user" +
+ CN="\user@example.com"
+ CN="host.example.com"   |matching SAN         |`*clientAuth*`
+|If any EKU is specified, make sure `*clientAuth*` is contained
+|===
+
+=== Machine Certificates Only
+
+[cols="2,1,1,5"]
+|===
+|CN                      |SAN                  |EKU |Comments
+
+|CN="user" +
+ CN="\user@example.com" +
+ CN="host.example.com"   |none or not matching |none
+|
+
+|CN="user" +
+ CN="\user@example.com" +
+ CN="host.example.com"   |does not matter      |`*serverAuth*`
+|Even if a matching SAN is contained and strongSwan would accept it, Windows will
+ ignore it for user authentication due to the missing `*clientAuth*` EKU
+|===
+
+
+== Disabling Extended Certificate Checks
+
+Alternatively, you may disable these extended certificate checks on the client.
+
+WARNING: This is potentially dangerous, as any certificate holder assured by your
+         CA may act as the VPN gateway.
+
+To disable the extended checks, in the client's registry add a `DWORD` called
+`*DisableIKENameEkuCheck*`
+to
+
+ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\RasMan\Parameters\
+
+== Further Information
+
+This {BLOG}[blog entry] provides detailed information about the Windows 7
+certificate requirements.

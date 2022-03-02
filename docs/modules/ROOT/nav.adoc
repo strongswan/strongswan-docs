@@ -44,6 +44,9 @@
 ** xref:os/freebsd.adoc[FreeBSD]
 ** xref:os/macos.adoc[macOS]
 
+.Interoperability
+** xref:interop/windowsCertRequirements.adoc[]
+
 .Tools
 ** xref:swanctl/swanctl.adoc[]
 ** xref:pki/pki.adoc[]
