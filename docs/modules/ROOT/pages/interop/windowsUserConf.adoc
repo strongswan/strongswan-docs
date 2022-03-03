@@ -1,0 +1,64 @@
+= Windows Client Configuration with User Certificates
+
+. Open the *Network & internet* settings
++
+image:networkInternet.png[Network & Internet]
++
+Select *VPN*.
+
+. The *Network & internet > VPN* menu opens.
++
+image:homeConnection.png[Home Connect]
++
+Click on *Add VPN*.
+
+. The *Add a VPN connection* menu pops up.
++
+image:addEapTlsVpnConnection.png[Add EAP-TLS VPN Connection]
++
+Fill in the following fields:
++
+VPN provider ::
+  Select *Windows (built-in)*.
++
+Connection name::
+  Choose a name for your VPN connection.
++
+Server name or address ::
+  Give the fully qualified hostname of the VPN gateway. The hostname must be
+  contained as a `*subjectAltName*` in the gateway certificate.
++
+VPN type ::
+  Select *IKEv2*.
++
+Type of sign-in info ::
+  Select *Certificate*.
+
++
+Click on *Save*.
+
+. The *EAP-TLS* connection has been added to the *Network & internet > VPN* menu.
++
+image:eapTlsConnection.png[EAP-TLS Connection]
+
+. Also a new *EAP-TLS* WAN Miniport (IKEv2) network adapter has been added to the
+  *Network Connections* overview.
++
+image:eapTlsNetworkAdapter.png[EAP-TLS Network Adapter]
++
+Right-click on the *EAP-TLS* network adapter and select *Properties*.
+
+. The *EAP-TLS Properties* menu pops up.
++
+image:eapTlsProperties.png[EAP-TLS Properties]
++
+Switch to the *Security* tab and change the *Data encryption* field to *Maximum
+strength encryption*. Then click *OK*. This eliminates the weak single `DES` and
+the fatal `NULL` encryption in the ESP proposal of the Windows client.
++
+----
+esp = aes256-3des-sha1
+----
+
+The Windows *EAP-TLS* VPN connection based on user certificates and EAP-TLS over
+IKEv2 has now been successfully completed.

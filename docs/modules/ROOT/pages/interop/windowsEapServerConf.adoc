@@ -1,0 +1,116 @@
+= strongSwan EAP Configuration with Passwords
+
+== Connection Definition
+
+The following `*eap*` connection definition in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] allows multiple Windows clients
+to connect to the strongSwan VPN gateway via any `EAP` method over IKEv2.
+----
+connections {
+  eap {
+    pools = ipv4, ipv6
+
+    local {
+      auth = pubkey
+      certs = gatewayCert.pem
+      id = vpn.strongswan.org
+    }
+    remote {
+      auth = eap-dynamic
+      eap_id = %any
+    }
+    children {
+      eap {
+        local_ts = 0.0.0.0/0, ::/0
+
+        rekey_time = 1h
+        esp_proposals = aes256-sha256-sha1-modp2048
+       }
+      version = 2
+      reauth_time = 3h
+      proposals = aes256-sha256-modp2048
+    }
+  }
+}
+
+pools {
+  ipv4 {
+    addrs = 10.10.1.64/26
+    dns = 10.10.0.1
+  }
+  ipv6 {
+    addrs = 2a02:168:4407:1::/122
+  }
+}
+----
+
+pools = ipv4, ipv6 ::
+  The gateway assigns an IPv4 and and IPv6 xref:features/vip.adoc[virtual IP]
+  address from the pools `*ipv4*` and `*ipv6*` pools, respectively. These two
+  pools are defined in a separate xref:swanctl/swanctlConf.adoc#_pools[`*pools*`]
+  section. The IPv4 and IPv6 lease ranges are `*10.10.1.64/26*` and
+  `*2a02:168:4407:1::/122*`, respectively. An internal IPv4 DNS server `*10.10.0.1*`
+  is defined as well. The assigned xref:features/vip.adoc[virtual IP] addresses
+  and internal DNS server information will be sent to the Windows Client via the
+  IKEv2 Configuration Payload (CP).
+
+local.certs = gatewayCert.pem ::
+  The X.509 certificate of the VPN gateway is stored in the
+  xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509*`] directory. The matching
+  private key of the VPN gateway can either be of type `RSA` or `ECDSA` and is
+  stored in the corresponding subdirectory in
+  xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/*`].
+
+local.id = vpn.strongswan.org ::
+  The IKEv2 ID of the VPN gateway. It must be contained as a `*subjectAltName*`
+  in the gateway certificate.
+
+remote.auth = eap-dynamic ::
+  The xref:plugins/eap-dynamic.adoc[`*eap-dynamic*`] plugin allows any EAP-method
+  defined in the
+  xref:config/strongswanConf.adoc#_charon_plugins_eap_dynamic[`*strongswan.conf*`]
+  to be negotiated.
++
+----
+charon-systemd {
+  plugins {
+    eap-dynamic {
+      prefer_user = yes
+      preferred = tls, mschapv2
+    }
+  }
+}
+----
++
+By default the strongSwan gateway requests EAP-TLS but the Windows client can reply
+with an EAP-NAK message and request EAP-MSCHAPv2 instead.
+
+remote.eap_id = %any ::
+  This option activates the sending of an EAP identity with which the Windows
+  client can be identified. With EAP-TLS, Windows sends its current IP address
+  as an IKEv2 ID which if it is dynamic doesn't have any identification value.
+
+children.eap-tls.local_ts = 0.0.0.0/0, ::/0 ::
+  All IPv4 and IPv6 traffic will be tunneled from the Windows client to the
+  strongSwan VPN gateway (no split-tunneling use case).
+
+children.eap-tls.esp_proposals = aes256-sha256-sha1-modp2048 ::
+  `aes256-sha1-modp2048` is the strongest ESP proposal the Windows client is able
+  to offer.
+
+proposals = aes256-sha256-modp2048 ::
+  This is the strongest IKE proposal the Windows client is able to offer.
+
+== EAP Secrets
+
+User secrets needed for EAP-MSCHAPv2-based authentication can be stored in the
+the xref:swanctl/swanctlConf.adoc#_secrets_eapsuffix[`*secrets*`] section of
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+----
+secrets {
+  eap-andi {
+    id = andi
+    secret = AznHu5Um?
+  }
+}
+----

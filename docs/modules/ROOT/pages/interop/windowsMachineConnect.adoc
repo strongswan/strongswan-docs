@@ -1,0 +1,35 @@
+= Windows Client Connection with Machine Certificates
+
+== Starting the Connection
+
+Open the *Network & Internet > VPN* settings.
+
+image:homeConnection.png[Home Connect]
+
+Select the *Home* connection and click on *Connect*. If no error messages are
+issued and the *Home connected* status appears after a while, the VPN connection
+has been successfully established.
+
+image:homeDisconnection.png[Home Disconnect]
+
+== Connection Status
+
+Open the *Network Connections* displaying all network adapters.
+
+image:homeNetworkAdapterActive.png[Active Home Network Adapter]
+
+Right-click on the *Home* WAN Miniport (IKEv2) adapter and select *Status*. The
+*General* tab shows the number of sent and received bytes in real-time.
+
+image:homeStatus.png[Home Status]
+
+In the *Details* tab more information on the established connection is shown.
+
+image:homeStatusDetails.png[Home Status Details]
+
+== Stopping the Connection
+
+In the *Network & Internet > VPN* settings, click on *Disconnect* of the *Home*
+connection
+
+image:homeDisconnection.png[Home Disconnect]

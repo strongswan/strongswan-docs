@@ -1,0 +1,313 @@
+= strongSwan Connection Status with Windows Machine Certificates
+
+== Starting the strongSwan Daemon
+
+The strongSwan xref:daemons/charon-systemd.adoc[`*charon-systemd*`] daemon
+is started with
+
+  sudo systemctl start strongswan
+
+The start of the strongSwan `*systemd*` service is usually done automatically during
+system boot. The `*journal*` log shows the following startup activities
+----
+Starting strongSwan IPsec IKEv1/IKEv2 daemon using swanctl...
+loaded plugins: charon-systemd nonce pem openssl curl revocation vici kernel-netlink socket-default
+spawning 16 worker threads
+loaded certificate 'C=CH, O=strongSec GmbH, CN=vpn.strongswan.org'
+loaded certificate 'C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA'
+loaded ECDSA private key
+added vici pool ipv4: 10.10.1.64, 62 entries
+added vici pool ipv6: 2a02:168:4407:1::, 62 entries
+added vici connection: win
+Started strongSwan IPsec IKEv1/IKEv2 daemon using swanctl.
+----
+The configured connection definitions can be listed with the
+xref:swanctl/swanctlListConns.adoc[`*swanctl --list-conns*`]
+----
+win: IKEv2, reauthentication every 10800s, no rekeying
+  local:  %any
+  remote: %any
+  local public key authentication:
+    id: vpn.strongswan.org
+    certs: C=CH, O=strongSec GmbH, CN=vpn.strongswan.org
+  remote public key authentication:
+    cacerts: C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA
+  win: TUNNEL, rekeying every 3600s
+    local:  0.0.0.0/0 ::/0
+    remote: dynamic
+----
+
+== Windows Client Connecting
+
+=== IKE_SA_INIT Request
+
+An `IKE_SA_INIT` request from a Windows client is received
+----
+received packet: from 212.51.148.80[63706] to 10.10.0.150[500] (632 bytes)
+parsed IKE_SA_INIT request 0 [ SA KE No N(FRAG_SUP) N(NATD_S_IP) N(NATD_D_IP) V V V V ]
+received MS NT5 ISAKMPOAKLEY v9 vendor ID
+received MS-Negotiation Discovery Capable vendor ID
+received Vid-Initial-Contact vendor ID
+received unknown vendor ID: 01:52:8b:bb:c0:06:96:12:18:49:ab:9a:1c:5b:2a:51:00:00:00:02
+212.51.148.80 is initiating an IKE_SA
+----
+This is the IKE crypto proposal selected by the strongSwn gateway
+----
+selected proposal: IKE:AES_CBC_256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/MODP_2048
+----
+Based on the `NAT_S_IP` and `NAT_D_IP` notifies at least two NAT routers were
+detected in the communications path
+----
+local host is behind NAT, sending keep alives
+remote host is behind NAT
+----
+
+=== IKE_SA_INIT Response
+
+The strongSwan gateway sends its `IKE_SA_INIT` response to the Windows client
+----
+sending cert request for "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+generating IKE_SA_INIT response 0 [ SA KE No N(NATD_S_IP) N(NATD_D_IP) CERTREQ N(FRAG_SUP) N(CHDLESS_SUP) N(MULT_AUTH) ]
+sending packet: from 10.10.0.150[500] to 212.51.148.80[63706] (481 bytes)
+----
+
+=== IKE_AUTH Request
+
+A fragmented `IKE_AUTH` request from the Windows client is received
+----
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (580 bytes)
+parsed IKE_AUTH request 1 [ EF(1/7) ]
+received fragment #1 of 7, waiting for complete IKE message
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (580 bytes)
+parsed IKE_AUTH request 1 [ EF(2/7) ]
+received fragment #2 of 7, waiting for complete IKE message
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (580 bytes)
+parsed IKE_AUTH request 1 [ EF(3/7) ]
+received fragment #3 of 7, waiting for complete IKE message
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (580 bytes)
+parsed IKE_AUTH request 1 [ EF(4/7) ]
+received fragment #4 of 7, waiting for complete IKE message
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (580 bytes)
+parsed IKE_AUTH request 1 [ EF(5/7) ]
+received fragment #5 of 7, waiting for complete IKE message
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (580 bytes)
+parsed IKE_AUTH request 1 [ EF(6/7) ]
+received fragment #6 of 7, waiting for complete IKE message
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (228 bytes)
+parsed IKE_AUTH request 1 [ EF(7/7) ]
+received fragment #7 of 7, reassembled fragmented IKE message (3200 bytes)
+parsed IKE_AUTH request 1 [ IDi CERT CERTREQ AUTH N(MOBIKE_SUP) CPRQ(ADDR DNS NBNS SRV ADDR6 DNS6 SRV6) SA TSi TSr ]
+----
+Certificate requests for the strongSec CA and 52 additional unknown CAs are received
+----
+received cert request for "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+received 52 cert requests for an unknown ca
+----
+The trustworthiness of the received Windows machine certificate is established and
+the RSA public key signature contained in the `AUTH` payload is successfully verified
+----
+received end entity cert "C=CH, O=strongSec GmbH, CN=mijas.strongsec.com"
+looking for peer configs matching 10.10.0.150[%any]...212.51.148.80[C=CH, O=strongSec GmbH, CN=mijas.strongsec.com]
+selected peer config 'win'
+  using certificate "C=CH, O=strongSec GmbH, CN=mijas.strongsec.com"
+  using trusted ca certificate "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+checking certificate status of "C=CH, O=strongSec GmbH, CN=mijas.strongsec.com"
+  fetching crl from 'http://www.strongsec.com/ca/strongsec.crl' ...
+  using trusted certificate "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  crl correctly signed by "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  crl is valid: until Mar 13 10:00:01 2022
+ reached self-signed root ca with a path length of 0
+authentication of 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com' with RSA signature successful
+----
+
+=== IKE_AUTH Response
+
+The VPN gateway generates its own public key signature using its ECDSA private key
+and sends its X.509 gateway certificate
+----
+peer supports MOBIKE
+authentication of 'vpn.strongswan.org' (myself) with ECDSA-256 signature successful
+IKE_SA win[1] established between 10.10.0.150[vpn.strongswan.org]...212.51.148.80[C=CH, O=strongSec GmbH, CN=mijas.strongsec.com]
+scheduling reauthentication in 10125s
+maximum IKE_SA lifetime 11205s
+sending end entity cert "C=CH, O=strongSec GmbH, CN=vpn.strongswan.org"
+----
+The Windows client requested both an IPv4 and IPv6 xref:features/vip.adoc[virtual IP]
+address so that one IP address from each pool is assigned.
+----
+peer requested virtual IP %any
+assigning new lease to 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+assigning virtual IP 10.10.1.65 to peer 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+peer requested virtual IP 2a02:168:4407:1::1
+assigning new lease to 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+assigning virtual IP 2a02:168:4407:1::1 to peer 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+----
+This is the ESP crypto proposal selected by the strongSwan gateway
+----
+selected proposal: ESP:AES_CBC_256/HMAC_SHA1_96/NO_EXT_SEQ
+----
+The strongSwan gateway sends its `IKE_AUTH` response to the Windows client
+----
+CHILD_SA win{1} established with SPIs c27eb69a_i 8bde3130_o and TS 0.0.0.0/0 ::/0 === 10.10.1.65/32 2a02:168:4407:1::1/128
+generating IKE_AUTH response 1 [ IDr CERT AUTH CPRP(ADDR ADDR6 DNS) SA TSi TSr N(AUTH_LFT) N(MOBIKE_SUP) N(ADD_6_ADDR) ]
+splitting IKE message (1456 bytes) into 2 fragments
+generating IKE_AUTH response 1 [ EF(1/2) ]
+generating IKE_AUTH response 1 [ EF(2/2) ]
+sending packet: from 10.10.0.150[4500] to 212.51.148.80[63707] (1444 bytes)
+sending packet: from 10.10.0.150[4500] to 212.51.148.80[63707] (84 bytes)
+----
+
+=== IKEv2 Message Count
+
+The IPsec tunnel has been established with only 2 IKEv2 request/response pairs.
+EAP-based connection setups need many more IKEv2 messages.
+
+== Connection Status
+
+The xref:swanctl/swanctlListSas.adoc[`*swanctl --list-sas*`] shows the details
+of the established IPsec tunnel
+----
+win: #1, ESTABLISHED, IKEv2, 48c04cfd85452589_i 4b22838eac3b49e7_r*
+  local  'vpn.strongswan.org' @ 10.10.0.150[4500]
+  remote 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com' @ 212.51.148.80[63707] [10.10.1.65 2a02:168:4407:1::1]
+  AES_CBC-256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/MODP_2048
+  established 15s ago, reauth in 10177s
+  win: #1, reqid 1, INSTALLED, TUNNEL-in-UDP, ESP:AES_CBC-256/HMAC_SHA1_96
+    installed 15s ago, rekeying in 3282s, expires in 3945s
+    in  c27eb69a,  29241 bytes,   179 packets,     1s ago
+    out 8bde3130,  42471 bytes,   107 packets,     3s ago
+    local  0.0.0.0/0 ::/0
+    remote 10.10.1.65/32 2a02:168:4407:1::1/128
+----
+
+== X.509 Certificates
+
+The xref:swanctl/swanctlListCerts.adoc[`*swanctl --list-certs*`] command shows
+all the X.509 certificates involved in the establishment of the IPsec tunnel.
+----
+List of X.509 End Entity Certificates
+
+  subject:  "C=CH, O=strongSec GmbH, CN=mijas.strongsec.com"
+  issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  validity:  not before Mar 07 17:02:57 2022, ok
+             not after  Aug 31 18:02:57 2026, ok (expires in 1636 days)
+  serial:    79:51:c5:d8:be:fa:72:7a
+  altNames:  mijas.strongsec.com
+  flags:     clientAuth
+  CRL URIs:  http://www.strongsec.com/ca/strongsec.crl
+  authkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
+  subjkeyId: 00:9e:19:ae:4d:d1:f4:96:76:35:8c:bf:f4:2e:34:99:95:50:7f:b9
+  pubkey:    RSA 3072 bits
+  keyid:     c4:87:2f:57:67:fd:cc:ab:74:bd:96:64:70:7c:42:01:64:fe:e9:a9
+  subjkey:   00:9e:19:ae:4d:d1:f4:96:76:35:8c:bf:f4:2e:34:99:95:50:7f:b9
+
+  subject:  "C=CH, O=strongSec GmbH, CN=vpn.strongswan.org"
+  issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  validity:  not before Jul 12 13:01:02 2021, ok
+             not after  Jul 12 13:01:02 2026, ok (expires in 1585 days)
+  serial:    32:b3:25:3c:b4:f4:78:be
+  altNames:  vpn.strongswan.org
+  flags:     serverAuth
+  CRL URIs:  http://www.strongsec.com/ca/strongsec.crl
+  authkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
+  subjkeyId: cc:83:49:87:2b:9e:f3:cb:b8:35:12:02:87:ff:14:89:28:44:a6:04
+  pubkey:    ECDSA 256 bits, has private key
+  keyid:     ba:64:37:a4:0e:c8:42:67:8c:55:5a:f9:1b:2a:eb:ff:5f:40:c3:e3
+  subjkey:   cc:83:49:87:2b:9e:f3:cb:b8:35:12:02:87:ff:14:89:28:44:a6:04
+----
+All X.509 end entity certificates were issued by the *strongSec CA*
+----
+List of X.509 CA Certificates
+
+  subject:  "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  validity:  not before Sep 02 10:25:01 2016, ok
+             not after  Sep 02 10:25:01 2026, ok (expires in 1637 days)
+  serial:    7c:24:43:4b:b7:dc:ef:7e
+  flags:     CA CRLSign self-signed
+  pathlen:   1
+  subjkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
+  pubkey:    RSA 4096 bits
+  keyid:     6c:79:f3:7a:b0:df:ac:69:03:b2:ac:6a:ed:82:3a:d2:66:93:b1:21
+  subjkey:   6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
+----
+The current Certificate Revocation List (CRL) was fetched from an HTTP server
+----
+List of X.509 CRLs
+
+  issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
+  update:    this on Mar 06 04:00:01 2022, ok
+             next on Mar 13 10:00:01 2022, ok (expires in 3 days)
+  serial:    01:15
+  authKeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
+  1 revoked certificate:
+    0f:96:79:30:de:9e:c5:90: Jul 07 21:24:36 2021, key compromise
+----
+
+== Virtual IP Address Leases
+
+The xref:swanctl/swanctlListPools.adoc[`*swanctl --list-pools --leases*`]
+command shows the defined xref:features/vip.adoc[virtual IP] address pools
+and the addresses that have already been assigned.
+----
+ipv4                 10.10.1.64                           1 / 0 / 62
+  10.10.1.65            online  'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+ipv6                 2a02:168:4407:1::                    1 / 0 / 62
+  2a02:168:4407:1::1    online  'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+----
+
+== NAT Keep-Alives
+
+Since NAT routers were detected in the communication path, periodic NAT Keep-Alive
+packets are sent in order to refresh the port mapping information in the NAT
+routers
+----
+15:08:29: sending keep alive to 212.51.148.80[63707]
+15:09:09: sending keep alive to 212.51.148.80[63707]
+15:09:49: sending keep alive to 212.51.148.80[63707]
+15:10:29: sending keep alive to 212.51.148.80[63707]
+15:11:11: sending keep alive to 212.51.148.80[63707]
+----
+
+== Windows Client Disconnecting
+
+The Windows client is disconnecting and sends `DELETE` notifies in `INFORMATIONAL`
+messages to the strongSwan gateway to delete both the `CHILD SA` and `IKE SA`
+----
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (80 bytes)
+parsed INFORMATIONAL request 2 [ D ]
+received DELETE for ESP CHILD_SA with SPI 8bde3130
+closing CHILD_SA win{1} with SPIs c27eb69a_i (86103 bytes) 8bde3130_o (170380 bytes) and TS 0.0.0.0/0 ::/0 === 10.10.1.65/32 2a02:168:4407:1::1/128
+sending DELETE for ESP CHILD_SA with SPI c27eb69a
+CHILD_SA closed
+generating INFORMATIONAL response 2 [ D ]
+sending packet: from 10.10.0.150[4500] to 212.51.148.80[63707] (80 bytes)
+----
+----
+received packet: from 212.51.148.80[63707] to 10.10.0.150[4500] (80 bytes)
+parsed INFORMATIONAL request 3 [ D ]
+received DELETE for IKE_SA win[1]
+deleting IKE_SA win[1] between 10.10.0.150[vpn.strongswan.org]...212.51.148.80[C=CH, O=strongSec GmbH, CN=mijas.strongsec.com]
+IKE_SA deleted
+generating INFORMATIONAL response 3 [ ]
+sending packet: from 10.10.0.150[4500] to 212.51.148.80[63707] (80 bytes)
+----
+
+== Virtual IP Address Release
+
+The IPv4 and IPv6 xref:features/vip.adoc[virtual IP] addresses are released.
+----
+lease 2a02:168:4407:1::1 by 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com' went offline
+lease 10.10.1.65 by 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com' went offline
+----
+The xref:swanctl/swanctlListPools.adoc[`*swanctl --list-pools --leases*`]
+command shows that the assigned xref:features/vip.adoc[virtual IP] address leases
+are now offline.
+----
+ipv4                 10.10.1.64                           0 / 1 / 62
+  10.10.1.65            offline 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+ipv6                 2a02:168:4407:1::                    0 / 1 / 62
+  2a02:168:4407:1::1    offline 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
+----
+The offline addresses will be re-assigned to the same Windows client as long as
+the strongSwan daemon is not restarted.

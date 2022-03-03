@@ -1,0 +1,95 @@
+= strongSwan Configuration for Windows Machine Certificates
+
+== Connection Definition
+
+The following `*win*` connection definition in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] allows multiple Windows clients
+using machine certificates to connect to the strongSwan VPN gateway.
+----
+connections {
+  win {
+    pools = ipv4, ipv6
+
+    local {
+      auth = pubkey
+      certs = gatewayCert.pem
+      id = vpn.strongswan.org
+    }
+    remote {
+      auth = pubkey
+      cacerts = strongsecCaCert.der
+    }
+    children {
+      win {
+        local_ts = 0.0.0.0/0, ::/0
+
+        rekey_time = 1h
+        esp_proposals = aes256-sha256-sha1-modp2048
+       }
+      version = 2
+      reauth_time = 3h
+      proposals = aes256-sha256-modp2048
+    }
+  }
+}
+
+pools {
+  ipv4 {
+    addrs = 10.10.1.64/26
+    dns = 10.10.0.1
+  }
+  ipv6 {
+    addrs = 2a02:168:4407:1::/122
+  }
+}
+----
+
+pools = ipv4, ipv6 ::
+  The gateway assigns an IPv4 and and IPv6 xref:features/vip.adoc[virtual IP]
+  address from the pools `*ipv4*` and `*ipv6*` pools, respectively. These two
+  pools are defined in a separate xref:swanctl/swanctlConf.adoc#_pools[`*pools*`]
+  section. The IPv4 and IPv6 lease ranges are `*10.10.1.64/26*` and
+  `*2a02:168:4407:1::/122*`, respectively. An internal IPv4 DNS server `*10.10.0.1*`
+  is defined as well. The assigned xref:features/vip.adoc[virtual IP] addresses
+  and internal DNS server information will be sent to the Windows Client via the
+  IKEv2 Configuration Payload (CP).
+
+local.certs = gatewayCert.pem ::
+  The X.509 certificate of the VPN gateway is stored in the
+  xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509*`] directory. The matching
+  private key of the VPN gateway can either be of type `RSA` or `ECDSA` and is
+  stored in the corresponding subdirectory in
+  xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/*`].
+
+local.id = vpn.strongswan.org ::
+  The IKEv2 ID of the VPN gateway. It must be contained as a `*subjectAltName*`
+  in the gateway certificate.
+
+remote.cacerts = strongsecCaCert.der ::
+  Any Windows client with a valid X.509 certificate issued by the *strongSec CA*
+  will be accepted. The CA certificate is stored in the
+  xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509ca*`] directory.
+
+children.win.local_ts = 0.0.0.0/0, ::/0 ::
+  All IPv4 and IPv6 traffic will be tunneled from the Windows client to the
+  strongSwan VPN gateway (no split-tunneling use case).
+
+children.win.esp_proposals = aes256-sha256-sha1-modp2048 ::
+  `aes256-sha1-modp2048` is the strongest proposal the Windows client is able
+  to offer.
+
+proposals = aes256-sha256-modp2048 ::
+  This is the strongest IKE proposal the Windows client is able to offer.
+
+== Single Windows Client
+
+If only a single Windows client is allowed to connect to the strongSwan VPN
+gateway then the `*subjectDistinguishedName*` (DN) of that client can be added as
+a restriction to the connection definition.
+----
+    remote {
+      auth = pubkey
+      cacerts = strongsecCaCert.der
+      id = "C=CH, O=strongSec GmbH, CN=mijas.strongsec.com"
+    }
+----

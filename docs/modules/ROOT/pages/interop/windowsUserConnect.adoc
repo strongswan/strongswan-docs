@@ -1,0 +1,35 @@
+= Windows Client Connection with User Certificates
+
+== Starting the Connection
+
+Open the *Network & Internet > VPN* settings.
+
+image:eapTlsConnection.png[EAP-TLS Connect]
+
+Select the *EAP-TLS* connection and click on *Connect*. If no error messages are
+issued and *EAP-TLS connected* status appears after a while, the VPN connection
+has been successfully established.
+
+image:eapTlsDisconnection.png[EAP-TLS Disconnect]
+
+== Connection Status
+
+Open the *Network Connections* displaying all network adapters.
+
+image:eapTlsNetworkAdapterActive.png[Active EAP-TLS Network Adapter]
+
+Right-click on the *EAP-TLS* WAN Miniport (IKEv2) adapter and select *Status*. The
+*General* tab shows the number of sent and received bytes in real-time.
+
+image:eapTlsStatus.png[EAP-TLS Status]
+
+In the *Details* tab more information on the established connection is shown.
+
+image:eapTlsStatusDetails.png[EAP-TLS Status Details]
+
+== Stopping the Connection
+
+In the *Network & Internet > VPN* settings, click on *Disconnect* of the *EAP-TLS*
+connection
+
+image:eapTlsDisconnection.png[EAP-TLS Disconnect]

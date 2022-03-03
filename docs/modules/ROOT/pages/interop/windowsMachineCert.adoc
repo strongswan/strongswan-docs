@@ -1,0 +1,61 @@
+= Storing a Windows Machine Certificate
+
+. Double-click on the PKCS#12 machine certificate container (`*.p12*` file) and
+  the *Certificate Import Wizard* pops up.
++
+image:localMachine.png[Local Machine]
++
+Since we want to store the end entity certificate, the matching private key and
+the Root CA certificate contained in the PKCS#12 file under the `HKEY_LOCAL_MACHINE`
+branch of the Windows registry, select *Local Machine* as *Store Location*. Then
+click *Next*.
+
+. After giving access control permission for the operation, the *File to Import*
+  menu pops up.
++
+image:machineCertificateImport.png[Machine Certificate Import]
++
+Click *Next*.
+
+. The *Private key protection* menu pops up.
++
+image:machinePrivateKeyProtection.png[Machine Private Key Protection]
++
+Enter the password with which the private key in the PKCS#12 container is protected
+and set the *Import options* (Enable strong private key protection is greyed out).
+Then click *Next*.
+
+. The *Certificate store* menu pops up.
++
+image:certificateStore.png[Certificate Store]
++
+Choose *Automatically select the certificate store based on the type of certificate*.
+Then click *Next*.
+
+. The *Completing the Certificate Import Wizard* menu pops up.
++
+image:completeMachineCertificateImport.png[Complete Machine Certificate Import]
++
+To complete the certificate import, click *Finish*.
+
+. A small popup window acknowledges the successful certificate import.
++
+image:importSuccessful.png[Import Successful]
++
+Click *OK* to close the window.
+
+. Executing the `*mmc*` (Microsoft Management Console) with the *Certificates
+  (Local Computer)* Snap-in loaded, it can easily verified that the machine
+  certificate has been stored in the correct location.
++
+image:mmcCertificatesLocalComputer.png[mmc with Certificates (Local Computer) Snap-in]
++
+Clicking on the certificate entry in the `*mmc*` opens a *Certificate Information*
+window showing that the matching private key has been stored in the registry, too.
++
+image:machineCertificate.png[Machine Certificate with Private Key]
++
+The Root CA certificate has been automatically installed in the *Trusted Root
+Certification Authorities* folder.
++
+image:mmcCertificatesLocalComputerCa.png[mmc with Certificates (Local Computer) Snap-in]

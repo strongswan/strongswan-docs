@@ -1,0 +1,54 @@
+= Storing a Windows CA Certificate
+
+Windows clients using EAP-based authentication methods (e.g. EAP-TLS or EAP-MSCHAPv2)
+require a Root CA certificate in the *Local Machine* store in order to be able to
+put trust into the received server certificate and thus be able to verify the digital
+signature sent by the VPN gateway in the `AUTH` payload of the `IKE_AUTH` response.
+
+. Double-click on the CA certificate file to be imported and the
+  *Certificate Information* pops up.
++
+image:caCertificate.png[CA certificate]
++
+Click on *Install Certificate*.
+
+. The *Certificate Import Wizard* pops up.
++
+image:localMachine.png[Local Machine]
++
+Since we need to import the CA certificate to be used for IKEv2 authentication
+under the `HKEY_LOCAL_MACHINE` branch of the Windows registry, select *Local Machine*
+as *Store Location*. Then click *Next*.
+
+. After giving permission for the operation, the *Certificate Store* menu pops up.
++
+image:browseCertificateStore.png[Browse Certificate Store]
++
+Choose *Place all certificates in the following store*.
+Then click *Browse*.
+
+. The *Select Certificate Store* menu pops up
++
+image:selectCertificateStore.png[Select Certificate Store]
++
+Select *Trusted Root Certification Authorities* and click *OK*.
+
+. We return to the *Certificate Store* menu with the selected *Trusted Root
+  Certification Authorities* filled in.
++
+image:selectedCertificateStore.png[Selected Certificate Store]
++
+Click *Next*.
+
+. The *Completing the Certificate Import Wizard* menu pops up.
++
+image:completeSelectedCertificateImport.png[Complete Certificate Import]
++
+To complete the certificate import, click *Finish*.
+
+. A small popup window acknowledges the successful certificate import.
++
+image:importSuccessful.png[Import Successful]
++
+Click *OK* on both the *Successful* and *Certificate Information* windows to
+close them.

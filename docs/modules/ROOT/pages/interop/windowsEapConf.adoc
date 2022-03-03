@@ -1,0 +1,64 @@
+= Windows Client EAP Configuration with Passwords
+
+. Open the *Network & internet* settings
++
+image:networkInternet.png[Network & Internet]
++
+Select *VPN*.
+
+. The *Network & internet > VPN* menu opens.
++
+image:eapTlsConnection.png[EAP-TLS Connect]
++
+Click on *Add VPN*.
+
+. The *Add a VPN connection* menu pops up.
++
+image:addEapVpnConnection.png[Add EAP VPN Connection]
++
+Fill in the following fields:
++
+VPN provider ::
+  Select *Windows (built-in)*.
++
+Connection name::
+  Choose a name for your VPN connection.
++
+Server name or address ::
+  Give the fully qualified hostname of the VPN gateway. The hostname must be
+  contained as a `*subjectAltName*` in the gateway certificate.
++
+VPN type ::
+  Select *IKEv2*.
++
+Type of sign-in info ::
+  Select *User name and password*.
+
++
+Click on *Save*.
+
+. The *EAP* connection has been added to the *Network & internet > VPN* menu.
++
+image:eapConnection.png[EAP Connection]
+
+. Also a new *EAP WAN Miniport (IKEv2) network adapter has been added to the
+  *Network Connections* overview.
++
+image:eapNetworkAdapter.png[EAP Network Adapter]
++
+Right-click on the *EAP* network adapter and select *Properties*.
+
+. The *EAP Properties* menu pops up.
++
+image:eapProperties.png[EAP Properties]
++
+Switch to the *Security* tab and change the *Data encryption* field to *Maximum
+strength encryption*. Then click *OK*. This eliminates the weak single `DES` and
+the fatal `NULL` encryption in the ESP proposal of the Windows client.
++
+----
+esp = aes256-3des-sha1
+----
+
+The Windows *EAP* VPN connection based on user certificates and EAP-MSCHAPv2 over
+IKEv2 has now been successfully completed.

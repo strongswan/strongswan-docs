@@ -1,0 +1,257 @@
+= Windows Clients
+
+:QUT:     https://www.qut.edu.au/
+:OPENSSL: https://www.openssl.org/
+:NIST:    https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57Pt3r1.pdf
+:PWSH:    https://docs.microsoft.com/en-us/powershell/module/vpnclient
+:IANA:    https://www.iana.org/assignments/ipv6-address-space/
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC4555: {IETF}/rfc4555
+:RFC4739: {IETF}/rfc4739
+:RFC5685: {IETF}/rfc5685
+
+Windows 7 and newer releases support IKEv2 and MOBIKE ({RFC4555}[RFC 4555]) through
+Microsoft's _Agile VPN_ functionality and are therefore able to interoperate with
+a strongSwan VPN gateway using these protocols. The Windows client does *not*
+currently support IKE redirection ({RFC5685}[RFC 5685]) and multiple authentication
+rounds ({RFC4739}[RFC 4739]).
+
+== Enable Strong Key Exchange
+
+By default Windows 7 up to Windows 11 propose only the weak `*modp1024*`
+Diffie-Hellman key exchange algorithm that has been deprecated by
+{NIST}[NIST Special Publication 800-57 Part 3 Revision 1] since 2015:
+
+ ike = 3des-aes128-aes192-aes256-sha1-sha256-sha384-modp1024
+
+Additionally Windows 11 proposes the `AES-GCM` authenticated encryption algorithm
+(AEAD) but unfortunately with the weak `*modp1024*` DH group, too.
+
+ ike = aes128gcm16-aes256gcm16-sha1-sha256-sha384-modp1024
+
+So if you don't want any major secret service to eavesdrop on your communication
+we strongly urge you to enable the `*modp2048*` Diffie-Hellman group by adding the
+`*NegotiateDH2048_AES256*` `DWORD` in the windows registry using `*regedit*`:
+
+ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Rasman\Parameters\NegotiateDH2048_AES256
+
+The values that can be used are `*0*`, `*1*` or `*2*`. The table below tells you
+what the values mean.
+
+[cols="1,8"]
+|===
+|Value |Meaning
+
+| 0    |Disable AES-256-CBC and MODP-2048. This is the default
+
+| 1    | Enable AES-256-CBC and MODP-2048
+
+| 2    | Enforce the usage of AES-256-CBC and MODP-2048
+|===
+
+With the value set to `*2*`, Windows 11 proposes
+
+ ike = aes256-sha1-sha256-sha384-modp2048
+
+Unfortunately the ESP proposals still contain the weak single `DES` and even
+`NULL` encryption algorithms and data integrity is restricted to `SHA1`
+
+ esp = aes256-aes128-3des-des-null-sha1
+
+By using the
+{PWSH}/set-vpnconnectionipsecconfiguration[`*Set-VpnConnectionIPsecConfiguration*`]
+PowerShell cmdlet it is possible to use even more algorithms like `AES-GCM` and `ECP`
+Diffie-Hellman groups (at least on Windows 10). The VPN connection may be added in
+the GUI or via the {PWSH}/add-vpnconnection[`*Add-VpnConnection*`] cmdlet.
+
+== Authentication Methods
+
+strongSwan currently can authenticate Windows clients either on the basis of
+
+* xref:#_using_x_509_machine_certificates[X.509 Machine Certificates] using `*RSA*` signatures
+
+* xref:#_using_x_509_user_certificates[X.509 User Certificates] using `*EAP-TLS*`
+
+* xref:#_using_passwords_with_eap_mschapv2[User Passwords] using `*EAP-MSCHAPv2*`
+
+=== Using X.509 Machine Certificates
+
+The strongSwan VPN gateway and each Windows VPN client needs an X.509 certificate
+issued by a Certification Authority (CA). {OPENSSL}[OpenSSL] or the
+xref:pki/pki.adoc[`*pki*`] tool can be used to generate these certificates, see
+our xref:pki/pkiQuickstart.adoc[Quickstart tutorial]. Make sure to fulfill the
+xref:./windowsCertRequirements.adoc[certificate requirements], so that Windows
+VPN clients and strongSwan VPN gateways can mutually authenticate themselves
+successfully.
+
+==== On the Windows Client
+
+* xref:./windowsMachineCert.adoc[Storing a machine certificate]
+
+* xref:./windowsMachineConf.adoc[Configuring a Windows VPN connection]
+
+* xref:./windowsMachineConnect.adoc[Starting a Windows VPN connection]
+
+==== On the strongSwan VPN Gateway
+
+* xref:./windowsMachineServerConf.adoc[Configuring strongSwan for Windows clients]
+
+* xref:./windowsMachineServerStatus.adoc[strongSwan connection status]
+
+=== Using X.509 User Certificates
+
+Certificates are stored in a user-specific keystore and it's also possible to
+use smart cards. The client authentication has to be done with
+xref:plugins/eap-tls.adoc[`EAP-TLS`] on top of `IKEv2 EAP`.
+
+==== On the Windows Client
+
+* xref:./windowsUserCert.adoc[Storing a user certificate]
+
+* xref:./windowsCaCert.adoc[Storing the CA certificate]
+
+* xref:./windowsUserConf.adoc[Configuring a Windows VPN connection]
+
+* xref:./windowsUserConnect.adoc[Starting a Windows VPN connection]
+
+==== On the strongSwan VPN Gateway
+
+The use of `EAP-TLS` requires the xref:plugins/eap-tls.adoc[`*eap-tls*`] and
+`*eap-identity*` plugins to be loaded by the strongSwan VPN gateway.
+
+* xref:./windowsUserServerConf.adoc[Configuring strongSwan for Windows clients]
+
+* xref:./windowsUserServerStatus.adoc[strongSwan connection status]
+
+=== Using Passwords with EAP-MSCHAPv2
+
+In order to prevent man-in-the-middle attacks the strongSwan VPN gateway always
+authenticates itself with an *X.509 certificate* using a strong RSA/ECDSA signature.
+After a secure communication channel has been set up by the IKEv2 protocol, the
+Windows clients authenticate themselves using the `EAP-MSCHAPv2` protocol based
+on *user name*, optional *windows domain* and *user password*. As an EAP identity
+exchange is needed for this to work, make sure to have the `*eap-identity*` plugin
+loaded.
+
+`EAP-MSCHAPv2` requires MD4 to generate the NT-Hashes, so either the `*md4*` plugin
+or one of the crypto library plugins (`*openssl*` or `*gcrypt*`) is required. This
+is not needed if the authentication is delegated to an AAA server via
+the xref:plugins/eap-radius.adoc[`*eap-radius*`] plugin.
+
+Some Windows clients will always send a domain part in the user name field (e.g.
+`Windows Phone\User`). Depending on the backend used to authenticate the users,
+the domain part may have to be stripped away or be included when defining the
+credentials (e.g. in the `*secrets*` section of
+xref:swanctl/swanctlConf.adoc#_secrets[`*swanctl.conf*`]).
+
+==== On the Windows Client
+
+* xref:./windowsCaCert.adoc[Storing the CA certificate]
+
+* xref:./windowsEapConf.adoc[Configuring a Windows VPN connection]
+
+* xref:./windowsEapConnect.adoc[Starting a Windows VPN connection]
+
+==== On the strongSwan VPN Gateway
+
+* xref:./windowsEapServerConf.adoc[Configuring strongSwan for Windows clients]
+
+* xref:./windowsEapServerStatus.adoc[strongSwan connection status]
+
+== Rekeying Behavior
+
+=== IKE SA Rekeying
+
+The Windows client supports IKE_SA rekeying but can't handle unsupported Diffie
+Hellman groups. If a strongSwan gateway initiates an IKE_SA rekeying, it must use
+`*modp2048*` as the DH group in the first attempt, otherwise rekeying fails.
+You can achieve this by setting `*modp2048*` as the first (or only) DH group in
+the gateways `*ike*` proposal of the VPN gateway.
+
+=== CHILD SA Rekeying
+
+Rekeying CHILD_SAs is also supported by the Windows client. For some reason, a
+client behind NAT does not accept a rekeying attempt and rejects it with a
+Microsoft specific notify `*12345*` containing an error code
+`ERROR_IPSEC_IKE_INVALID_SITUATION`.
+
+To work around the issue, let the client initiate the rekeying by setting
+
+  connections.<conn>.children.<child>.rekey_time = 0
+
+on the strongSwan VPN gateway.
+
+== Bugs and Features
+
+=== IKEv2 Fragmentation
+
+IKEv2 fragmentation is supported since the v1803 release of Windows 10 and Windows
+Server. All versions of Windows also support the proprietary IKEv1 fragmentation.
+
+=== Split Routing since Windows 10
+
+Microsoft changed the Windows 10 VPN routing behavior for new VPN connections.
+Option "Use default gateway on remote network option" in the Advanced TCP/IP settings
+of the VPN connection is now disabled by default but can be enabled if desired.
+Fortunately Windows sends a DHCP request upon connection and add routes supplied
+in option `*249*` of the DHCP reply.
+
+Sample configuration file for dnsmasq:
+----
+dhcp-vendorclass=set:msipsec,MSFT 5.0
+dhcp-range=tag:msipsec,192.168.103.0,static
+dhcp-option=tag:msipsec,6
+dhcp-option=tag:msipsec,249, 0.0.0.0/1,0.0.0.0, 128.0.0.0/1,0.0.0.0
+----
+where `*192.168.103.0*` is your (internal) network. It pushes two separate routes
+which cover the entire IPv4 range. Gateway could be anything (set to `*0.0.0.0*`
+in an example) as it is ignored by Windows. Note that you can't ignore DHCP routes
+in Windows.
+
+=== IPv6
+
+Windows doesn't add an IPv6 route by default. There are two workarounds:
+
+* Add a permanent default route manually using the following or a similar command
++
+----
+netsh interface ipv6 add route ::/0 interface=27
+----
++
+where `*27*` is your IKEv2 interface ID or
++
+----
+netsh interface ipv6 add route ::/0 interface="<interface name>"
+----
+to avoid problems with interface ID change between reboots.
+
+* On Windows 10 and presumably all future versions where PowerShell is available,
+  you can use MS PowerShell
+  {PWSH}/add-vpnconnectionroute[`*Add-VpnConnectionRoute*`] cmdlet. This cmdlet
+  will not allow you add default route `0::/0`. However in most cases you do not
+  really need a default route over VPN. Current (as of 2/2020)
+  {IANA}[IANA IPv6 space assignment] specifies only the `2000::/3` block as Global
+  Unicast, and adding this prefix is perfectly sufficient for routing all traffic
+  over the VPN interface. Cmdlet will will take care of adding the route upon VPN
+  connection and also removing it upon disconnection. Also, unlike `*netsh*`, this
+  usually does not require administrator privileges and is fully integrated with
+  the Windows GUI, saving you trouble with batch files.
++
+----
+Add-VpnConnectionRoute -ConnectionName "<interface name>" -DestinationPrefix "2000::/3"
+----
+
+=== Serving different IDs/Domain names
+
+The native Windows VPN Client does not send a responder identity (IDr) when
+initiating an IKE_SA, so two connection configurations can only be distinguished
+if their authentication type differs or the clients send different certificate for
+the different certificates' root CAs.
+
+=== Accessing the VPN server via VPN
+
+Windows doesn't seem to be able to reach the VPN server's physical IP address
+(to which the IKE_SA was established) via VPN connection. To access the server via
+VPN, use any other IP address that is assigned to it and included in the traffic
+selector (if necessary, assign an IP address to any local interface and maybe
+adjust the traffic selector).

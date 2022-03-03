@@ -1,0 +1,35 @@
+= Windows Client EAP Connection with Passwords
+
+== Starting the Connection
+
+Open the *Network & Internet > VPN* settings.
+
+image:eapConnection.png[EAP Connect]
+
+Select the *EAP* connection and click on *Connect*. Upon request type in the
+username and password. If no error messages are issued and *EAP connected* status
+appears after a while, the VPN connection has been successfully established.
+
+image:eapDisconnection.png[EAP Disconnect]
+
+== Connection Status
+
+Open the *Network Connections* displaying all network adapters.
+
+image:eapNetworkAdapterActive.png[Active EAP Network Adapter]
+
+Right-click on the *EAP* WAN Miniport (IKEv2) adapter and select *Status*. The
+*General* tab shows the number of sent and received bytes in real-time.
+
+image:eapStatus.png[EAP Status]
+
+In the *Details* tab more information on the established connection is shown.
+
+image:eapStatusDetails.png[EAP Status Details]
+
+== Stopping the Connection
+
+In the *Network & Internet > VPN* settings, click on *Disconnect* of the *EAP*
+connection
+
+image:eapDisconnection.png[EAPDisconnect]

@@ -1,0 +1,53 @@
+= Storing a Windows User Certificate
+
+. Double-click on the PKCS#12 user certificate container (`*.p12*` file) and the
+  *Certificate Import Wizard* pops up.
++
+image:currentUser.png[Current User]
++
+Since we want to store the end entity certificate, the matching private key and
+the Root CA certificate contained in the PKCS#12 file under the `HKEY_CURRENT_USER`
+branch of the Windows registry, select *Current User* as *Store Location*. Then
+click *Next*.
+
+. After acknowledging the path of the selected certificate file the *Private key
+  protection* menu pops up.
++
+image:privateKeyProtection.png[Private Key Protection]
++
+Enter the password with which the private key in the PKCS#12 container is protected
+and set the *Import options*. Then click *Next*.
+
+. The *Certificate store* menu pops up.
++
+image:certificateStore.png[Certificate Store]
++
+Choose *Automatically select the certificate store based on the type of certificate*.
+Then click *Next*.
+
+. The *Import a private key* menu pops up.
++
+image:importPrivateKey.png[Import Private Key]
++
+The default *Security Level* is set to *Medium*. We want to increase the security
+level by clicking *Set Security Level*.
+
+. The *Choose a Security Level* menu pops up.
++
+image:chooseSecurityLevel.png[Choose Security Level]
++
+Select *High* and then click *Next*.
+
+. The *Create a Password* menu pops up.
++
+image:createPassword.png[Create Password]
++
+Enter a strong password that will protect the private key stored in the Windows
+registry. Then click *Finish*.
+
+. The *Import a private key* menu appears again.
++
+image:securityLevelHigh.png[Security Level High]
++
+The *Security Level* is now set to *High*. To conclude the certificate import,
+click *OK*.

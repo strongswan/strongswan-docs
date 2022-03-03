@@ -26,6 +26,7 @@
 ** xref:features/integrityTests.adoc[]
 
 .Howtos
+** xref:config/quickstart.adoc[]
 ** xref:pki/pkiQuickstart.adoc[]
 
 .Daemons
@@ -38,14 +39,30 @@
 ** xref:os/android.adoc[Android]
 *** xref:os/androidVpnClient.adoc[Android VPN Client]
 *** xref:os/androidVpnClientProfiles.adoc[Android VPN Client Profiles]
-*** xref:os/androidVpnClientBuild.adoc[Android VPN Privacy Policy]
+*** xref:os/androidVpnClientPrivacyPolicy.adoc[Android VPN Privacy Policy]
 *** xref:os/androidVpnClientBuild.adoc[Android VPN Client Build]
 ** xref:os/windows.adoc[Windows]
 ** xref:os/freebsd.adoc[FreeBSD]
 ** xref:os/macos.adoc[macOS]
 
 .Interoperability
-** xref:interop/windowsCertRequirements.adoc[]
+** xref:interop/windowsClients.adoc[]
+*** xref:interop/windowsCertRequirements.adoc[]
+*** xref:interop/windowsMachineCert.adoc[]
+*** xref:interop/windowsMachineConf.adoc[]
+*** xref:interop/windowsMachineConnect.adoc[]
+*** xref:interop/windowsMachineServerConf.adoc[]
+*** xref:interop/windowsMachineServerStatus.adoc[]
+*** xref:interop/windowsUserCert.adoc[]
+*** xref:interop/windowsCaCert.adoc[]
+*** xref:interop/windowsUserConf.adoc[]
+*** xref:interop/windowsUserConnect.adoc[]
+*** xref:interop/windowsUserServerConf.adoc[]
+*** xref:interop/windowsUserServerStatus.adoc[]
+*** xref:interop/windowsEapConf.adoc[]
+*** xref:interop/windowsEapConnect.adoc[]
+*** xref:interop/windowsEapServerConf.adoc[]
+*** xref:interop/windowsEapServerStatus.adoc[]
 ** xref:interop/ios.adoc[]
 
 .Tools
