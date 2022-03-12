@@ -11,11 +11,11 @@ by three different methods:
 
 * Manually through the Settings app on iOS or System Preferences on macOS
 
-* With a custom xref:interop/appleIkev2Profile.adoc[configuration profile]
+* With a custom xref:./appleIkev2Profile.adoc[configuration profile]
 
 * Through an app that has the NetworkExtension entitlement
 
-The xref:interop/windowsClients.adoc[Windows IKEv2] configurations can be used
+The xref:./windowsClients.adoc[Windows IKEv2] configurations can be used
 with some small changes.
 
 * For manual configurations, specify only DH group 2 (`*modp1024*`) in the `*ike*`
@@ -32,13 +32,13 @@ esp=aes256-sha256,aes256-sha1,3des-sha1
 As of iOS 14 (maybe earlier) `*modp2048*` and `*sha2*` are supported. Thus use
 +
 ----
-ike=aes256-sha2_256-modp2048
-esp=aes256-sha2_256
+ike=aes256-sha256-modp2048
+esp=aes256-sha256
 ----
 
 * The client does not send a certificate request (`*CERTREQ*`) unless
   `*ServerCertificateIssuerCommonName*` is configured in a
-  xref:interop/appleIkev2Profile.adoc[configuration profile] whereas strongSwan
+  xref:./appleIkev2Profile.adoc[configuration profile] whereas strongSwan
   does not send certificates without it with the default value of
   `*connections.<conn>.send_cert = ifasked*`. Therefore explictly set
   `*connections.<conn>.send_cert = always*`.
@@ -78,31 +78,10 @@ esp=aes256-sha2_256
 Since iOS 8 (but not macOS 10.10) IKEv2 is natively supported on Apple clients.
 For such devices the xref:config/IKEv2.adoc[IKEv2 configuration examples] for
 roadwarrior responders or the
-xref:interop/windowsClients.adoc[Windows IKEv2 configurations] can be used.
+xref:./windowsClients.adoc[Windows IKEv2 configurations] can be used.
 
 Unfortunately Apple has not yet updated the GUI, so IKEv2 connections have to be
-installed with a xref:interop/appleIkev2Profile.adoc[custom configuration profile].
-
-== IKEv1
-
-iOS 4 and newer, and macOS 10.7 and newer support native IPsec VPN via IKEv1
-(otherwise referred to as Cisco IPSec in these clients) and are able to interoperate
-with strongSwan.
-
-Authentication uses XAuth and X.509 certificates. Authentication without X.509
-certificates using IKEv1 Aggressive Mode is possible but strongly discouraged.
-
-Use the standard
-xref:config/IKEv1.adoc[IKEv1 client and server configuration examples]
-as well the following
-xref:interop/appleClientIkev1.adoc[IKEv1 client and server configuration example].
-
-
-=== Behaviour with Several Subnets
-
-Recent versions of iOS and macOS will only establish SAs for the first subnet.
-The SAs for the other subnets are created on demand with separate Quick Mode
-exchanges, when the traffic matches the traffic selector.
+installed with a xref:./appleIkev2Profile.adoc[custom configuration profile].
 
 == Certificate Requirements
 
@@ -116,8 +95,7 @@ or in a `*subjectAltName*` extension that can be added with the OpenSSL option
  subjectAltName = DNS:vpn.strongswan.org
 
 where in the above cases `*vpn.strongswan.org*` must exactly match the value
-entered in the *Server* field of the
-xref:interop/appleClientIkev1.adoc#_ios_client_configuration[iOS client configuration].
+entered in the *Server* field of the iOS client configuration.
 If the certificate contains any `*subjectAltNames*` at all, one of them *must*
 match that value (a matching DN is not enough in this case).
 

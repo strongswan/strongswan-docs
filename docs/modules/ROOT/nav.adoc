@@ -64,6 +64,7 @@
 *** xref:interop/windowsEapServerConf.adoc[]
 *** xref:interop/windowsEapServerStatus.adoc[]
 ** xref:interop/ios.adoc[]
+*** xref:interop/appleIkev2Profile.adoc[]
 
 .Tools
 ** xref:swanctl/swanctl.adoc[]

@@ -1,0 +1,412 @@
+= Apple IKEv2 Configuration Profile
+
+:APPLE:    https://support.apple.com
+:APPLEDOC: https://developer.apple.com/library/prerelease/mac/featuredarticles/iPhoneConfigurationProfileRef/Introduction/Introduction.html
+
+== Overview
+
+While iOS 8 introduced native IKEv2 support, the VPN application's GUI was initially
+not updated to allow configuration of such connections on the devices themselves.
+Therefore it was required to create IKEv2 connections with custom configuration
+profiles.
+
+Since iOS 9 IKEv2 connections may be configured in the GUI. But it is still possible
+to configure VPN connections with profiles (offering some settings that are not
+available in the GUI). Such profiles can be created manually or you can use
+{APPLE}/apple-configurator[Apple Configurator] or
+{APPLE}/profile-manager[Apple Profile Manager].
+
+You can adjust the following templates to your setup and then send it to your
+device[s] via email or provide it via HTTP. In order for the iOS mail client to
+install the profile, the file name of the attachment must end in `*.mobileconfig*`
+and the content type should be `*application/octet-stream*` (Thunderbird seems to
+use `*text/html*` which will not work).
+
+Several notes to the configuration keys are provided as comments in the template
+files below. The official documentation can be found at
+{APPLEDOC}[`*developer.apple.com*`].
+
+macOS 10.11 and newer support IKEv2. Earlier versions only support IKEv1.
+
+=== Known Issues
+
+* ASN.1 Distinguished Names can't be used as identities because the client currently
+  sends them as identities of type `*FQDN*`.
+
+=== Authentication Options
+
+The client and server authentication is determined by the following options
+(more details can be found in comments in the templates below):
+
+* *AuthenticationMethod = Certificate* +
+  In all these variants the server is authenticated with a certificate. The
+  *ServerCertificateIssuerCommonName* and *ServerCertificateCommonName* options
+  are used to verify the server certificate.
+
+** *ExtendedAuthEnabled = 0* and *PayloadCertificateUUID* set +
+     The client is using
+     xref:#_certificate_based_authentication[certificate-based authentication].
+
+** *ExtendedAuthEnabled = 1*
+
+*** *PayloadCertificateUUID* set +
+      The client is using
+      xref:#_eap_tls_authentication[certificate-based authentication via EAP-TLS].
+
+*** *PayloadCertificateUUID* *not* set +
+      The client is
+      xref:#_eap_authentication[authenticated via a password-based EAP method]
+      currently restricted to EAP-MSCHAPv2. Use of other EAP types (e.g. EAP-MD5
+      or EAP-GTC) will produce an IKE_AUTH failure, asking to use EAP-MSCHAPv2
+      instead (tested on IOS 9). The credentials can be configured with
+      *AuthName* and *AuthPassword*.
+
+* *AuthenticationMethod = SharedSecret* +
+  Uses xref:#_psk_based_authentication[PSK-based authentication] for client and
+  server. The PSK can be configured with the *SharedSecret* option.
+
+== EAP Authentication (base template)
+
+This configuration is compatible to the
+xref:./windowsClients.adoc#_using_passwords_with_eap_mschapv2[Windows EAP configuration].
+
+[source, xml]
+----
+<code class="xml">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Set the name to whatever you like, it is used in the profile list on the device -->
+  <key>PayloadDisplayName</key>
+  <string>Profile name</string>
+  <!-- This is a reverse-DNS style unique identifier used to detect duplicate profiles -->
+  <key>PayloadIdentifier</key>
+  <string>org.example.vpn1</string>
+  <!-- A globally unique identifier, use uuidgen on Linux/Mac OS X to generate it -->
+  <key>PayloadUUID</key>
+  <string>9f93912b-5fd2-4455-99fd-13b9a47b4581</string>
+  <key>PayloadType</key>
+  <string>Configuration</string>
+  <key>PayloadVersion</key>
+  <integer>1</integer>
+  <key>PayloadContent</key>
+  <array>
+    <!-- It is possible to add multiple VPN payloads with different identifiers/UUIDs and names -->
+    <dict>
+      <!-- This is an extension of the identifier given above -->
+      <key>PayloadIdentifier</key>
+      <string>org.example.vpn1.conf1</string>
+      <!-- A globally unique identifier for this payload -->
+      <key>PayloadUUID</key>
+      <string>29e4456d-3f03-4f15-b46f-4225d89465b7</string>
+      <key>PayloadType</key>
+      <string>com.apple.vpn.managed</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+      <!-- This is the name of the VPN connection as seen in the VPN application later -->
+      <key>UserDefinedName</key>
+      <string>VPN Name</string>
+      <key>VPNType</key>
+      <string>IKEv2</string>
+      <key>IKEv2</key>
+      <dict>
+        <!-- Hostname or IP address of the VPN server -->
+        <key>RemoteAddress</key>
+        <string>vpn.example.org</string>
+        <!-- Remote identity, can be a FQDN, a userFQDN, an IP or (theoretically) a certificate's subject DN. Can't be empty.
+             IMPORTANT: DNs are currently not handled correctly, they are always sent as identities of type FQDN -->
+        <key>RemoteIdentifier</key>
+        <string>vpn.example.org</string>
+        <!-- Local IKE identity, same restrictions as above. If it is empty the client's IP address will be used -->
+        <key>LocalIdentifier</key>
+        <string></string>
+        <!-- Optional, if it matches the CN of the root CA certificate (not the full subject DN) a certificate request will be sent
+             NOTE: If this is not configured make sure to configure leftsendcert=always on the server, otherwise it won't send its certificate -->
+        <key>ServerCertificateIssuerCommonName</key>
+        <string>Example Root CA</string>
+        <!-- Optional, the CN or one of the subjectAltNames of the server certificate to verify it, if not set RemoteIdentifier will be used -->
+        <key>ServerCertificateCommonName</key>
+        <string>vpn.example.org</string>
+        <!-- The server is authenticated using a certificate -->
+        <key>AuthenticationMethod</key>
+        <string>Certificate</string>
+        <!-- The client uses EAP to authenticate -->
+        <key>ExtendedAuthEnabled</key>
+        <integer>1</integer>
+        <!-- User name for EAP authentication. Since iOS 9 this is optional, the user is prompted when the profile is installed -->
+        <key>AuthName</key>
+        <string>User</string>
+        <!-- Optional password for EAP authentication, if it is not set the user is prompted when the profile is installed
+        <key>AuthPassword</key>
+        <string>...</string>
+        -->
+        <!-- The next two dictionaries are optional (as are the keys in them), but it is recommended to specify them as the default is to use 3DES.
+             IMPORTANT: Because only one proposal is sent (even if nothing is configured here) it must match the server configuration -->
+        <key>IKESecurityAssociationParameters</key>
+        <dict>
+          <!-- @see https://developer.apple.com/documentation/networkextension/nevpnikev2encryptionalgorithm -->
+          <key>EncryptionAlgorithm</key>
+          <string>AES-128</string><!-- Alternatives include: AES-256, AES-256-GCM, etc -->
+          <!-- @see https://developer.apple.com/documentation/networkextension/nevpnikev2integrityalgorithm -->
+          <key>IntegrityAlgorithm</key>
+          <string>SHA1-96</string><!-- Alternatives include: SHA2-256, SHA2-512, etc -->
+          <!-- @see https://developer.apple.com/documentation/networkextension/nevpnikev2diffiehellmangroup -->
+          <key>DiffieHellmanGroup</key>
+          <integer>14</integer><!-- Alternatives include 20, 21, 31, etc -->
+        </dict>
+        <key>ChildSecurityAssociationParameters</key>
+        <dict>
+          <key>EncryptionAlgorithm</key>
+          <string>AES-128</string><!-- Alternatives include: AES-256, AES-256-GCM, etc -->
+          <key>IntegrityAlgorithm</key>
+          <string>SHA1-96</string><!-- Alternatives include: SHA2-256, SHA2-512, etc -->
+          <key>DiffieHellmanGroup</key>
+          <integer>14</integer><!-- Alternatives include 20, 21, 31, etc -->
+        </dict>
+      </dict>
+    </dict>
+    <!-- This payload is optional but it provides an easy way to install the CA certificate together with the configuration -->
+    <dict>
+      <key>PayloadIdentifier</key>
+      <string>org.example.ca</string>
+      <key>PayloadUUID</key>
+      <string>64988b2c-33e0-4adf-a432-6fbcae543408</string>
+      <key>PayloadType</key>
+      <string>com.apple.security.root</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+      <!-- This is the Base64 (PEM) encoded CA certificate -->
+      <key>PayloadContent</key>
+      <data>
+      MIIDajCCA...
+      </data>
+    </dict>
+  </array>
+</dict>
+</plist>
+</code>
+----
+
+== Certificate-based Authentication
+
+This configuration is compatible to the
+xref:./windowsClients.adoc#_using_x_509_machine_certificates[Windows with Machine
+Certificates configuration]. Only the differences to the above configuration are
+shown.
+
+[source, xml]
+----
+<code class="xml">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  ...
+  <array>
+    <dict>
+      ...
+      <key>IKEv2</key>
+      <dict>
+        ...
+        <!-- Local IKE identity, should match one of the subjectAltNames of the client certificate
+             IMPORTANT: As mentioned above, subject DN's currently can't be used -->
+        <key>LocalIdentifier</key>
+        <string>client@example.org</string>
+        ...
+        <!-- Either set this to 0 or don't configure it at all to use certificate authentication also for the client
+        <key>ExtendedAuthEnabled</key>
+        <integer>0</integer>
+        -->
+        <!-- Similarly, instead of AuthName and AuthPassword, we configure the certificate to use -->
+        <key>PayloadCertificateUUID</key>
+        <string>d60488c6-328e-4944-9c8d-61db8095c864</string>
+        <!-- Optional key type, to use ECDSA keys this has to be set to ECDSA... as it defaults to RSA
+        <key>CertificateType</key>
+        <string>ECDSA256</string>
+        -->
+        ...
+      </dict>
+    </dict>
+    <dict>
+      <key>PayloadIdentifier</key>
+      <string>org.example.vpn1.client</string>
+      <key>PayloadUUID</key>
+      <string>d60488c6-328e-4944-9c8d-61db8095c864</string>
+      <key>PayloadType</key>
+      <string>com.apple.security.pkcs12</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+      <!-- Optional password to decrypt the PKCS#12 container, if not set the user is prompted when installing the profile
+      <key>Password</key>
+      <string>...</string>
+      -->
+      <!-- This is the Base64 encoded PKCS#12 container with the certificate and private key for the client.
+           IMPORTANT: The CA certificate will not be extracted from the container, so either install it separately or include it as payload (as seen above) -->
+      <key>PayloadContent</key>
+      <data>
+      MIINCQ...
+      </data>
+    </dict>
+    <!-- As mentioned above the CA certificate is not extracted from the PKCS#12 container, so install it using this payload -->
+    <dict>
+      <key>PayloadIdentifier</key>
+      <string>org.example.ca</string>
+      ...
+    </dict>
+  </array>
+</dict>
+</plist>
+</code>
+----
+
+== EAP-TLS authentication
+
+This configuration is compatible to the
+xref:./windowsClients.adoc#_using_x_509_user_certificates[Windows with User Certificates configuration].
+
+This is basically the same as the certificate configuration above, but with
+*ExtendedAuthEnabled* activated.
+
+[source, xml]
+----
+<code class="xml">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  ...
+  <array>
+    <dict>
+      ...
+      <key>IKEv2</key>
+      <dict>
+        ...
+        <!-- Enable EAP, by configuring PayloadCertificateUUID EAP-TLS gets used -->
+        <key>ExtendedAuthEnabled</key>
+        <integer>1</integer>
+        <!-- Instead of AuthName and AuthPassword, we configure the certificate to use -->
+        <key>PayloadCertificateUUID</key>
+        <string>d60488c6-328e-4944-9c8d-61db8095c864</string>
+        <!-- Optional key type, to use ECDSA keys this has to be set to ECDSA... as it defaults to RSA
+        <key>CertificateType</key>
+        <string>ECDSA256</string>
+        -->
+        ...
+      </dict>
+    </dict>
+    <!-- Certificates are configured as shown above. If your AAA server certificate is issued by a different CA just install multiple CA certificates -->
+  </array>
+</dict>
+</plist>
+</code>
+----
+
+== PSK-based Authentication
+
+It is also possible to use Pre-Shared Keys (PSKs) for authentication.
+
+[source, xml]
+----
+<code class="xml">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  ...
+  <array>
+    <dict>
+      ...
+      <key>IKEv2</key>
+      <dict>
+        ...
+        <!-- Use a pre-shared secret for authentication -->
+        <key>AuthenticationMethod</key>
+        <string>SharedSecret</string>
+        <!-- The actual secret -->
+        <key>SharedSecret</key>
+        <string>...</string>
+        <!-- No EAP -->
+        <key>ExtendedAuthEnabled</key>
+        <integer>0</integer>
+        ...
+      </dict>
+    </dict>
+  </array>
+</dict>
+</plist>
+</code>
+----
+
+== Enable On-Demand VPN
+
+It is possible to automatically trigger an VPN-Connect if needed. This example shows
+rules which will disconnect the tunnel when connected to a specific WiFi SSID
+(`*MySSID*`) and establishes a tunnel when domain name resolution of specific domains
+fail (`**.internal.mydomain.com*`).
+For more details have a look at Apple's {APPLEDOC}[Configuration Profile Reference].
+
+[source, xml]
+----
+<code class="xml">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  ...
+  <array>
+    <dict>
+      ...
+      <key>IKEv2</key>
+      <dict>
+        ...
+        <key>OnDemandEnabled</key>
+        <integer>1</integer>
+        <key>OnDemandRules</key>
+        <array>
+          <!--
+               1. Check if we are connected to a WiFi network
+               2. Check if the SSID is included in the SSIDMatch-array
+               3. If 1 + 2 are true, then disconnect the tunnel
+          -->
+          <dict>
+            <key>InterfaceTypeMatch</key>
+            <string>WiFi</string>
+            <key>SSIDMatch</key>
+            <array>
+              <string>MySSID</string>
+            </array>
+            <key>Action</key>
+            <string>Disconnect</string>
+          </dict>
+          <!--
+               1. For each connection attempt, test if the domain name is included in the Domains-array
+               2. If 1 is true, try domain name resolution
+               3. If 2 fails or times out, establish a VPN connection
+          -->
+          <dict>
+            <key>Action</key>
+            <string>EvaluateConnection</string>
+            <key>ActionParameters</key>
+            <array>
+              <dict>
+                <key>Domains</key>
+                <array>
+                  <string>*.internal.mydomain.com</string>
+                </array>
+                <key>DomainAction</key>
+                <string>ConnectIfNeeded</string>
+              </dict>
+            </array>
+          </dict>
+          <!--
+            Default entry, ignore any other cases
+          -->
+          <dict>
+            <key>Action</key>
+            <string>Ignore</string>
+          </dict>
+        </array>
+        ...
+      </dict>
+    </dict>
+  </array>
+</dict>
+</plist>
+</code>
+----
