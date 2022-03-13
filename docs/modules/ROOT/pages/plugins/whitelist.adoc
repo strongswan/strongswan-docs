@@ -85,7 +85,7 @@ the following operations:
 == Socket interface
 
 The `*whitelist*` socket interface definition can be found here:
-{GITHUB}/{WHITE_DEF}[`source:{WHITE_DEF}`].
+{GITHUB}/{WHITE_DEF}[`{WHITE_DEF}`].
 
 The `*whitelist*` tool demonstrating how the interface can be used:
-{GITHUB}/{WHITE_TOOL}[`source:{WHITE_TOOL}`]
+{GITHUB}/{WHITE_TOOL}[`{WHITE_TOOL}`]

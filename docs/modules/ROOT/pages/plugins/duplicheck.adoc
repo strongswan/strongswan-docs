@@ -56,7 +56,7 @@ over a UNIX or TCP socket. An example application of a listener is provided with
 the `*duplicheck*` tool. It listens on the socket and receives the affected peer
 identity. To integrate notification listening to your application, see
 
-{GITHUB}/{DUPLICHECK}[`source:{DUPLICHECK}`]
+{GITHUB}/{DUPLICHECK}[`{DUPLICHECK}`]
 
 You'll have to start a dedicated thread to read from the socket or integrated
 the file descriptor to your applications main loop.

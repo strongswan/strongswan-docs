@@ -45,7 +45,7 @@ messages to STDOUT.
 == Socket Interface
 
 The `*error_notify*` socket interface definition can be found here:
-{GITHUB}/{ENFY_DEF}[`source:{ENFY_DEF}`].
+{GITHUB}/{ENFY_DEF}[`{ENFY_DEF}`].
 
 The `*error-notify*` tool demonstrating how the interface can be used:
-{GITHUB}/{ENFY_TOOL}[`source:{ENFY_TOOL}`]
+{GITHUB}/{ENFY_TOOL}[`{ENFY_TOOL}`]

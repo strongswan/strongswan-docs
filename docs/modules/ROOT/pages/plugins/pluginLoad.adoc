@@ -113,9 +113,9 @@ Plugin features, which are usually loaded dynamically from a plugin via the
 
  plugin_t::get_features
 
-callback (see {GITHUB}/{SRC1}[`source:{SRC1}`]) may also be added statically
+callback (see {GITHUB}/{SRC1}[`{SRC1}`]) may also be added statically
 from a (modified) library or executable by using the
 
  plugin_loader_t::add_static_feature
 
-method (see {GITHUB}/{SRC2}[`source:{SRC2}`]).
+method (see {GITHUB}/{SRC2}[`{SRC2}`]).

@@ -94,7 +94,7 @@ xref:os/androidVpnClient.adoc[Android app].
 
 The daemon loads plugins at startup. These implement the
 
-`*plugin_t*` interface ({GITHUB}/{SRC}[`source:{SRC}`]).
+`*plugin_t*` interface ({GITHUB}/{SRC}[`{SRC}`]).
 
 Each plugin registers itself with the daemon to hook in its functionality.
 ----

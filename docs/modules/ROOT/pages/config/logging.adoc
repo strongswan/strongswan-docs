@@ -266,12 +266,12 @@ to include logging messages of level `*0*` and `*1*` only.
   enabled via `*charon.plugins.sql.loglevel*`.
 
 * Custom plugins may register their own implementation of the `*logger_t*`
-  interface ({GITHUB}/{SRC1}[`source:{SRC1}`]) with the bus
-  ({GITHUB}/{SRC2}[`source:{SRC2}`]).
+  interface ({GITHUB}/{SRC1}[`{SRC1}`]) with the bus
+  ({GITHUB}/{SRC2}[`{SRC2}`]).
 
 * In applications using `*libcharon`*, custom loggers
-  ({GITHUB}/{SRC3}[`source:{SRC3}`]) may also be registered early from code via
-  `*register_custom_logger()*` ({GITHUB}/{SRC4}[`source:{SRC4}`]).
+  ({GITHUB}/{SRC3}[`{SRC3}`]) may also be registered early from code via
+  `*register_custom_logger()*` ({GITHUB}/{SRC4}[`{SRC4}`]).
   xref:daemons/charon-systemd.adoc[`*charon-systemd*`] uses this mechanism for
   its `*journald*` logger.
 

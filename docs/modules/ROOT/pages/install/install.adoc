@@ -91,7 +91,7 @@ sudo make install
 === Building from the Git Repository
 
 To build strongSwan from the Git repository, additional tools and steps are
-required. Check {GITHUB}/blob/master/HACKING[`source:HACKING`] for details.
+required. Check {GITHUB}/blob/master/HACKING[`HACKING`] for details.
 
 === Building on Other Platforms
 
@@ -121,7 +121,7 @@ executables can be achieved by configuring with
 
 Including third-party static libraries requires manual modification of the Makefiles
 due to limitations of our build system (see e.g. the Makefile for the fuzzing
-targets {GITHUB}//blob/master/fuzz/Makefile.am[`source:fuzz/Makefile.am`]).
+targets {GITHUB}//blob/master/fuzz/Makefile.am[`fuzz/Makefile.am`]).
 
 == Configuration Management
 

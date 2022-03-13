@@ -10,7 +10,7 @@
 
 The `*kernel-libipsec*` plugin for `*libcharon*` provides an IPsec backend that
 works entirely in userland, using TUN devices and our own `*libipsec*` IPsec
-implementation, see {GITHUB}/src/libipsec/[`source:src/libipsec`].
+implementation, see {GITHUB}/src/libipsec/[`src/libipsec`].
 
 Both other kernel interfaces, `*kernel-netlink*` (the default) and `*kernel-pfkey*`,
 install IPsec SAs in the operating system's IPsec stack. This plugin provides an

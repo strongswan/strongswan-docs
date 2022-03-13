@@ -67,4 +67,4 @@ charon {
 ----
 This should speed up the lookup for `IKE SA` initiation. For more information and
 implementation details, have a look at the `IKE SA` Manager implementation
-({GITHUB}/{SRC}[`source:{SRC}`]).
+({GITHUB}/{SRC}[`{SRC}`]).

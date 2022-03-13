@@ -26,11 +26,11 @@ comfortable frontend to configure the database. But there are some `SQL` scripts
 to assist you in the database setup (more information on the tables and values
 can be found xref:config/sqliteDbSchema.adoc[here]).
 
-* MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*source:src/pool/mysql.sql*`]
+* MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*src/pool/mysql.sql*`]
 
-* SQLite tables: {GITHUB}/src/pool/sqlite.sql[`*source:src/pool/sqlite.sql*`]
+* SQLite tables: {GITHUB}/src/pool/sqlite.sql[`*src/pool/sqlite.sql*`]
 
-* Test data: {GITHUB}/testing/tests/sql[`*source:testing/tests/sql*`], e.g. this example
+* Test data: {GITHUB}/testing/tests/sql[`*testing/tests/sql*`], e.g. this example
   {GITHUB}/testing/tests/sql/ip-pool-db/hosts/moon/etc/ipsec.d/data.sql.in[`*data.sql*`]
   file.
 

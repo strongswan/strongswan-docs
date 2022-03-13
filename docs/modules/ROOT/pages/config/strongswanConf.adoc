@@ -209,7 +209,7 @@ a reload is triggered). Values are accessed using a dot-separated section list
 and a key: Accessing `*section-one.subsection.othervalue*` in the examples above
 will return `*xxx*`.
 
-Have a look at the settings interface {GITHUB}/{SETTINGS}[`source:{SETTINGS}`]
+Have a look at the settings interface {GITHUB}/{SETTINGS}[`{SETTINGS}`]
 to learn about the details.
 
 == Keys

@@ -37,7 +37,7 @@ NOTE: When building from a tarball on *macOS 11 or newer*, it's necessary to pat
 === Requirements
 
 If you build from the Git repository the tools/packages listed in
-{GITHUB}/blob/master/HACKING[`source:HACKING`] have to be installed. Depending on
+{GITHUB}/blob/master/HACKING[`HACKING`] have to be installed. Depending on
 your plugin configuration, other packages may be required, such as the GMP library
 or a newer release of the OpenSSL library.
 
@@ -78,7 +78,7 @@ options are either required or recommended:
 When building with Homebrew, it's necessary to adjust environment variables such
 as `*PATH*`, `*ACLOCAL_PATH*`, `*PKG_CONFIG_PATH*`, `*CPPFLAGS*` and `*LDFLAGS*`
 depending on the libraries that are used. See the `*macos*` case in
-{GITHUB}/blob/master/scripts/test.sh[`source:scripts/test.sh`] for details.
+{GITHUB}/blob/master/scripts/test.sh[`scripts/test.sh`] for details.
 
 With MacPorts using `*--with-lib-prefix=/opt/local*` might be enough as all
 libraries and header files are located in `*/opt/local*`.

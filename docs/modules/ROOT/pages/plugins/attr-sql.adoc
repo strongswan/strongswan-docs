@@ -40,9 +40,9 @@ include::partial$config/plugins/attr-sql.adoc[]
 
 To setup the database use the schema defined in the following SQL scripts:
 
-* MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*source:src/pool/mysql.sql*`]
+* MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*src/pool/mysql.sql*`]
 
-* SQLite tables: {GITHUB}/src/pool/sqlite.sql[`*source:src/pool/sqlite.sql*`]
+* SQLite tables: {GITHUB}/src/pool/sqlite.sql[`*src/pool/sqlite.sql*`]
 
 These files contain the complete database schema, which also includes tables
 that are required by the xref:./sql.adoc[`*sql*`] plugin, only.

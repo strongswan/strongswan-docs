@@ -69,7 +69,7 @@ out notifications for the registered events.
 == Socket interface
 
 The `*lookip*` socket interface definition can be found here:
-{GITHUB}/{LOOKIP_DEF}[`source:{LOOKIP_DEF}`].
+{GITHUB}/{LOOKIP_DEF}[`{LOOKIP_DEF}`].
 
 The `*lookip*` tool demonstrating how the interface can be used:
-{GITHUB}/{LOOKIP_TOOL}[`source:{LOOKIP_TOOL}`]
+{GITHUB}/{LOOKIP_TOOL}[`{LOOKIP_TOOL}`]

@@ -51,7 +51,7 @@ export PATH=/tmp/strongswan-toolchain/bin:$PATH
 ----
 
 NOTE: Depending on the API level, the older Linux headers included in the toolchain
-      might make it necessary to add some additional headers in source:src/include
+      might make it necessary to add some additional headers in `src/include`
       or to revert the headers there to versions closer to the ones included in
       the toolchain.
 
@@ -155,7 +155,7 @@ with newer Android releases.
 If you build directly from the strongSwan Git repository instead of a tarball,
 the sources have to be prepared properly, otherwise the build will fail. In the
 root of the strongSwan sources run the following to create the required files
-(this has some external dependencies, see `source:HACKING` for details):
+(this has some external dependencies, see `HACKING` for details):
 
   ./autogen.sh && ./configure && make dist && rm strongswan-*.tar.gz
 
