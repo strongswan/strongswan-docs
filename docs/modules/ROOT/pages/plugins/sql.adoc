@@ -24,7 +24,7 @@ plugin, respectively.
 The `*sql*` plugin is still rather experimental. Thus there is currently no
 comfortable frontend to configure the database. But there are some `SQL` scripts
 to assist you in the database setup (more information on the tables and values
-can be found xref:./sqlite.adoc[here]).
+can be found xref:config/sqliteDbSchema.adoc[here]).
 
 * MySQL tables:  {GITHUB}/src/pool/mysql.sql[`*source:src/pool/mysql.sql*`]
 

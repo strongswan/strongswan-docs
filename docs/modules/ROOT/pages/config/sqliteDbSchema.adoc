@@ -1,0 +1,302 @@
+= SQLite Database Schema
+
+:TESTS:  https://www.strongswan.org/testing/testresults
+:GITHUB: https://github.com/strongswan/strongswan/blob/master
+:SRC1:   src/pool/sqlite.sql
+:SRC2:   src/libstrongswan/utils/identification.h
+:SRC3:   src/libstrongswan/credentials/keys/public_key.h
+:SRC4:   src/libstrongswan/credentials/certificates/certificate.h
+:SRC5:   src/libstrongswan/credentials/keys/shared_key.h
+:SRC6:   src/libstrongswan/credentials/auth_cfg.h
+:SRC7:   src/libstrongswan/eap/eap.h
+:SRC8:   src/libcharon/config/child_cfg.h
+:SRC9:   src/libstrongswan/ipsec/ipsec_types.h
+:SRC10:  src/libstrongswan/selectors/traffic_selector.h
+:SRC11:  src/libcharon/plugins/sql/sql_config.c
+
+The database schema for SQLite as used by the xref:plugins/sql.adoc[`*sql*`] and
+xref:plugins/attr-sql.adoc[`*attr-sql*`] plugins is defined in
+{GITHUB}/{SRC1}[`{SRC1}`].
+
+
+== TABLE identities
+
+*type* defined in {GITHUB}/{SRC2}#L57[`{SRC2}`]
+
+[cols="1,3,5,7"]
+|===
+
+| 0 |ID_ANY              |matches any id
+|id = %any
+
+| 1 |ID_IPV4_ADDR        |IPv4 address
+|id = 192.168.0.1
+
+| 2 |ID_FQDN             |fully qualified domain name
+|id = moon.strongswan.org
+
+| 3 |ID_RFC822_ADDR      |RFC822 email address
+|id = \carol@strongswan.org
+
+| 5 |ID_IPV6_ADDR        |IPv6 address
+|id = fec0::1
+
+| 9 |ID_DER_ASN1_DN      |ASN.1 distinguished name
+|id = "C=CH, O=Linux strongSwan, CN=moon.strongswan.org"
+
+|11 |ID_KEY_ID           |opaque octet string
+|id = @#e5e410876c2ac4bead854942a6de7658303a9fc1
+|===
+
+`*ID_ANY*`: `scripts/id2sql "%any"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  0, X_
+);
+----
+
+`*ID_IPV4_ADDR*`: `scripts/id2sql "192.168.0.1"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  1, X'c0a80001'
+);
+----
+
+`*ID_FQDN*`: `scripts/id2sql "moon.strongswan.org"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  2, X'6d6f6f6e2e7374726f6e677377616e2e6f7267'
+);
+----
+
+`*ID_RFC822_ADDR*`: `scripts/id2sql "\carol@strongswan.org"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  3, X'6361726f6c407374726f6e677377616e2e6f7267'
+);
+----
+
+`*ID_IPV6_ADDR*`: `scripts/id2sql "fec0::1"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  5, X'fec00000000000000000000000000001'
+);
+----
+
+`*ID_DER_ASN1_DN*`: `scripts/id2sql "C=CH, O=Linux strongSwan, CN=moon.strongswan.org"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  9, X'3046310b300906035504061302434831193017060355040a13104c696e7578207374726f6e675377616e311c301a060355040313136d6f6f6e2e7374726f6e677377616e2e6f7267'
+);
+----
+
+`*ID_KEY_ID*`: `scripts/id2sql "@#e5:e4:10:87:6c:2a:c4:be:ad:85:49:42:a6:de:76:58:30:3a:9f:c1"`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  11, X'e5e410876c2ac4bead854942a6de7658303a9fc1'
+);
+----
+
+`*ID_PUBKEY_INFO_SHA1*`: `scripts/key2keyid < moonKey.der`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  11, X'd70dbd46d5133519064f12f100525ead0802ca95'
+);
+----
+
+`*ID_PUBKEY_SHA1*`: `scripts/key2keyid < moonKey.der`
+----
+INSERT INTO identities (
+  type, data
+) VALUES (
+  11, X'e5e410876c2ac4bead854942a6de7658303a9fc1'
+);
+----
+
+== TABLE private_keys
+
+*type* defined in {GITHUB}/{SRC3}#L35[`{SRC3}`]
+
+[cols="1,4,9"]
+|===
+
+|1 |KEY_RSA
+|RSA key in PKCS#1 format
+
+|2 |KEY_ECDSA
+|ECDSA key in ANSI X9.62 format
+|===
+
+== TABLE certificates
+
+*type* defined in {GITHUB}/{SRC4}#L35[`{SRC4}`]
+
+[cols="1,4,9"]
+|===
+
+|1 |CERT_X509
+|X.509 certificate
+
+|2 |CERT_X509_CRL
+|X.509 certificate revocation list
+
+|5 |CERT_X509_AC
+|X.509 attribute certificate
+
+|6 |CERT_TRUSTED_PUBKEY
+|Trusted public key
+|===
+
+== TABLE shared_secrets
+
+*type* defined in {GITHUB}/{SRC5}#L31[`{SRC5}`]
+
+[cols="1,4,9"]
+|===
+
+|1 |SHARED_IKE
+|xref:swanctl/swanctlConf.adoc#_secrets_ikesuffix[`*secrets.ike<suffix>.secret*`]
+
+|2 |SHARED_EAP
+|xref:swanctl/swanctlConf.adoc#_secrets_eapsuffix[`*secrets.eap<suffix>.secret*`]
+
+|3 |SHARED_PRIVATE_KEY_PASS
+|xref:swanctl/swanctlConf.adoc#_secrets_rsasuffix[`*secrets.rsa<suffix>.secret*`]
+
+|4 |SHARED_PIN
+|xref:swanctl/swanctlConf.adoc#_secrets_tokensuffix[`*secrets.token<suffix>.pin*`]
+|===
+
+== TABLE peer_configs
+
+*auth_method* defined in {GITHUB}/{SRC6}#L32[`{SRC6}`]
+
+[cols="1,3,6,6"]
+|===
+
+|0 |AUTH_CLASS_ANY    |Any or no authentication method
+|
+
+|1 |AUTH_CLASS_PUBKEY |Authentication using public key
+|auth = pubkey
+
+|2 |AUTH_CLASS_PSK    |Authentication using pre-shared secret
+|auth = psk
+
+|3 |AUTH_CLASS_EAP    |Authentication using EAP
+|auth = eap
+
+|4 |AUTH_CLASS_XAUTH  |authentication using XAuth
+|auth = xauth
+|===
+
+*eap_type* defined in {GITHUB}/{SRC7}#L53[`{SRC7}`]
+
+[cols="1,12"]
+|===
+
+|  4 |EAP_MD5
+
+|  6 |EAP_GTC
+
+| 13 |EAP_TLS
+
+| 18 |EAP_SIM
+
+| 21 |EAP_TTLS
+
+| 23 |EAP_AKA
+
+| 25 |EAP_PEAP
+
+| 26 |EAP_MSCHAPV2
+
+| 38 |EAP_TNC
+
+|253 |EAP_RADIUS
+|===
+
+== TABLE child_configs
+
+*start_action*, *dpd_action*, and *close_action* defined in
+{GITHUB}/{SRC8}#L38[`{SRC8}`]
+
+[cols="1,4,9"]
+|===
+
+|0 |ACTION_NONE
+|No action or clear
+
+|1 |ACTION_ROUTE
+|Install or retain an IPsec policy
+
+|2 |ACTION_RESTART
+|Start or restart a CHILD_SA
+|===
+
+IPsec *mode* defined in {GITHUB}/{SRC9}#L39[`{SRC9}`]
+
+[cols="1,4,9"]
+|===
+
+|1 |TRANSPORT
+|IPsec transport mode
+
+|2 |TUNNEL
+|IPsec tunnel mode
+
+|3 |BEET
+| IPsec beet mode
+
+|4 |PASS
+|Shunt PASS policy
+
+|5 |DROP
+|Shunt DROP policy
+|===
+
+== TABLE traffic_selectors
+
+*type* defined in {GITHUB}/{SRC10}#L33[`{SRC10}`]
+
+[cols="1,12"]
+|===
+
+|7 |TS_IPV4_ADDR_RANGE
+
+|8 |TS_IPV6_ADDR_RANGE
+|===
+
+*kind* defined in {GITHUB}/{SRC11}#L56[`{SRC11}`]
+
+[cols="1,12"]
+|===
+
+|0 |Local TS
+
+|1 |Remote TS
+
+|2 |Local Dynamic TS
+
+|3 |Remote Dynamic TS
+|===
+
+== Examples
+
+* {TESTS}/sql/[All SQL test scenarios]
