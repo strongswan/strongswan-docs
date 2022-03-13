@@ -6,15 +6,16 @@
 ** xref:install/trafficDumps.adoc[Taking Traffic Dumps]
 
 .Configuration
+* xref:config/config.adoc[]
 ** xref:config/strongswanConf.adoc[]
 ** xref:config/strongswanDir.adoc[]
-** xref:config/logging.adoc[]
-** xref:config/identityParsing.adoc[]
-** xref:config/jobPriority.adoc[]
-** xref:config/lookupTuning.adoc[]
-** xref:config/retransmission.adoc[]
 ** xref:swanctl/swanctlConf.adoc[]
 ** xref:swanctl/swanctlDir.adoc[]
+* xref:config/logging.adoc[]
+* xref:config/identityParsing.adoc[]
+* xref:config/jobPriority.adoc[]
+* xref:config/lookupTuning.adoc[]
+* xref:config/retransmission.adoc[]
 
 .Features
 ** xref:features/vip.adoc[]
