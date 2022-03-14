@@ -1,0 +1,35 @@
+|<conn>.reauth_time        |`0s`
+|Time to schedule IKE reauthentication. IKE reauthentication recreates the
+ IKE/ISAKMP SA from scratch and re-evaluates the credentials. In asymmetric
+ configurations (with EAP or configuration payloads) it might not be possible to
+ actively reauthenticate as responder. The IKEv2 reauthentication lifetime
+ negotiation can instruct the client to perform reauthentication. Reauthentication
+ is disabled by default. Enabling it usually may lead to small connection
+ interruptions as strongSwan uses a *break-before-make* policy with IKEv2 by
+ default unless `*charon.make_before_break = yes*` is set in
+ xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+
+|<conn>.rekey_time         |`4h`
+|IKE rekeying refreshes key material using a Diffie-Hellman key exchange, but does
+ not re-check associated credentials. It is supported with IKEv2 only. IKEv1
+ performs a reauthentication procedure instead. With the default value, IKE
+ rekeying is scheduled every `*4*` hours minus the configured `*rand_time*`. If
+ a `*reauth_time*` is configured, `*rekey_time*` defaults to zero, disabling
+ rekeying. In that case set `*rekey_time*` explicitly to both enforce rekeying and
+ reauthentication
+
+|<conn>.over_time          |[->]
+|Hard IKE_SA lifetime if rekey/reauth does not complete, as time. To avoid having
+ an IKE or ISAKMP connection kept alive if IKE reauthentication or rekeying fails
+ perpetually, a maximum hard lifetime may be specified. If the IKE_SA fails to
+ rekey or reauthenticate within the specified time, the IKE_SA gets closed.
+ In contrast to CHILD_SA rekeying, `*over_time*` is relative in time to the
+ `*rekey_time*` and `*reauth_time*` values, as it applies to both.
+ The default is 10% of either `*rekey_time*` or `*reauth_time*`, whichever value
+ is larger. [`0.1 * max(rekey_time, reauth_time)`]
+
+|<conn>.rand_time          |[->]
+|Time range from which to choose a random value to subtract from rekey/reauth
+ times. To avoid having both peers initiating the rekey/reauth procedure
+ simultaneously, a random time gets subtracted from the rekey/reauth times.
+ The default is equal to the configured `*over_time*`. [`over_time`]

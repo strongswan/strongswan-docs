@@ -15,6 +15,7 @@
 * xref:config/identityParsing.adoc[]
 * xref:config/jobPriority.adoc[]
 * xref:config/lookupTuning.adoc[]
+* xref:config/rekeying.adoc[]
 * xref:config/retransmission.adoc[]
 * xref:config/sqliteDbSchema.adoc[]
 

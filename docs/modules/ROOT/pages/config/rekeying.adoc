@@ -1,0 +1,240 @@
+= Renewal of IKE and IPsec Security Associations
+
+:COLS:    cols="3,1,8"
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC4478: {IETF}/rfc4478
+
+The keys negotiated for `IKE SAs` and `IPsec SAs` should only be used for a limited
+amount of time. Additionally `IPsec SA` keys should only encrypt a limited amount
+of data. This means that each `SA` should expire after a specific lifetime or after
+a specific data or packet volume. To avoid interruptions, a replacement `SA` needs
+to be negotiated before that happens. This is called *rekeying*.
+
+== Interoperability
+
+There may be interoperability issues related to rekeying and reauthentication.
+Please refer to xref:interop/windowsClients.adoc#_rekeying_behavior[Windows] and
+xref:interop/ios.adoc#_ikev2_reauthentication_issues[macOS/iOS].
+
+== IKE SAs
+
+Depending on the IKE version there are up to three ways to replace an `IKE SA`
+before it expires.
+
+=== Rekeying
+
+In comparison to `IKEv1` which only supports reauthentication (see below), `IKEv2`
+provides proper inline rekeying of `IKE SAs` by use of `CREATE_CHILD_SA` exchanges.
+This means that new keys may be established without any interruption of the
+existing `IKE` and `IPsec SAs`.
+
+This is the default for IKEv2 configurations based on
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] using the
+xref:plugins/vici.adoc[`*vici*`] management interface.
+
+=== Reauthentication
+
+This method to renew the `IKE` keys involves creating a complete `IKE SA` from
+scratch, which includes complete `IKE_SA_INIT` and `IKE_AUTH` exchanges and the
+recreation of all associated `IPsec SAs`.
+
+The point of a reauthentication, as the term implies, is to redo the
+authentication and to verify that the peers still have access to valid credentials.
+Without reauthentication it is currently possible to keep a connection alive even
+after a peer's certificate has expired. Revocation of certificates by means of
+`CRLs` or `OCSP` is also only checked during authentication.  Reauthentication
+also could make sense in cases where smart cards are used for client authentication,
+as it ensures that the user still has the smart card inserted and unlocked with
+the `PIN`.
+
+Reauthenticating an `IKE SA` may be done in two ways:
+
+*Break-before-make* ::
+  This is the *default* behavior of the `IKE` daemon when
+  reauthenticating an `IKEv2 SA`. It means that all `IKE_SAs` and `CHILD SAs` are
+  torn down before recreating them. This will cause some interruptions during
+  which no `IPsec SAs` are installed. If trap policies are used it could also
+  trigger unnecessary acquires and hence duplicate `IPsec SAs` during that downtime.
+  To prevent plaintext traffic from leaving the host appropriate firewall rules
+  or drop policies may be used.
+
+*Make-before-break* ::
+  This method first creates duplicates of the `IKE SAs` and all `CHILD SAs`
+  overlapping with the existing ones and then deletes the old ones.
+  This avoids interruptions but requires that both peers can handle overlapping
+  `SAs` (e.g. in regards to virtual IPs, duplicate policies or updown scripts).
+  It is supported for `IKEv2` since version 5.3.0 but is disabled by default
+  and may be enabled by explicitly setting
++
+----
+charon.make_before_break = yes
+----
+
+The `*make_before_break*` option was introduced in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] with strongSwan version 5.3.0
+
+[cols = "4,1,8"]
+|===
+|Setting |Default |Description
+
+|make_before_break                           |`no`
+|Initiate IKEv2 reauthentication with a *make-before-break* instead of a
+ *break-before-make* scheme. Make-before-break uses overlapping `IKE` and `CHILD SA`
+ during reauthentication by first recreating all new SAs before deleting the old
+ ones. This behavior can be beneficial to avoid connectivity gaps during
+ reauthentication, but requires support for overlapping SAs by the peer.
+ strongSwan can handle such overlapping SAs since version 5.3.0
+|===
+
+`IKEv1 SAs` are also rekeyed/reauthenticated using a *make-before-break* scheme.
+However only the `IKE SA` is affected. `IPsec SAs` are adopted by the new `IKE SA`
+and not recreated.
+
+==== IKEv2 Responder Behavior
+
+Responders that have reauthentication configured will use the `AUTH_LIFETIME`
+notify defined by {RFC4478}[`RFC 4478`] to demand that clients reauthenticate before
+a certain time. If the responder can not initiate the reauthentication itself (e.g.
+due to asymmetric authentication like EAP) it will close the `IKE_SA` if the client
+fails to reauthenticate the `SA` in time. The responder sends the calculated and
+randomized reauthentication time to the client (not the hard lifetime of the `SA`).
+
+Note that strongSwan as a client will adhere to `AUTH_LIFETIME` notifies even if
+reauthentication is disabled in the config (or configured differently). It
+subtracts the locally configured `*over_time*` or `*margintime*` from the received
+`*lifetime*` and schedules a reauthentication.
+
+=== Settings
+
+The following settings control when `IKE SAs` expire and how and when they are
+replaced. Note that both configuration backends support randomization of rekeying
+times to avoid collisions.
+
+The following parameters are used in the
+xref:swanctl/swanctlConf.adoc#_connections[`*connections*`] section of
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]:
+
+[{COLS}]
+|===
+|Key |Default| Description [default]
+
+include::partial$config/swanctl-rekey-ike.adoc[]
+|===
+
+== IPsec SAs
+
+`IPsec SAs` or `CHILD_SAs` are always rekeyed by creating new `SAs` and then
+deleting the old ones. The cryptographic keys may either be derived from the
+`IKE` key material or with a separate Diffie-Hellman (`DH`) exchange. The latter
+is also known as *Perfect Forward Secrecy* (`PFS`). To use `PFS`, `DH` groups
+may be added to the proposals for the `IPsec SAs` e.g.
+
+ esp_proposals = aes128-sha256-modp3072
+ 
+in `swanctl.conf`. To make `PFS` optional (i.e. let the peer choose whether `PFS` 
+is used or not) add proposals with and without `DH` groups e.g.
+
+ esp_proposals = aes128-sha256-modp3072,aes128-sha256
+
+=== IKEv2
+
+There is one important aspect that affects `IKEv2`. The keys for the `CHILD_SA`
+that is implicitly created with the `IKE_AUTH` exchange will always be derived
+from the `IKE` key exchange even if `PFS` is configured. So if the peers disagree
+on whether to use `PFS` or not (or on the DH groups) it will not be known until
+the `CHILD_SA` is first rekeyed with a `CREATE_CHILD_SA` exchange (and fails).
+This is also the reason why you won't see a `DH` group in the status output of
+the daemon until the `SA` is first rekeyed.
+
+=== IKEv1
+
+With `IKEv1` it is different as each Quick Mode exchange uses the complete
+proposals, so already the first `IPsec SA` will use `PFS` according to the
+configuration.
+
+It's possible to force a `CHILD_SA` rekeying via the
+xref:swanctl/swanctlRekey.adoc[ `*swanctl*`] command and the
+xref:plugins/vici.adoc[`*vici*`] interface. This could be used to test if there
+is a `PFS` configuration mismatch.
+
+Also, since version `5.8.0` strongSwan supports the initiation of childless
+`IKE_SAs`. If enabled, no `CHILD_SA` is created during `IKE_AUTH`. The first
+`CHILD_SA` will be created with a separate `CREATE_CHILD_SA` exchange. Thus the
+configuration issued as described above will be apparent right from the start,
+without having to trigger a rekeying or wait for one.
+
+==== CHILD_SA Rekeying Behavior since Version 5.5.3
+
+With version `5.5.3` the behavior during `IKEv2` `CHILD_SA` rekeyings has changed
+to avoid traffic loss. When responding to a `CREATE_CHILD_SA` request to rekey a
+`CHILD_SA` the responder already has everything available to install and use the
+new `CHILD_SA`. However, immediately doing so (as strongSwan did before `5.5.3`)
+could lead to lost traffic as the initiator won't be able to process inbound
+packets until it receives the `CREATE_CHILD_SA` response and updates the inbound
+`SA`. To avoid this the responder only installs the new inbound `SA` and delays
+installing the outbound `SA` until it receives the `DELETE` notify for the
+replaced `CHILD_SA`.
+
+The messages transporting these `DELETE` notifications could reach the peer
+before packets sent with the deleted outbound `SAs` reach it. To reduce the
+chance of traffic loss due to this the inbound `SA` of the replaced `CHILD_SA`
+is not removed for a configurable amount of seconds as defined by the
+
+ charon.delete_rekeyed_delay
+
+parameter after the `DELETE` notify has been processed.
+
+=== Settings
+
+The following settings control when IPsec SAs expire and when they are replaced.
+Note that both configuration backends support randomization of rekeying margins
+to avoid collisions.
+
+The following parameters are used in the
+xref:swanctl/swanctlConf.adoc#_connections_conn_children[`*connections.<conn>.children*`]
+section of xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+[{COLS}]
+|===
+|Key |Default| Description [default]
+
+include::partial$config/swanctl-rekey-child.adoc[]
+|===
+
+== Example
+
+With the default settings in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] the
+following times are used:
+
+* *IKE SA* default:
++
+----
+rekey_time = 4h = 240m
+over_time = 0.1 * rekey_time = 24m
+rand_time = over_time = 24m
+
+expiry = rekey_time + over_time = 264m
+rekey = rekey_time - random(0, rand_time) = [216, 240]m
+----
++
+Thus the daemon will attempt to rekey the `IKE SA` at a random time between
+`*216*` and `*240*` minutes after establishing the SA. Or in other words, between
+`*24*` and `*48*` minutes before the SA expires.
+
+* *IPsec SA* default:
++
+----
+rekey_time = 1h = 60m
+life_time = 1.1 * rekey_time = 66m
+rand_time = life_time - rekey_time = 6m
+
+expiry = life_time = 66m
+rekey = rekey_time - random(0, rand_time) = [54, 60]m
+----
++
+Thus the daemon will attempt to rekey the `IPsec SA` at a random time between
+`*54*` and `*60*` minutes after establishing the SA. Or in other words, between
+`*6*` and `*12*` minutes before the SA expires.
+
+NOTE: Since the rekeying of an SA needs some time, the margin values must not be
+      set too low.

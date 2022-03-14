@@ -257,41 +257,7 @@ an arbitrary yet unique name (denoted `<conn>` below).
  first authentication round). Unless set to `*never*` the client will send a
  notify
 
-|<conn>.reauth_time        |`0s`
-|Time to schedule IKE reauthentication. IKE reauthentication recreates the
- IKE/ISAKMP SA from scratch and re-evaluates the credentials. In asymmetric
- configurations (with EAP or configuration payloads) it might not be possible to
- actively reauthenticate as responder. The IKEv2 reauthentication lifetime
- negotiation can instruct the client to perform reauthentication. Reauthentication
- is disabled by default. Enabling it usually may lead to small connection
- interruptions as strongSwan uses a *break-before-make* policy with IKEv2 by
- default unless `*charon.make_before_break = yes*` is set in
- xref:config/strongswanConf.adoc[`*strongswan.conf*`]
-
-|<conn>.rekey_time         |`4h`
-|IKE rekeying refreshes key material using a Diffie-Hellman key exchange, but does
- not re-check associated credentials. It is supported with IKEv2 only. IKEv1
- performs a reauthentication procedure instead. With the default value, IKE
- rekeying is scheduled every `*4*` hours minus the configured `*rand_time*`. If
- a `*reauth_time*` is configured, `*rekey_time*` defaults to zero, disabling
- rekeying. In that case set `*rekey_time*` explicitly to both enforce rekeying and
- reauthentication
-
-|<conn>.over_time          |[->]
-|Hard IKE_SA lifetime if rekey/reauth does not complete, as time. To avoid having
- an IKE or ISAKMP connection kept alive if IKE reauthentication or rekeying fails
- perpetually, a maximum hard lifetime may be specified. If the IKE_SA fails to
- rekey or reauthenticate within the specified time, the IKE_SA gets closed.
- In contrast to CHILD_SA rekeying, `*over_time*` is relative in time to the
- `*rekey_time*` and `*reauth_time*` values, as it applies to both.
- The default is 10% of either `*rekey_time*` or `*reauth_time*`, whichever value
- is larger. [`0.1 * max(rekey_time, reauth_time)`]
-
-|<conn>.rand_time          |[->]
-|Time range from which to choose a random value to subtract from rekey/reauth
- times. To avoid having both peers initiating the rekey/reauth procedure
- simultaneously, a random time gets subtracted from the rekey/reauth times.
- The default is equal to the configured `*over_time*`. [`over_time`]
+include::partial$config/swanctl-rekey-ike.adoc[]
 
 |<conn>.pools              |
 |Comma-separated list of named IP pools to allocate virtual IP addresses and other
@@ -672,61 +638,7 @@ of the CHILD_SA configuration, which must be unique within the connection
 |Comma separated list of remote selectors to include in CHILD_SA. See `*local_ts*`
  for a description of the selector syntax. [`dynamic`]
 
-|<child>.rekey_time        |`1h`
-|Time to schedule CHILD_SA rekeying. CHILD_SA rekeying refreshes key material,
- optionally using a Diffie-Hellman exchange if a group is specified in the proposal.
- To avoid rekey collisions initiated by both ends simultaneously, a value in the
- range of `*rand_time*` gets subtracted to form the effective soft lifetime. By
- default CHILD_SA rekeying is scheduled every hour, minus `*rand_time*`
-
-|<child>.life_time         |[->]
-|Maximum lifetime before CHILD_SA gets closed. Usually this hard lifetime is never
- reached, because the CHILD_SA gets rekeyed before. If that fails for whatever
- reason, this limit closes the CHILD_SA. The default is 10% more than the
- `*rekey_time*`. [`1.1 * rekey_time`]
-
-|<child>.rand_time         |[->]
-|Time range from which to choose a random value to subtract from `*rekey_time*`.
- The default is the difference between `*life_time*` and `*rekey_time*`.
- [`life_time - rekey_time`]
-
-|<child>.rekey_bytes       |`0`
-|Number of bytes processed before initiating CHILD_SA rekeying. CHILD_SA rekeying
- refreshes key material, optionally using a Diffie-Hellman exchange if a group is
- specified in the proposal. To avoid rekey collisions initiated by both ends
- simultaneously, a value in the range of `*rand_bytes*` gets subtracted to form
- the effective soft volume limit. Volume based CHILD_SA rekeying is disabled by
- default
-
-|<child>.life_bytes        |
-|Maximum bytes processed before CHILD_SA gets closed. Usually this hard volume
- limit is never reached, because the CHILD_SA gets rekeyed before. If that fails
- for whatever reason, this limit closes the CHILD_SA. The default is 10% more than
- `*rekey_bytes*`. [`1.1 * rekey_bytes`]
-
-|<child>.rand_bytes        |[->]
-|Byte range from which to choose a random value to subtract from `*rekey_bytes*`.
- The default is the difference between `*life_bytes*` and `*rekey_bytes*`.
- [`life_bytes - rekey_bytes`]
-
-|<child>.rekey_packets     |`0`
-|Number of packets processed before initiating CHILD_SA rekeying. CHILD_SA rekeying
- refreshes key material, optionally using a Diffie-Hellman exchange if a group is
- specified in the proposal. To avoid rekey collisions initiated by both ends
- simultaneously, a value in the range of `*rand_packets*` gets subtracted to form
- the effective soft packet count limit. Packet count based CHILD_SA rekeying is
- disabled by default
-
-|<child>.life_packets      |[->]
-|Maximum number of packets processed before CHILD_SA gets closed. Usually this
- hard packets limit is never reached, because the CHILD_SA gets rekeyed before.
- If that fails for whatever reason, this limit closes the CHILD_SA. The default
- is 10% more than `*rekey_bytes*`. [`1.1 * rekey_packets`]
-
-|<child>.rand_packets      |[->]
-|Packet range from which to choose a random value to subtract from `*rekey_packets*`.
- The default is the difference between `*life_packets*` and `*rekey_packets*`.
- [`life_packets - rekey_packets`]
+include::partial$config/swanctl-rekey-child.adoc[]
 
 |<child>.updown            |
 |Updown script to invoke on CHILD_SA up and down events
