@@ -1,0 +1,637 @@
+= IPsec and Related Standards
+
+:COLS:    cols="1,20"
+:IETFORG: https://www.ietf.org/
+:IETF:    https://datatracker.ietf.org/doc/html
+:IANA:    https://www.iana.org/assignments
+
+:S: footnote:S[S = Status: x = not supported, d = under development]
+:S_ref: footnote:S[]
+
+This is a list of IPsec and IPsec-related {IETFORG}[IETF] standards and drafts.
+
+If nothing else is noted in the status column, the standards and drafts are at
+least partially implemented by the most current strongSwan release or by the Linux
+kernel.
+
+== IPsec and IKE Roadmap
+
+[{COLS}]
+|===
+|S{S} |RFC, Internet Draft
+
+|
+|{IETF}/rfc6071[RFC 6071]:
+ IPsec and IKE Document Roadmap
+|===
+
+== IKEv1
+
+=== Core Standards
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc2407[RFC 2407]:
+ IPsec Domain of Interpretation for ISAKMP (IPsec DoI)
+
+|
+|{IETF}/rfc2408[RFC 2408]:
+ Internet Security Association and Key Management Protocol (ISAKMP)
+
+|
+|{IETF}/rfc2409[RFC 2409]:
+ Internet Key Exchange (IKE)
+
+|
+|{IANA}/isakmp-registry[IANA-ISAKMP]:
+ ISAKMP Registry
+
+|
+|{IANA}/ipsec-registry[IANA-IKE/IPSEC]:
+ IKE/IPsec Registry
+|===
+
+=== Extensions
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc3526[RFC 3526]:
+ More Modular Exponential (MODP) Diffie-Hellman groups for IKE
+
+|
+|{IETF}/rfc3706[RFC 3706]:
+ A Traffic-Based Method of Detecting Dead IKE Peers
+
+|
+|{IETF}/rfc3947[RFC 3947]:
+ Negotiation of NAT-Traversal in the IKE
+
+|
+|{IETF}/draft-dukes-ike-mode-cfg[draft-dukes-ike-mode-cfg]:
+ The ISAKMP Configuration Method
+
+|
+|{IETF}/draft-ietf-ipsec-isakmp-xauth[draft-ietf-ipsec-isakmp-xauth]:
+ Extended Authentication within ISAKMP/Oakley (XAUTH)
+
+|
+|{IETF}/draft-ietf-ipsec-isakmp-hybrid-auth[draft-ietf-ipsec-isakmp-hybrid-auth]:
+ A Hybrid Authentication Mode for IKE
+|===
+
+== IKEv2
+
+=== Core Standards
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc7296[RFC 7296]:
+ Internet Key Exchange Protocol Version 2 (IKEv2)
+
+|
+|{IETF}/rfc7815[RFC 7815]:
+ Minimal IKEv2 Initiator Implementation
+
+|
+|{IETF}/rfc8247[RFC 8247]:
+ Algorithm Implementation Requirements and Usage Guidance for IKEv2
+
+|
+|{IANA}/ikev2-parameters[IANA-IKEv2]:
+ IKEv2 Parameters
+|===
+
+=== Extensions
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc4478[RFC 4478]:
+ Repeated Authentication in Internet Key Exchange (IKEv2) Protocol
+
+|
+|{IETF}/rfc4555[RFC 4555]:
+ IKEv2 Mobility and Multihoming Protocol (MOBIKE)
+
+|*x*
+|{IETF}/rfc4595[RFC 4595]:
+ Use of IKEv2 in the Fibre Channel Security Association Management Protocol
+
+|
+|{IETF}/rfc4615[RFC 6515]:
+ The AES-Cipher-based Message Authentication Code-Pseudo-Random Function-128 (AES-CMAC-PRF-128) Algorithm for IKE
+
+|
+|{IETF}/rfc4621[RFC 4621]:
+ Design of the IKEv2 Mobility and Multihoming (MOBIKE) Protocol
+
+|
+|{IETF}/rfc4739[RFC 4739]:
+ Multiple Authentication Exchanges in the IKEv2 Protocol
+
+|
+|{IETF}/rfc4754[RFC 4754]:
+ IKE and IKEv2 Authentication Using the Elliptic Curve Digital Signature Algorithm (ECDSA)
+
+|*x*
+|{IETF}/rfc4806:[RFC 4806]:
+ Online Certificate Status Protocol (OCSP) Extensions to IKEv2
+
+|*x*
+|{IETF}/rfc5026[RFC 5026]:
+ Mobile IPv6 Bootstrapping in Split Scenario
+
+|
+|{IETF}/rfc5282[RFC 5282]:
+ Using Authenticated Encryption Algorithms with the Encrypted Payload of the IKEv2 Protocol
+
+|
+|{IETF}/rfc5685[RFC 5685]:
+ Redirect Mechanism for IKEv2
+
+|*x*
+|{IETF}/rfc5723[RFC 5723]:
+ IKEv2 Session Resumption
+
+|*x*
+|{IETF}/rfc5739[RFC 5739]: IPv6 Configuration in IKEv2
+
+|*x*
+|{IETF}/rfc5857[RFC 5857]:
+ IKEv2 Extensions to Support Robust Header Compression over IPsec
+
+|
+|{IETF}/rfc5903[RFC 5903]:
+ ECP Groups for IKE and IKEv2
+
+|
+|{IETF}/rfc5930[RFC 5930]:
+ Using Advanced Encryption Standard Counter Mode (AES-CTR) with the IKEv2 Protocol
+
+|
+|{IETF}/rfc5998[RFC 5998]:
+ An Extension for EAP-only Authentication in IKEv2
+
+|
+|{IETF}/rfc6023[RFC 6023]:
+ A Childless Initiation of the IKEv2 Security Association (SA)
+
+|*x*
+|{IETF}/rfc6027[RFC 6027]:
+ IPsec Cluster Problem Statement
+
+|*x*
+|{IETF}/rfc6290[RFC 6290]:
+ A Quick Crash Detection Method for the IKE Protocol
+
+|*x*
+|{IETF}/rfc6311[RFC 6311]:
+ Protocol Support for High Availability of IKEv2/IPsec
+
+|*d*
+|{IETF}/rfc6467[RFC 6467]:
+ Secure Password Framework for IKEv2
+
+|*x*
+|{IETF}/rfc6617[RFC 6617]:
+ Secure Pre-Shared Key (PSK) Authentication for IKE
+
+|*d*
+|{IETF}/rfc6628[RFC 6628]:
+ Efficient Augmented Password-Only Authentication and Key Exchange for IKEv2
+
+|*d*
+|{IETF}/rfc6631[RFC 6631]:
+ Password Authenticated Connection Establishment with IKEv2
+
+|*x*
+|{IETF}/rfc6867[RFC 6867]:
+ An IKEv2 Extension to Support EAP Re-authentication Protocol (ERP)
+
+|
+|{IETF}/rfc6932[RFC 6932]:
+ Brainpool Elliptic Curves for the IKE Group Description Registry
+
+|
+|{IETF}/rfc6954[RFC 6954]:
+ Using the Elliptic Curve Cryptography (ECC) Brainpool Curves for IKEv2
+
+|
+|{IETF}/rfc6989[RFC 6989]:
+ Additional Diffie-Hellman Tests for IKEv2
+
+|
+|{IETF}/rfc7383[RFC 7383]:
+ IKEv2 Message Fragmentation
+
+|
+|{IETF}/rfc7427[RFC 7427]:
+ Signature Authentication in IKEv2
+
+|*x*
+|{IETF}/rfc7619[RFC 7619]:
+ The NULL Authentication Method in IKEv2
+
+|
+|{IETF}/rfc7634[RFC 7634]:
+ ChaCha20, Poly1305, and Their Use in the IKE Protocol and IPsec
+
+|*d*
+|{IETF}/rfc7651[RFC 7651]:
+ 3GPP IP Multimedia Subsystems (IMS) Option for IKEv2
+
+|*x*
+|{IETF}/rfc7670[RFC 7670]:
+ Generic Raw Public-Key Support for IKEv2
+
+|*x*
+|{IETF}/rfc8019[RFC 8019]:
+ Protecting IKEv2 Implementations from Distributed Denial-of-Service Attacks
+
+|
+|{IETF}/rfc8031[RFC 8031]:
+ Curve25519 and Curve448 for the IKEv2 Key Agreement
+
+|
+|{IETF}/rfc8420[RFC 8420]:
+ Using the Edwards-Curve Digital Signature Algorithm (EdDSA) in IKEv2
+
+|*x*
+|{IETF}/rfc8229[RFC 8229]:
+ TCP Encapsulation of IKE and IPsec Packets
+
+|*x*
+|{IETF}/rfc8598[RFC 8598]:
+ Split DNS Configuration for IKEv2
+
+|
+|{IETF}/rfc8784[RFC 8784]:
+ Mixing Preshared Keys in IKEv2 for Post-quantum Security
+
+|*x*
+|{IETF}/rfc8983[RFC 8983]:
+ IKEv2 Notification Status Types for IPv4/IPv6 Coexistence
+
+|
+|{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
+ Labeled IPsec Traffic Selector support for IKEv2
+
+|6.0
+|{IETF}/draft-ietf-ipsecme-ikev2-intermediate[draft-ietf-ipsecme-ikev2-intermediate]:
+ Intermediate Exchange in the IKEv2 Protocol
+
+|6.0
+|{IETF}/draft-ietf-ipsecme-ikev2-multiple-ke[draft-ietf-ipsecme-ikev2-multiple-ke]:
+ Multiple Key Exchanges in IKEv2
+
+|
+|{IETF}/draft-brunner-ikev2-mediation[draft-brunner-ikev2-mediation]:
+ IKEv2 Mediation Extension
+
+|*x*
+|{IETF}/draft-laganier-ike-ipv6-cga[draft-laganier-ike-ipv6-cga]:
+ Using IKE with IPv6 Cryptographically Generated Addresses
+|===
+
+== IPsec
+
+=== Core Standards
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc4301[RFC 4301]:
+ Security Architecture for the Internet Protocol
+
+|
+|{IETF}/rfc4302[RFC 4302]:
+ IP Authentication Header (AH)
+
+|
+|{IETF}/rfc4303[RFC 4303]:
+ IP Encapsulating Security Payload (ESP)
+
+|
+|{IETF}/rfc4308[RFC 4308]:
+ Cryptographic Suites for IPsec
+
+|
+|{IETF}/rfc8221[RFC 8221]:
+ Cryptographic Algorithm Implementation Requirements and Usage Guidance for ESP and AH
+|===
+
+=== Extensions
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc2410[RFC 2410]:
+ The NULL Encryption Algorithm and Its Use With IPsec
+
+|
+|{IETF}/rfc2451[RFC 2451]:
+ The ESP CBC-Mode Cipher Algorithms
+
+|
+|{IETF}/rfc3602[RFC 3602]:
+ The AES-CBC Cipher Algorithm and Its Use with IPsec
+
+|
+|{IETF}/rfc3948[RFC 3948]:
+ UDP Encapsulation of IPsec ESP Packets
+
+|
+|{IETF}/rfc3686[RFC 3686]:
+ Using Advanced Encryption Standard (AES) Counter Mode With IPsec ESP
+
+|
+|{IETF}/rfc4106[RFC 4106]:
+ The Use of Galois/Counter Mode (GCM) in IPsec ESP
+
+|
+|{IETF}/rfc4304[RFC 4304]:
+ Extended Sequence Number (ESN) Addendum to IPsec DOI for ISAKMP
+
+|
+|{IETF}/rfc4309[RFC 4309]:
+Using Advanced Encryption Standard (AES) CCM Mode with IPsec ESP
+
+|*x*|
+{IETF}/rfc4494[RFC 4494]:
+ The AES-CMAC-96 Algorithm and Its Use with IPsec
+
+|
+|{IETF}/rfc4543[RFC 4543]:
+ The Use of Galois Message Authentication Code (GMAC) in IPsec ESP and AH
+
+|
+|{IETF}/rfc4868[RFC 4868]:
+ Using HMAC-SHA-256, HMAC-SHA-384, and HMAC-SHA-512 with IPsec
+
+|
+|{IETF}/rfc5114[RFC 5114]:
+ Additional Diffie-Hellman Groups for Use with IETF Standards
+
+|
+|{IETF}/rfc5529[RFC 5529]:
+ Modes of Operation for Camellia for Use with IPsec
+
+|*x*
+|{IETF}/rfc5660[RFC 5660]:
+ IPsec Channels: Connection Latching
+
+|*x*
+|{IETF}/rfc5840[RFC 5840]:
+ Wrapped Encapsulating Security Payload (ESP) for Traffic Visibility
+
+|
+|{IETF}/rfc5879[RFC 5879]:
+ Heuristics for Detecting ESP-NULL Packets
+
+|
+|{IETF}/rfc6379[RFC 6379]:
+ Suite B Cryptographic Suites for IPsec
+
+|
+|{IETF}/rfc6380[RFC 6380]:
+ Suite B Profile for Internet Protocol Security (IPsec)
+
+|
+|{IETF}/rfc6479[RFC 6479]: IPsec Anti-Replay Algorithm without Bit Shifting
+
+|*x*
+|{IETF}/rfc7018[RFC 7018]:
+Auto-Discovery VPN Problem Statement and Requirements
+
+|*x*
+|{IETF}/rfc8229[RFC 8229]:
+ TCP Encapsulation of IKE and IPsec Packets
+
+|*x*
+|{IETF}/rfc8750[RFC 8750]:
+ Implicit Initialization Vector (IV) for Counter-Based Ciphers in ESP
+|===
+
+== Multicast IPsec
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|*x*
+|{IETF}/rfc4046[RFC 4046]:
+ Multicast Security (MSEC) Group Key Management Architecture
+
+|*x*
+|{IETF}/rfc4535[RFC 4535]:
+ GSAKMP: Group Secure Association Key Management Protocol
+
+|*x*
+|{IETF}/rfc5374[RFC 5374]:
+ Multicast Extensions to the Security Architecture for the Internet Protocol
+
+|*x*
+|{IETF}/rfc6054[RFC 6054]:
+ Using Counter Modes with ESP and AH to Protect Group Traffic
+
+|*x*
+|{IETF}/rfc6407[RFC 6407]:
+ The Group Domain of Interpretation (GDOI)
+
+|*x*
+|{IETF}/draft-ietf-msec-gkdp[draft-ietf-msec-gkdp]:
+ GKDP: Group Key Distribution Protocol
+|===
+
+== Mobile IPv6
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc4877[RFC 4877]:
+ Mobile IPv6 Operation with IKEv2 and the Revised IPsec Architecture
+|===
+
+== PKI
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc3779[RFC 3779]:
+ X.509 Extensions for IP Addresses and AS Identifiers
+
+|
+|{IETF}/rfc4514[RFC 4514]:
+ LDAP: String Representation of Distinguished Names
+
+|
+|{IETF}/rfc4518[RFC 4518]:
+ LDAP Internationalized String Preparation
+
+|
+|{IETF}/rfc4809[RFC 4809]:
+ Requirements for an IPsec Certificate Management Profile
+
+|
+|{IETF}/rfc4945[RFC 4945]:
+ The Internet IP Security PKI Profile of IKEv1/ISAKMP, IKEv2, and PKIX
+
+|
+|{IETF}/rfc5280[RFC 5280]:
+ Internet X.509 Public Key Infrastructure - Certificate and CRL Profile
+
+|
+|{IETF}/rfc5755[RFC 5755]:
+ An Internet Attribute Certificate Profile for Authorization
+
+|
+|{IETF}/rfc5759[RFC 5759]:
+ Suite B Certificate and CRL Profile
+
+|
+|{IETF}/rfc6818[RFC 6818]:
+ Updates to the Internet X.509 PKI Certificate and CRL Profile
+
+|
+|{IETF}/rfc6960[RFC 6960]:
+ X.509 Internet PKI Online Certificate Status Protocol - OCSP
+
+|
+|{IETF}/rfc7468[RFC 7468]:
+ Textual Encodings of PKIX, PKCS, and CMS Structures
+
+|
+|{IETF}/rfc8032[RFC 8032]:
+ Edwards-Curve Digital Signature Algorithm (EdDSA)
+
+|
+|{IETF}/rfc8410[RFC 8410]:
+Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.509
+
+|
+|{IETF}/rfc8894[RFC 8894]:
+ Simple Certificate Enrollment Protocol (SCEP)
+|===
+
+== EAP
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc3748[RFC 3748]:
+ Extensible Authentication Protocol (EAP)
+
+|
+|{IETF}/rfc4186[RFC 4186]:
+ EAP Method for GSM Subscriber Identity Modules (EAP-SIM)
+
+|
+|{IETF}/rfc4187[RFC 4187]:
+ EAP Method for 3rd Generation Authentication and Key Agreement (EAP-AKA)
+
+|
+|{IETF}/rfc5216[RFC 5216]:
+ The EAP-TLS Authentication Protocol
+
+|
+|{IETF}/rfc5281[RFC 5281]:
+ The EAP-TTLS Authentication Protocol Version 0
+
+|*x*
+|{IETF}/rfc5448[RFC 5448]:
+ Improved EAP Method for 3rd Generation Authentication and Key Agreement (EAP-AKA')
+
+|*x*
+|{IETF}/rfc7170[RFC 7170]:
+ Tunnel EAP Method (TEAP) Version 1
+
+|
+|{IANA}/eap-numbers[IANA EAP]:
+ EAP Method Types
+
+|
+|{IANA}/eapsimaka-numbers[IANA EAP-AKA/SIM]:
+ EAP-AKA and EAP-SIM Parameters
+|===
+
+== RADIUS
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc2865[RFC 2865]:
+ Remote Authentication Dial In User Service (RADIUS)
+
+|
+|{IETF}/rfc2869[RFC 2869]:
+ RADIUS Extensions
+
+|
+|{IETF}/rfc3579[RFC 3579]:
+ RADIUS for EAP
+|===
+
+== DNS
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc4025[RFC 4025]:
+ A Method for Storing IPsec Keying Material in DNS
+|===
+
+== NEA
+
+[{COLS}]
+|===
+|S{S_ref} |RFC, Internet Draft
+
+|
+|{IETF}/rfc5209[RFC 5209]:
+ Network Endpoint Assessment (NEA): Overview and Requirements
+
+|
+|{IETF}/rfc5792[RFC 5792]:
+ PA-TNC: A Posture Attribute (PA) Protocol Compatible with TNC
+
+|
+|{IETF}/rfc5793[RFC 5793]:
+ PB-TNC: A Posture Broker (PB) Protocol Compatible with TNC
+
+|
+|{IETF}/rfc6876[RFC 6876]:
+ PT-TLS: Posture Transport Protocol over TLS
+
+|
+|{IETF}/rfc7171[RFC 7171]:
+ PT-EAP: Posture Transport Protocol For EAP Tunnel Methods
+
+|
+|{IETF}/rfc8412[RFC 8412]:
+ Software Inventory Message and Attributes (SWIMA) for PA-TNC
+|===
