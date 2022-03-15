@@ -142,5 +142,6 @@
 * xref:tnc/tnc.adoc[]
 
 .Support
+* xref:support/flawReporting.adoc[Flaw Reporting]
 * xref:support/free.adoc[]
 * xref:support/commercial.adoc[]

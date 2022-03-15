@@ -1,0 +1,73 @@
+= Security and Functional Flaw Reporting
+:page-toclevels: 4
+
+:MAILTO: mailto:security@strongswan.org
+:PGPSEC: https://download.strongswan.org/STRONGSWAN-SECURITY-PGP-KEY
+:PGPREL: https://download.strongswan.org/STRONGSWAN-RELEASE-PGP-KEY
+:CVE:    https://www.cve.org/ResourcesSupport/ReportRequest#RequestCVEID
+:NVD:    https://nvd.nist.gov/vuln/search/results?isCpeNameSearch=false&query=strongswan&results_type=overview&form_type=Basic&search_type=all&startIndex=0
+:FIXES:  https://download.strongswan.org/security/
+:GITHUB: https://github.com/strongswan/strongswan
+
+
+== Security Flaws
+
+=== Reporting
+
+* Please {MAILTO}[email] any security-relevant flaw to the special mail account
+  {MAILTO}[security@strongswan.org]. Whenever possible encrypt your posting
+  using the {PGPSEC}[strongSwan security PGP key] for the
+  {MAILTO}[security@strongswan.org] account.
+
+=== Severity Classification
+
+==== High Severity Flaw
+
+* Allows remote access to the VPN with improper, missing, or invalid credentials
+
+* Allows local escalation of privileges on the server
+
+* Plain text traffic on the secure interface
+
+* Key generation and crypto flaws that reduce the difficulty in decrypting secure
+  traffic
+
+==== Medium Severity Flaw
+
+* Remotely crashing the strongSwan daemon which would allow DoS attacks on the
+  VPN service
+
+==== Low Severity Flaw
+
+* All other minor issues not directly compromising security or availability of
+  the strongSwan daemon or the host the daemon is running on
+
+=== Action Taken
+
+* For *high* and *medium* severity vulnerabilities we are going to apply for a
+  {CVE}[CVE Identifier] first. Next we notify all known strongSwan customers and
+  the major Linux distributions, giving them a time of about three weeks to patch
+  their software release. On a predetermined date we officially issue an advisory
+  and a patch for the vulnerability and usually a new stable strongSwan release
+  containing the security fix. Also the {NVD}[CVE entry] will be published.
+
+ * Minor vulnerabilities  of *low* severity usually will be fixed immediately and
+   the corresponding patch will be posted on the strongSwan mailing list.
+
+=== List of Reported and Fixed Security Flaws
+
+ * Here is the list of all reported strongSwan high and medium security flaws
+   registered in the {NVD}[CVE database] which were fixed by the following
+   {FIXES}[security patches]. Each security patch is signed by the
+   {PGPREL}[strongSwan release PGP key].
+
+== Functional Flaws
+
+ * Please report all non-security-related flaws and bugs by opening a
+   {GITHUB}/issues[*new issue*] on our {GITHUB}/issues[strongSwan Github site].
+   Of course it is helpful if you can already pinpoint the code file where you
+   suspect the bug or in the case of a crash to provide a backtrack analysis of
+   the core dump.
+
+ * User patches fixing flaws are always welcome can be posted as a
+   {GITHUB}/pulls[*pull request*] on our {GITHUB}/pulls[strongSwan Github site].
