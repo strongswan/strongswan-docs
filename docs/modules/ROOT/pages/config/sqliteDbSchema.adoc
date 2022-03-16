@@ -299,4 +299,4 @@ IPsec *mode* defined in {GITHUB}/{SRC9}#L39[`{SRC9}`]
 
 == Examples
 
-* {TESTS}/sql/[All SQL test scenarios]
+* xref:./IKEv2Sql.adoc[IKEv2 SQL test scenarios]

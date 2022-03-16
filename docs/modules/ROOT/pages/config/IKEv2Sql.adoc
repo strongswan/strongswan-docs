@@ -1,0 +1,62 @@
+= IKEv2 SQL Configuration Examples
+
+:TESTS: https://www.strongswan.org/testing/testresults
+
+== Remote Access
+
+[cols="4,1,1,1"]
+|===
+|RSA authentication with X.509 certificates
+|{TESTS}/sql/rw-cert[IPv4]
+|
+|{TESTS}/sql/shunt-policies-nat-rw[NAT]
+
+|RSA Authentication with X.509 Multi-Level CA
+|{TESTS}/sql/multi-level-ca[IPv4]
+|
+|
+
+|PSK authentication with pre-shared keys (IP)
+|{TESTS}/sql/rw-psk-ipv4[IPv4]
+|{TESTS}/sql/rw-psk-ipv6[IPv6]
+|
+
+
+|EAP_AKA authentication
+|{TESTS}/sql/rw-eap-aka-rsa[IPv4]
+|
+|
+|===
+
+== Remote Access with Virtual IP Adresses
+
+[cols="4,3"]
+|===
+
+|DB-based server-side virtual IP pool
+|{TESTS}/sql/ip-pool-db[IPv4]
+
+|Two DB-based server-side virtual IP pools
+|{TESTS}/sql/ip-split-pools-db[IPv4]
+|===
+
+== Site-to-Site
+
+[cols="4,3"]
+|===
+|RSA authentication with X.509 certificates
+|{TESTS}/sql/net2net-cert[IPv4]
+
+|PSK authentication with pre-shared keys
+|{TESTS}/sql/net2net-psk[IPv4]
+
+|Connection setup automatically started by daemon
+|{TESTS}/sql/net2net-start[IPv4]
+
+|Connection setup triggered by data to be tunneled
+|{TESTS}/sql/net2net-route[IPv4]
+|===
+
+== Complete List
+
+* {TESTS}/sql[All IKEv2 SQL test scenarios]
