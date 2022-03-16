@@ -26,6 +26,7 @@
 ** xref:features/networkManager.adoc[]
 ** xref:features/routeBasedVpn.adoc[]
 ** xref:features/highAvailability.adoc[]
+** xref:features/hashAndUrl.adoc[]
 ** xref:features/integrityTests.adoc[]
 ** xref:features/ietf.adoc[]
 

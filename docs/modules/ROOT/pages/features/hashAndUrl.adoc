@@ -1,0 +1,112 @@
+= Hash and URL
+
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC7296: {IETF}/rfc7296
+:TESTS:   https://www.strongswan.org/testing/testresults
+:EX1:     {TESTS}/ikev2/rw-hash-and-url
+:EX2:     {TESTS}/ikev2-multi-ca/rw-hash-and-url
+
+== Introduction
+
+To avoid UDP datagrams being fragmented, IKEv2 supports the
+{RFC7296}#section-3.6[*Hash and URL*] encoding of X.509 certificates. Thus instead
+of transmitting the binary DER encoded certificates in the IKE_AUTH exchange, only
+a hash value and an URL of each certificate is submitted. This URL has to resolve
+to the DER encoded certificate and the hash is a SHA1 digest of that data.
+
+The IKEv2 daemon charon supports both - sending and receiving - of certificates
+encoded in this manner. Receiving such payloads requires no special configuration
+from the user (except enabling the feature, see next section). Thus it is not
+specifically covered in this guide.
+
+=== Example
+
+image:a-m-c-w-d.png[topology, link={EX1},title=hash-and-url example]
+strongSwan *Hash and URL* {EX1}[example]
+
+In this guide we want to configure a connection between the road warriors `*carol*`
+and `*dave*` to the VPN gateway `*moon*`, using certificates issued by the strongSwan
+CA and served by the web server `*winnetou*`.
+
+== Enabling Hash and URL
+
+NOTE: Since there are some security concerns about accepting URLs supplied by
+      unauthenticated peers and then blindly download whatever there may be,
+      *Hash and URL* is currently disabled by default.
+
+To enable {RFC7296}#section-3.6[*Hash and URL*] support in
+xref:daemons/charon.adoc[`*charon*`] the following option in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] has to be set
+----
+charon {
+  hash_and_url = yes
+}
+----
+
+== Configuring the Base URL
+
+The URLs that will be sent by the IPsec peers are built by appending the SHA1 hash
+of the DER encoded certificate to a base URL configured in the
+xref:swanctl/swanctlConf.adoc#_authorities[`*authorities*`] section of
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. The option is `*cert_uri_base*`
+and it has to be added to the `*authorities*` section of the CA that issued the
+certificate we want to send as {RFC7296}#section-3.6[*Hash and URL*].
+
+NOTE: A peer that sends its certificates as *Hash and URL* still has to have these
+      certificates locally available.
+
+On `*carol*` the required CA section might look like this (likewise on `*moon*`
+and `*dave*`):
+----
+authorities {
+  strongswan {
+    cacert = strongswanCert.pem
+    cert_uri_base = http://winnetou.strongswan.org/certs/
+  }
+}
+----
+The URLs will then be built by concatenating the value of `*cert_uri_base*` and
+the SHA1 hash of the DER encoded certificate (see an example later on).
+
+== Preparing the Certificates
+
+Next the certificates have to be prepared and uploaded to the web server `*winnetou*`.
+If the X.509 certificates provided, are PEM encoded they have to be converted to
+DER encoding first, e.g. using the `*openssl*` command
+
+ $ openssl x509 -in carolCert.pem -inform PEM -out carolCert.der -outform DER
+
+As mentioned above the URL is just the base URL plus the SHA1 hash of the
+certificate data. To compute the hash, either `*openssl*`
+----
+$ openssl dgst -sha1 carolCert.der
+SHA1(carolCert.der)= 2979610b950df52476a7b0f1cd2baa2bf8026d77
+----
+or `*sha1sum*`
+----
+$ sha1sum carolCert.der
+2979610b950df52476a7b0f1cd2baa2bf8026d77  carolCert.der
+----
+can be used. The file `*carolCert.der*` is now renamed to
+`*2979610b950df52476a7b0f1cd2baa2bf8026d77*` and uploaded to the web server
+`*winnetou*`.
+
+== Hash and URL Use
+
+In the example presented above `*carol*` sends her certificate in the form of a
+{RFC7296}#section-3.6[*Hash and URL*] and `*moon*` fetches the actual certificate
+from `*winnetou*`
+----
+received cert request for "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+received hash-and-url for end entity cert "http://winnetou.strongswan.org/certs/2979610b950df52476a7b0f1cd2baa2bf8026d77"
+fetching certificate from 'http://winnetou.strongswan.org/certs/2979610b950df52476a7b0f1cd2baa2bf8026d77' ...
+fetched certificate "C=CH, O=strongSwan Project, OU=Research, CN=carol@strongswan.org"
+----
+
+== Multi-Level CA Example
+
+{RFC7296}#section-3.6[*Hash and URL*] also works in a multi-level CA setup where
+intermediate CA certificates are used.
+
+image:a-m-c-w-d.png[topology,252,129,link={EX2},title=multi-level-hash-and-url example]
+strongSwan multi-level CA Hash and URL {EX2}[example].
