@@ -1,5 +1,9 @@
 = strongSwan Documentation
 
+== Introduction
+
+* xref:howtos/introduction.adoc[An introduction to strongSwan]
+
 == Configuration Examples
 
 === Modern vici-based Scenarios
