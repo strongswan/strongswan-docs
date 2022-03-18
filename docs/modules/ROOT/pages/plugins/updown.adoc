@@ -19,14 +19,14 @@ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] pass the absolute path to it in
 
 and add the `*iptables*` argument so that the default behavior is triggered, e.g.
 
- updown = /usr/local/libexec/ipsec/_updown iptables
+ updown = /usr/libexec/ipsec/_updown iptables
 
 The default `*_updown*` script installs `*ACCEPT*` Netfilter rules in the Linux
 kernel by invoking `*iptables*` for the established traffic selectors, allowing
 default `*DROP*` policies. If the local traffic selector is not a single host
 then the option
 
-  connections.<conn>.children.<child>.hostaccess
+  connections.<conn>.children.<child>.hostaccess = yes
 
 in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] inserts rules in the `INPUT`
 and `OUTPUT` chains, besides the rules in the `FORWARD` chain, that allow
