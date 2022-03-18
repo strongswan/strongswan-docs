@@ -1,0 +1,246 @@
+= Forwarding and Split-Tunneling
+
+:NETFILTER: https://upload.wikimedia.org/wikipedia/commons/3/37/Netfilter-packet-flow.svg
+:VPNCLIENT: https://docs.microsoft.com/en-us/powershell/module/vpnclient/
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC3442:   {IETF}/rfc3442
+
+== Overview
+
+In remote access situations clients will usually send all their traffic to the
+gateway. Below we explain how this traffic can be forwarded and properly routed
+back to the roadwarriors.
+
+In some situations it might be more desirable to send only specific traffic via
+the gateway, for instance, to unburden it from forwarding web or even worse, file
+sharing traffic. Therefore, we also explain how to enable so-called _split-tunneling_
+for different clients.
+
+== Forwarding Client Traffic
+
+In order to forward traffic to hosts behind the gateway (or hosts on the Internet
+if split-tunneling is not used), the following option has to be enabled on Linux
+gateways
+----
+sysctl net.ipv4.ip_forward=1
+sysctl net.ipv6.conf.all.forwarding=1
+----
+This can be added to `*/etc/sysctl.conf*` to enable it permanently.
+
+If the firewall on the gateway is rather restrictive, then
+
+ connections.<conn>.children.<child>.updown = /usr/libexec/ipsec/_updown iptables
+
+will automatically cause the default xref:plugins/updown.adoc[`*_updown*`] script
+to add rules that allow traffic to be forwarded.
+
+In remote access setups, VPN clients will be assigned a
+xref:features/vip.adoc[virtual IP] address from a configured address pool. The
+important thing on the gateway side is that all hosts to which the gateway forwards
+traffic to, have to know that they must route packets to be tunneled back to the
+remote access clients via the VPN gateway.
+
+Please note that there might be additional considerations when hosting on
+xref:howtos/cloudPlatforms.adoc[cloud platforms] (e.g. src/dst address checks).
+
+=== Hosts on the LAN
+
+For hosts on the LAN behind the gateway the following situations are possible:
+
+The virtual IPs are from the subnet behind the gateway ::
+  In this situation either the xref:plugins/dhcp.adoc[`*dhcp*`] plugin is used or
+  the gateway assigns xref:features/vip.adoc[virtual IP] addresses from a subnet
+  of the whole LAN behind the gateway (distinct from the IP addresses assigned via
+  DHCP to other LAN hosts). If that is the case, the xref:plugins/farp.adoc[`*farp*`]
+  plugin must be used so that the hosts behind the gateway may learn that they have
+  to send response packets to the VPN gateway. For IPv6 something similar can be
+  done using Neighbour Discovery Protocol (NDP) proxying.
+
+The virtual IPs are from a distinct subnet / In site-to-site scenarios ::
+  If the VPN gateway is the *default gateway* of the accessed LAN nothing special
+  has to be done.  If this is not the case, either add a route on all hosts behind
+  the gateway (manually or e.g. via {RFC3442}[DHCP option 121]), telling them that
+  the subnet from which virtual IP addresses are assigned to roadwarriors or remote
+  subnets in *site-to-site* scenarios can be reached through the VPN gateway.
++
+Alternatively configure a static route on the actual default gateway that redirects
+traffic for the virtual subnet to the VPN gateway. It's also possible to NAT the
+virtual IPs to the (internal) IP address of the gateway, so that requests from
+remote clients will look to LAN hosts as if they originated from the gateway (see
+the next section for notes on setting up a NAT).
+
+If the VPN gateway is not the default gateway of the LAN, ICMP redirects might get
+returned to hosts if they send traffic destined for the remote hosts/subnets to the
+VPN gateway, directing them to the default gateway of the LAN (which probably doesn't
+work and otherwise might get that traffic out unencrypted). To avoid this, disable
+sending such ICMP messages by setting
+----
+net.ipv4.conf.all.send_redirects=0
+net.ipv4.conf.default.send_redirects=0
+----
+If the latter option is not set before the network interface comes up, also set
+the option for the individual interface
+----
+net.ipv4.conf.<iface>.send_redirects=0
+----
+
+=== Hosts on the Internet
+
+If *split-tunneling* is not used, all client traffic will be sent through the IPsec
+tunnel. In this scenario '*local_ts = 0.0.0.0/0*` is configured on the gateway and
+`*remote_ts = 0.0.0.0/0*` on the client.  Now, the gateway could simply ignore
+or drop traffic not destined for subnets it doesn't want the clients to access.
+But that is probably not what most users expect.  It is more likely that they
+expect being able to continue to surf the web or read their emails while being
+connected to the VPN.
+
+The situation here is similar to the one for LAN hosts above. If the gateway would
+simply forward traffic from the virtual subnet to hosts on the Internet, these hosts
+wouldn't be able respond because they would send their response to the virtual IP
+address. What is therefore required are *NAT rules* so that hosts in the virtual
+subnet are mapped to at least one IP address of the VPN gateway (which itself could
+be behind a NAT device too). For hosts on the Internet, traffic from the virtual
+subnet then would appear to originate from the VPN gateway.
+
+By way of example, let's assume the gateway assigns virtual IPs from the
+`*10.0.3.0/24*` subnet to its roadwarrior clients. The following `*iptables*` rules
+will NAT traffic from that subnet to the gateway's `*eth0*` interface (this works
+even for gateways that have only one network interface).
+----
+iptables -t nat -A POSTROUTING -s 10.0.3.0/24 -o eth0 -m policy --dir out --pol ipsec -j ACCEPT
+iptables -t nat -A POSTROUTING -s 10.0.3.0/24 -o eth0 -j MASQUERADE
+----
+
+The first rule exempts traffic that matches an IPsec policy from the NAT rule.
+Additional subnets behind the gateway may be listed after `*-s*`, like
+`*-s 10.0.3.0/24,192.168.88.0/24*`. The `*-s*` option may also be omitted altogether
+to match all outbound traffic.
+
+== General NAT problems
+
+Local firewall stacks generally don't treat packets with a matching IPsec policy
+any different from unprotected packets. That means NAT rules also apply to traffic
+that is supposed to be tunneled.
+
+This often leads to problems, because many hosts have `SNAT` or `MASQUERADE` rules
+set up which change the source IP of the packets, making them not match the negotiated
+IPsec policies when IPsec processing of outgoing packets happens in the
+{NETFILTER}[Netfilter packet flow] `*xfrm lookup*` node. To fix this problem, packets
+with a matching IPsec policy should skip NAT rules in the `POSTROUTING` chain of
+the `*nat*` table. This is achieved by inserting a rule that accepts packets with
+a matching IPsec policy before any NAT rule in the `POSTROUTING` chain
+----
+iptables -t nat -I POSTROUTING -m policy --pol ipsec --dir out -j ACCEPT
+----
+
+== Split-Tunneling
+
+With split-tunneling the clients will only send traffic for specific destination
+subnets to the gateway. For both protocol versions split-tunneling is easy to deploy
+f traffic selectors (TS) can freely be configured on both peers. In that case you'd
+simply use specific values for the `*local_ts*` and `*remote_ts*` options.
+
+=== Split-Tunneling with IKEv2
+
+With IKEv2, *split-tunneling* is quite easy to use as the protocol inherently
+supports the narrowing of the proposed traffic selectors.
+
+For instance if the client proposes `*0.0.0.0/0*` as a remote traffic selector, i.e.
+(`*remote_ts = 0.0.0.0/0*`), this proposal can be narrowed on the gateway by
+configuring `*local_ts =* <list of subnets>`. Likewise the client may already propose
+a selective remote TS by configuring a list of subnets with `*remote_ts*` which the
+gateway might simply accept (e.g. if it has configured `*local_ts = 0.0.0.0/0*`)
+or could further narrow the subnets to be tunneled.
+
+While the protocol supports split-tunneling, whether it can actually be used
+*depends on the client*. Most remote access clients will propose `*0.0.0.0/0*` as
+remote TS, so split-tunneling must be configured explicitly on the gateway. But
+whether this will actually result in split-tunneling will depend on the client.
+All strongSwan based clients (Linux, NetworkManager, Android) support this kind
+of narrowing whereas for Windows clients the situation is as follows:
+
+Windows 7 ::
+  The client will always allow access to the host's LAN. So to access e.g. a local
+  printer nothing special has to be done. Since the client always proposes `*0.0.0.0/0*`
+  as remote TS, the gateway is free to narrow it to a subset. But to make split-tunneling
+  actually work on the client, the _Use default gateway on remote network_ option
+  in the _Advanced TCP/IP_ settings of the VPN connection has to be disabled. Also
+  because a classful route is installed, the virtual IP address has to belong to the
+  remote subnet, otherwise the _Disable class based route addition_ option has to
+  be enabled and routes have to be installed manually.
+
+Windows 8.1 and Windows Server 2012 R2 ::
+  Microsoft introduced {VPNCLIENT}[PowerShell cmdlets] to configure VPN connections.
+  These provide more options and also allow to configure split tunneling directly
+  (`*-SplitTunneling*` option).
+
+Windows 10 ::
+  Split tunneling is enabled by default but with the same limitations seen since
+  Windows 7, i.e. the virtual IP has to be from the remote subnet or routes have
+  to be added manually, e.g. via the
+  {VPNCLIENT}/Add-VpnConnectionRoute?view=win10-ps[Add-VpnConnectionRoute] PowerShell
+  command. To tunnel all traffic via VPN instead, split tunneling has to be disabled
+  explicitly, either by enabling the _Use default gateway on remote network_
+  setting described above or by using the following PowerShell command
++
+----
+Set-VpnConnection "<Connection Name>" -SplitTunneling 0
+----
+
+=== Split-Tunneling with IKEv1
+
+IKEv1 does not provide narrowing of traffic selectors by default.  That means that
+the traffic selector configuration usually has to *match exactly* on both peers.
+To simplify things, the IKEv1 implementation in the
+xref:daemons/charon.adoc[`*charon*`] daemon does support *narrowing* of traffic
+selectors similar to how it is implemented for IKEv2. Unfortunately this is not
+compatible with many third party implementations.
+
+On the other hand, such clients may support the *Unity extensions* developed by
+Cisco. The xref:plugins/unity.adoc[`*unity*`] plugin provides strongSwan gateways
+with a transparent way of assigning narrowed traffic selectors to clients that
+support these extensions (e.g. `*racoon*` as used in Apple products). The
+xref:plugins/attr.adoc[`*attr*`] and xref:plugins/attr-sql.adoc[`*attr-sql*`] plugins
+provides the means to manually configure attributes that enable split-tunneling
+for Unity-aware clients.
+
+== MTU/MSS Issues
+
+It is possible that you encounter MSS/MTU problems when tunneling traffic. This is
+caused by broken routers dropping ICMP packets and thus breaking PMTUD (Path MTU
+Discovery). You can work around these issues by lowering the advertised MSS value
+of TCP with the `TCPMSS` target in `*iptables*`.
+
+Or if you control the router in question, fixing PMTU may be advisable. To do so
+you need to permit the appropriate ICMP traffic (type 3, destination unreachable,
+code 4, fragmentation needed - though all of type 3 is usually allowed).
+In particular one must pay attention to the source address of ICMP messages emitted
+by the VPN gateway, which will usually be the primary IP address of the gateway's
+internal interface, *not* that of the endpoint experiencing the issue.
+
+The value you set with the `TCPMSS` target must accommodate for any other overhead
+introduced by the tunneling protocols in use (e.g. UDP encapsulation of ESP).
+Google the issue and read the man page of `*iptables*` and `*iptables-extensions*`
+if there are any questions about its usage.
+
+The `*charon.plugins.kernel-netlink.mss*` and `*charon.plugins.kernel-netlink.mtu*`
+options may be used, too, but the values set there apply to the routes that
+teh `*kernel-netlink*` plugin installs and the impact of them onto the traffic and
+the behavior of the kernel is currently quite unclear.
+
+Add the following `*iptables*` rules on the IKE responder to reduce the MSS (as
+noted above, the actual values depend on the overhead imposed by the tunneling
+protocols and the MTU, so it might have to be lower than what is used in the
+example here):
+----
+iptables -t mangle -A FORWARD -m policy --pol ipsec --dir in  -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
+iptables -t mangle -A FORWARD -m policy --pol ipsec --dir out -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
+----
+Alternatively you can add the same rules in `PREROUTING` and `POSTROUTING`
+(also in the `*mangle*` table). Additionally set `*net.ipv4.ip_no_pmtu_disc=1*`
+on the server.
+
+In newer kernels the counter `*XfrmOutStateModeError*` in `*/proc/self/net/xfrm_stat*`
+is incremented if the kernel detects that a packet would be too large after
+encapsulation.
+

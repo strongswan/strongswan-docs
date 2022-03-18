@@ -31,9 +31,10 @@
 ** xref:features/ietf.adoc[]
 
 .Howtos
-** xref:howtos/introduction.adoc[]
 ** xref:config/quickstart.adoc[]
 ** xref:pki/pkiQuickstart.adoc[]
+** xref:howtos/introduction.adoc[]
+** xref:howtos/forwarding.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]
