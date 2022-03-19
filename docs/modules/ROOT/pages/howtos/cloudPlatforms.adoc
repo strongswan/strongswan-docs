@@ -1,0 +1,79 @@
+= Cloud Platforms
+
+Running strongSwan on a cloud platform is usually relatively painless because only
+the hardware is virtualized. The kernel and userspace is untouched.
+
+== General Warnings And Problems
+
+Generally in a cloud environment, the underlying network checks the source IP address
+of the sent IP packets. You need to be able to deactivate this check in order to
+use strongSwan as a VPN gateway, either in a roadwarrior or a site-to-site scenario.
+Except if you masquerade the source address of all packets that are transmitted
+over the network. However, it is advisable to avoid NAT at any cost because it
+prevents you from addressing remote endpoints. This only applies to the outermost
+IP packet though as it does not affect the inner IP packet of any tunneling protocol.
+
+As an alternative, the packets from and to the VPN gateway can be transported to
+the hosts on the local network using other means than directly on top of Ethernet,
+e.g by using IPsec in tunnel mode, GRE, IPinIP or other protocols.
+
+== Container Virtualization
+
+Container-virtualized environments often do not offer a working IPsec stack to
+the software in the container. Therefore the
+xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`] interface might have to
+be used instead.
+
+To use xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`], `*tun*` devices have
+to be available. Keep in mind that using
+xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`] has drawbacks and is generally
+discouraged. Change to a hardware-virtualized virtual machine if possible.
+
+*OpenVZ* uses container virtualization. On *OpenVZ*, support for IPsec seems to
+have been broken at some point. *Virtuozzo* can also be a container. With *Virtuozzo*
+it depends on the VM type.
+
+If the xref:daemons/charon.adoc[`*charon*`] daemon complains about not being able
+to open an XFRM socket or the installation of SAs fails, then it's very likely
+container-virtualized.
+
+strongSwan in a *Docker container* works with kernel IPsec if the host operating
+system has a working IPsec stack and if the docker container, as well as strongSwan,
+have the necessary privileges to access it (`CAP_NET_ADMIN`). You do not have
+to enable host networking.
+
+An incomplete list of container virtualization technologies:
+
+* LXC
+
+* Docker
+
+* xref:howtos/nameSpaces.adoc[Generally Linux namespaces]
+
+== AWS EC2
+
+On AWS the source check of a machine can be disabled in the EC2 management menu.
+Disabling it is required if the host running strongSwan is supposed to make the
+whole Internet available to the hosts in the VPC. Otherwise add the routes to
+the remote network in the VPC's route settings.
+
+This is not required if you protect the traffic between the other hosts and the
+*central gateway* in the VPC (not the AWS-provided Internet Gateway) using IPsec
+in tunnel mode.
+
+Generally the source check only has to be disabled if the routing table of the
+VPC disagrees with the direction the traffic goes into and comes from (the return
+path check fails). That is the same mechanism as the `*rp_filter*` on Linux.
+
+== Azure
+
+Each virtual NIC attached to a VM has an option to enable IP forwarding. If that
+option is not enabled, then Azure does a `*src/dst*` check.
+
+== Google Cloud Engine
+
+No specialties about the Google Cloud Engine (GCE) are known at this point.
+
+== DigitalOcean Droplets
+
+On DigitalOcean the source check cannot be disabled.
