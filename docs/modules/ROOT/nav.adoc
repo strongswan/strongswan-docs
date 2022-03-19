@@ -18,6 +18,7 @@
 * xref:config/rekeying.adoc[]
 * xref:config/retransmission.adoc[]
 * xref:config/sqliteDbSchema.adoc[]
+* xref:config/IPv6Ndp.adoc[]
 
 .Features
 ** xref:features/vip.adoc[]

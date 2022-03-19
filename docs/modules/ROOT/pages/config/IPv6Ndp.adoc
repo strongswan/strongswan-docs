@@ -1,0 +1,90 @@
+= IPv6 and the Neighbor Discovery Protocol
+
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC4861:   {IETF}/rfc4861
+
+== Overview
+
+When using IPv6 a potential pitfall is that traffic selectors of established tunnels
+might also cover packets used by the Neighbor Discovery Protocol (NDP), in particular
+if all traffic is tunneled (traffic selector is `*::/0*`). Thus looking up link layer
+addresses of peers and routers might fail or locally assigned IP addresses might
+disappear.
+
+To allow NDP traffic when tunnels are established bypass policies have to be
+installed.
+
+Either for all ICMPv6 traffic or only for certain types (depending on the setup and
+traffic selectors not all will have to be bypassed, refer to {RFC4861}[RFC 4861]
+for details on the message types):
+
+Router Solicitation (RS): 133 ::
+  Used to locate routers. Source address is a local address or `*::*` (if none is
+  known yet), the destination address is typically the all-routers multicast address.
+
+Router Advertisement (RA): 134 ::
+  Sent by routers periodically or in response to RS messages (from a link-local
+  address to either the address from which RS messages were received or the
+  all-nodes multicast address). If these (or RS messages, if used) are blocked,
+  locally assigned addresses might disappear after establishing the tunnel.
+
+ Neighbor Solicitation (NS): 135 ::
+  Similar to ARP for IPv4 these are used to determine the link layer address of
+  a host. Typically sent from a locally assigned address to the solicited-node
+  multicast address corresponding to the target address.
+
+ Neighbor Advertisement (NA): 136 ::
+  Sent as response to NS messages (from a local address to the address from which
+  the NS messages were received). If these or NS messages are blocked, peers might
+  not be able to reach each other or a router after establishing the tunnel (could
+  take a while if link local addresses are cached).
+
+ Redirect (R): 137 ::
+   Could be used by routers to send hosts a better first hop router for a destination
+   (from a link-local address to the source address of the packet that triggered
+   the redirect).
+
+== Examples
+
+To bypass all ICMPv6 messages
+----
+connections {
+  ...
+  ndp {
+    children {
+      icmpv6 {
+        local_ts = ::/0[ipv6-icmp/%any]
+        remote_ts = ::/0[ipv6-icmp/%any]
+        mode = pass
+        start_action = trap
+      }
+    }
+  }
+}
+----
+
+To bypass only NS and NA messages
+----
+connections {
+  ...
+  ndp {
+    children {
+      ns {
+        local_ts = ::/0[ipv6-icmp/135]
+        remote_ts = ::/0[ipv6-icmp/135]
+        mode = pass
+        start_action = trap
+      }
+      na {
+        local_ts = ::/0[ipv6-icmp/136]
+        remote_ts = ::/0[ipv6-icmp/136]
+        mode = pass
+        start_action = trap
+      }
+    }
+  }
+}
+----
+
+NOTE: Instead of *ipv6-icmp* the numeric protocol identifier *58* might have to
+      be used if the protocol name can't be resolved.
