@@ -1,0 +1,92 @@
+= strongSwan in Linux Network Namespaces
+
+Normally, the network stack (interfaces, routing tables, firewall rules etc.) is
+shared by all processes running on an operating system. With Linux network namespaces
+(`*netns*`) it's possible to have multiple separate instances of the network stack.
+
+NOTE: While basic support for network namespaces was added to the Linux kernel a
+      long time ago some features (e.g. CLUSTERIP support) might require a recent
+      kernel.
+
+The easiest way to work with network namespaces is to use the `*ip*` command of the
+`*iproute2*` package. These commands will have to be executed as root (i.e. with
+`*sudo*` on most distros).
+
+== Network Namespace Basics
+
+To create a new netns use the following command:
+
+ # ip netns add <network namespace name>
+
+A list of all currently defined `*netns*` is provided by `*ip netns list*`.
+Interfaces can be assigned to a `*netns*` with the `*ip link*` command:
+
+ # ip link set <interface name> netns <netns name>
+
+If you run `*ip link list*` afterwards, such an interface won't be seen as it is
+only available in the configured `*netns*`. So to actually list the interface in
+a specific `*netns*` it is required to be able to run commands in a specific
+`*netns*`. This can be done with the `*ip netns exec*` command. Thus to get a list
+of interfaces defined in a specific `*netns*` use:
+
+ # ip netns exec <netns name> ip link list
+
+If only one physical interface is available or if you don't want to assign physical
+interfaces to the `*netns*` for other reasons, it's possible to create virtual
+Ethernet interface pairs (`*veth*` provided via `CONFIG_VETH`). These are like a
+bi-directional pipe (i.e. what's written to one end comes out the other end and
+vice-versa) of which one end is placed inside the `*netns*` and the other stays
+outside in the *default* or *global* namespace.
+
+To create such a pair use:
+
+ # ip link add <interface name 1> type veth peer name <interface name 2>
+
+This creates two connected Enthernet interfaces with the given names. One is
+assigned to a netns (via `*ip link*`) the other is not (it doesn't matter which
+one and it's also possible to assign both interfaces to two different `*netns*`
+to connect them).  How the outer interface is used depends on the use case: it may
+be put inside a bridge or used in routing rules to route traffic to and from a
+`*netns*`.
+
+Since interfaces assigned to a `*netns*` are disabled they have to be enabled first
+and they will probably also require an IP address, which can be done with:
+----
+# ip netns exec <netns name> ip addr add x.x.x.x/x dev <iface name>
+# ip netns exec <netns name> ip link set dev <iface name> up
+----
+Similar to these commands, routes or firewall rules may be added by running
+`*ip route*` or `*iptables*` inside a specific `*netns*` via
+
+ # ip netns exec <command>
+
+== Running strongSwan Inside a Network Namespace
+
+Running a single instance of strongSwan inside a `*netns*` is straight-forward.
+Simply run xref:swanctl/swanctlConf.adoc[`*swanctl*`] commands via
+
+ # ip netns exec ipsec <command>
+
+But more interesting is running multiple instances of strongSwan in separate
+namespaces. Because all `*netns*` share the same file system this is a bit tricky.
+
+Luckily, the `*ip netns exec*` command provides a helpful feature: Every file found
+in `*/etc/netns/<name>/*` for a given `*netns*` is bind-mounted over its corresponding
+counterpart in `*/etc/*` (so it has to exist there).  This can be used to provide
+different config files for each instance but may also be used to redirect the so
+called `*piddir*` where the xref:daemons/charon.adoc[`*charon*`] daemon creates its
+PID file and UNIX sockets. The default is to use `*/var/run*` which would conflict
+if multiple instances would use it.
+
+In order to fix this, make sure strongSwan is
+xref:install/autoconf.adoc[`*configured*`] with `*--sysconfdir=/etc*` and e.g.
+`*--with-piddir=/etc/ipsec.d/run*`. Then after
+xref:install/install.adoc#_building_strongswan[building and installing strongSwan]
+the `*piddirs*` can be created as follows:
+----
+# mkdir -p /etc/ipsec.d/run
+# mkdir -p /etc/netns/<netns name 1>/ipsec.d/run
+# mkdir -p /etc/netns/<netns name 2>/ipsec.d/run
+----
+For config files that differ between `*netns*`, a modified copy of the original
+may be placed in `*/etc/netns/<name>/*` or a subdirectory.

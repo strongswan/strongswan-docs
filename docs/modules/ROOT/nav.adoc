@@ -37,6 +37,7 @@
 ** xref:howtos/introduction.adoc[]
 ** xref:howtos/forwarding.adoc[]
 ** xref:howtos/cloudPlatforms.adoc[]
+** xref:howtos/nameSpaces.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]
