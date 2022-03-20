@@ -278,7 +278,7 @@ If you run into problems, increasing the log level might help you understand wha
 exactly went wrong. The different xref:config/logging.adoc[logging options] are
 described in a xref:config/logging.adoc[separate document] or the
 xref:config/strongswanConf.adoc[`*strongswan.conf*`] man page. Recommended log
-settings for debugging problems may be found xref:support/helpRequests.adoc [here].
+settings for debugging problems may be found xref:support/helpRequests.adoc[here].
 
 Whenever you encounter a log message similar to `*received ... error notify*` where
 the placeholder `*...*` is e.g. `NO_PROPOSAL_CHOSEN` or `TS_UNACCEPTABLE`, you
