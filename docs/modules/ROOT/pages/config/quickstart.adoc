@@ -1,5 +1,4 @@
 = Configuration Quickstart
-:prewrap!:
 
 Certificates for users, hosts and gateways are issued by a fictitious
 strongSwan CA. In our example scenarios the CA certificate `strongswanCert.pem`
@@ -11,15 +10,14 @@ in the xref:pki/pkiQuickstart.adoc[certificates quickstart] section.
 
 == Site-to-Site Case
 
-In this scenario two security gateways _moon_ and _sun_ will connect the
-two subnets _moon-net_ and _sun-net_ with each other through a VPN tunnel
+In this scenario two security gateways `*moon*` and `*sun*` will connect the
+two subnets `*moon-net*` and `*sun-net*` with each other through a VPN tunnel
 set up between the two gateways:
 
     10.1.0.0/16 -- | 192.168.0.1 | === | 192.168.0.2 | -- 10.2.0.0/16
       moon-net          moon                 sun           sun-net
 
-Configuration on gateway _moon_:
-
+Configuration on gateway `*moon*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/moonCert.pem
@@ -27,31 +25,29 @@ Configuration on gateway _moon_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    net-net {
+      remote_addrs = 192.168.0.2
+      local {
+        auth = pubkey
+        certs = moonCert.pem
+      }
+      remote {
+        auth = pubkey
+        id = "C=CH, O=strongSwan, CN=sun.strongswan.org"
+      }
+      children {
         net-net {
-            remote_addrs = 192.168.0.2
-
-            local {
-                auth = pubkey
-                certs = moonCert.pem
-            }
-            remote {
-                auth = pubkey
-                id = "C=CH, O=strongSwan, CN=sun.strongswan.org"
-            }
-            children {
-                net-net {
-                    local_ts  = 10.1.0.0/16
-                    remote_ts = 10.2.0.0/16
-                    start_action = trap
-                }
-            }
+          local_ts  = 10.1.0.0/16
+          remote_ts = 10.2.0.0/16
+          start_action = trap
         }
+      }
     }
+  }
 ----
 
-Configuration on gateway _sun_:
-
+Configuration on gateway `*sun*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/sunCert.pem
@@ -59,43 +55,41 @@ Configuration on gateway _sun_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    net-net {
+      remote_addrs = 192.168.0.1
+      local {
+        auth = pubkey
+        certs = sunCert.pem
+      }
+      remote {
+        auth = pubkey
+        id = "C=CH, O=strongSwan, CN=moon.strongswan.org"
+      }
+      children {
         net-net {
-            remote_addrs = 192.168.0.1
-
-            local {
-                auth = pubkey
-                certs = sunCert.pem
-            }
-            remote {
-                auth = pubkey
-                id = "C=CH, O=strongSwan, CN=moon.strongswan.org"
-            }
-           children {
-                net-net {
-                    local_ts  = 10.2.0.0/16
-                    remote_ts = 10.1.0.0/16
-                    start_action = trap
-                }
-            }
+          local_ts  = 10.2.0.0/16
+          remote_ts = 10.1.0.0/16
+          start_action = trap
         }
+      }
     }
+  }
 ----
+The `*local*` and `*remote*` identities used in this scenario are the
+`*subjectDistinguishedNames*` (DNs) contained in the end entity certificates.
+The certificates and private keys are loaded into the
+xref:daemons/charon.adoc[`*charon*`] daemon with the command
 
-The local and remote identities used in this scenario are the
-`subjectDistinguishedNames` contained in the end entity certificates.
-The certificates and private keys are loaded into the `charon` daemon with
-the command
-
-    swanctl --load-creds
+ swanctl --load-creds
 
 whereas
 
-    swanctl --load-conns
+ swanctl --load-conns
 
 loads the connections defined in
 xref:swanctl/swanctlConf.adoc#_connections[`*swanctl.conf*`]. With
-`start_action = trap` the IPsec connection is automatically set up with the
+`*start_action = trap*` the IPsec connection is automatically set up with the
 first plaintext payload IP packet wanting to go through the tunnel.
 
 == Host-to-Host Case
@@ -107,8 +101,7 @@ connections we will use the default IPsec tunnel mode.
     | 192.168.0.1 | === | 192.168.0.2 |
          moon                sun
 
-Configuration on host _moon_:
-
+Configuration on host `*moon*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/moonCert.pem
@@ -116,29 +109,27 @@ Configuration on host _moon_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    host-host {
+      remote_addrs = 192.168.0.2
+      local {
+        auth=pubkey
+        certs = moonCert.pem
+      }
+      remote {
+        auth = pubkey
+        id = "C=CH, O=strongSwan, CN=sun.strongswan.org"
+      }
+      children {
         host-host {
-            remote_addrs = 192.168.0.2
-
-            local {
-                auth=pubkey
-                certs = moonCert.pem
-            }
-            remote {
-                auth = pubkey
-                id = "C=CH, O=strongSwan, CN=sun.strongswan.org"
-            }
-                children {
-                    net-net {
-                    start_action = trap
-                }
-            }
+          start_action = trap
         }
+      }
     }
+  }
 ----
 
-Configuration on host _sun_:
-
+Configuration on host `*sun*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/sunCert.pem
@@ -146,25 +137,24 @@ Configuration on host _sun_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    host-host {
+      remote_addrs = 192.168.0.1
+      local {
+        auth = pubkey
+        certs = sunCert.pem
+      }
+      remote {
+        auth = pubkey
+        id = "C=CH, O=strongSwan, CN=moon.strongswan.org"
+      }
+      children {
         host-host {
-            remote_addrs = 192.168.0.1
-
-            local {
-                auth = pubkey
-                certs = sunCert.pem
-            }
-            remote {
-                auth = pubkey
-                id = "C=CH, O=strongSwan, CN=moon.strongswan.org"
-            }
-            children {
-                host-host {
-                    start_action = trap
-                }
-            }
+          start_action = trap
         }
+      }
     }
+  }
 ----
 
 == Roadwarrior Case
@@ -175,8 +165,7 @@ number of remote VPN clients usually having dynamic IP addresses.
     10.1.0.0/16 -- | 192.168.0.1 | === | x.x.x.x |
       moon-net          moon              carol
 
-Configuration on gateway _moon_:
-
+Configuration on gateway `*moon*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/moonCert.pem
@@ -184,27 +173,26 @@ Configuration on gateway _moon_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    rw {
+      local {
+        auth = pubkey
+        certs = moonCert.pem
+        id = moon.strongswan.org
+      }
+      remote {
+        auth = pubkey
+      }
+      children {
         rw {
-            local {
-                auth = pubkey
-                certs = moonCert.pem
-                id = moon.strongswan.org
-            }
-            remote {
-                auth = pubkey
-            }
-            children {
-                net-net {
-                    local_ts  = 10.1.0.0/16
-                }
-            }
+          local_ts  = 10.1.0.0/16
         }
+      }
     }
+  }
 ----
 
-Configuration on roadwarrior _carol_:
-
+Configuration on roadwarrior `*carol*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/carolCert.pem
@@ -212,68 +200,65 @@ Configuration on roadwarrior _carol_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
-        home {
-            remote_addrs = moon.strongswan.org
-
-            local {
-                auth = pubkey
-                certs = carolCert.pem
-                id = carol@strongswan.org
-            }
-            remote {
-                auth = pubkey
-                id = moon.strongswan.org
-            }
-            children {
-                home {
-                    local_ts  = 10.1.0.0/16
-                    start_action = start
-                }
-            }
+  connections {
+    home {
+      remote_addrs = moon.strongswan.org
+      local {
+        auth = pubkey
+          certs = carolCert.pem
+          id = carol@strongswan.org
         }
+      remote {
+        auth = pubkey
+        id = moon.strongswan.org
+      }
+      children {
+        home {
+          local_ts  = 10.1.0.0/16
+          start_action = start
+        }
+      }
     }
+  }
 ----
-
-For `remote_addrs` the hostname `moon.strongswan.org` was chosen which will be
+For `*remote_addrs*` the hostname `*moon.strongswan.org*` was chosen which will be
 resolved by DNS at runtime into the corresponding IP destination address.
-In this scenario the identity of the roadwarrior `carol` is the email address
-`carol@strongswan.org` which must be included as a `subjectAlternativeName` in
-the roadwarrior certificate `carolCert.pem`.
+In this scenario the identity of the roadwarrior `*carol*` is the email address
+`*carol@strongswan.org*` which must be included as a `*subjectAltName*` in
+the roadwarrior certificate `*carolCert.pem*`.
 
 
 == Roadwarrior Case with Virtual IP
 
 Roadwarriors usually have dynamic IP addresses assigned by the ISP they are
-currently attached to.  In order to simplify the routing from _moon-net_ back
-to the remote access client _carol_ it would be desirable if the roadwarrior had
+currently attached to.  In order to simplify the routing from `*moon-net*` back
+to the remote access client `*carol*` it would be desirable if the roadwarrior had
 an inner IP address chosen from a pre-defined pool.
 
     10.1.0.0/16 -- | 192.168.0.1 | === | x.x.x.x | -- 10.3.0.1
       moon-net          moon              carol       virtual IP
 
 In our example the virtual IP address is chosen from the address pool
-`10.3.0.0/16` which can be configured by adding the section
-
-    pools {
-        rw_pool {
-            addrs = 10.3.0.0/16
-        }
+`*10.3.0.0/16*` which can be configured by adding the section
+----
+  pools {
+    rw_pool {
+      addrs = 10.3.0.0/16
     }
-
+  }
+----
 to the gateway's xref:swanctl/swanctlConf.adoc#_pools[`*swanctl.conf*`] from where
 they are loaded into the xref:daemons/charon.adoc[`*charon*`] daemon using the
 command
 
-    swanctl --load-pools
+ swanctl --load-pools
 
 To request an IP address from this pool a roadwarrior can use IKEv1 mode config
 or IKEv2 configuration payloads. The configuration for both is the same
 
-    vips = 0.0.0.0
+ vips = 0.0.0.0
 
-Configuration on gateway _moon_:
-
+Configuration on gateway `*moon*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/moonCert.pem
@@ -281,35 +266,33 @@ Configuration on gateway _moon_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    rw {
+      pools = rw_pool
+      local {
+        auth = pubkey
+          certs = moonCert.pem
+          id = moon.strongswan.org
+        }
+      remote {
+        auth = pubkey
+      }
+      children {
         rw {
-            pools = rw_pool
-
-            local {
-                auth = pubkey
-                certs = moonCert.pem
-                id = moon.strongswan.org
-            }
-            remote {
-                auth = pubkey
-            }
-            children {
-                net-net {
-                    local_ts  = 10.1.0.0/16
-                }
-            }
+          local_ts  = 10.1.0.0/16
         }
+      }
     }
+  }
 
-    pools {
-        rw_pool {
-            addrs = 10.30.0.0/16
-        }
+  pools {
+    rw_pool {
+      addrs = 10.30.0.0/16
     }
+  }
 ----
 
-Configuration on roadwarrior _carol_:
-
+Configuration on roadwarrior `*carol*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/carolCert.pem
@@ -317,28 +300,27 @@ Configuration on roadwarrior _carol_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
-        home {
-            remote_addrs = moon.strongswan.org
-            vips = 0.0.0.0
-
-            local {
-                auth = pubkey
-                certs = carolCert.pem
-                id = carol@strongswan.org
-            }
-            remote {
-                auth = pubkey
-                id = moon.strongswan.org
-            }
-            children {
-                home {
-                    local_ts  = 10.1.0.0/16
-                    start_action = start
-                }
-            }
+  connections {
+    home {
+      remote_addrs = moon.strongswan.org
+      vips = 0.0.0.0
+      local {
+        auth = pubkey
+          certs = carolCert.pem
+          id = carol@strongswan.org
+      }
+      remote {
+        auth = pubkey
+          id = moon.strongswan.org
         }
+      children {
+        home {
+          local_ts  = 10.1.0.0/16
+          start_action = start
+        }
+      }
     }
+  }
 ----
 
 == Roadwarrior Case with EAP
@@ -350,8 +332,7 @@ number of remote VPN clients which authenticate themselves via a password-based
     10.1.0.0/16 -- | 192.168.0.1 | === | x.x.x.x |
       moon-net          moon              carol
 
-Configuration on gateway _moon_:
-
+Configuration on gateway `*moon*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/moonCert.pem
@@ -359,74 +340,72 @@ Configuration on gateway _moon_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    rw {
+      local {
+        auth = pubkey
+        certs = moonCert.pem
+        id = moon.strongswan.org
+      }
+      remote {
+        auth = eap-md5
+      }
+      children {
         rw {
-            local {
-                auth = pubkey
-                certs = moonCert.pem
-                id = moon.strongswan.org
-            }
-            remote {
-                auth = eap-md5
-            }
-            children {
-                net-net {
-                    local_ts  = 10.1.0.0/16
-                }
-            }
-            send_certreq = no
+          local_ts  = 10.1.0.0/16
         }
+      }
+      send_certreq = no
     }
+  }
+----
+The xref:swanctl/swanctlConf.adoc#_secrets[`*swanctl.conf*`] file additionally
+contains a `*secrets*` section defining all client credentials
+----
+  secrets {
+    eap-carol {
+      id = carol@strongswan.org
+      secret = Ar3etTnp
+    }
+    eap-dave {
+      id = dave@strongswan.org
+      secret = W7R0g3do
+    }
+  }
 ----
 
-The  xref:swanctl/swanctlConf.adoc#_secrets[`*swanctl.conf*`] file additionally
-contains a `*secrets*` section defining all client credentials
-
-        secrets {
-            eap-carol {
-                id = carol@strongswan.org
-                secret = Ar3etTnp
-            }
-            eap-dave {
-                id = dave@strongswan.org
-                secret = W7R0g3do
-            }
-        }
-
-Configuration on roadwarrior _carol_:
-
+Configuration on roadwarrior `*carol*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    home {
+      remote_addrs = moon.strongswan.org
+      local {
+        auth = eap
+        id = carol@strongswan.org
+      }
+      remote {
+        auth = pubkey
+        id = moon.strongswan.org
+      }
+      children {
         home {
-            remote_addrs = moon.strongswan.org
-
-            local {
-                auth = eap
-                id = carol@strongswan.org
-            }
-            remote {
-                auth = pubkey
-                id = moon.strongswan.org
-            }
-            children {
-                home {
-                    local_ts  = 10.1.0.0/16
-                    start_action = start
-                }
-            }
+          local_ts  = 10.1.0.0/16
+          start_action = start
         }
+      }
     }
+  }
 
-    secrets {
-        eap-carol {
-            id = carol@strongswan.org
-            secret = Ar3etTnp
-        }
+  secrets {
+    eap-carol {
+      id = carol@strongswan.org
+      secret = Ar3etTnp
     }
+  }
 ----
 
 == Roadwarrior Case with EAP Identity
@@ -438,8 +417,7 @@ the IPv4 address of the client.
     10.1.0.0/16 -- | 192.168.0.1 | === | x.x.x.x |
       moon-net          moon              carol
 
-Configuration on gateway _moon_:
-
+Configuration on gateway `*moon*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 /etc/swanctl/x509/moonCert.pem
@@ -447,70 +425,68 @@ Configuration on gateway _moon_:
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    rw {
+      local {
+        auth = pubkey
+        certs = moonCert.pem
+        id = moon.strongswan.org
+      }
+      remote {
+        auth = eap-md5
+        eap_id = %any
+      }
+      children {
         rw {
-            local {
-                auth = pubkey
-                certs = moonCert.pem
-                id = moon.strongswan.org
-            }
-            remote {
-                auth = eap-md5
-                eap_id = %any
-            }
-            children {
-                net-net {
-                    local_ts  = 10.1.0.0/16
-                }
-            }
-            send_certreq = no
+          local_ts  = 10.1.0.0/16
         }
+      }
+      send_certreq = no
     }
+  }
 
-    secrets {
-        eap-carol {
-            id = carol
-            secret = Ar3etTnp
-        }
-        eap-dave {
-            id = dave
-            secret = W7R0g3do
-        }
+  secrets {
+    eap-carol {
+      id = carol
+      secret = Ar3etTnp
     }
+    eap-dave {
+      id = dave
+      secret = W7R0g3do
+    }
+  }
 ----
 
-Configuration on roadwarrior _carol_:
-
+Configuration on roadwarrior `*carol*`:
 ----
 /etc/swanctl/x509ca/strongswanCert.pem
 
 /etc/swanctl/swanctl.conf:
 
-    connections {
+  connections {
+    home {
+      remote_addrs = moon.strongswan.org
+      local {
+        auth = eap
+        eap_id = carol
+      }
+      remote {
+        auth = pubkey
+        id = moon.strongswan.org
+      }
+      children {
         home {
-            remote_addrs = moon.strongswan.org
-
-            local {
-                auth = eap
-                eap_id = carol
-            }
-            remote {
-                auth = pubkey
-                id = moon.strongswan.org
-            }
-            children {
-                home {
-                    local_ts  = 10.1.0.0/16
-                    start_action = start
-                }
-            }
+          local_ts  = 10.1.0.0/16
+          start_action = start
         }
+      }
     }
+  }
 
-    secrets {
-        eap-carol {
-            id = carol
-            secret = Ar3etTnp
-        }
+  secrets {
+    eap-carol {
+      id = carol
+      secret = Ar3etTnp
     }
+   }
 ----
