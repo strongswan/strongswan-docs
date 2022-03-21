@@ -140,7 +140,7 @@ Public Key Authentication ::
   {OCSP}[Online Certificate Status Protocol] (OCSP) may be used to verify the
   validity of certificates.
 
-* To securely store private keys xref:features/smartcards.adoc[smartcards] may be
+* To securely store private keys xref:howtos/smartcards.adoc[smartcards] may be
   used via the xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin.
 
 * In order to prevent {MITM}[man-in-the-middle attacks], the identity claimed by

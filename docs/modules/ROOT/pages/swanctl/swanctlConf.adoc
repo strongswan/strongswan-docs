@@ -319,26 +319,7 @@ a single authentication round, only, the`<suffix>` may be omitted.
  certificate request payloads. If no appropriate CA can be located, the first
  certificate is used
 
-|cert<suffix>              |
-|Since version 5.5.2. Subsection for a certificate candidate to use for
- authentication. Certificates in `*certs*` are transmitted as binary blobs whereas
- the `*cert*` subsections offer more flexibility
-
-|cert<suffix>.file         |
-|Absolute path to the certificate to load. Passed as-is to the daemon, so it must
- be readable by it. Configure either `*file*` or `*handle*` but not both in one
- section
-
-|cert<suffix>.handle       |
-|Hex-encoded `CKA_ID` or handle of the certificate on a token or
- xref:tpm/tpm2.adoc[TPM 2.0], respectively. Configure either `*handle*` or `*file*`
- but not both in one section
-
-|cert<suffix>.slot         |
-|Optional slot number of the token that stores the certificate
-
-|cert<suffix>.module       |
-|Optional PKCS#11 module name
+include::partial$config/swanctl-local-cert.adoc[]
 
 |pubkeys                   |
 |Since version 5.4.0. Comma-separated list of raw public key candidates to use for
@@ -1006,19 +987,7 @@ smartcard or a xref:tpm/tpm2.adoc[TPM 2.0].
 |===
 |Key |Default| Description
 
-|handle                  |
-|Hex-encoded `CKA_ID` or handle of the private key on the token or
- xref:tpm/tpm2.adoc[TPM 2.0], respectively
-
-|slot                    |
-|Optional slot number to access the token
-
-|module                  |
-|Optional PKCS#11 module name to access the token
-
-|pin                     |
-|Optional PIN required to access the key on the token. If none is provided the
- user is prompted during an interactive `*--load-creds*` call
+include::partial$config/swanctl-secrets-token.adoc[]
 |===
 
 === pools

@@ -1,0 +1,249 @@
+= Smart Card Configuration
+
+:COLS:   cols="3,1,8"
+:OPENSC: https://github.com/OpenSC/OpenSC/wiki
+:PCSC:   https://pcsclite.apdu.fr/
+:CCID:   https://en.wikipedia.org/wiki/CCID_(protocol)
+
+== Introduction
+
+Smart cards are a mature technology that prevents your user credentials from getting
+easily compromised by theft. With the
+xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin, strongSwan can use any PKCS#11 library
+to access smart cards, e.g. the one provided by the {OPENSC}[OpenSC] project.
+
+image::strongswan-smartcard.png[smart card]
+
+This tutorial gives information on how to use a smartcard reader, initialize cards
+and configure strongSwan with smartcards.
+
+== Compatible Hardware
+
+You need a USB smart card reader and a blank smart card, or a USB token that combines
+the two in a convenient form factor, preferably with support of 2048 bit RSA or
+256 bit ECDSA keys.
+
+=== Compatible Card Readers
+
+Thanks to {OPENSC}[OpenSC], Linux supports most {CCID}[CCID] smart card readers,
+often using the {PCSC}[PCSC-Lite] library. Most recent USB card readers are compatible.
+
+* An overview on smart card readers can be found
+  {OPENSC}/Smart-card-readers-%28Linux-and-Mac-OS-X%29[here].
+
+=== Compatible Smart Cards and Tokens
+
+* An overview on smart card readers can be found
+  {OPENSC}/Supported-hardware-%28smart-cards-and-USB-tokens%29#usb-tokens[here].
+
+* A list where to buy cards and readers in Europe is given
+  {OPENSC}/Frequently-Asked-Questions#where-can-i-buy-smart-cards-[here].
+
+== Preparation
+
+=== Smart Card Reader
+
+To install pcsc-tools with CCID support, under Debian based distributions use:
+
+ sudo apt-get install pcsc-tools libccid
+
+strongSwan supports the PKCS#11 standard, which specifies how to access cryptographic
+information on devices. Thus, any shared object file that provides a PKCS#11
+interface may be used. In this tutorial we use {OPENSC}[OpenSC].
+
+To install OpenSC use:
+
+ sudo apt-get install opensc
+
+Do not install the OpenCT package, as it is incompatible with the `*pcsc-lite*`
+package.
+
+Check that the card reader is correctly recognized by OpenSC:
+----
+$ opensc-tool -l
+Readers known about:
+Nr.    Driver     Name
+0      pcsc       OmniKey CardMan 3121 00 00
+----
+
+At position Nr. `*0*` a Omnikey CardMan 3121 reader has been recognized. Let's
+insert a smart card in the reader.
+
+NOTE: When buying a smart card you'll also receive a *transport key*. Make sure
+      that the `*transport key*` proposed by OpenSC matches the one you got in
+      the mail. The smart card will be *irretrievably* blocked by entering the
+      wrong key three times.
+
+Let's double check that the card is recognized by printing its ATR:
+----
+$ opensc-tool -r0 -a
+3b:9f:95:81:31:fe:9f:00:65:46:53:05:30:06:71:df:00:00:00:81:61:10:c6
+----
+We can also check the name of the card with the `*-n*` option (we can omit the
+`*-r0*` argument since we only have one reader connected)
+----
+$ opensc-tool -n
+Using reader with a card: OmniKey CardMan 3121 00 00
+entersafe
+----
+At this point we know both the card and reader are fully recognized and functional.
+We can now proceed to erase the card (you will be asked for the transport key you
+got in your mail).
+
+=== Certification Authority
+
+To set up your CA you may use OpenSSL or the strongSwan xref:pki/pki.adoc[`*pki*`]
+tool. To simplify things you may also use a
+xref:pki/caManagementGui.adoc[graphical user interface] to set up your CA. One
+important thing to keep in mind is that you shouldn't create private keys with a
+key length not supported by your smart card (check the specs to be sure). RSA keys
+with a maximum length of 2048 bits are known to work.
+
+Make a backup of your keys/certificates and store it in a safe place.
+
+With most cards/tokens it is also possible to generate the private keys directly
+on the device. This way you can ensure nobody can get their hands on the keys but
+you also can't create a backup, so any information encrypted with the corresponding
+public key will be inaccessible if the card is lost or stolen.
+
+=== Configuring a Smart Card with pkcsc15-init
+
+Credentials on smart cards are usually stored according to the PKCS#15 Cryptographic
+Token Information Format Standard fully supported by OpenSC. The following command
+erases the card and removes the existing PKCS#15 structure and all stored
+cryptographic objects
+
+ pkcs15-init --erase-card
+
+This may result in a error if the card is already blank. With the next command a
+fresh PKCS#15 file structure is created on a smart card or crypto token:
+----
+pkcs15-init  --create-pkcs15 --profile pkcs15+onepin \
+             --use-default-transport-key \
+             --pin 0000 --puk 111111 \
+             --label "Test"
+----
+A secret PIN code is stored in an irretrievable location on the smart card. The PIN
+will protect the signing operation. If the PIN is entered incorrectly more than
+three times then the smart card will be locked and the PUK code can be used to
+unlock the card again.
+
+Next the private key is transferred to the smart card
+
+ pkcs15-init --auth-id 1 [--id 45] --store-private-key myKey.pem
+
+By default the PKCS#15 smart card record will be assigned the ID `*0x45*`. Using
+the `*--id*` option, multiple key records can be stored on a smart card.
+
+At last we load the matching X.509 certificate onto the smart card
+
+ pkcs15-init --auth-id 1 [--id 45] --store-certificate myCert.pem
+
+The `*pkcs15-tool*` can now be used to verify the contents of the smart card.
+
+ pkcs15-tool --list-pins --list-keys --list-certificates
+
+== strongSwan Configuration
+
+=== pkcs11 Plugin
+
+To use smart cards with strongSwan the xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin
+has to be enabled and configured.
+
+Next the PKCS#11 library provided by {OPENSC}["OpenSC] has to be configured in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+----
+  pkcs11 {
+    modules {
+      opensc {
+        path = /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so
+      }
+    }
+  }
+----
+
+=== Entering the PIN Code
+
+Since the smart card signing operation needed during authentication is protected
+by a PIN code, the secret PIN must be made available to the IKE daemon via a
+xref:swanctl/swanctlConf.adoc#_secrets_tokensuffix[`*secrets.token<suffix>*`]
+subsection in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+
+[{COLS}]
+|===
+|Key |Default| Description
+
+include::partial$config/swanctl-secrets-token.adoc[]
+|===
+
+For gateways that must be able to start IPsec tunnels automatically in unattended
+mode after a reboot, the secret PIN can be stored statically, as in
+----
+secrets {
+  token-gw {
+    handle = 45
+    pin = "12345678"
+  }
+}
+----
+On a personal notebook computer that could get stolen, you wouldn't want to store
+ your PIN in in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. Thus just omit
+ the `*pin*` attribute as in
+secrets {
+  token1 {
+    handle = 45
+  }
+}
+Using the xref:swanctl/swanctlLoadCreds.adoc[`*swanctl --load-creds*`] on the
+command line before starting the IPsec connection will prompt you for the PIN.
+
+=== Configuring Certificates and Connections
+
+The xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin will automatically load all
+certificates from the smart card when the daemon initializes it. CA certificates
+are also automatically available as trust anchors without the need to copy them
+into the xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509ca*`] directory first.
+
+Therefore it is usually not necessary to configure a `*local.cert*` subsection in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`], instead `*local.id*` is configured
+to either the `*subjectDistinguishedName*` or one of the `*subjectAltNames*`
+contained in the certificate.
+
+For instance if `*\alice@strongswan.org*` is contained in the certificate as a
+`*subjectAltName*` extension, simply configure
+
+ connections.<conn>.left.id = alice@strongswan.org
+
+In situations where multiple certificates match the same identity configuring a
+`*local.cert<suffix>*` subsection might be necessary
+
+[{COLS}]
+|===
+|Key |Default| Description
+
+include::partial$config/swanctl-local-cert.adoc[]
+|===
+
+This can be the case with some eID cards that contain separate signature and
+encryption certificates with the same identities. Thus for instance
+----
+  local {
+    ...
+    cert-50 {
+      handle = 50
+    }
+  }
+----
+will look in all available modules and slots for ID `*0x50*` starting with the
+first slot whereas
+----
+  local {
+    ...
+    cert-50 {
+      slot = 4
+      handle = 50
+    }
+  }
+----
+will directly check slot `*4*` (which is usually the first slot on the second
+reader/token when using the OpenSC library) for a key with ID `*0x50*`.
