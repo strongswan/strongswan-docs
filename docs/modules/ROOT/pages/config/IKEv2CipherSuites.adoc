@@ -1,0 +1,601 @@
+= IKEv2 Cipher Suites
+
+:NISTPQC: https://csrc.nist.gov/projects/post-quantum-cryptography/round-3-submissions
+:PQ:      https://github.com/strongX509/docker/tree/master/pq-strongswan#readme
+:CNSA:    https://apps.nsa.gov/iaarchive/programs/iad-initiatives/cnsa-suite.cfm
+:IANA:    https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC6379: {IETF}/rfc6379
+
+The keywords listed below can be used with the `*proposals*` attributes in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to define IKE or ESP/AH cipher
+suites. IANA provides a complete list of algorithm identifiers registered for
+{IANA}[IKEv2].
+
+== IKE Support Options
+
+The single-character options in the list below are used throughout this document
+to designate the third-party crypto libraries and/or the default strongSwan
+plugins that support a given crypto algorithm used by the IKE protocol.
+
+Algorithms designated by *s* are strongly deprecated because they have become
+cryptographically *weak* and thus prone to attacks.
+
+[cols="1,12,3,6"]
+|===
+|    |Option                           |Plugin      |Since
+
+|*s* |Deprecated due to security issues|            |
+
+|*x* |Default crypto plugin[s]         |            |
+
+|*b* |Botan crypto library             |`*botan*`   | strongSwan 5.7.0
+
+|*w* |wolfSSL crypto library           |`*wolfssl*` | strongSwan 5.8.0
+
+|*o* |OpenSSL crypto library           |`*openssl*` |
+
+|*g* |Gcrypt crypto library            |`*gcrypt*`  |
+
+|*a* |AF_ALG userland Linux crypto API |`*af-alg*`  | Linux kernel 2.6.38
+|===
+
+== ESP Support Options
+
+The single-character options in the list below are used throughout this document
+to designate the Linux kernel versions that support a given crypto algorithm used
+by the ESP or AH IPsec protocols.
+
+Algorithms designated by *s* are strongly deprecated because they have become
+cryptographically *weak* and thus prone to attacks.
+
+[cols="1,15,6"]
+|===
+|    |Option                           |Since
+
+|*s* |Deprecated due to security issues|
+
+|*k* |                                 |Linux kernel 2.6
+
+|*m* |                                 |Linux kernel 2.6.33
+
+|*n* |                                 |Linux kernel 4.2
+
+|*p* |Compatibility with kernels incorrectly using 96 bit truncation for SHA256
+                                       |Linux kernel < 2.6.33
+
+|*q* |for AH, AES-GMAC is negotiated as encryption algorithm for ESP |
+|===
+
+== Encryption Algorithms
+
+[cols="5,6,1,3,1,3"]
+|===
+|Keyword |Description |{IANA}#ikev2-parameters-5[IANA] |xref:#_ike_support[IKE] |xref:#_esp_support[ESP] |Plugins
+
+|*3des*
+|168 bit 3DES-EDE-CBC
+| 3 |*s* x w o g a |*s* k |des
+
+|*cast128*
+|128 bit CAST-CBC
+| 6 |*s* o g a     |*s* k |
+
+|*blowfish128* or *blowfish*
+|128 bit Blowfish-CBC
+| 7 |*s* x o g a   |*s* k |blowfish
+
+|*blowfish192*
+|192 bit Blowfish-CBC
+| 7 |*s* x o a     |*s* k |blowfish
+
+|*blowfish256*
+|256 bit Blowfish-CBC
+| 7 |*s* x o a     |*s* k |blowfish
+
+|*null*
+|Null encryption
+|11 | w o          |k     |
+
+|*aes128* or *aes*
+|128 bit AES-CBC
+|12 |x b w o g a   |k     |aes
+
+|*aes192*
+|192 bit AES-CBC
+|12 |x b w o g a   |k     |aes
+
+|*aes256*
+|256 bit AES-CBC
+|12 |x b w o g a   |k     |aes
+
+|*aes128ctr*
+|128 bit AES-COUNTER
+|13 |x w o g a     |k     |aes, ctr
+
+|*aes192ctr*
+|192 bit AES-COUNTER
+|13 |x w o g a     |k     |aes, ctr
+
+|*aes256ctr*
+|256 bit AES-COUNTER
+|13 |x w o g a     |k     |aes, ctr
+
+|*camellia128* or *camellia*
+|128 bit Camellia-CBC
+|23 |o g a         |k     |
+
+|*camellia192*
+|192 bit Camellia-CBC
+|23 |o g a         |k     |
+
+|*camellia256*
+|256 bit Camellia-CBC
+|23 |o g a         |k     |
+
+|*camellia128ctr*
+|128 bit Camellia-COUNTER
+|24 |o g a         |k     |
+
+|*camellia192ctr*
+|192 bit Camellia-COUNTER
+|24 |o g a         |k     |
+
+|*camellia256ctr*
+|256 bit Camellia-COUNTER
+|24 |o g a         |k     |
+|===
+
+== Authenticated Encryption (AEAD) Algorithms
+
+AEAD (Authenticated Encryption with Associated Data) algorithms can't be combined
+with classic encryption ciphers in the same proposal. No separate integrity algorithm
+must be proposed and therefore Pseudo-Random Functions (PRFs) have to be included
+explicitly in such proposals.
+
+[cols="5,6,1,3,1,3"]
+|===
+|Keyword |Description |{IANA}#ikev2-parameters-5[IANA] |xref:#_ike_support[IKE] |xref:#_esp_support[ESP] |Plugins
+
+|*aes128ccm8*  or +
+ *aes128ccm64*
+|128 bit AES-CCM with  64 bit ICV
+|14 |x b w o g a   |k     |aes, ccm
+
+|*aes192ccm8*  or +
+ *aes192ccm64*
+|192 bit AES-CCM with  64 bit ICV
+|14 |x b w o g a   |k     |aes, ccm
+
+|*aes256ccm8*  or +
+ *aes256ccm64*
+|256 bit AES-CCM with  64 bit ICV
+|14 |x b w o g a   |k     |aes, ccm
+
+|*aes128ccm12* or +
+ *aes128ccm96*
+|128 bit AES-CCM with  96 bit ICV
+|15 |x b w o g a   |k     |aes, ccm
+
+|*aes192ccm12* or +
+ *aes192ccm96*
+|192 bit AES-CCM with  96 bit ICV
+|15 |x b w o g a   |k     |aes, ccm
+
+|*aes256ccm12* or +
+ *aes256ccm96*
+|256 bit AES-CCM with  96 bit ICV
+|15 |x b w o g a   |k     |aes, ccm
+
+|*aes128ccm16* or +
+ *aes128ccm128*
+|128 bit AES-CCM with 128 bit ICV
+|16 |x b w o g a   |k     |aes, ccm
+
+|*aes192ccm16* or +
+ *aes192ccm128*
+|192 bit AES-CCM with 128 bit ICV
+|16 |x b w o g a   |k     |aes, ccm
+
+|*aes256ccm16* or +
+ *aes256ccm128*
+|256 bit AES-CCM with 128 bit ICV
+|16 |x b w o g a   |k     |aes, ccm
+
+|*aes128gcm8*  or +
+ *aes128gcm64*
+|128 bit AES-GCM with  64 bit ICV
+|18 |x b w o g a   |k     |aes, gcm
+
+|*aes192gcm8*  or +
+ *aes192gcm64*
+|192 bit AES-GCM with  64 bit ICV
+|18 |x b w o g a   |k     |aes, gcm
+
+|*aes256gcm8*  or +
+ *aes256gcm64*
+|256 bit AES-GCM with  64 bit ICV
+|18 |x b w o g a   |k     |aes, gcm
+
+|*aes128gcm12* or +
+ *aes128gcm96*
+|128 bit AES-GCM with  96 bit ICV
+|19 |x b w o g a   |k     |aes, gcm
+
+|*aes192gcm12* or +
+ *aes192gcm96*
+|192 bit AES-GCM with  96 bit ICV
+|19 |x b w o g a   |k     |aes, gcm
+
+|*aes256gcm12* or +
+ *aes256gcm96*
+|256 bit AES-GCM with  96 bit ICV
+|19 |x b w o g a   |k     |aes, gcm
+
+|*aes128gcm16* or +
+ *aes128gcm128*
+|128 bit AES-GCM with 128 bit ICV
+|20 |x b w o g a   |k     |aes, gcm
+
+|*aes192gcm16* or +
+ *aes192gcm128*
+|192 bit AES-GCM with 128 bit ICV
+|20 |x b w o g a   |k     |aes, gcm
+
+|*aes256gcm16* or +
+ *aes256gcm128*
+|256 bit AES-GCM with 128 bit ICV
+|20 |x b w o g a   |k     |aes, gcm
+
+|*aes128gmac*
+|Null encryption with 128 bit AES-GMAC
+|21 |              |k     |
+
+|*aes192gmac*
+|Null encryption with 192 bit AES-GMAC
+|21 |              |k     |
+
+|*aes256gmac*
+|Null encryption with 256 bit AES-GMAC
+|21 |              |k     |
+
+|*camellia128ccm8*  or +
+ *camellia128ccm64*
+|128 bit Camellia-CCM with  64 bit ICV
+|25 |o g a         |      |
+
+|*camellia192ccm8*  or +
+ *camellia192ccm64*
+|192 bit Camellia-CCM with  64 bit ICV
+|25 |o g a         |      |
+
+|*camellia256ccm8*  or +
+ *camellia256ccm64*
+|256 bit Camellia-CCM with  64 bit ICV
+|25 |o g a         |      |
+
+|*camellia128ccm12* or +
+ *camellia128ccm96*
+|128 bit Camellia-CCM with  96 bit ICV
+|26 |o g a         |      |
+
+|*camellia192ccm12* or +
+ *camellia192ccm96*
+|192 bit Camellia-CCM with  96 bit ICV
+|26 |o g a         |      |
+
+|*camellia256ccm12* or +
+ *camellia256ccm96*
+|256 bit Camellia-CCM with  96 bit ICV
+|26 |o g a         |      |
+
+|*camellia128ccm16* or +
+ *camellia128ccm128*
+|128 bit Camellia-CCM with 128 bit ICV
+|27 |o g a         |      |
+
+|*camellia192ccm16* or +
+ *camellia192ccm128*
+|192 bit Camellia-CCM with 128 bit ICV
+|27 |o g a         |      |
+
+|*camellia256ccm16* or +
+ *camellia256ccm128*
+|256 bit Camellia-CCM with 128 bit ICV
+|27 |o g a         |      |
+
+|*chacha20poly1305*
+|256 bit ChaCha20/Poly1305 with 128 bit ICV
+|28 |x b w o       |n     |chapoly
+|===
+
+== Integrity Algorithms
+
+[cols="5,6,1,3,1,3"]
+|===
+|Keyword |Description |{IANA}#ikev2-parameters-7[IANA] |xref:#_ike_support[IKE] |xref:#_esp_support[ESP] |Plugins
+
+|*md5*
+|MD5 HMAC (96 bit)
+| 1 |*s* x w o a   |*s* k |md5, hmac
+
+|*md5_128*
+|MD5_128 HMAC (128 bit)
+| 6 |*s* w         |*s* m |
+
+|*sha1* or *sha*
+|SHA1 HMAC (96 bit)
+| 2 |*s* x b w o a |*s* k |sha1, hmac
+
+|*sha1_160*
+|SHA1_160 HMAC  (160 bit)
+| 7 |*s* w         |*s* m |
+
+|*aesxcbc*
+|AES XCBC (96 bit)
+| 5 | x  a         |k     |aes, xcbc
+
+|*aescmac*
+|AES CMAC (96 bit)
+| 8 |x             |      |aes, cmac
+
+|*aes128gmac*
+|128-bit AES-GMAC (128 bit)
+| 9 |              |q     |
+
+|*aes192gmac*
+|192-bit AES-GMAC (128 bit)
+|10 |              |q     |
+
+|*aes256gmac*
+|256-bit AES-GMAC (128 bit)
+|11 |              |q     |
+
+|*sha256* or *sha2_256*
+|SHA2_256_128 HMAC (128 bit)
+|12 |x b w o a     |m     |sha2, hmac
+
+|*sha384* or *sha2_384*
+|SHA2_384_192 HMAC (192 bit)
+|13 |x b w o a     |m     |sha2, hmac
+
+|*sha512* or *sha2_512*
+|SHA2_512_256 HMAC (256 bit)
+|14 |x b w o a     |m     |sha2, hmac
+
+|*sha256_96* or *sha2_256_96*
+|SHA2_256_96 HMAC (96 bit)
+|1024|             |p     |
+|===
+
+It's also possible to use the hash implementations provided by the `*gcrypt*` plugin
+together with the `*hmac*` plugin.
+
+== Pseudo-Random Functions
+
+PRF algorithms can optionally be defined in IKEv2 proposals. In earlier releases
+or if no pseudo-random functions are configured, the proposed integrity algorithms
+are mapped to pseudo-random functions.
+
+If AEAD ciphers are proposed there won't be any integrity algorithms from which
+to derive PRFs. Thus PRF algorithms have to be configured explicitly.
+
+[cols="5,6,1,4,3"]
+|===
+|Keyword |Description |{IANA}#ikev2-parameters-6[IANA] |xref:#_ike_support[IKE] |Plugins
+
+|*prfmd5*
+|MD5 PRF
+| 1 |*s* x w o a   |md5, hmac
+
+|*prfsha1*
+|SHA1 PRF
+| 2 |*s* x b w o a |sha1, hmac
+
+|*prfaesxcbc*
+|AES XCBC PRF
+| 4 |x a           |aes, xcbc
+
+|*prfaescmac*
+|AES CMAC PRF
+| 8 |x             |aes, cmac
+
+|*prfsha256*
+|SHA2_256 PRF
+| 5 |x b w o a     |sha2, hmac
+
+|*prfsha384*
+|SHA2_384 PRF
+| 6 |x b w o a     |sha2, hmac
+
+|*prfsha512*
+|SHA2_512 PRF
+| 7 |x b w o a     |sha2, hmac
+|===
+
+It's also possible to use the hashers provided by the `*gcrypt*` plugin together
+with the `*hmac*` plugin.
+
+== Diffie Hellman Groups
+
+=== Regular Modular Prime Groups
+
+[cols="5,6,1,4,3"]
+|===
+|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+
+|*modp768*
+|768 bits
+| 1 |*s* x b w o g |gmp
+
+|*modp1024*
+|1024 bits
+| 2 |*s* x b w o g |gmp
+
+|*modp1536*
+|1536 bits
+| 5 |*s* x b w o g |gmp
+
+|*modp2048*
+|2048 bits
+|14 |x b w o g     |gmp
+
+|*modp3072*
+|3072 bits
+|15 |x b w o g     |gmp
+
+|*modp4096*
+|4096 bits
+|16 |x b w o g     |gmp
+
+|*modp6144*
+|6144 bits
+|17 |x b o g       |gmp
+
+|*modp8192*
+|8192 bits
+|18 |x b o g       |gmp
+|===
+
+=== Modular Prime Groups with Prime Order Subgroup
+
+[cols="5,3,3,1,4,3"]
+|===
+|Keyword |Modulus |Subgroup |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+
+|*modp1024s160*
+|1024 bits |160 bits
+|22 |*s* x b w o g |gmp
+
+|*modp2048s224*
+|2048 bits |224 bits
+|23 |*s* x b w o g |gmp
+
+|*modp2048s256*
+|2048 bits |256 bits
+|24 |*s* x b w o g |gmp
+|===
+
+=== NIST Elliptic Curve Groups
+
+[cols="5,6,1,4,3"]
+|===
+|Keyword |Prime Size |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+
+|*ecp192*
+|192 bits
+|25 |*s* w o       |
+
+|*ecp224*
+|224 bits
+|26 |w o           |
+
+|*ecp256*
+|256 bits
+|19 |b w o         |
+
+|*ecp384*
+|384 bits
+|20 |b w o         |
+
+|*ecp521*
+|521 bits
+|21 |b w o         |
+|===
+
+=== Brainpool Elliptic Curve Groups
+
+[cols="5,6,1,4,3"]
+|===
+|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+
+|*ecp224bp*
+|224 bits
+|27 |o             |
+
+|*ecp256bp*
+|256 bits
+|28 |b w o         |
+
+|*ecp384bp*
+|384 bits
+|29 |b w o         |
+
+|*ecp512bp*
+|512 bits
+|30 |b w o         |
+|===
+
+=== Modern Elliptic Curve Groups
+
+[cols="5,6,1,4,3"]
+|===
+|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+
+|*curve25519* or *x25519*
+|256 bits
+|31 |x b w o       |curve25519
+
+|*curve448* or *x448*
+|448 bits
+|32 | w o          |
+|===
+
+== Post-Quantum Key Exchange Methods
+
+The forthcoming {PQ}[strongSwan 6.0 release] supports the {NISTPQC}[NIST PQC]
+(Post-Quantum Cryptography) Round 3 Key Exchange Method (KEM) candidates.
+
+== Commercial National Security Algorithm Suite
+
+The *Suite B* cryptographic suites for IPsec ({RFC6379}[RFC 6379]) have been
+superseded by the {CNSA}[Commercial National Security Algorithm Suite] (CNSA) suite
+which basically deprecates the 128-bit suite defined by Suite B. Its recommendations
+regarding algorithm parameters are as follows:
+
+Encryption ::
+  AES with 256-bit key length (*aes256gcm16* or *aes256*)
+
+Key Exchange ::
+  ECDH with NIST P-384 curve (*ecp384*) +
+  DH with at least 3072-bit modulus (*modp3072* or higher)
+
+Pseudo-Random Function/Integrity Protection ::
+  SHA-384 (e.g. *prfsha384* or *sha384* if not using AES in GCM mode)
+
+Digital Signatures ::
+  ECDSA with NIST P-384 curve +
+  RSA with at least 3072-bit modulus
+
+== Deprecated NSA Suite B
+
+strongSwan does not provide direct keywords to configure the deprecated Suite B
+cryptographic suites defined in {RFC6379}[RFC 6379] whose status was set to *historic*
+in 2018. But Suite B algorithms may be configured explicitly using the following
+proposal strings (if supported by plugins and IPsec implementation):
+
+=== ESP Integrity Protection and Confidentiality
+
+Suite-B-GCM-128 ::
+  IKE: aes128gcm16-prfsha256-ecp256 +
+  ESP: aes128gcm16-ecp256
+
+Suite-B-GCM-256 ::
+  IKE: aes256gcm16-prfsha384-ecp384 +
+  ESP: aes256gcm16-ecp384
+
+=== ESP Integrity Protection Only
+
+Suite-B-GMAC-128 ::
+  IKE: aes128-sha256-ecp256 +
+  ESP: aes128gmac-ecp256 +
+
+Suite-B-GMAC-256 ::
+  IKE: aes256-sha384-ecp384 +
+  ESP: aes256gmac-ecp384
+
+The proposal strings above enable PFS (Perfect Forward Secrecy). Omit the DH groups
+in the ESP proposals to disable PFS or configure two proposals, one with and one
+without DH group in order to let the peer decide whether PFS is used. This is what
+the xref:os/androidVpnClient.adoc[strongSwan Android VPN client] implements in its
+default ESP proposals.
