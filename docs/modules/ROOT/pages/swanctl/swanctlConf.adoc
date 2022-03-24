@@ -311,23 +311,6 @@ a single authentication round, only, the`<suffix>` may be omitted.
  are sorted. If not specified, rounds are ordered by their position in the config
  file or xref:plugins/vici.adoc[`*vici*`] message
 
-|certs                     |
-|Comma-separated list of certificate candidates to use for authentication. The
- certificates may use a relative path from the
- xref:swanctl/swanctlDir.adoc[`*swanctl/x509*`] directory or an absolute path.
- The certificate used for authentication is selected based on the received
- certificate request payloads. If no appropriate CA can be located, the first
- certificate is used
-
-include::partial$config/swanctl-local-cert.adoc[]
-
-|pubkeys                   |
-|Since version 5.4.0. Comma-separated list of raw public key candidates to use for
- authentication. The public keys may use a relative path from the
- xref:swanctl/swanctlDir.adoc[`*swanctl/pubkey*`] directory or an absolute path.
- Even though multiple local public keys could be defined in principle, only the
- first public key in the list is used for authentication.
-
 |auth                      |[->]
 |Authentication to perform locally. `*pubkey*` uses public key authentication based
  on a private key associated with a usable certificate. `*psk*` uses pre-shared key
@@ -342,15 +325,17 @@ include::partial$config/swanctl-local-cert.adoc[]
  +
  For `*eap*` a specific EAP method name may be appended, separated by a dash. An EAP
  module implementing the appropriate method is selected to perform the EAP
- conversation. Since version 5.4.0, if both peers support IKEv2 Signature
- Authentication ({RFC7427}[RFC 7427]), specific hash algorithms to be used during
- IKEv2 authentication may be configured. To do so use `*ike:*` followed by a trust
+ conversation.
+ +
+ Since version 5.4.0, if both peers support IKEv2 Signature Authentication
+ ({RFC7427}[RFC 7427]), specific hash algorithms to be used during IKEv2
+ authentication may be configured. To do so use `*ike:*` followed by a trust
  chain signature scheme constraint (see description of the `*auth*` keyword
  in the xref:#_connections_conn_remote[`*remote*`] section).
  +
  For example with `*ike:pubkey-sha384-sha256*`, a public key signature scheme
  with either SHA-384 or SHA-256 would get used for authentication, in that order
- and depending on the hash algorithms supported by the peer. If no  specific hash
+ and depending on the hash algorithms supported by the peer. If no specific hash
  algorithms are configured, the default is to prefer an algorithm that matches or
  exceeds the strength of the signature key. If no constraints with `*ike:*` prefix
  are configured, any signature scheme constraint (without `*ike:*` prefix) will
@@ -381,6 +366,23 @@ include::partial$config/swanctl-local-cert.adoc[]
 
 |xauth_id                  |`id`
 |Client XAuth username used in the XAuth exchange
+
+|certs                     |
+|Comma-separated list of certificate candidates to use for authentication. The
+ certificates may use a relative path from the
+ xref:swanctl/swanctlDir.adoc[`*swanctl/x509*`] directory or an absolute path.
+ The certificate used for authentication is selected based on the received
+ certificate request payloads. If no appropriate CA can be located, the first
+ certificate is used
+
+include::partial$config/swanctl-local-cert.adoc[]
+
+|pubkeys                   |
+|Since version 5.4.0. Comma-separated list of raw public key candidates to use for
+ authentication. The public keys may use a relative path from the
+ xref:swanctl/swanctlDir.adoc[`*swanctl/pubkey*`] directory or an absolute path.
+ Even though multiple local public keys could be defined in principle, only the
+ first public key in the list is used for authentication.
 |===
 
 ==== connections.<conn>.remote
@@ -400,6 +402,30 @@ To define a single authentication round, only, the `<suffix>` may be omitted.
 |Since version 5.4.0. Optional numeric identifier by which authentication rounds
  are sorted. If not specified, rounds are ordered by their position in the config
  file or xref:plugins/vici.adoc[`*vici*`] message
+
+|auth                      |[->]
+|Authentication to expect from remote. See the description of the `*auth*` keyword
+ in the xref:#_connections_conn_local[`*local*`] section about the details of
+ supported mechanisms.
+ +
+ Since version 5.4.0, to require a trust chain public key strength for the remote
+ side, specify the key type followed by the minimum strength in bits (e.g.
+ `*ecdsa-384*` or `*rsa-2048-ecdsa-256*`). To limit the acceptable set of hashing
+ algorithms for trust chain validation, append hash algorithms to `*pubkey*` or a
+ key strength definition (e.g. `*pubkey-sha256-sha512*`,
+ `*rsa-2048-sha256-sha384-sha512*` or `*rsa-2048-sha256-ecdsa-256-sha256-sha384*`).
+ Unless disabled in xref:config/strongswanConf.adoc[`*strongswan.conf*`] or if
+ explicit IKEv2 signature constraints are configured, such key types and hash
+ algorithms are also applied as constraints against IKEv2 signature authentication
+ schemes used by the remote side.
+ +
+ To require `RSASSA-PSS` signatures use `*rsa/pss*` instead of `*pubkey*`
+ or `*rsa*` as e.g. in `*rsa/pss-sha256*`. If `*pubkey*` or `*rsa*` constraints
+ are configured `RSASSA-PSS*` signatures will only be accepted if enabled in
+ xref:config/strongswanConf.adoc[`*strongswan.conf*`]. To specify trust chain
+ constraints for EAP-(T)TLS, append a colon to the EAP method, followed by the
+ key type/size and hash algorithm as discussed above (e.g.
+ `*eap-tls:ecdsa-384-sha384*`). [`pubkey`]
 
 |id                        |`%any`
 |IKE identity to expect for authentication round. Refer to the `*id*` keyword
@@ -501,29 +527,6 @@ To define a single authentication round, only, the `<suffix>` may be omitted.
  information available, but it could not be obtained. The default revocation
  policy `*relaxed*` fails only if a certificate is revoked, i.e. it is explicitly
  known that it is bad. [`relaxed`]
-
-|auth                      |[->]
-|Authentication to expect from remote. See the description of the `*auth*` keyword
- in the xref:#_connections_conn_local[`*local*`] section about the details of
- supported mechanisms. Since version 5.4.0, to require a trustchain public key
- strength for the remote side, specify the key type followed by the minimum
- strength in bits (e.g. `*ecdsa-384*` or `*rsa-2048-ecdsa-256*`). To limit the
- acceptable set of hashing algorithms for trustchain validation, append hash
- algorithms to `*pubkey*` or a key strength definition (e.g.
- `*pubkey-sha256-sha512*`, `*rsa-2048-sha256-sha384-sha512*` or
- `*rsa-2048-sha256-ecdsa-256-sha256-sha384*`).  Unless disabled in
- xref:config/strongswanConf.adoc[`*strongswan.conf*`] or explicit IKEv2 signature
- constraints are configured, such key types and hash algorithms are also applied
- as constraints against IKEv2 signature authentication schemes used by the remote
- side.
- +
- To require `RSASSA-PSS` signatures use `*rsa/pss*` instead of `*pubkey*`
- or `*rsa*` as e.g. in `*rsa/pss-sha256*`. If `*pubkey*` or `*rsa*` constraints
- are configured `RSASSA-PSS*` signatures will only be accepted if enabled in
- xref:config/strongswanConf.adoc[`*strongswan.conf*`]. To specify trust chain
- constraints for EAP-(T)TLS, append a colon to the EAP method, followed by the
- key type/size and hash algorithm as discussed above (e.g.
- `*eap-tls:ecdsa-384-sha384*`). [`pubkey`]
 |===
 
 ==== connections.<conn>.children
