@@ -36,6 +36,7 @@
 ** xref:pki/pkiQuickstart.adoc[]
 ** xref:howtos/introduction.adoc[]
 ** xref:howtos/forwarding.adoc[]
+** xref:howtos/securityRecommendations.adoc[]
 ** xref:howtos/smartcards.adoc[]
 ** xref:howtos/cloudPlatforms.adoc[]
 ** xref:howtos/nameSpaces.adoc[]
