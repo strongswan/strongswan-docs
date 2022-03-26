@@ -1,1 +1,128 @@
 = Trusted Network Connect
+:TCG:     https://trustedcomputinggroup.org
+:TCGTNC:  {TCG}/work-groups/trusted-network-communications/tnc-resources/
+:IFTNCCS: {TCG}/wp-content/uploads/IF-TNCCS_v2_0_r21-a.pdf
+:IFM:     {TCG}/wp-content/uploads/TNC_IFM_v1_0_r41-a.pdf
+:IFPEP:   {TCG}/wp-content/uploads/TNC_IF-PEP-v1.1-rev-0.8.pdf
+:IANA:    https://www.iana.org/assignments
+:EAPTYPE: {IANA}/eap-numbers/eap-numbers.xhtml#eap-numbers-4
+:PEN:     {IANA}/enterprise-numbers/enterprise-numbers
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC5209: {IETF}/rfc5209
+:RFC5281: {IETF}/rfc5281
+:RFC5792: {IETF}/rfc5792
+:RFC5793: {IETF}/rfc5793
+:RFC6876: {IETF}/rfc6876
+:RFC7171: {IETF}/rfc7171
+
+== Network Endpoint Assessment
+
+The {RFC5209}[Network Endpoint Assessment] (NEA) Internet standard
+{RFC5209}[RFC5209] defines a generic framework on how the *state of health* or
+*posture* of a network endpoint ({RFC5209}#section-5.1.1[NEA Client]) can be
+assessed by a central management system ({RFC5209}#section-5.1.2[NEA Server]).
+
+image:neaArchitecture.png[NEA Architecture]
+
+The NEA architecture comprises three communications layers governed by the
+following generic protocols:
+
+* {RFC5209}#section-5.2.1[Posture Attribute Protocol] (PA)
+
+* {RFC5209}#section-5.2.2[Posture Broker Protocol] (PB)
+
+* {RFC5209}#section-5.2.3[Posture Transport Protocol] (PT)
+
+== TNC Protocol Layers
+
+One specific and up to now the only implementation of NEA is
+{TCGTNC}[Trusted Network Connect] (TNC) originally defined by the
+{TCG}[Trusted Computing Group] (TCG).
+
+image:tnc.png[TNC overview]
+
+{RFC5792}[PA-TNC (RFC5792)]: Posture Attribute Protocol with TNC ::
+  PA-TNC was derived from the {IFM}[TCG TNC IF-M 1.0] measurement protocol. +
+  PA-TNC bundles standard IETF and/or vendor-specific PA-TNC attributes into PA-TNC
+  messages on Integrity Measurement Collectors (Posture Collectors) and Integrity
+  Measurement Verifiers (Posture Validators) according to standard IETF and/or
+  vendor-specific PA subtypes.
+
+{RFC5793}[PB-TNC (RFC5793)]: Posture Broker Protocol with TNC ::
+  PB-TNC was derived from the {IFTNCCS}[TCG TNC IF-TNCCS 2.0] client-server protocol. +
+  PB-TNC packs PA-TNC messages received from Integrity Measurement Collectors
+  (Posture Collectors) on the NEA client side or from Integrity Measurement
+  Verifiers (Posture Validators) on the NEA server side into PB-TNC batches that
+  are exchanged between the TNC Client (Posture Broker Client) and the
+  TNC Server (Posture Broker Server). +
+  PB-TNC batches are also used to send final _Assessment Results_ together with
+  optional _Access Recommendations_ and _Remediation Parameters_ from the TNC Server
+  to the TNC Client.
+
+{RFC6876}[PT-TLS (RFC6876)]: Posture Transport Protocol over TLS ::
+  PT-TLS is a Posture Transport (PT) protocol protected by a TLS channel. +
+  PT-TLS is responsible for transporting PB-TNC batches over the network
+  between the PT Client component of the NEA Client and the PT Server component
+  of the NEA Server and is usually used for periodic posture or state-of-health
+  assessments of an endpoint continously connected to a secured home network.
+
+{RFC7171}[PT-EAP (RFC7171)]: Posture Transport Protocol for EAP Tunnel Methods ::
+  PT-EAP is an inner EAP method ({EAPTYPE}[EAP type *54*]) used within a TLS-protected
+  EAP tunnel method like EAP-TTLS ({RFC5281}[RFC5281]) running e.g. over IKEv2
+  EAP (strongSwan) on layer 3 or EAPOL (wpa_supplicant) on layer 2. +
+  PT-EAP is responsible for transporting PB-TNC batches over the network
+  between the PT Client component of the NEA Client and the PT Server component
+  of the NEA Server and is usually used in the early phase when an endpoint wants
+  to connect to a secured home network via VPN (layer 3) or over LAN/WLAN (layer 2)
+  and its posture or state-of-health has to be assessed first.
+
+=== TNC Protocol Layer Example
+
+This example shows the messages received by a NEA server from a NEA client on the
+{RFC5792}[PA-TNC], {RFC5793}[PB-TNC] and {RFC7171}[PT-EAP] layers.
+
+image:tnc_layers.png[TNC layers]
+
+The Operating System Integrity Measurement Verifier (OS IMV) receives measurement
+data from an Operating System Measurement Collector (OS IMC) running on an Android
+endpoint.
+
+The measurements consist of three PA-TNC attributes that are packed into a PA-TNC
+message of the standard IETF subtype `*Operating System*`. The first two PA-TNC
+attributes of the IETF standard types `*Product Information*` and `*String Version*`
+whereas the third PA-TNC attribute has the vendor-specific type `*Device ID*`
+defined in the {PEN}[PEN] namespace of the `*ITA-HSR*` organization.
+
+The PA-TNC message is delivered by the xref:tnc/tncClient.adoc[TNC Client] to the
+xref:tnc/tncServer.adoc[TNC Server] in a `CDATA` (ClientData) PB-TNC batch. The
+xref:tnc/tncClient.adoc[TNC Client] can also request the language in which
+optional _Access Recommendations_ and _Remediation Parameters_ are going to be
+sent.
+
+The PB-TNC batch is transported via {RFC7171}[PT-EAP] tunneled in EAP-TTLS over
+IKEv2 EAP.
+
+== TNC Client
+
+There are two ways how the strongSwan xref:tnc/tncClient.adoc[TNC Client] functionality
+can be used to collect the *state-of-health* or *posture* of an endpoint:
+
+* Collocated with a strongSwan VPN client (Network Access Requestor) running a
+  xref:daemons/charon.adoc[`*charon*`] daemon that communicates over IKEv2 EAP
+  ({RFC7171}[PT-EAP]).
+
+* The stand-alone xref:tnc/pt-tls-client.adoc[`*pt-tls-client*`] communicating
+  over TLS ({RFC6876}[PT-TLS]).
+
+== TNC Server
+
+There are two ways how the strongSwan xref:tnc/tncServer.adoc[TNC Server] functionality
+can can be used to assess the *state-of-health* or *posture* of associated endpoints:
+
+* Collocated with a strongSwan VPN gateway (Policy Enforcement Point) running a
+  xref:daemons/charon.adoc[`*charon*`] daemon that communicates over IKEv2 EAP
+  ({RFC7171}[PT-EAP]).
+
+* A stand-alone strongSwan Policy Decision Point (PDP) based on a skeleton
+  xref:daemons/charon.adoc[`*charon*`] daemon with the `*tnc-pdp*` plugin
+  communicating either over TLS ({RFC6876}[PT-TLS]) or RADIUS ({IFPEP}[IF-PEP]).
