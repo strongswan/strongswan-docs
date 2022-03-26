@@ -20,8 +20,8 @@ additionally either the EAP-MD5 or EAP-MSCHAPv2 methods have to be enabled with
 
 == Configuration
 
-In the xref:config/strongswanConf.adoc[`*strongswan.conf*`] a couple of important
-parameters have to been set:
+In the xref:config/strongswanConf.adoc[`*strongswan.conf*`] configuration file a
+couple of important parameters have to been set:
 ----
 charon {
   plugins {
@@ -38,6 +38,9 @@ charon {
   }
 }
 ----
+
+=== Message Size Restrictions
+
 Since often quite a lot of messages are exchanged via the PT-EAP transport protocol
 protected by EAP-TTLS, the default upper limit set by the `*max_message_count*`
 parameter of the
@@ -46,9 +49,12 @@ xref:config/strongswanConf.adoc#_charon_plugins_eap_ttls[`*eap-ttls*`] plugins
 have to be disabled in order not to disrupt the communication.
 
 It is also recommended to set the maximum PB-TNC batch size and the maximum
-PA-TNC message size to the values defined above.
+PA-TNC message size possible with PT-EAP transport to the optimum values defined
+above.
 
-It is also possible to restrict the TLS cipher suites proposed by the client
+=== Restriction of TLS Cipher Suites
+
+It is possible to restrict the TLS cipher suites proposed by the client
 in a xref:config/strongswanConf.adoc#_libtls[`*libtls*`] section of
 xref:config/strongswanConf.adoc[`*strongswan.conf*`]
 ----
@@ -57,6 +63,8 @@ libtls
   suites = TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 }
 ----
+
+xref:tnc/tncServer.adoc#_configuration[TNC Server] >
 
 == Integrity Measurement Collectors
 
@@ -72,7 +80,7 @@ IMC "Scanner"        /usr/lib/ipsec/imcvs/imc-scanner.so
 # IMC "SWIMA"        /usr/lib/ipsec/imcvs/imc-swima.so
 # IMC "Attestation"  /usr/lib/ipsec/imcvs/imc-attestation.so
 ----
-In the configuration file above, the `*OS*` and `*Scanner*` IMCs are enabled, so
+In the configuration file above, the `*OS IMC*` and the `*Scanner IMV*` are enabled, so
 that these Integrity Measurement Collectors have to be built beforehand with the
 xref:install/autoconf.adoc[`*./configure*`] options
 
@@ -100,6 +108,11 @@ When the xref:daemons/charon.adoc[`*charon*`] daemon starts up, the IMCs are loa
 00[TNC] IMC 2 supports 1 message type: 'IETF/Firewall' 0x000000/0x00000005
 00[TNC] IMC 2 "Scanner" loaded from '/usr/lib/ipsec/imcvs/imc-scanner.so'
 ----
+
+xref:tnc/tncServer.adoc#_integrity_measurement_verifiers[TNC Server] >
+
+== TNC-Enabled VPN Client Configuration
+
 After xref:daemons/charon.adoc[`*charon*`] has loaded all its plugins and spawned
 16 worker threads, the xref:swanctl/swanctl.adoc[`*swanctl*`] start scripts load
 the credentials and the connection configurations.
@@ -168,6 +181,8 @@ certificate-based EAP client authentication whereas the second alternative that 
 currently commented out is based on a preshared EAP secret. In the following we
 are going to discuss both variants.
 
+xref:tnc/tncServer.adoc#_tnc_enabled_vpn_server_configuration[TNC Server] >
+
 == Certificate-Based EAP Client Authentication
 
 The client authentication is based on an EAP Identity defined by
@@ -176,7 +191,10 @@ The client authentication is based on an EAP Identity defined by
 
 as enabled in the configuration xref:#_tnc_enabled_vpn_client_configuration[above],
 matched by an X.509 client certificate that is going to be used in the initial TLS
-handshake of the EAP-TTLS method
+handshake of the EAP-TTLS method.
+
+The xref:swanctl/swanctlListConns.adoc[`*swanctl --list-conns*`] shows the loaded
+VPN connection definition
 ----
 # swanctl --list-conns
 tnc: IKEv2, no reauthentication, rekeying every 14400s
@@ -217,8 +235,9 @@ authentication according to {RFC5998}[RFC5998]
 ----
 Since the VPN client didn't include an AUTH payload in its IKE_AUTH request, the
 VPN server switches to EAP-based authentication and at the outset requests an EAP
-Identity. Due to the *EAP-only* mode the server doesn't include an AUTH payload
-either. The client replies with its EAP Identity `*client.strongswan.org*`.
+Identity. The client replies with its EAP Identity `*client.strongswan.org*`.
+Due to the *EAP-only* mode, the server doesn't include an AUTH payload in its
+first IKE_AUTH response, either.
 ----
 06[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (112 bytes)
 06[ENC] parsed IKE_AUTH response 1 [ IDr EAP/REQ/ID ]
@@ -227,6 +246,8 @@ either. The client replies with its EAP Identity `*client.strongswan.org*`.
 06[ENC] generating IKE_AUTH request 2 [ EAP/RES/ID ]
 06[NET] sending packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (96 bytes)
 ----
+
+xref:tnc/tncServer.adoc#_ikev2_connection_setup[TNC Server] >
 
 === EAP-TTLS Tunnel Setup
 
@@ -266,6 +287,8 @@ the tunnel the client's EAP Identity is requested again
 09[NET] sending packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (144 bytes)
 ----
 
+xref:tnc/tncServer.adoc#_eap_ttls_tunnel_setup[TNC Server] >
+
 === PB-TNC Connection 1
 
 Now within the EAP-TTLS tunnel the PT-EAP transport protocol is started and the
@@ -286,6 +309,8 @@ TNC client and a new state is created for both the `*OS IMC*` and the `*Scanner 
 16[IMC] IMC 1 "OS" changed state of Connection ID 1 to 'Handshake'
 16[IMC] IMC 2 "Scanner" changed state of Connection ID 1 to 'Handshake'
 ----
+
+xref:tnc/tncServer.adoc#_pb_tnc_connection_1[TNC Server] >
 
 === TNC Measurements
 
@@ -354,7 +379,7 @@ The first PA-TNC message is of standard subtype `*Operating System*` and contain
 a PA-TNC attribute of type `*Max Attribute Size Request*` defined in the `*TCG*`
 namespace ({IFMSEG}[TCG TNC IF-M Segmentation]) which proposes to split up huge
 PA-TNC (TCG TNC IF-M) messages into `*TCG/Segmentation Attributes*` with a maxium
-size of `*32698*` bytes plus a second PA-TNC attribute of the standard type
+size of `*32698*` bytes each, plus a second PA-TNC attribute of the standard type
 `*Attribute Request*` which requests a PA-TNC attribute of standard type
 `*Installed Packages*`
 ----
@@ -377,6 +402,7 @@ PA-TNC attribute defined in the `*TCG*` namespace
 05[IMC] package 'base-files' (11ubuntu5.3)
 05[IMC] package 'base-passwd' (3.5.47)
         ...
+05[IMC] package 'tar' (1.30+dfsg-7ubuntu0.20.04.1)
 05[IMC] package 'ubuntu-keyring' (2020.02.11.2)
 05[IMC] package 'util-linux' (2.34-0.1ubuntu9.1)
 05[IMC] package 'zlib1g' (1:1.2.11.dfsg-2ubuntu1.2)
@@ -441,12 +467,12 @@ of standard subtype `*Operating System*` directed to the `*OS IMC*` and carries
 a standard `*Assessment Result*` PA-TNC attribute with the value `*compliant*`.
 
 Additionally the PB-TNC Result batch contains the three standard PB-TNC messages
-of standard types `*PB-Assessment-Result*`, `*PB-Access-Recomentation*`, and
+of standard types `*PB-Assessment-Result*`, `*PB-Access-Recommendation*`, and
 `*PB-Reason-String*` with the values `*non-compliant minor*`, `*Access Denied*`
-and `*Open server ports were detected"`, respectively.
+and `*Open server ports were detected*`, respectively.
 
-Finally the TNC client sents a PB-TNC Close batch to the TNC server, closing
-down the TNC Connection with ID `*1*`
+Finally the TNC client sends a PB-TNC Close batch to the TNC server, closing
+down the PA-TNC Connection with ID `*1*`
 ----
 06[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (272 bytes)
 06[ENC] parsed IKE_AUTH response 9 [ EAP/REQ/TTLS ]
@@ -479,8 +505,8 @@ down the TNC Connection with ID `*1*`
 06[ENC] generating IKE_AUTH request 10 [ EAP/RES/TTLS ]
 06[NET] sending packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (144 bytes)
 ----
-The VPN server and subsequently the VPN client close the EAP-TTLS tunnel since it
-is not needed anymore for TNC measurements
+The VPN server and subsequently the VPN client close the EAP-TTLS tunnel over
+IKEv2 EAP since it is not needed anymore for TNC measurements
 ----
 10[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (112 bytes)
 10[ENC] parsed IKE_AUTH response 10 [ EAP/REQ/TTLS ]
@@ -490,10 +516,14 @@ is not needed anymore for TNC measurements
 10[NET] sending packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (112 bytes)
 ----
 
+xref:tnc/tncServer.adoc#_tnc_measurements[TNC Server] >
+
 === IKEv2 Authentication Failure
 
 Since the overall PB-TNC `*PB-Assessment-Recommendation*` was `*Access Denied*`
-due to the open TCP server port, the IKEv2 negotiation aborts as well
+due to the open TCP server port, the IKEv2 negotiation aborts as well. The PB-TNC
+Connection `*1*` is removed and the states of the `*OS IMC*` and `*Scanner IMC*`
+are deleted
 ----
 09[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (80 bytes)
 09[ENC] parsed IKE_AUTH response 11 [ EAP/FAIL ]
@@ -506,6 +536,8 @@ due to the open TCP server port, the IKEv2 negotiation aborts as well
 initiate failed: establishing CHILD_SA 'tnc' failed
 ----
 
+xref:tnc/tncServer.adoc#_ikev2_authentication_failure[TNC Server] >
+
 == PSK-Based EAP Client Authentication
 
 Alternatively a preshared EAP secret could be used with EAP-MD5 or EAP-MSCHAPv2
@@ -514,7 +546,10 @@ within EAP-TTLS by enabling the EAP Identity
   eap_id = hacker
 
 in the configuration file xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] defined
-xref:#_tnc_enabled_vpn_client_configuration[above]
+xref:#_tnc_enabled_vpn_client_configuration[above] and then reloading the edited
+configuration with the xref:swanctl/swanctlLoadConns.adoc[`*swanctl --load-conns*`]
+command. The xref:swanctl/swanctlListConns.adoc[`*swanctl --list-conns*`] then
+shows the reloaded VPN connection definition
 ----
 swanctl --list-conns
 tnc: IKEv2, no reauthentication, rekeying every 14400s
@@ -542,8 +577,8 @@ xref:swanctl/swanctlInitiate.adoc[`*swanctl --initiate*`] command
 ----
 Since no IKE client identity has been explicitly defined, the client's IP
 address `*192.168.0.3*` is used by default. By sending the EAP_ONLY notify the
-client is signalling to the server that it is accepting *EAP-only* authentication
-according to {RFC5998}[RFC5998]
+client is signalling to the server that it is willing to accept *EAP-only*
+authentication according to {RFC5998}[RFC5998]
 ----
 14[NET] received packet: from 192.168.0.2[500] to 192.168.0.3[500] (248 bytes)
 14[ENC] parsed IKE_SA_INIT response 0 [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(FRAG_SUP) N(HASH_ALG) N(CHDLESS_SUP) N(MULT_AUTH) ]
@@ -555,8 +590,9 @@ according to {RFC5998}[RFC5998]
 ----
 Since the VPN client didn't include an AUTH payload in its IKE_AUTH request, the
 VPN server switches to EAP-based authentication and at the outset requests an EAP
-Identity. Due to the *EAP-only* mode the server doesn't include an AUTH payload
-either. The client replies with its EAP Identity `*hacker*`.
+Identity. The client replies with its EAP Identity `*hacker*`. Due to the *EAP-only*
+mode, the server doesn't include an AUTH payload in its first IKE_AUTH response,
+either.
 ----
 13[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (112 bytes)
 13[ENC] parsed IKE_AUTH response 1 [ IDr EAP/REQ/ID ]
@@ -618,7 +654,6 @@ secret is done
 Again the PT-EAP transport protocol is started within the EAP-TTLS tunnel and the
 PB-TNC (TCG IF-TNCCS) Connection ID `*2*` is assigned to the connection by the TNC
 client and a fresh state is created for both the `*OS IMC*` and the `*Scanner IMC*`
-
 ----
 08[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (128 bytes)
 08[ENC] parsed IKE_AUTH response 6 [ EAP/REQ/TTLS ]
@@ -643,7 +678,9 @@ PB-TNC connection.
 === IKEv2 Authentication Failure
 
 Since the overall PB-TNC `*PB-Assessment-Recommendation*` was `*Access Denied*`
-due to the open TCP server port, the IKEv2 negotiation aborts as well
+due to the open TCP server port, the IKEv2 negotiation aborts as well. The PB-TNC
+Connection `*2*` is removed and the states of the `*OS IMC*` and `*Scanner IMC*`
+are deleted
 ----
 09[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (80 bytes)
 09[ENC] parsed IKE_AUTH response 9 [ EAP/FAIL ]
@@ -655,3 +692,5 @@ due to the open TCP server port, the IKEv2 negotiation aborts as well
 09[TNC] removed TNCCS Connection ID 2
 initiate failed: establishing CHILD_SA 'tnc' failed
 ----
+
+xref:tnc/tncServer.adoc#_ikev2_authentication_failure_2[TNC Server] >
