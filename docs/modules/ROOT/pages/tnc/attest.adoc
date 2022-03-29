@@ -5,9 +5,9 @@
 == Synopsis
 
 ----
-ipsec attest --files|--products|--keys|--hashes [options]
+ipsec attest --components|--devices|--sessions|--files|--hashes|--keys [options]
 
-ipsec attest --components|--measurements|--add|--del [options]
+ipsec attest --measurements|--packages|--products|--add|--del [options]
 ----
 
 == Description
@@ -42,20 +42,23 @@ capabilities of the {STRONGTNC}[strongTNC] web-based management framework.
 
 == Options
 
+`--components [--key <digest>|--kid <id>]`::
+
+Show a list of components with an AIK digest or its primary key as an optional
+selector.
+
+`--devices [--utc]`::
+
+Show a list of registered devices and associated collected information.
+
+`--sessions [--utc]`::
+
+Show a chronologically sorted list of all TNC sessions.
+
 `--files [--product <name>|--pid <id>]`::
 
 Show a list of files with a software product name or its primary key as an
 optional selector.
-
-`--products [--file <path>|--fid <id>]`::
-
-Show a list of supported software products with a file path or its primary key as
-an optional selector.
-
-`--keys [--components <cfn>|--cid <id>]`::
-
-Show a list of AIK key digests with a component or its primary key as an optional
-selector.
 
 `--hashes [--sha1|--sha256|--sha384] [--product <name>|--pid <id>]`::
 
@@ -67,9 +70,9 @@ as an optional selector.
 Show a list of measurement hashes for a given file or its primary key as an
 optional selector.
 
-`--components [--key <digest>|--kid <id>]`::
+`--keys [--components <cfn>|--cid <id>]`::
 
-Show a list of components with an AIK digest or its primary key as an optional
+Show a list of AIK key digests with a component or its primary key as an optional
 selector.
 
 `--measurements [--sha1|--sha256|--sha384] [--component <cfn>|--cid <id>]`::
@@ -82,14 +85,36 @@ an optional selector.
 Show a list of component measurements for a given AIK or its primary key as an
 optional selector.
 
+`--packages [--product <name>|--pid <id>] [--utc]`::
+
+Show a list of software packages for a given product or
+its primary key as an optional selector.
+
+`--products [--file <path>|--fid <id>]`::
+
+Show a list of supported software products with a file path or its primary key as
+an optional selector.
+
 `--add --file <path>|--dir <path>|--product <name>|--component <cfn>`::
 
-Add a file, directory, product or component entry Component `<cfn>` entries must
-be of the form `<vendor_id>/<name>-<qualifier>`
+Add a file, directory, product or component entry. Component `<cfn>` entries must
+be of the form `<vendor_id>/<name>-<qualifier>`.
 
 `--add [--owner <name>] --key <digest>|--aik <path>`::
 
 Add an AIK public key digest entry preceded by an optional owner name.
+
+`--add --product <name>|--pid <id> --sha1|--sha256|--sha384 --dir <path>|--file <path> [--relative|--rel] [--package <name> --version <string>]`::
+
+Add hashes of a single file or all files in a directory under absolute or relative filenames
+
+`--add --key <digest|--kid <id> --component <cfn>|--cid <id> --sequence <no>|--seq <no>`::
+
+Add an ordered key/component entry
+
+`--add --package <name> --version <string> [--security|--blacklist] [--product <name>|--pid <id>]`::
+
+Add a package version for a given product optionally with security or blacklist flag
 
 `--del --file <path>|--fid <id>|--dir <path>|--did <id>`::
 
@@ -99,6 +124,59 @@ Delete a file or directory entry referenced either by value or primary key.
 
 Delete a product or component entry referenced either by value or primary key.
 
+`--del --product <name>|--pid <id> --file <path>|--fid <id>|--dir <path>|--did <id>`::
+
+Delete a product/file entry referenced either by value or primary key
+
 `--del --key <digest>|--kid <id>|--aik <path>`::
 
 Delete an AIK entry referenced either by value or primary key.
+
+`--del --key <digest|--kid <id> --component <cfn>|--cid <id>`::
+
+Delete a key/component entry
+
+`--del --product <name>|--pid <id> --sha1|--sha1-ima|--sha256|--sha384 [--dir <path>|--did <id>] --file <path>|--fid <id>`::
+
+Delete a file hash given an absolute or relative filename
+
+== Examples
+
+List all sessions
+----
+# /usr/libexec/ipsec/attest --sessions
+   2: Mar 29 09:15:29 2022  1 Ubuntu 20.04 x86_64  a488651e36664792b306 hacker - no access
+   1: Mar 29 06:30:45 2022  1 Ubuntu 20.04 x86_64  a488651e36664792b306 client.strongswan.org - no access
+----
+List all devices
+----
+# /usr/libexec/ipsec/attest --devices
+   1: - a488651e36664792b306cf8be72dd630 - Ubuntu 20.04 x86_64 -
+   2:   Mar 29 09:15:29 2022 hacker - no access
+   1:   Mar 29 06:30:45 2022 client.strongswan.org - no access
+1 device found
+----
+List all files
+----
+# /usr/libexec/ipsec/attest --files
+     2: /etc
+     6:   tnc_config
+     5: /lib/x86_64-linux-gnu
+     1:   libcrypto.so.1.0.0
+     3:   libssl.so.1.0.0
+     8: /usr/bin
+     5:   openssl
+    11: /usr/lib/x86_64-linux-gnu
+     2:   libcrypto.so.1.1
+     4:   libssl.so.1.1
+6 files found
+----
+List all software packages
+----
+# /usr/libexec/ipsec/attest --packages
+   1: libssl-dev
+   2: libssl1.0.0
+   3: libssl1.0.0-dbg
+   4: openssl
+4 packages found
+----
