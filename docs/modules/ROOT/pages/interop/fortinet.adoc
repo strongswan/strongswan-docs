@@ -1,0 +1,24 @@
+= Fortinet Devices
+
+:FORTINET: https://www.fortinet.com/
+:FORTIOS:  https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/5ec8a15f-aa17-11ec-9fd1-fa163e15d75b/FortiOS-7.2.0-Administration_Guide.pdf
+
+The U.S. company {FORTINET}[*FORTINET*] offers a large range of network security
+devices running the {FORTIOS}[*FortiOS*] operating system that includes IPsec-based
+VPN functionality. This also encompasses the *FortiGate* product family.
+
+== Known Quirks
+
+* IKEv2 is only supported with a single set of subnets per CHILD_SA.
+  Thus a separate child definition has to be created in the
+  xref:swanctl/swanctlConf.adoc#_connections_conn_children[`*children*`] subsection
+  of xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] for each additional subnet.
+
+* When the device receives an IKE_SA_INIT from any valid peer, it initiates a
+  tunnel on its own to that peer. This leads to CHILD_SA duplication.
+
+* The FortiGate device sometimes sends an invalid checksum, causing strongSwan
+  to switch to NAT-T encapsulated ESP while the FortiGate device remains unchanged,
+  resulting in strongSwan not processing inbound traffic. The workaround is to
+  force ESPinUDP encapsulation, i.e. to set `*connections.<conn>.encap = yes*` in
+  xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].

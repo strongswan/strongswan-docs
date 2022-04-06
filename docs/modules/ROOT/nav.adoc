@@ -77,6 +77,7 @@
 *** xref:interop/windowsEapServerStatus.adoc[]
 ** xref:interop/ios.adoc[]
 *** xref:interop/appleIkev2Profile.adoc[]
+** xref:interop/fortinet.adoc[]
 
 .Tools
 ** xref:swanctl/swanctl.adoc[]
