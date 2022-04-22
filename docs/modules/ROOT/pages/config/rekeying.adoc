@@ -130,8 +130,8 @@ is also known as *Perfect Forward Secrecy* (`PFS`). To use `PFS`, `DH` groups
 may be added to the proposals for the `IPsec SAs` e.g.
 
  esp_proposals = aes128-sha256-modp3072
- 
-in `swanctl.conf`. To make `PFS` optional (i.e. let the peer choose whether `PFS` 
+
+in `swanctl.conf`. To make `PFS` optional (i.e. let the peer choose whether `PFS`
 is used or not) add proposals with and without `DH` groups e.g.
 
  esp_proposals = aes128-sha256-modp3072,aes128-sha256
@@ -146,12 +146,6 @@ the `CHILD_SA` is first rekeyed with a `CREATE_CHILD_SA` exchange (and fails).
 This is also the reason why you won't see a `DH` group in the status output of
 the daemon until the `SA` is first rekeyed.
 
-=== IKEv1
-
-With `IKEv1` it is different as each Quick Mode exchange uses the complete
-proposals, so already the first `IPsec SA` will use `PFS` according to the
-configuration.
-
 It's possible to force a `CHILD_SA` rekeying via the
 xref:swanctl/swanctlRekey.adoc[ `*swanctl*`] command and the
 xref:plugins/vici.adoc[`*vici*`] interface. This could be used to test if there
@@ -160,7 +154,7 @@ is a `PFS` configuration mismatch.
 Also, since version `5.8.0` strongSwan supports the initiation of childless
 `IKE_SAs`. If enabled, no `CHILD_SA` is created during `IKE_AUTH`. The first
 `CHILD_SA` will be created with a separate `CREATE_CHILD_SA` exchange. Thus the
-configuration issued as described above will be apparent right from the start,
+configuration issue as described above will be apparent right from the start,
 without having to trigger a rekeying or wait for one.
 
 ==== CHILD_SA Rekeying Behavior since Version 5.5.3
@@ -183,6 +177,11 @@ is not removed for a configurable amount of seconds as defined by the
  charon.delete_rekeyed_delay
 
 parameter after the `DELETE` notify has been processed.
+
+=== IKEv1
+
+With `IKEv1` each Quick Mode exchange uses the complete proposals, so already
+the first `IPsec SA` will use `PFS` according to the configuration.
 
 === Settings
 
