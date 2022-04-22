@@ -6,8 +6,6 @@
 
 == Configuration Examples
 
-* xref:config/IKEv2CipherSuites.adoc[Supported IKEv2 cipher suites]
-
 === Modern vici-based Scenarios
 
 :VICI: https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/vici/README.md
