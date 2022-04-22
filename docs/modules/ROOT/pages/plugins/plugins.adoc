@@ -105,6 +105,9 @@ for specific needs.
 |hmac                                     |x|s
 |HMAC wrapper using various hashers
 
+|kdf                                      |x|s
+|IKEv2 key derivation wrapper using various PRFs
+
 |keychain                                 | |e
 |macOS Keychain Services credential set
 
@@ -382,6 +385,9 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |save-keys                                | |s
 |Development/Debugging plugin that saves IKE and/or ESP keys to files compatible with {WIRESHARK}[Wireshark]
 
+|xref:./selinux.adoc[selinux]             | |s
+|SELinux support plugin for labeled IPsec
+
 |smp                                      | |d
 |XML based strongSwan Management Protocol
 
@@ -475,7 +481,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 
 == Default Plugins
 
-The following 35 plugins are built and loaded by default:
+The following 36 plugins are built and loaded by default:
 
 [cols="5,1,1,20"]
 |===
@@ -511,6 +517,9 @@ The following 35 plugins are built and loaded by default:
 
 |hmac                                     |x|s
 |HMAC wrapper using various hashers
+
+|kdf                                      |x|s
+|IKEv2 key derivation wrapper using various PRFs
 
 |md5                                      |x|s
 |MD5 hasher software implementation
@@ -563,7 +572,7 @@ The following 35 plugins are built and loaded by default:
 |xcbc                                     |x|s
 |XCBC wrapper using various ciphers
 
-|*libstrongswan*                          |27|
+|*libstrongswan*                          |28|
 |
 
 |xref:./attr.adoc[attr]                   |x|s

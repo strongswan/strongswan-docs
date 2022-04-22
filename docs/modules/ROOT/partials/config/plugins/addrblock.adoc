@@ -1,3 +1,18 @@
+|depth   |`-1`
+|How deep towards the root CA to validate issuer cert `*IPAddrblock*`
+ extensions (since version 5.9.6).
+
+ {RFC3779}[RFC 3779] requires that all addrblocks claimed by a certificate must
+ be contained in the `*IPAddrblock*` extension of the issuer certificate, up to
+ the root CA.  The default depth setting of `*-1*` enforces this.
+
+ In practice, third party (root) CAs may not contain the extension, making the
+ `*IPAddrblock*` extension unusable under such CAs. By limiting the validation
+ depth, only a certain level of issuer certificates are validated for proper
+ `*IPAddrblock*` extensions: A depth of `*0*` does not check any issuer
+ certificate extensions, a depth of `*1*` only the direct issuer of the end entity
+ certificate is checkend, and so on.
+
 |strict  |`yes`
 |If set to `*yes*`, a subject certificate without an `*IPAddrblock*` extension
  is rejected if the issuer certificate posesses an `*IPAddrblock*`  extension

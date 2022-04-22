@@ -1,0 +1,36 @@
+= selinux Plugin
+
+== Purpose
+
+The `*selinux*` plugin for `*libcharon*` automatically installs and updates
+trap policies with generic SELinux contexts/labels. This is especially useful
+as responder in roadwarrior scenarios, where `start_action=trap` can't be used.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-selinux
+
+NOTE: Even if the plugin is not necessary for your specific scenario (e.g. for
+      site-to-site connections), this option is required to enable SELinux
+      support in general.
+
+== Behavior
+
+On systems with SELinux supported and enabled, it's expected that the label
+configured in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] is a generic
+context such as `system_u:object_r:ipsec_spd_t:s0`. When traffic hits a trap
+policy with such a context and matches it via `association:polmatch`, the kernel
+generates an acquire with the specific context for which a CHILD_SAs with
+matching label is negotiated with the peer.  Since traffic in either direction
+usually requires different labels, the peer will probably create another
+CHILD_SA. Traffic will then flow through one IPsec SA of each CHILD_SA, the
+other SAs will remain unused.
+
+In situations where trap policies can't be installed from the start (by including
+`trap` in `start_action`), the `*selinux*` plugin dynamically installs trap
+policies with the configured label once an IKE_SA is established (possibly
+childless if the initiator had no specific label available). It does this for
+each child config that has a label configured and uses `selinux` as label mode.
+The trap policies are automatically updated in case of MOBIKE updates and
+removed once the IKE_SA is terminated.

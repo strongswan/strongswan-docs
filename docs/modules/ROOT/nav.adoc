@@ -122,6 +122,7 @@
 ** xref:plugins/pkcs11.adoc[]
 ** xref:plugins/radattr.adoc[]
 ** xref:plugins/resolve.adoc[]
+** xref:plugins/selinux.adoc[]
 ** xref:plugins/socket-win.adoc[]
 ** xref:plugins/sql.adoc[]
 ** xref:plugins/systime-fix.adoc[]

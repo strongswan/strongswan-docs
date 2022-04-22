@@ -432,7 +432,7 @@ To define a single authentication round, only, the `<suffix>` may be omitted.
  of the xref:#_connections_conn_local[`*local*`] section for details. When using
  certificate-based authentication, the IKE identity must be contained in the
  certificate, either as the subject DN or as a subjectAltName. It's possible to
- use wildcards `***` to match remote identities (e.g. `*{STAR}@strongswan.org*`,
+ use wildcards to match remote identities (e.g. `*{STAR}@strongswan.org*`,
  `*{STAR}.strongswan.org*` or `*"C=CH, O=strongSwan, CN={STAR}"*`). Connections
  with exact matches are preferred. When using DNs with wildcards, the
  `*charon.rdn_matching*` option in
@@ -534,7 +534,7 @@ To define a single authentication round, only, the `<suffix>` may be omitted.
 CHILD_SA configuration subsection. Each connection definition may have one or
 more sections in its `*children*` subsection. The section name defines the name
 of the CHILD_SA configuration, which must be unique within the connection
-(denoted `<child>_` below).
+(denoted `<child>` below).
 
 [{COLS}]
 |===
@@ -654,7 +654,8 @@ include::partial$config/swanctl-rekey-child.adoc[]
 |<child>.dpd_action       |`clear`
 |Action to perform for this CHILD_SA on DPD timeout. The default `*clear*` closes
  the CHILD_SA and does not take further action. `*trap*` installs a trap policy,
- which will catch matching traffic and tries to re-negotiate the tunnel on-demand.
+ which will catch matching traffic and tries to re-negotiate the tunnel
+ on-demand (note that this is redundant if `*start_action*` includes `*trap*`.
  `*restart*` immediately tries to re-negotiate the CHILD_SA under a fresh IKE_SA.
 
 |<child>.ipcomp           |`no`
@@ -685,7 +686,7 @@ include::partial$config/swanctl-rekey-child.adoc[]
  duplicate policies and enables Netfilter rules to select specific SAs/policies for
  incoming traffic. Note that inbound marks are only set on policies since version
  5.5.2, unless `*mark_in_sa*` is enabled. The special value `*%unique*` sets a
- unique mark on each CHILD_SA instance, beyond that the value _*%unique-dir*`
+ unique mark on each CHILD_SA instance, beyond that the value `*%unique-dir*`
  assigns a different unique mark for each CHILD_SA direction (in/out) since version
  5.6.0. An additional mask may be appended to the mark separated by `*/*`. The
  default mask if omitted is `*0xffffffff*`. [`0/0x00000000`]
@@ -743,6 +744,33 @@ include::partial$config/swanctl-rekey-child.adoc[]
  interface ID for each CHILD_SA direction (in/out). The daemon will not install
  routes for CHILD_SAs that have this option set
 
+|<child>.label        |
+|Since version 5.9.6. Optional security label (e.g. SELinux context), IKEv2 only.
+ Refer to `*label_mode*` for details on how labels are processed.
+
+|<child>.label_mode   |[->]
+|Since version 5.9.6. Defines the mode in which the configured security label
+ is used. The default value of `*system*` selects `*selinux*` if strongSwan was
+ built with SELinux support and SELinux is enabled by the kernel, otherwise,
+ `*simple*` will be selected.
+
+ If set to `*simple*`, the label will be used as is as an additional
+ identifier/selector on the IKEv2 level when negotiating CHILD_SAs and selecting
+ configs. Labels are not installed in the kernel and received labels have to
+ match exactly.
+
+ If set to `*selinux*`, which is only allowed if SELinux is usable on the system,
+ the configured label is expected to be a generic context (e.g.
+ `system_u:object_r:ipsec_spd_t:s0`) for which flows, whose context match it
+ via `association:polmatch`, will trigger an acquire if no SA exists yet for
+ the flow's specific context.  The configured label is installed on trap
+ policies, so this should generally be combined with `*trap*` in
+ `*start_action*`. However, if the connection is initiated directly, without
+ acquire, a childless IKE_SA is established and appropriate trap policies are
+ installed on both ends by the xref:plugins/selinux.adoc[selinux plugin].
+ Labels received from peers are accepted if they match the configured label via
+ `association:polmatch`.
+
 |<child>.tfc_padding      |`0`
 |Pads ESP packets with additional data to have a consistent ESP packet size for
  improved Traffic Flow Confidentiality. The padding defines the minimum size of
@@ -787,17 +815,23 @@ include::partial$config/swanctl-rekey-child.adoc[]
  the connection only, which then can be manually initiated or used as a responder
  configuration. The value `*trap*` installs a trap policy which triggers the tunnel
  as soon as matching traffic has been detected. The value `*start*` initiates the
- connection actively. When unloading or replacing a CHILD_SA configuration having
- a `*start_action*` different from `*none*`, the inverse action is performed.
- Configurations with `*start*` get closed while those with `*trap*` get uninstalled
+ connection actively. These two modes can be combined with `*trap\|start*`, to
+ immediately initiate a connection for which trap policies have been installed.
+
+ When unloading or replacing a CHILD_SA configuration having a `*start_action*`
+ different from `*none*`, the inverse action is performed. Configurations with
+ `*start*` get closed while those with `*trap*` get uninstalled (both happens
+ for connections with `*trap\|start*`).
 
 |<child>.close_action     |`none`
 |Action to perform after a CHILD_SA gets closed by the peer. The default of `*none*`
- does not take any action. `*trap*` installs a trap policy for the CHILD_SA and
- `*start*` tries to re-create the CHILD_SA.  `*close_action*` does not provide any
- guarantee that the CHILD_SA is kept alive. It acts on explicit close messages only
- but not on negotiation failures. Use trap policies to reliably re-create failed
- CHILD_SAs
+ does not take any action. `*trap*` installs a trap policy for the CHILD_SA (note
+ that this is redundant if `*start_action*` includes `*trap*`). `*start*` tries
+ to immediately re-create the CHILD_SA.
+
+ `*close_action*` does not provide any guarantee that the CHILD_SA is kept alive.
+ It acts on explicit close messages only but not on negotiation failures. Use
+ trap policies to reliably re-create failed CHILD_SAs
 |===
 
 === secrets

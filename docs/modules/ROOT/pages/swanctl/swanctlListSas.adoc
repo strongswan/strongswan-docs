@@ -4,7 +4,8 @@
 == Synopsis
 
 ----
-swanctl --list-sas [--ike <name>|--ike-id <id>] [--raw|--pretty] [--noblock]
+swanctl --list-sas [--ike <name>|--ike-id <id>] [--child <name>|--child-id <id>]
+                   [--raw|--pretty] [--noblock]
 
 swanctl --list-sas --help
 ----
@@ -19,6 +20,8 @@ their dependent `CHILD SAs`.
 ----
 --ike      (-i)  filter IKE_SAs by name
 --ike-id   (-I)  filter IKE_SAs by unique identifier
+--child    (-c)  filter CHILD_SAs by name (since 5.9.6)
+--child-id (-C)  filter CHILD_SAs by unique identifier (since 5.9.6)
 --noblock  (-n)  don't wait for IKE_SAs in use
 
 --raw      (-r)  dump raw response message

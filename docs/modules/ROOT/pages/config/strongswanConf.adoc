@@ -6,6 +6,7 @@
 :SETTINGS: src/libstrongswan/settings/settings.h
 :STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
 :IETF:     https://datatracker.ietf.org/doc/html
+:RFC3779:  {IETF}/rfc3779
 :RFC4739:  {IETF}/rfc4739
 :RFC4941:  {IETF}/rfc4941
 :RFC5685:  {IETF}/rfc5685

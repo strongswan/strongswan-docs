@@ -416,6 +416,42 @@ to derive PRFs. Thus PRF algorithms have to be configured explicitly.
 It's also possible to use the hashers provided by the `*gcrypt*` plugin together
 with the `*hmac*` plugin.
 
+=== Key Derivation Functions
+
+Based on the negotiated PRF, IKEv2 derives key material in two separate steps
+(PRF/prf+). Since strongSwan 5.9.6, these are provided by plugins.
+
+[cols="6,4,3"]
+|===
+|Base PRF |xref:#_ike_support[IKE] |Plugins
+
+|MD5 PRF
+|*s* x w o     |md5, hmac, kdf
+
+|SHA1 PRF
+|*s* x b w o   |sha1, hmac, kdf
+
+|AES XCBC PRF
+|x             |aes, xcbc, kdf
+
+|AES CMAC PRF
+|x             |aes, xcbc, kdf
+
+|SHA2_256 PRF
+|x b w o       |sha2, hmac, kdf
+
+|SHA2_384 PRF
+|x b w o       |sha2, hmac, kdf
+
+|SHA2_512 PRF
+|x b w o       |sha2, hmac, kdf
+|===
+
+The `*botan*`, `*openssl*` and `*wolfssl*` plugins implement HMAC-based KDFs
+directly via their respective {IETF}/rfc5869[HKDF (RFC 5869)] implementation.
+
+The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
+
 == Diffie Hellman Groups
 
 === Regular Modular Prime Groups

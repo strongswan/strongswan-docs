@@ -424,6 +424,10 @@ plugins.
 |enable development/debugging plugin that saves IKE and ESP keys in
  {WIRESHARK}[Wireshark] format
 
+|xref:plugins/selinux.adoc[--enable-selinux]                 |5.9.6
+|enable SELinux support for labeled IPsec and the
+ xref:plugins/selinux.adoc[selinux] plugin
+
 |--enable-sha3                                               |5.3.4
 |enable SHA3 and SHAKE software implementation plugin
 
@@ -590,6 +594,9 @@ specific plugins.
 
 |--disable-ikev2                                              |
 |disable IKEv2 protocol support in `charon` daemon
+
+|--disable-kdf                                                |5.9.6
+|disable default KDF (prf+) implementation plugin
 
 |--disable-kernel-netlink                                     |
 |disable default Netlink kernel interface

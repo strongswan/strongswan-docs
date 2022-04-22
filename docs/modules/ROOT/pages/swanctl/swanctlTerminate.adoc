@@ -21,7 +21,7 @@ This xref:./swanctl.adoc[`*swanctl*`] subcommand terminates either a single
 ----
 --child     (-c)  terminate by CHILD_SA name
 --ike       (-i)  terminate by IKE_SA name
---child-id  (-C)  terminate by CHILD_SA reqid
+--child-id  (-C)  terminate by CHILD_SA unique identifier
 --ike-id    (-I)  terminate by IKE_SA unique identifier
 --force     (-f)  terminate IKE_SA without waiting, unless timeout is set
 --timeout   (-t)  timeout in seconds before detaching
