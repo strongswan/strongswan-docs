@@ -1,0 +1,14 @@
+name: Trigger publish of docs.strongswan.org
+on:
+  push:
+    branches: [antora]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - run: gh workflow run --repo strongswan/strongswan-antora publish.yml -f msg="$MSG $GITHUB_REPOSITORY@$SHA"
+      env:
+        GITHUB_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+        SHA: ${{ github.event.head_commit.id }}
+        MSG: ${{ github.event.head_commit.message }}
