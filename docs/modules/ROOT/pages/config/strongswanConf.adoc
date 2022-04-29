@@ -65,7 +65,7 @@ keyvalue := key = value\n
 ----
 
 Values must be terminated by a newline. Comments are possible using the
-#-character. Section names and keys may contain any printable character except:
+`*&num;*` character. Section names and keys may contain any printable character except:
 ----
 . , : { } = " # \n \t space
 ----
@@ -156,11 +156,11 @@ connections {
 
 === Including Files
 
-The `*include*` statement allows to include otherfiles into `*strongswan.conf*`,
+The `*include*` statement allows to include other files into `*strongswan.conf*`,
 e.g.
-
- include /some/path/*.conf
-
+----
+include /some/path/*.conf
+----
 If the file name is not an absolute path, it is considered to be relative to the
 directory of the file containing the include statement. The file name may include
 shell wildcards. Also, such inclusions can be nested.
@@ -531,7 +531,7 @@ connection attempts are blocked
 |How the Relative Distinguished Names (RDNs) a certificate's Subject Distinguished
  Name (DN) is composed of, are matched against configured identities. Possible
  values are `*strict*` (the default), `*reordered*`, and `*relaxed*`.  With
- `*strict*` the number, type and order of all RDNs have to match. Wildcards (`***`)
+ `*strict*` the number, type and order of all RDNs have to match. Wildcards (`*&ast;*`)
  for RDN values are allowed (that's the case for all three variants). Using
  `*reordered*` also matches a DN if the RDNs appear in a different order, The
  number and type still have to match. Finally `*relaxed*` also allows matches of

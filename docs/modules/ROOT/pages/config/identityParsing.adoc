@@ -14,7 +14,7 @@
 
 The type and binary encoding of identity strings specified in
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] , e.g. the parameters
-`*connections.<conn>.local<suffix>.id*` or '*secrets.eap<suffix>.id<suffix>*` and
+`*connections.<conn>.local<suffix>.id*` or `*secrets.eap<suffix>.id<suffix>*` and
 several other identities defined as strings, are parsed as follows:
 
 * If the string value contains an equal sign `*=*`, it is assumed to be a
@@ -27,9 +27,9 @@ several other identities defined as strings, are parsed as follows:
 * If the string value contains an `*@*` character, the type depends on the position
    of that character:
 
-** If the string begins with `*@\#*`, the type is set to `*KEY_ID*` and the string
+** If the string begins with `*@&num;*`, the type is set to `*KEY_ID*` and the string
    following that prefix is assumed to be the hex-encoded binary value of the
-   identity (note that `*#*` is used for comments in config files, so quotes are
+   identity (note that `*&num;*` is used for comments in config files, so quotes are
    necessary).
 
 ** If the string begins with `*@@*`, the type is set to `*USER_FQDN*` and the
@@ -48,20 +48,21 @@ several other identities defined as strings, are parsed as follows:
   follows:
 
 ** If the value is an empty string or equals `*%any*`, `*%any6*`, `*0.0.0.0*`,
-   `*::*`  or `***`, the type is set to `*ID_ANY*` which matches any other identity.
+   `*::*`  or `*&ast;*`, the type is set to `*ID_ANY*` which matches any other identity.
 
 ** If the value contains a colon `*:*`, it is assumed to be an `*IPv6*` address.
    But if parsing the address and converting it to its binary encoding fails, the
    type is set to `*KEY_ID*` and the encoding is the literal value. Since version
    5.4.0 subnets in CIDR notation and address ranges (i.e. two addresses separated
-   by a hyphen `*-*` without spaces are parsed too (they can't be used as IKE
+   by a hyphen `*-*` without spaces) are parsed too (they can't be used as IKE
    identities but e.g. to define shared secrets in
    xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]).
 
 ** For all other strings, an attempt at parsing them as `*IPv4*` addresses is made
-   (since version 5.4.0 also as subnets and ranges, see above). If that fails, the
-   type is set to `*FQDN*` and the literal value is adopted as encoding (this is
-   where domain names and simple names end up).
+   (since version 5.4.0 also as subnets and ranges, see above).
++
+If that fails, the type is set to `*FQDN*` and the literal value is adopted
+as encoding (this is where domain names and simple names end up).
 
 * If the value has the form `<type>:<value>` (supported since version 5.2.2),
   the type and value are explicitly specified:
@@ -71,14 +72,14 @@ several other identities defined as strings, are parsed as follows:
    `*dns*`, `*asn1dn*`, `*asn1gn*` and `*keyid*`.  Custom type prefixes may be
    specified by surrounding the numerical type value with curly brackets.
 
-** If the value starts with `*\#*`, the remaining data is interpreted as hex
+** If the value starts with `*&num;*`, the remaining data is interpreted as hex
    encoding. Otherwise, the string is used as is as the identification data (note
-   that `*\#*` is used for comments in config files, so quotes are necessary).
+   that `*&num;*` is used for comments in config files, so quotes are necessary).
 +
 *Important:* This implies that no conversion is performed for non-string
 identities. For example, `*ipv4:10.0.0.1*` does not create a valid
 `*ID_IPV4_ADDR*` IKE identity, as it does not get converted to binary
-`*0x0a000001*`. Instead, one could use `*ipv4:#0a000001*` to get a valid
+`*0x0a000001*`. Instead, one could use `*ipv4:&num;0a000001*` to get a valid
 identity, but just using the automatic conversion as described above is usually
 simpler. The same applies to the ASN.1 encoded types (for subject DNs the
 xref:pki/pkiDn.adoc[`*pki --dn*`] command may be useful).
@@ -87,7 +88,7 @@ The `<type>:<value>` notation is primarily useful if the auto-detection is
 inadequate or produces the wrong result.  For instance, strongSwan does not nest
 RDNs when generating the binary encoding of an ASN.1 DN, which some PKIs do.
 Another example is the need to encode an `*FQDN*` as a `*KEY_ID*` which is
-rather inconvenient with the `*@#*` syntax, as the binary encoding has to be
+rather inconvenient with the `*@&num;*` syntax, as the binary encoding has to be
 provided.
 
 == Supported RDN Types
