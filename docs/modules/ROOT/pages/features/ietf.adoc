@@ -567,6 +567,10 @@ Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.5
  Tunnel EAP Method (TEAP) Version 1
 
 |
+|{IETF}/rfc7171[RFC 7171]:
+ PT-EAP: Posture Transport Protocol For EAP Tunnel Methods
+
+|
 |{IANA}/eap-numbers[IANA EAP]:
  EAP Method Types
 

@@ -54,8 +54,8 @@ xref:config/strongswanConf.adoc#_charon_plugins_eap_ttls[`*eap-ttls*`] plugins
 have to be disabled in order not to disrupt the communication.
 
 It is also recommended to set the maximum PB-TNC batch size and the maximum
-PA-TNC message size possible with PT-EAP transport to the optimum values defined
-above.
+PA-TNC message size possible with PT-EAP transport to the
+xref:tnc/optimumTncSizes.adoc[optimum values] defined above.
 
 === Choice of EAP Authentication Method
 
@@ -421,9 +421,10 @@ standard PA-TNC attribute `*Port Filter*` which will be analyzed later on
 09[TNC] processing PA-TNC attribute type 'IETF/Port Filter' 0x000000/0x00000006
 ----
 The TNC server creates a PA-TNC attribute of type `*Max Attribute Size Request*`
-defined in the `*TCG*` namespace ({IFMSEG}[TCG TNC IF-M Segmentation]) which
-proposes to split up huge PA-TNC (TCG TNC IF-M) messages into
-`*TCG/Segmentation Attributes*` with a maxium size of `*32698*` bytes each
+defined in the `*TCG*` namespace which proposes to split up huge PA-TNC
+messages into segments with a maximum size of `*32'698*` bytes each
+(see xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message
+segmentation])
 ----
 09[IMV] IMV 1 requests a segmentation contract for PA message type 'IETF/Operating System' 0x000000/0x00000001
 09[IMV]   maximum attribute size of 100000000 bytes with maximum segment size of 32698 bytes

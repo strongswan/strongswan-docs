@@ -49,8 +49,8 @@ xref:config/strongswanConf.adoc#_charon_plugins_eap_ttls[`*eap-ttls*`] plugins
 have to be disabled in order not to disrupt the communication.
 
 It is also recommended to set the maximum PB-TNC batch size and the maximum
-PA-TNC message size possible with PT-EAP transport to the optimum values defined
-above.
+PA-TNC message size possible with PT-EAP transport to the
+xref:tnc/optimumTncSizes.adoc[optimum values] defined above.
 
 === Restriction of TLS Cipher Suites
 
@@ -377,11 +377,9 @@ client.
 ----
 The first PA-TNC message is of standard subtype `*Operating System*` and contains
 a PA-TNC attribute of type `*Max Attribute Size Request*` defined in the `*TCG*`
-namespace ({IFMSEG}[TCG TNC IF-M Segmentation]) which proposes to split up huge
-PA-TNC (TCG TNC IF-M) messages into `*TCG/Segmentation Attributes*` with a maxium
-size of `*32698*` bytes each, plus a second PA-TNC attribute of the standard type
-`*Attribute Request*` which requests a PA-TNC attribute of standard type
-`*Installed Packages*`
+namespace which proposes to split up huge PA-TNC messages into segments with a
+maximum size of `*32'698*` bytes each (see
+xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message segmentation]), plus a second PA-TNC attribute of the standard type `*Attribute Request*` which requests a PA-TNC attribute of standard type `*Installed Packages*`
 ----
 05[TNC] handling PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
 05[IMC] IMC 1 "OS" received message for Connection ID 1 from IMV 1

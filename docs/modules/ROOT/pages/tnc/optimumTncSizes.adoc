@@ -1,0 +1,242 @@
+= Optimum PB-TNC Batch and PA-TNC Message Sizes
+
+:TCG:     https://trustedcomputinggroup.org
+:IFMSEG:  {TCG}/wp-content/uploads/IFM_Segmentation_v1r5_04042016.final_.pdf
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC3748: {IETF}/rfc3748#section-4
+:RFC6066: {IETF}/rfc6066#section-4
+:RFC7171: {IETF}/rfc7171#section-3.3
+
+== Maximum PDU Sizes
+
+The default TLS maximum fragment length ({RFC6066}[RFC 6066]) is `*2^14 = 16'384*`
+bytes. Therefore in order to minimize the TLS fragmentation overhead, the optimum
+maximum TLS Application Data Record length is a multiple of `*16'384*` bytes.
+
+On the other hand the maximum size of an EAP message ({RFC3748}[RFC 3748]) is
+restricted to `*2^16 - 1 = 65'535*` bytes due to the two-octet `*Length*` field.
+This limits the size of the PT-EAP ({RFC7171}[RFC 7171]) messages tunneled via
+the EAP-TTLS protocol which itself has a fragmentation mechanism with a relatively
+small xref:config/strongswanConf.adoc#_charon_plugins_eap_ttls[`*fragment_size*`]
+so that an EAP-TTLS AVP fragment fits into a single IKEv2 UDP datagram.
+
+The following table shows in the first column the maximum possible size and in
+the remaining four columns the optimum sizes for various PT-TNC, PB-TNC, and PA-TNC
+*Protocol Data Units* (PDUs). The maximum PB-TNC batch size (`*max_batch_size*`)
+and the maximum PA-TNC message size (`*max_message_size*`) can be set in the
+xref:config/strongswanConf.adoc#_charon_plugins_tnccs_20[`*tnccs-20*`] plugin
+subsection of xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+
+Since writing of a lot of new entries into the SQLite database on the TNC server
+side is usually the speed bottleneck during a TNC measurement, especially with the
+IMA (Linux Integrity Measurement Architecture) or SWIMA (Software Inventory Message
+and Attributes) applications, it is recommended to use the reduced values shown
+in the xref:#_configuration_example[configuration example] listed below instead
+of the xref:config/strongswanConf.adoc#_charon_plugins_tnccs_20[default values].
+This avoids IKEv2 timeouts with PT-EAP transport due to overly long TNC database processing times.
+
+[cols="3,1,2,2,2,2,2"]
+|===
+|Type |Header |Size |Size |Size |Size |Size
+
+|TLS AppData Record
+|   |4 * 16'384 + 7 |4 * 16'384 |3 * 16'384 |2 * 16'384 |1 * 16'384
+
+|xref:#_eap_ttls_avp_header_8_bytes[EAP-TTLS AVP]
+| 8 | 65'543        | 65'536    | 49'152    | 32'768    | 16'384
+
+|xref:#_pt_eap_message_header_6_bytes[PT-EAP Message]
+| 6 |*65'535*       | 65'528    | 49'144    | 32'760    | 16'376
+
+|xref:#_pb_tnc_batch_header_8_bytes[PB-TNC Batch]
+| 8 | 65'529        |*65'522*   | 49'138    |*32'754*   | 16'370
+
+|xref:#_pb_tnc_message_header_12_bytes[PB-TNC Message]
+|12 | 65'521        | 65'514    | 49'130    | 32'746    | 16'362
+
+|xref:#_pb_pa_message_header_12_bytes[PB-PA Message]
+|12 | 65'509        | 65'502    | 49'118    | 32'734    | 16'350
+
+|xref:#_pa_tnc_message_header_8_bytes[PA-TNC Message]
+| 8 | 65'497        |*65'490*   | 49'106    |*32'722*   | 16'338
+
+|xref:#_pa_tnc_attribute_header_12_bytes[PA-TNC Attribute]
+|12 | 65'489        | 65'482    | 49'098    | 32'714    | 16'330
+
+|Attribute Value
+|   | 65'477        | 65'470    | 49'086    | 32'702    | 16'318
+
+|xref:#_if_m_segment_envelope_attribute_value[IF-M Segment Value]
+|   | 65'473        | 65'466    | 49'082    | 32'698    | 16'314
+
+|Comments |
+|max. size
+|xref:config/strongswanConf.adoc#_charon_plugins_tnccs_20[default size]
+|
+|IMA/SWIMA
+|
+|===
+
+== EAP-TTLS AVP Header (8 bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           AVP Code                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|V M r r r r r r|                  AVP Length                   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== PT-EAP Message Header (6 bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Code      |   Identifier  |            Length             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Type       |   Flags | Ver |           Data ...            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== PB-TNC Batch Header (8 bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |D|     Reserved                        | B-Type|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Batch Length                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== PB-TNC Message Header (12 bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Flags     |               PB-TNC Vendor ID                |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       PB-TNC Message Type                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PB-TNC Message Length                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|               PB-TNC Message Value (Variable Length)          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== PB-PA Message Header (12 Bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Flags      |               PA Message Vendor ID            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           PA Subtype                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Posture Collector Identifier | Posture Validator Identifier  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                 PA Message Body (Variable Length)             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== PA-TNC Message Header (8 bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |                    Reserved                   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Message Identifier                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== PA-TNC Attribute Header (12 bytes)
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Flags     |          PA-TNC Attribute Vendor ID           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                     PA-TNC Attribute Type                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    PA-TNC Attribute Length                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                 Attribute Value (Variable Length)             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== IF-M Segment Envelope Attribute Value
+
+----
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| Flags         |                 Base Message ID               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                 Segment Value (Variable Length)               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+----
+
+== Configuration Example
+
+Here is an example xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+configuration file:
+----
+libtnccs {
+  plugins {
+    tnccs-20 {
+      max_batch_size = 32754
+      max_message_size = 32722
+    }
+  }
+}
+----
+
+== PA-TNC Message Segmentation
+
+If a PA-TNC or TCG TNC IF-M message larger than `*max_message_size*` has to be transported via PT-EAP then the {IFMSEG}[TCG TNC IF-M Segmentation] mechanism
+which defines the following PA-TNC attributes in the `*TCG*` namespace:
+
+Segmentation Contract Request ::
+  Request to establish a Segmentation Contract.
+
+Segmentation Contract Response ::
+  Indicate acceptance of a Segmentation Contract.
+
+Segment Envelope ::
+  Send a Message Segment as part of a Segmented Message Exchange.
+
+Next Segment ::
+  Request the next Message Segment in a Segmented Message Exchange.
+
+Cancel ::
+  Cancel a Segmentation Contract and/or an ongoing Segmented Message Exchange.
+
+can be used to split up the PA-TNC message and transport the segments in two or
+more consecutive PA-TNC xref:#_if_m_segment_envelope_attribute_value[`*Segment
+Envelope*`] attributes.
+
+=== Example
+
+Assuming the maximum PA-TNC message size of `*32'722*` bytes from the configuration
+example xref:#_configuration_example[above], a PA-TNC message of this size fits
+exactly into a single PB-TNC batch with the maximum size of `*32'754*` bytes.
+
+If the PA-TNC message size is increased by only one octet to `*32'723*` bytes, then
+this PA-TNC message is split up by the {IFMSEG}[TCG TNC IF-M Segmentation] mechanism
+into a first segment of `*32'698*` bytes and a second segment of `*25*` bytes.
+Each segment value is embedded in a PA-TNC
+xref:#_if_m_segment_envelope_attribute_value[`*Segment Envelope*`] attribute.
+
+The first attribute inserted in an outer PA-TNC message fits exactly into a PB-TNC
+batch of the maximum size of `*32'754*` bytes, whereas the second attribute is
+transferred in a second PB-TNC batch with a small size of `*81*` bytes, after
+having received a PA-TNC `*Next Segment*` attribute from the TNC peer.
