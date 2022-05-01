@@ -28,6 +28,8 @@ These scenarios use the deprecated `*stroke*` interface as implemented by the
 * xref:config/IKEv1Stroke.adoc[`*IKEv1*`] examples
 * xref:config/IPv6Stroke.adoc[`*IPv6*`] examples
 
+NOTE: xref:config/configExamplesNotes.adoc[Notes on Configuration Examples]
+
 == Platform Security
 
 * xref:tpm/tpm2.adoc[Using TPM 2.0 keys with strongSwan]

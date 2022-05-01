@@ -1,0 +1,31 @@
+= Notes on Configuration Examples
+
+:RESULTS: https://www.strongswan.org/testing/testresults
+:GITHUB:  https://github.com/strongswan/strongswan/tree/master
+:TESTS:   testing/tests
+
+The {RESULTS}[configuration examples] on the strongSwan website are actually
+xref:devs/testingEnvironment.adoc[regression test scenarios]. In order to run all
+of them, pretty much all of the plugins are required and get built and installed.
+That's why xref:plugins/pluginLoad.adoc[load statements] are used in each scenario
+to only load those plugins that are actually needed for the test case. Doing this
+is generally xref:plugins/pluginLoad.adoc#_static_load_list[*not recommended*].
+Normally you just enable and compile the additional plugins that you need and load
+them all implicitly without any load list.
+
+The config files in these examples are not meant to be used literally. They just
+serve, well, as examples. Attempting to understand each setting and its effects
+is definitely advisable. In particular, time settings are explicitly set lower
+than usual to make the test runs shorter. Check the man pages or the documentation
+for the xref:config/config.adoc[configuration files] for details.
+
+Also important is that the {RESULTS}[scenarios] on the strongSwan website are always
+for the latest stable release (check the strongSwan version stated on the overview
+page of the test run). So you might find scenarios that use features that are not
+available with your strongSwan version (or configure them with different settings).
+
+There are some scenarios that use files (e.g. xref:plugins/updown.adoc[`*updown*`]
+or `*iptables.rules*` scripts) that are not linked directly or logged in
+`*console.log*`. Such files may be found in our repository
+({GITHUB}/{TESTS}[`*{TESTS}*`])  in the `*hosts*` directory of a particular test
+scenario.
