@@ -1,7 +1,7 @@
 name: Trigger publish of docs.strongswan.org
 on:
   push:
-    branches: [antora]
+    branches: [master]
   workflow_dispatch:
 jobs:
   build:
