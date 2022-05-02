@@ -36,6 +36,7 @@
 .Howtos
 ** xref:config/quickstart.adoc[]
 ** xref:pki/pkiQuickstart.adoc[]
+** xref:pki/caManagement.adoc[]
 ** xref:howtos/introduction.adoc[]
 ** xref:howtos/forwarding.adoc[]
 ** xref:howtos/securityRecommendations.adoc[]

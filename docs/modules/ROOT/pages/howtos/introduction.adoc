@@ -314,7 +314,7 @@ xref:pki/pki.adoc[`*pki*`] tool. Since setting up a whole PKI can be quite compl
 we provide some xref:pki/pkiQuickstart.adoc[simple instructions] to get you started.
 
 OpenSSL is also a widespread alternative to generate certificates, as are several
-GUI based [xref:pki/caManagementGui.adoc[CA management utilities].
+GUI based [xref:pki/caManagement.adoc[CA management utilities].
 Microsoft's {ADCS}[Active Directory Certificate Services] (AD CS) could also be
 used for large scale PKIs.
 

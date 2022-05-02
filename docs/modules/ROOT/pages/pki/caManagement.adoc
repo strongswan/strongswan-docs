@@ -1,0 +1,132 @@
+= GUI-based CA Management
+
+:GNOMINT: https://sourceforge.net/projects/gnomint/
+:TINYCA2: https://opsec.eu/src/tinyca/#:~:text=TinyCA
+:XCA:     https://hohnstaedt.de/xca
+
+This list only includes free software as defined by the GNU foundation.
+Please contribute a small description if you think your favorite tool should be
+included in the list.
+
+== gnoMint
+
+image::gnoMint.png[gnoMint]
+
+{GNOMINT}[gnoMint] allows any person to run a Certification Authority, creating
+certificates for any purpose: e-mail signing and/or crypting; TLS authentication
+through web, VPNs or other protocols; secured web-servers... Its development was
+started due to the lack of a 'just-works' CA software: creating a CA from zero,
+through open-source command-line utilities, was possible, but was unconfortable
+to remember all the neccessary parameters. And you had to create a difficult
+configuration file. So here is {GNOMINT}[gnoMint], and it will help all systems
+and network administrators to deploy a Certification Authority very easily.
+
+=== Features
+
+* Creating all the infrastructure to keep and run a Certification Authority,
+  saved in only one file.
+
+* Create Certification Signing Requests, allowing to export them to PKCS#8 files,
+  so they can be send to other CAs.
+
+* Create X.509 certificates, with a usual set of subject-parameters.
+
+* Export certificates and private keys to PEM files, so they can be used by external
+  applications.
+
+* For each CA, establish a set of policies for certificate generation.
+
+* Import CSRs made by other applications.
+
+* Export PKCS#12 structures, so the certificates can be imported easily by web
+  and mail clients.
+
+* Revoke certificates, and generate the corresponding CRLs.
+
+* Allow the possibility of keeping the CA private key or other private keys in
+  external files or devices (as USB drives).
+
+* Allow the management of a whole hierarchy of CAs with their respectives
+  certificates.
+
+* Import pre-existing Certification Authorities with all their data.
+
+* Allows an easy CA operation from command-line tools, for batch certificate
+  creation, or integration with other utilities.
+
+=== Drawbacks
+
+* With the exception of the Root CA key where the RSA key size can be chosen,
+  only 2048 bit RSA end entity or intermediate CA keys are available which
+  doesn't allow for a 128 bit security strength.
+
+* No support of ECDSA keys.
+
+* No support of `*subjectAlternativeNames*` which doesn't allow to use Fully
+  Qualified Domain Names (FQDNs) for hosts or email addresses for users as IKEv2
+  identities.
+
+* The selection of the Country Name from a dropdown list is quite tiresome.
+
+* No new releases since version 1.3.0 in 2016.
+
+== TinyCA 2
+
+image::tinyCa.png[tinyCA]
+
+{TINYCA2}[TinyCA] is a simple graphical user interface written in Perl/Gtk to
+manage a small Certification Authority. TinyCA works as a frontend for openssl.
+
+=== Features
+
+* Unlimited CAs possible.
+
+* Support for creating and managing Intermediate CAs.
+
+* Creation and Revocation of X.509 certificates.
+
+* PKCS#10 Requests can be imported and signed.
+
+* Certificates can be exported as: PEM, DER, TXT or PKCS#12.
+
+* Certificates can have a Fully Qualified Domain Name (FQDN), an IP
+  address or an email address as a `*subjectAlternativeName*`.
+
+* Certificate Revocation List (CRL).
+
+* CRLs can be exported as: PEM, DER and TXT.
+
+=== Drawbacks
+
+* No support of ECDSA keys.
+
+* No new releases since version 0.7.5 in 2006.
+
+== Xca
+
+image::xca.png[Xca]
+
+{XCA}[Xca] is a  graphical user interface for  handling  X.509  certificates,
+RSA or ECDSA keys, PKCS#10 requests and CRLs in software and on smartcards.
+
+=== Features
+
+* Start your own PKI and create all kinds of private keys, certificates, requests
+  or CRLs.
+
+* Import and export them in any format like PEM, DER, PKCS#7, PKCS#12.
+
+* Use them for your IPsec, OpenVPN, TLS or any other certificate based setup.
+
+* Manage your Smart-Cards via PKCS#11 interface.
+
+* Export certificates and requests as OpenSSL config file.
+
+* Create Subject- and/or Extension- templates to ease issuing similar certs.
+
+* Convert existing certificates or requests to templates.
+
+* Get the broad support of x509v3 extensions as flexible as OpenSSL but more
+  user-friendly.
+
+* Adapt the columns to have your important information at a glance.

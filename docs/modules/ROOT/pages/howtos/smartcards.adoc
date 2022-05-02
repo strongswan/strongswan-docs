@@ -94,7 +94,7 @@ got in your mail).
 
 To set up your CA you may use OpenSSL or the strongSwan xref:pki/pki.adoc[`*pki*`]
 tool. To simplify things you may also use a
-xref:pki/caManagementGui.adoc[graphical user interface] to set up your CA. One
+xref:pki/caManagement.adoc[graphical user interface] to set up your CA. One
 important thing to keep in mind is that you shouldn't create private keys with a
 key length not supported by your smart card (check the specs to be sure). RSA keys
 with a maximum length of 2048 bits are known to work.
