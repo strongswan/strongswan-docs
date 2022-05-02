@@ -23,7 +23,7 @@ The `*resolve*` plugin is configured using the following options in the
 xref:config/strongswanConf.adoc#_charon_plugins_resolve[`*charon.plugins.resolve*`]
 section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="2,1,8"]
+[cols="3,1,8"]
 |===
 |Key|Default|Description
 

@@ -349,7 +349,7 @@ a single authentication round, only, the`<suffix>` may be omitted.
 |id                        |
 |IKE identity to use for authentication round. When using certificate authentication.
  The IKE identity must be contained in the certificate, either as the subject DN
- or as a subjectAltName. (the identity will default to the certificate^s subject
+ or as a subjectAltName (the identity will default to the certificate's subject
  DN if not specified). Refer to xref:config/identityParsing.adoc[identity parsing]
  for details on how identities are parsed and may be configured
 

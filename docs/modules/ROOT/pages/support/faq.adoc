@@ -1,0 +1,451 @@
+= Frequently Asked Questions (FAQ)
+:page-toclevels: 4
+
+:NETFILTER: https://upload.wikimedia.org/wikipedia/commons/3/37/Netfilter-packet-flow.svg
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC3948:   {IETF}/rfc3948
+:RFC4555:   {IETF}/rfc4555
+:RFC6125:   {IETF}/rfc6125
+:RFC7383:   {IETF}/rfc7383
+:MITM:      https://en.wikipedia.org/wiki/Man-in-the-middle_attack
+:TESTS:     https://www.strongswan.org/testing/testresults
+
+== General Questions
+
+=== Capturing outbound plaintext packets with tcpdump/wireshark
+
+*Q:* _When using `tcpdump/wireshark` to sniff traffic secured by IPsec,
+incoming packets show up twice: encrypted i.e. as ESP packets and unencrypted as
+plaintext packets. However, for outgoing traffic, only ESP packets show up. How
+can I get incoming *and* outgoing packets as plaintext?_
+
+*A:* That's a peculiarity of the Linux kernel. Capture the (UDP encapsulated) ESP
+packets and use wireshark to decrypt them. See https://wiki.wireshark.org/ESP_Preferences
+
+Run the `*ip xfrm state*` command to determine the encryption algorithms and the
+symmetric keys used by the kernel. Depending on your configuration, strongSwan
+periodically changes encryption keys. Keep this in mind if you are capturing
+traffic over an extended period of time.
+
+There's also a document that shows different ways to
+xref:install/trafficDumps.adoc[dump traffic] on the IPsec endpoint.
+
+=== Non-standard IKE ports
+
+*Q:* _Can I use a local non-standard port for IKE?_
+
+*A:* The default socket implementation `*socket-default*` can only listen on two
+predetermined ports. By default one is used for xref:features/natTraversal.adoc[].
+There are compile time options and two settings in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] to determine these ports,
+but clients usually will only use the default ports (`*500/4500*`). To use
+ephemeral source ports on a client, these settings may be set to `*0*` so the
+plugin determines them when it's initialized.
+
+As a client, strongSwan can use an arbitrary remote port, which may be configured
+via `*remote_port*` in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] (see the
+notes regarding
+xref:features/natTraversal.adoc#_custom_server_ports[custom server ports and NAT-Traversal]).
+There is also another socket implementation called `*socket-dynamic*`, which is
+experimental and can send IKE messages from specific source ports (specified with
+`*local_port*`), and requires sending packets to the remote NAT-T port (e.g.
+`*remote_port = 4500*`).
+
+You can also use the `DNAT` and `SNAT` targets in `*iptables*` to move ports around,
+if you desire so.
+
+=== Plugin is missing
+
+*Q:* _I need some xref:plugins/plugins.adoc[plugin], but it seems my version
+of charon doesn't load it! What should I do?!_
+
+*A:* Check if you xref:plugins/pluginLoad.adoc[customized the list of loaded plugins].
+If so, make sure the plugin you need is included (see below for details on modular
+plugin loading). Then make sure the plugin is actually installed. For that, run
+`*find*` (check the man page of `*find*` for the syntax) with the required parameters
+to search your hard drive for the plugin's `*.so*` file. If it exists and is in a
+plausible directory, then it should be installed. Then restart the daemon.
+
+If your installation of strongSwan is configured for
+xref:plugins/pluginLoad.adoc#_modular_configuration[modular loading]
+(the default since version 5.1.2) and
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] includes the
+`*strongswan.d/charon/*` directory, check if the plugin-specific configuration
+file in that directory contains `*load = yes*` in the plugin-specific configuration
+section. If the file doesn't exist, the plugin is likely not installed.
+
+If you compiled strongSwan yourself, rebuild it with the required plugins
+xref:install/autoconf.adoc[enabled]. Make sure to run `*make clean*` before rebuilding
+again to update the plugin lists used by the executables.
+
+If you got strongSwan from the xref:install/install.adoc[repositories of a distribution],
+look for additional packages. It is likely the distribution ships the plugin you're
+looking for in another package. If you still can not find it, search the issue tracker
+of that distribution for a bug report or feature request for the plugin you want.
+If you found one, weigh in on it, unless it is already closed or a plausible
+reason was given why the request can not be fulfilled.
+If you did not find a bug report or feature request in the issue tracker of that
+distribution, open one stating your request for the plugin you're looking for to
+be included.
+
+=== strongSwan crashes
+
+*Q:* _strongSwan crashes and I don't know why. What should I do?_
+
+*A:* If you are not using the latest version, it is very likely that the crash
+you experienced was already fixed.
+
+If you xref:install/install.adoc[compiled it yourself], make sure your cleaned
+the build directory before compiling. If you do not do that, you can end up linking
+objects of different strongSwan versions together and that can cause crashes.
+If you don't use the same configure options when building a newer version,
+uninstalling/removing the previous binaries/libraries is required (the same applies
+if you previously had strongSwan installed from a distribution package).
+Then recompile it and reinstall it.
+
+If you installed it as xref:install/install.adoc[binary package], check the
+corresponding distribution's issue tracker for reports.
+
+In either case, if the crashes persist, try to find a similar report in our
+issue tracker or discussion forum and read it. If you can't find one, create
+a new one with as much details as possible.
+
+=== Configuration compatibility with FreeS/WAN, Openswan and Libreswan
+
+*Q:* _Are configuration files of FreeS/WAN, Openswan and Libreswan compatible with the ones of strongSwan?_
+
+*A:* They are not compatible. Although the general format of `*ipsec.conf*` is
+identical between the different swans, the files are not compatible, because several
+options have different meanings and a variety of different options are absent from
+some versions and others exist. Do not attempt to reuse configuration files between
+different swans.
+
+NOTE: The *ipsec.conf* backend is deprecated, use
+      xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] or
+      xref:plugins/vici.adoc[`*vici*`] instead.
+
+=== Multiple subnets per SA
+
+*Q:* _Can I tunnel several subnets in one CHILD_SA?_
+
+*A:* If you use IKEv2, you can if the peers support it. Some do not (e.g. devices
+by Checkpoint, Cisco and Fortinet, refer to the *Interoperability* section for details).
+If you use IKEv1, you need to be a roadwarrior and use the _UNITY_ extension.
+strongSwan implements it with the xref:plugins/unity.adoc[`*unity*`] plugin.
+
+In any other case, you need to define a separate CHILD_SA per subnet pair.
+
+=== IPsec and iptables/nftables
+
+*Q:* _How does IPsec on Linux interact with `iptables/nftables`?_
+
+*A:* IPsec-protected traffic passes through the same tables and chains as
+unprotected traffic. The only exception is that IPsec-protected traffic passes
+through some chains twice. You can tell protected and unprotected traffic apart
+using the `*policy*` module in `*iptables*` or the `*nft_xfrm*` module in `*nftables*`.
+The {NETFILTER}[Netfilter traffic flow graph] shows where IPsec (XFRM) hooks into
+Netfilter and which tables and chains are traversed in what order.
+
+Packets that are compressed using xref:features/ipcomp.adoc[IPComp] pass through
+some chains three times. Once as encapsulated packet, then as IP-in-IP packet and
+then as the actual packet. The protocol number depends on the encapsulated protocol.
+You need to allow the protocols in the firewall depending on your tunnel configuration.
+
+=== IPsec policy ordering
+
+*Q:* _In which order do IPsec policies apply?_
+
+*Q:* The policies' priorities are used to order them. They are checked from the
+lowest priority to the highest priority. The one that matches first is applied
+(first match wins, lower number = higher priority).
+
+strongSwan installs all passthrough policies with higher priorities than other
+policies and drop policies with lower priorities.  The priorities can be changed
+manually via `*<child>.priority*` setting in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+
+=== High Availability and Failover configurations
+
+*Q:* _Does strongSwan support high availability and failover configurations?_
+
+*A:* At this moment (version 5.9.6), strongSwan only supports
+xref:features/highAvailability.adoc[active-active/passive HA clusters] that are
+comprised of two nodes. It only supports such configurations when both peers
+receive the same packets by use of an multicast group, as described on
+xref:features/highAvailability.adoc[].
+
+Failover configurations with policy-based tunnels are, while not impossible, tricky
+to implement. However, with xref:features/routeBasedVpn.adoc[route-based tunnels]
+that are built using virtual interfaces and with a dynamic routing daemon, such
+a configuration should be easily possible between one strongSwan installation
+and two redundant remote gateways, like AWS.
+
+=== No matching peer config found
+
+*Q:* _The connection attempt by a peer fails with the error `no matching peer config found`.
+How do I fix this?_
+
+*A:* When a peer connects, the IKE daemon has to find a config object with all the
+information required for the authentication of the peer and the CHILD_SAs that
+should be established. It does this by comparing the *IP addresses* and the
+*identities* in the received message to those in the loaded configurations (the
+IKE proposal is also considered in newer versions). If no matching configuration
+is found based on that information, the connection can't be established and you
+see the corresponding error message.
+
+That message is actually preceded by another that looks something like this:
+
+----
+looking for peer configs matching 192.168.0.1[moon.strongswan.org]...192.168.0.100[carol@strongswan.org]
+----
+
+which contains the following information:
+
+192.168.0.1:: Local IP address of the IKE_SA (= responder/server's IP)
+[moon.strongswan.org]:: Responder/Server identity proposed by the
+initiator/client in the IDr payload, if one was received, must match the local
+identity that's configured
+192.168.0.100:: Remote IP address of the IKE_SA (= initiator/client's IP)
+[\carol@strongswan.org]:: Initiator/Client identity proposed by the
+initiator/client in the IDi payload, must match the remote identity that's
+configured
+
+Basically, this information has to match whatever is configured in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] (wildcards are allowed in the
+configured identities, e.g. `*&ast;@strongswan.org*`). So if no config is found,
+make sure to compare the data in the log message to the configured values seen
+in xref:swanctl/swanctlListConns.adoc[`*swanctl --list-conns*`].
+
+Note that the type of compared identities (e.g. FQDN vs. USER_FQDN or KEY_ID,
+see xref:config/identityParsing.adoc[identity parsing]) must match too. Identities
+might look the same in the log and e.g.
+xref:swanctl/swanctlListConns.adoc[`*swanctl --list-conns*`] but their type could
+be different. More details about this comparison (including the type) are logged
+only if the xref:config/logging.adoc[log level] for `*cfg*` is increased to `*3*`.
+
+=== Constraint check failed: identity '...' required
+
+*Q:* _The authentication fails with the error `constraint check failed: identity '...' required`.
+What exactly is the problem?_
+
+*A:* To prevent {MITM}[MITM attacks], some of the clients that, for simplicity, don't
+require configuring the server identity explicitly (e.g. the
+xref:os/android.adoc[Android app] or the
+xref:features/networkManager.adoc[NetworkManager plugin]) enforce the hostname/IP
+as remote identity and will check that this identity is contained in a
+`*subjectAlternativeName*` (SAN) extension of the server certificate. If that's not
+the case, you'll receive that error (also see the questions below regarding
+matching identities against CN and wildcard certificates). Both mentioned clients
+allow configuring the server identity explicitly in the advanced settings, but
+other clients might not. In that case you'll have to add the missing SAN to the
+certificate (e.g. with the `*--san*` option for
+xref:pki/pkiIssue.adoc[`*pki --issue*`]) or use a hostname or IP address that's
+already contained as SAN in the certificate.
+
+=== Pre-Shared Key Authentication
+
+*Q:* _Should I use IKE with PSK authentication?_
+
+*A:* Both IKEv1 and IKEv2 with PSK-based authentication are vulnerable to dictionary
+and brute-force attacks (online but also offline if a password hash was actively
+gathered beforehand, with <<Aggressive Mode, IKEv1 Aggressive Mode>> even passively).
+So it is generally recommended to use digital signature (certificate) based authentication.
+
+If you have to use PSKs, you should generate high entropy PSKs as shown in the
+xref:howtos/securityRecommendations.adoc#_preshared_keys[security recommendations].
+It's also not recommended to use the same PSK for multiple hosts, e.g. to authenticate
+a server in roadwarrior scenarios (every client that knows the PSK can impersonate
+the server or any of the other clients).
+
+For roadwarrior scenarios with IKEv2, username/password-based EAP authentication
+for clients with certificate authentication for the server might be an option.
+The certificate makes sure clients only send their password hash to the correct
+server (which prevents offline attacks). However, such setups could still be
+vulnerable to online attacks if weak user passwords are used.
+
+== Certificates / Private Keys
+
+=== Wildcard Certificates
+
+*Q:* _Does strongSwan support wildcard certificates?_
+
+*A:*: No, it doesn't. The reason for that is that wildcard certificates were declared
+{RFC6125}#section-7.2[deprecated in RFC 6125].
+
+=== Matching CN field in Distinguished Names
+
+*Q:* _Does strongSwan support checking the ID against the Common Name (CN) field
+of a Distinguished Name (DN) in X.509 certificates?_
+
+*A:*: No, it doesn't. The ID must be present in a SAN field of the correct type.
+
+=== X.509 Certificate Chain Files
+
+*Q:* _Can strongSwan read chain files (an end-entity certificate and the CAs that are required to authenticate it)?_
+
+*A:* Not completely, it only reads the first certificate from such files.
+
+=== No private key found
+
+*Q:* _strongSwan logs "no private key found". What's wrong?_
+
+*A:* You are trying to use a certificate to authenticate yourself for which you
+did not provide the private key to strongSwan. Check the log for errors when
+the private keys are loaded.
+
+If it persists, check that the certificate's public key was generated using the
+private key you're trying to use (e.g. with xref:pki/pkiPrint.adoc[`*pki --print*`]
+and xref:pki/pkiVerify.adoc[`*pki --verify*`]). It surprisingly often happens that
+people re-generate keys and certificates and try to use the wrong private key.
+
+=== No trusted RSA public key found for [...]
+
+*Q:* _I get the error `no trusted RSA public key found for [...]` when trying to establish my VPN connection. Why is that happening?_
+
+*A:* The daemon is unable to authenticate the remote peer's transmitted identity
+using its available authentication credentials (e.g. transmitted client certificate,
+all transmitted and installed/trusted CA certificates).
+
+Make sure your configuration fulfills the following requirements:
+
+ * The end-entity certificate is transmitted (check the log for `sending end entity
+cert` and/or `received end entity cert`) or locally installed (make sure it matches
+the peer's private key)
++
+This is affected by the `*send_certreq*` and `*send_cert*` settings in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+
+ * Any required intermediate CA certificates are also sent or locally installed
+
+ * The root/intermediate CA that issued the end-entity certificate is trusted or
+   the end-entity certificate is locally installed (check
+   xref:swanctl/swanctlListCerts.adoc[`*swanctl --list-certs*`])
+
+ * The end-entity and CA certificates are valid (make sure to also check the system
+   time). Note that this check is skipped for locally installed end-entity certificates
+
+ * The transmitted identity is either in one of it's certificate's SAN fields
+   with the correct type (type IP if it's an IP, type FQDN if it's a FQDN) or it
+   equals the certificate's full subject DN (distinguished name)
+
+== IKEv2
+
+=== Disabling NAT traversal?
+
+*Q:* _How can I turn off NAT traversal in charon (IKEv2)?_
+
+*A:* NAT traversal cannot be disabled in the charon daemon. If you don't like
+automatic port floating to UDP/4500 due to the MOBIKE protocol ({RFC4555}[RFC 4555]),
+which happens even if no NAT situation exists, then you can disable MOBIKE by
+disabling `*<conn>.mobike*` in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+
+=== Public Key Authentication Fails With Retransmissions
+
+*Q:* _My IKEv2 connection fails with retransmits during the IKE_AUTH exchange
+when using RSA certificates, but works when a PSK is used. Why?_
+
+*A:* This is probably related to the Path MTU. The IKE_AUTH messages that contain
+the certificates and certificate requests can get pretty big, therefore, the IP
+packets transporting these UDP datagrams could get fragmented. Some firewalls
+might block IP fragments and will therefore hamper your IKE connection.
+
+strongSwan and many other implementations support {RFC7383}[IKEv2 fragmentation]
+to avoid this problem. Make sure this is not disabled (`fragmentation` option in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]) and the peer supports it (check
+for `FRAGMENTATION_SUPPORTED` (`FRAG_SUP`) notifies in IKE_SA_INIT messages in the
+log).
+
+If you can't use IKEv2 fragmentation or configure the responsible firewall(s) to
+accept IP fragments, you could try to preload the certificates on both sides and
+then configure `*send_cert=never*` in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to prevent the daemon from sending
+certificates (`*send_certreq=no*` may be used to avoid sending certificate requests,
+which also prevents that certificates are sent with the default setting of
+`*ifasked*` for `*send_cert*`).
+
+Using ECDSA instead of RSA will also reduce the size of the IKE_AUTH messages as
+keys/certificates will be significantly smaller.
+
+== IKEv1
+
+=== No proposal chosen returned by ZyXEL/Linksys/x router
+
+*Q:* _I'm trying to set up a VPN tunnel with a ZyXEL/Linksys/X router but the
+other side keeps on telling me `no proposal chosen` when strongSwan initiates the connection._
+
+*A:* Make sure that the peer supports all the algorithms (including the key
+lengths) which strongSwan proposes for IKE and ESP. In terms of IKE, the proposal
+consists of the following parts: Encryption algorithm, hash algorithm (PRF) and
+DH group. In terms of ESP, the proposal includes the following: Encryption algorithm,
+hash algorithm, DH group (for PFS) and compression algorithm. There are lots of
+IPsec implementations out there that do *not* support compression or have
+implemented it erroneously. So the first thing to try in this situation is to
+switch compression off (the default). Then try to make sure the proposals match
+on both ends.
+
+=== Invalid HASH_V1 payload length, decryption failed?
+
+*Q:* _I'm getting the error message `invalid HASH_V1 payload length, decryption failed?`
+when using PSK authentication. What could be the reason?_
+
+*A:* This is most likely due to an incorrect PSK on one of the peers. Since the
+PSK is incorporated into the key material used so secure the IKEv1 packets they
+can't be decrypted properly if the PSKs don't match.
+
+Note that the PSK whose associated identities/IPs matches best is used. So if the
+local identity is configured with every PSK, every PSK will basically match to
+some degree. Which is why only remote identities/IPs should be associated with PSKs.
+
+For IKEv1, there is also a lookup based on the IP addresses (i.e. every secret
+that lists the local IP will match). And as responder, identities can only be
+used directly to find PSKs if aggressive mode is used (<<Aggressive Mode, which
+should never be used with PSK>>). However, if a configuration is found (based on
+the IPs) a lookup based on the configured identities is still done (all matching
+configs are considered until a PSK is found).
+
+=== Aggressive Mode
+
+*Q:* _Does strongSwan support IKEv1 Aggressive Mode?_
+
+*A:* Since version 5.0.0 the answer is _yes_. However, the strongSwan developers
+still recommend to avoid its use with pre-shared keys. This is due to a known
+weakness of the protocol. With Aggressive Mode, a hash of the pre-shared key is
+transmitted in clear-text. An eavesdropper can capture this hash and run an offline
+brute-force attack against it. Once the pre-shared key is known {MITM}[MITM attacks]
+to gather the XAuth credentials can easily be executed. Aggressive Mode is
+therefore incompatible with the basic principles of the strongSwan project which
+is to deliver a product that meets high security standards. That's why, in order
+to use Aggressive Mode with pre-shared keys as responder (i.e. on gateways) it
+is required to enable
+----
+charon {
+  i_dont_care_about_security_and_use_aggressive_mode_psk = yes
+}
+----
+in xref:config/strongswanConf.adoc[`*strongswan.conf*`]. As promised often in
+numerous public and private talks, strongSwan then changes its name to *weakSwan*.
+It is not required to set this option for clients as they often have no other choice.
+
+To avoid Aggressive Mode with pre-shared keys (and other short-comings of IKEv1
+Main or Aggressive Mode) the best option is to switch to *IKEv2 with signature-based
+authentication*, because IKEv2 PSK based authentication is also vulnerable to
+dictionary and brute-force attacks.
+
+But even for IKEv1 {TESTS}/ikev1/xauth-id-rsa-hybrid[hybrid authentication]
+provides an easy to deploy alternative.  This mode uses a certificate to
+authenticate the gateway and only XAuth to authenticate the client, during
+Phase 1 (Main or Aggressive Mode) the client is not authenticated.
+
+=== NAT Between Windows L2TP/IPsec Clients and strongSwan
+
+*Q:* _I want to set up strongSwan to interoperate with Microsoft Windows using
+L2TP/IPsec._
+
+*A:* NAT-Traversal with IPsec transport mode has some inherent issues (see
+{RFC3948}#section-5.2[RFC 3948] and
+{TESTS}/ikev2/host2host-transport-nat[this test scenario]
+for an illustration). While strongSwan supports NAT-T with transport mode, the
+fundamental issues remain. Refer to the xref:plugins/connmark.adoc[`*connmark*`]
+plugin for possible workarounds in some scenarios. However, for Windows L2TP clients
+that all use the same client port
+xref:plugins/connmark.adoc#_windows_l2tp[the plugin alone is not enough].

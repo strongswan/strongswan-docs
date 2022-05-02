@@ -1,6 +1,7 @@
 = Taking Traffic Dumps on Linux
 
-:NETFILTER: https://inai.de/images/nf-packet-flow.png
+:NETFILTER:    https://commons.wikimedia.org/wiki/File:Netfilter-packet-flow.svg
+:NETFILTERIMG: https://upload.wikimedia.org/wikipedia/commons/3/37/Netfilter-packet-flow.svg
 
 == Abstract
 
@@ -60,15 +61,15 @@ xref:daemons/charon.adoc[`*charon*`] handles that traffic.
 
 The solution to the problem is to use the `*nflog*` interface in the `*iptables*`
 framework to get exactly the packets we are interested in. Taking a look at the
-netfilter packet flow
+{NETFILTER}[netfilter packet flow]
 
-image::{NETFILTER}[netfilter graph, link="{NETFILTER}"]
+image::{NETFILTERIMG}[netfilter graph, link=self]
 
 
 gives a list of possible places to dump traffic at.
 
 `*nflog*` rules log to a kernel internal multicast group which is identified by
-an integer in the `*0 .. 2^16-1*` range. Only the part of the datagram that the
+an integer in the `*0 .. 2&#94;16-1*` range. Only the part of the datagram that the
 framework sees will be captured. For `*iptables*` this is an IPv4 packet whereas
 for `*ip6tables*` it is an IPv6 packet. If you use it in `*ebtables*` this is an
 Ethernet frame.

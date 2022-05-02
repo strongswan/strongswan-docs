@@ -1,0 +1,95 @@
+= IPComp
+
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC3173: {IETF}/rfc3173
+:TESTS:   https://www.strongswan.org/testing/testresults
+
+IP Payload Compression (IPComp) is a protocol that allows compressing the content
+of IP packets. It's defined in {RFC3173}[RFC 3173].
+
+It may be combined with IPsec to provide compression before encryption (making up
+for some of the overhead introduced by IPsec itself). To use it, both peers have
+to support it and it must be negotiated during IKE. strongSwan currently only
+supports DEFLATE as compression algorithm.
+
+To enable IPComp in strongSwan enable `*<child>.ipcomp*` in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+
+== Linux
+
+When debugging connections that use IPComp on Linux there are some things to be aware of.
+
+For packets smaller than a certain threshold the kernel does not do any compression
+(e.g. default-sized pings for IPv4). To handle uncompressed packets in tunnel mode
+the kernel will implicitly create an IPIP tunnel besides the actual IPComp SAs.
+These IPIP states can be seen in `*ip xfrm state*` with `*proto 4*`. For IPv6, the
+kernel also creates such states - `*proto 41*` - but since the compression threshold
+is relatively low and IPv6 packets are naturally larger even default-sized pings
+are compressed. These IPIP tunnels also have an impact on the firewall rules that
+are installed by the default updown script (some issues were fixed with version 5.1.2
+and for IPv6 with version 5.4.0) or manually, as IPIP traffic has to be allowed
+explicitly in the INPUT chain.
+
+Due to how the six states (IPsec, IPComp, IPIP, in- and outbound each) are used,
+the traffic counters (bytes, packets) seen in `*ip -s xfrm state*` might look a bit
+confusing at first:
+
+* For outbound traffic, the IPIP state is not used, instead all traffic directly
+  goes through the outbound IPComp and IPsec SAs. The kernel will simply not perform
+  any compression for small packets (the byte and packet counters of the IPComp SA
+  are still increased, though). The thresholds are statically defined in
+  `*net/xfrm/xfrm_algo.c*` for each compression algorithm. For `*deflate*` it is
+  90 bytes.
+
+* For the inbound traffic, on the other hand, the traffic counters for the IPComp
+  SAs are accurate and only count actually decompressed traffic. The other packets
+  pass through the implicitly created IPIP tunnel, increasing its traffic counters.
+
+This can be seen in the {TESTS}/ikev2/compress[compress test scenario] (or
+{TESTS}/ipv6/rw-compress-ikev2[for IPv6]). Host `*carol*` sends two pings to
+`*alice*` via gateway `*moon*` but only one ping actually gets compressed.
+
+So on `*carol*` the packet and byte counts for all six states are as follows:
+
+[cols="2,1,1,9"]
+|===
+|State |Bytes |Packets |Notes
+
+|ESP out|173|2
+|The larger ping request got highly compressed as it basically contains the same
+ data repeated over and over
+
+|IPComp out|8296|2
+|Only one packet of these actually gets compressed
+
+|IPIP out|0|0
+|Not used
+
+|ESP in|172|2
+|
+
+|IPComp in|8212|1
+|For the compressed ping reply
+
+|IPIP in|84|1
+|For the uncompressed ping reply
+|===
+
+The IPComp/IPsec packet processing in the kernel may be visualized as follows:
+
+----
+                        len < threshold
+            +---------+    no header     +---------+
+outbound--->|IPComp SA|----------------->| ESP SA  |--->
+            +----+----+                  +----+----+
+                 |        /----------\        |
+len >= threshold +------->| compress |--------+ IPComp header
+                          \----------/              added
+
+                          +---------+    +---------+
+        <--------+--------|  IPIP   |<---| ESP SA  |<---inbound
+                 |        +---------+    +----+----+
+                 |        +---------+         |
+                 +--------|IPComp SA|<--------+ IPComp header
+                          +---------+               found
+----

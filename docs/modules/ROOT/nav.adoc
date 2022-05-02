@@ -25,6 +25,7 @@
 ** xref:features/vip.adoc[]
 ** xref:features/mobike.adoc[]
 ** xref:features/natTraversal.adoc[]
+** xref:features/ipcomp.adoc[]
 ** xref:features/networkManager.adoc[]
 ** xref:features/routeBasedVpn.adoc[]
 ** xref:features/highAvailability.adoc[]
@@ -157,6 +158,7 @@
 
 .Support
 * xref:support/helpRequests.adoc[Help Requests]
+* xref:support/faq.adoc[FAQ]
 * xref:support/flawReporting.adoc[Flaw Reporting]
 * xref:support/free.adoc[]
 * xref:support/commercial.adoc[]
