@@ -131,5 +131,5 @@ mark return traffic.
 
 == Example
 
-image:a-m-c-w-d.png[topology,252,129,link={EX},title=forecast example]
-strongSwan {EX}[example] using the `*forecast*` mechanism
+.strongSwan {EX}[example] using the `*forecast*` mechanism
+image::a-m-c-w-d.png[topology,372,190,link={EX}]

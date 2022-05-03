@@ -79,11 +79,7 @@ connections {
 }
 ----
 
-=== Example
-
-image:a-m-c.png[topology,187,129,link={EX},title=xauth-rsa-eap-md5-radius example]
-strongSwan {EX}[example] showing the use of `*XAuth*` with the `*xauth-eap*`
-plugin.
-
 == Example
 
+.strongSwan {EX}[example] showing the use of `*XAuth*` with the `*xauth-eap*` plugin
+image::a-m-c.png[topology,276,190,link={EX}]

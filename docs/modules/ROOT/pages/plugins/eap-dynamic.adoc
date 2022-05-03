@@ -45,5 +45,5 @@ methods are included.
 
 == Example
 
-image:a-m-c-w-d.png[topology,252,129,link={EX},title=eap-dynamic example]
-strongSwan {EX}[example] showing the use of the `*eap-dynamic*` plugin.
+.strongSwan {EX}[example] showing the use of the `*eap-dynamic*` plugin
+image::a-m-c-w-d.png[topology,372,190,link={EX}]

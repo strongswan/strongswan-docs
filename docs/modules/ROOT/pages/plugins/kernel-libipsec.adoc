@@ -113,8 +113,8 @@ firewall rules to plug a hole caused by changing the setting.
 
 == Examples
 
-image:a-m-w-s-b.png[topology,340,129,link={EX1},title=libipsec/net2net-cert example]
-strongSwan {EX1}[net-to-net example] using `*libipsec*`.
+.strongSwan {EX1}[net-to-net example] using `*libipsec*`
+image::a-m-w-s-b.png[topology,501,190,link={EX1}]
 
-image:m-w-s.png[topology,141,129,link={EX2},title=libipsec/host2host-cert example]
-strongSwan {EX2}[host-to-host example] using `*libipsec*` with `*fmark*` options.
+.strongSwan {EX2}[host-to-host example] using `*libipsec*` with `*fmark*` options
+image::m-w-s.png[topology,208,190,link={EX2}]

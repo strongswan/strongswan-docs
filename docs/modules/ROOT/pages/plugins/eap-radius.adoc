@@ -372,11 +372,11 @@ charon {
 }
 ----
 
-image:a-m-c-w-d.png[topology,252,129,link={EX1},title=rw-eap-framed-ip-radius example]
-strongSwan {EX1}[example] using the {RFC2865}#section-5.8[`*Framed-IP-Address*`] attribute
+.strongSwan {EX1}[example] using the {RFC2865}#section-5.8[`*Framed-IP-Address*`] attribute
+image::a-m-c-w-d.png[topology,372,190,link={EX1}]
 
-image:a-m-c-w-d.png[topology,252,129,link={EX2},title=rw-eap-md5-class-radius example]
-strongSwan {EX2}[example] using the {RFC2865}#section-5.25[`*Class*`] attribute
+.strongSwan {EX2}[example] using the {RFC2865}#section-5.25[`*Class*`] attribute
+image::a-m-c-w-d.png[topology,372,190,link={EX2}]
 
 == Accounting
 
@@ -458,8 +458,8 @@ messages to RADIUS accounting messages.
 
 === Example
 
-image:a-m-c.png[topology,187,129,link={EX3},title=rw-radius-accounting example]
-strongSwan {EX3}[example] showing the use of RADIUS accounting.
+.strongSwan {EX3}[example] showing the use of RADIUS accounting
+image::a-m-c.png[topology,276,190,link={EX3}]
 
 == Attributes sent to RADIUS Servers
 
@@ -620,9 +620,8 @@ connections {
 
 === Example
 
-image:a-m-c.png[topology,187,129,link={EX4},title=xauth-rsa-radius example]
-strongSwan {EX4}[example] showing the use of `*XAuth*` with the `*eap-radius*`
-plugin.
+.strongSwan {EX4}[example] showing the use of `*XAuth*` with the `*eap-radius*` plugin
+image::a-m-c.png[topology,276,190,link={EX4}]
 
 === Multiple Rounds
 

@@ -69,8 +69,8 @@ connections.<conn>.vips = 0.0.0.0, ::
 
 === Example
 
-image:a-m-c-w.png[topology,192,129,link={EX},title=ip-two-pools-v4v6 example]
-strongSwan {EX}[example] illustrates the use dual IPv4/IPv6 address pools.
+.strongSwan {EX}[example] illustrates the use dual IPv4/IPv6 address pools
+image::a-m-c-w.png[topology,297,190,link={EX}]
 
 === DNS servers
 

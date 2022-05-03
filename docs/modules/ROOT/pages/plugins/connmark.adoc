@@ -104,5 +104,5 @@ An experimental patch for `*xl2tpd*` can be found in the
 
 == Example
 
-image:a-m-w-s-b.png[topology,340,129,link={EX},title=host2host-transport-connmark example]
-strongSwan {EX}[example] showing the use of the `*connmark*` plugin.
+.strongSwan {EX}[example] showing the use of the `*connmark*` plugin
+image::a-m-w-s-b.png[topology,501,190,link={EX}]

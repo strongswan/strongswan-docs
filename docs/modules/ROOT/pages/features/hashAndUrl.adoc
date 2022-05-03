@@ -21,8 +21,8 @@ specifically covered in this guide.
 
 === Example
 
-image:a-m-c-w-d.png[topology, link={EX1},title=hash-and-url example]
-strongSwan *Hash and URL* {EX1}[example]
+.strongSwan *Hash and URL* {EX1}[example]
+image::a-m-c-w-d.png[topology,372,190,link={EX1}]
 
 In this guide we want to configure a connection between the road warriors `*carol*`
 and `*dave*` to the VPN gateway `*moon*`, using certificates issued by the strongSwan
@@ -108,5 +108,5 @@ fetched certificate "C=CH, O=strongSwan Project, OU=Research, CN=carol@strongswa
 {RFC7296}#section-3.6[*Hash and URL*] also works in a multi-level CA setup where
 intermediate CA certificates are used.
 
-image:a-m-c-w-d.png[topology,252,129,link={EX2},title=multi-level-hash-and-url example]
-strongSwan multi-level CA Hash and URL {EX2}[example].
+.strongSwan multi-level CA Hash and URL {EX2}[example]
+image::a-m-c-w-d.png[topology,372,190,link={EX2}]

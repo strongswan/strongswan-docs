@@ -249,9 +249,9 @@ libtls {
 
 == Examples
 
-image:a-m-c.png[topology,187,129,link={EX1},title=rw-eap-tls-only example]
-strongSwan {EX1}[example] showing the use of EAP-TLS only authentication.
+.strongSwan {EX1}[example] showing the use of EAP-TLS only authentication.
+image::a-m-c.png[topology,276,190,link={EX1}]
 
-image:a-m-c.png[topology,187,129,link={EX2},title=rw-eap-tls-radius example]
-strongSwan {EX2}[example] showing the use of EAP-TLS with AAA server.
+.strongSwan {EX2}[example] showing the use of EAP-TLS with AAA server.
+image::a-m-c.png[topology,276,190,link={EX2}]
 

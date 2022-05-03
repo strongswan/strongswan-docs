@@ -145,5 +145,5 @@ covered by the `*IPaddrBlock*` extension of the `*moon*` certificate
 ----
 so the establishment of the `CHILD SA` fails.
 
-image:a-m-w-s-b.png[topology,340,129,link={EX},title=net2net-rfc3779 example]
-strongSwan {EX}[example] showing the use of the `*addrblock*` plugin.
+.strongSwan {EX}[example] showing the use of the `*addrblock*` plugin
+image::a-m-w-s-b.png[topology,501,190,link={EX}]

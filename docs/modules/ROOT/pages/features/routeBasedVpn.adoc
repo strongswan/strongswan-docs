@@ -124,8 +124,8 @@ work).
 
 === Example
 
-image:a-m-w-s-b.png[topology,340,129,link={EXVTI},title=net2net-vti example]
-strongSwan {EXVTI}[example] showing the use of VTI devices.
+.strongSwan {EXVTI}[example] showing the use of VTI devices
+image::a-m-w-s-b.png[topology,501,190,link={EXVTI}]
 
 === Sharing VTI Devices
 
@@ -144,8 +144,8 @@ NOTE: Only one such device with the same local IP may be created.
 
 === Example
 
-image:a-m-c-w-d.png[topology,252,129,link={EXSHVTI},title=rw-shared-vti example]
-strongSwan {EXSHVTI}[example] showing the use of shared VTI devices.
+.strongSwan {EXSHVTI}[example] showing the use of shared VTI devices
+image::a-m-c-w-d.png[topology,372,190,link={EXSHVTI}]
 
 === Connection-specific VTI Devices
 
@@ -342,8 +342,8 @@ It's possible to use transport mode for host-to-host connections between two pee
 
 === Example
 
-image:a-m-w-s-b.png[topology,340,129,link={EXXFRM},title=net2net-xfrmi example]
-strongSwan {EXXFRM}[example] showing the use of XFRM interfaces.
+.strongSwan {EXXFRM}[example] showing the use of XFRM interfaces
+image::a-m-w-s-b.png[topology,501,190,link={EXXFRM}]
 
 === Sharing XFRM Interfaces
 
@@ -355,8 +355,8 @@ the subnets used for virtual IPs to the XFRM interface).
 
 === Example
 
-image:a-m-c-w-d.png[topology,252,129,link={EXSHXFRM},title=rw-shared-xfrmi example]
-strongSwan {EXSHXFRM}[example] showing the use of shared XFRM interfaces.
+.strongSwan {EXSHXFRM}[example] showing the use of shared XFRM interfaces
+image::a-m-c-w-d.png[topology,372,190,link={EXSHXFRM}]
 
 === Connection-specific XFRM Interfaces
 
@@ -413,8 +413,8 @@ dynamically decide which traffic is tunneled through which IPsec SA.
 
 === Example
 
-image:a-v-m-w-s-b.png[topology,340,129,link={EXMARK},title=net2net-psk-dscp example]
-strongSwan {EXMARK}[example] showing the use of marks for QoS/DiffServ.
+.strongSwan {EXMARK}[example] showing the use of marks for QoS/DiffServ
+image::a-v-m-w-s-b.png[topology,501,190,link={EXMARK}]
 
 == GRE Tunnels
 
@@ -474,8 +474,8 @@ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
 
 === Example
 
-image:a-m-w-s-b.png[topology,340,129,link={EXGRE},title=net2net-gre example]
-strongSwan {EXGRE}[example] showing the use of GRE tunnels.
+.strongSwan {EXGRE}[example] showing the use of GRE tunnels
+image::a-m-w-s-b.png[topology,501,190,link={EXGRE}]
 
 === Automation
 
