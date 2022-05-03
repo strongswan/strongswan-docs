@@ -25,7 +25,7 @@ as well) and is located in the xref:swanctl/swanctlDir.adoc[`*swanctl*`]
 configuration directory, usually `*/etc/swanctl*`.
 
 Many examples can be found in our testing environment, eg. as used by the
-{TESTS}/ikev2[IKEv2 scenarios]
+{TESTS}/ikev2[IKEv2 scenarios].
 
 == Time Formats
 

@@ -8,7 +8,7 @@ It does actually not send a username/password request, but directly sends
 insist on doing XAuth but it is actually not intended by the administrator.
 Authentication relies on the client RSA private key, only. The plugin is also
 useful for iOS / macOS clients, where it can be used to
-xref:os/macos.adoc#_isakmp-reauthenticaton_issues[survive ISAKMP reauthentication].
+xref:interop/ios.adoc#_ikev1_reauthentication_issues[survive ISAKMP reauthentication].
 
 The plugin is disabled by default and can be enabled with the
 xref:install/autoconf.adoc[`*./configure*`] option

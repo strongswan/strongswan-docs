@@ -4,7 +4,7 @@
 :NOEL_MAIL:     mailto:noel.kuntze@thermi.consulting
 :CONTAURO_MAIL: mailto:vpn.support@contauro.com
 :CONTAURO_WEB:  https://www.contauro.com/
-:SYS4_MAIL:     mailto:ms@sys4.de":mailto:ms@sys4.de
+:SYS4_MAIL:     mailto:ms@sys4.de
 :SYS4_WEB:      https://sys4.de/en/
 
 Commercial support can be acquired from several different people and companies.
@@ -24,4 +24,4 @@ can contact them directly. They agreed to be listed here.
   - **Businesses only, no private persons**
 
 . {SYS4_WEB}[Sys4 AG], Germany, contact {SYS4_MAIL}[Michael Schwartzkopff]
-  ({SYS4_MAIL}[ms@sys4.de":mailto:ms@sys4.de])
+  ({SYS4_MAIL}[ms@sys4.de])

@@ -30,7 +30,7 @@ NOTE: VTI devices are supported since the Linux 3.6 kernel but some important
       changes were added later (3.15+). The information below might not be accurate
       for older kernel versions. On newer kernels (4.19+), XFRM interfaces provide
       a better solution than VTI devices, see xref:#_xfrm_interfaces_on_linux[below]
-      for details._
+      for details.
 
 VTI devices act like a wrapper around existing IPsec policies. This means you can't
 just route arbitrary packets to a VTI device to get them tunneled, the established
@@ -46,8 +46,8 @@ device it automatically gets the configured mark applied, so it will match the
 policy and get tunneled.
 
 It's important to note that VTI tunnel devices are a local feature, no additional
-encapsulation (like with GRE, see xref:#_gre[below]) is added, so the other end
-does not have to be aware that VTI devices are used in addition to regular IPsec
+encapsulation (like with GRE, see xref:#_gre_tunnels[below]) is added, so the other
+end does not have to be aware that VTI devices are used in addition to regular IPsec
 policies.
 
 === VTI Device Management
@@ -227,7 +227,7 @@ NOTE: strongSwan supports XFRM interfaces since version 5.8.0. They are supporte
       by the Linux kernel since 4.19 and *iproute2* version 5.1.0+.
 
 XFRM interfaces are similar to VTI devices in their basic functionality (see
-xref:#_vti_device_on_linux[above] for details) but offer several advantages:
+xref:#_vti_devices_on_linux[above] for details) but offer several advantages:
 
 * No tunnel endpoint addresses have to be configured on the interfaces. Compared
   to VTIs, which are layer 3 tunnel devices with mandatory endpoints, this resolves
@@ -545,7 +545,7 @@ exit 0
 
 ==== gre config File
 
-config file under `*/etc/conf.d/`*, matches the glob `*/etc/conf.d/gre-*.conf*`
+config file under `*/etc/conf.d/*`, matches the glob `*/etc/conf.d/gre-&ast;.conf*`
 ----
 TUNNEL_NAME="tun-EXAMPLE"
 DEVICE="eth0"

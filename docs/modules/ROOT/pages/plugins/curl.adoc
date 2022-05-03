@@ -22,7 +22,7 @@ but relies on the appropriate strongSwan crypto plugin for doing so. This implie
 that a corresponding strongSwan crypto plugin is required which matches the TLS
 backend that `*curl*` uses:
 
-* If `*libcurl*` uses OpenSSL as a backend, then_`--enable-openssl` is required
+* If `*libcurl*` uses OpenSSL as a backend, then `--enable-openssl` is required
   when building strongSwan in order to support fetching via HTTPS.
 
 * Likewise, if `*libcurl*` uses _GnuTLS_ as a backend, `--enable-gcrypt` is needed

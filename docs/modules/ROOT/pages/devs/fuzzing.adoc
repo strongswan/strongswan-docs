@@ -8,7 +8,7 @@ Since version 5.5.3 parts of the strongSwan code base are fuzzed on Google's
 
 The following fuzz targets are currently in use:
 
- *fuzz-certs*`::
+ *fuzz-certs*::
   Fuzzes the X.509 certificate parsing framework as provided by the default
   plugins (`*x509*`, `*pem*`, `*pkcs1*`, `*gmp*`, etc.) and the ASN.1 parser
   of the `*libstrongswan*` library.

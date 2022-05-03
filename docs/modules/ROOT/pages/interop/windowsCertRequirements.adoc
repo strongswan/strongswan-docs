@@ -103,7 +103,7 @@ first identity below). If no matching SAN (`*subjectAltName*`) is contained
 in the certificate, strongSwan will reject it because it can't confirm the client
 identity.
 
-[cols="2,1,1,5"]
+[cols="3,1,1,5"]
 |===
 |CN                      |SAN                  |EKU |Comments
 
@@ -120,7 +120,7 @@ identity.
 
 === Machine Certificates Only
 
-[cols="2,1,1,5"]
+[cols="3,1,1,5"]
 |===
 |CN                      |SAN                  |EKU |Comments
 

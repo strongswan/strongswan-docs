@@ -65,8 +65,8 @@ on the gateway side.
 
 Certificates for EAP-TLS are configured the same way as for traditional IKEv2
 certificate-based authentication, using the
-xref:swanctl/swanctlDir.adoc[*`swanctl*`] certificate and key directories as
-well as the xref:swanctl/swanctlConf.adoc['*swanctl.conf*'] definitions
+xref:swanctl/swanctlDir.adoc[`*swanctl*`] certificate and key directories as
+well as the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] definitions
 
  connections.<conn>.local.certs
 
@@ -209,7 +209,7 @@ TLS_RSA_WITH_NULL_MD5
 ====
 
 ECDHE and ECDSA require a third-party crypto backend. Since version 5.9.2, EdDSA
-$ may also be used with ECDSA cipher suites. ECDHE support is limited to the
+may also be used with ECDSA cipher suites. ECDHE support is limited to the
 named curves `*SECP256R1*`, `*SECP384R1*`, `*SECP521R1*`, `*SECP224R1*` and
 `*SECP192R1*` with uncompressed points. Since version 5.9.2, `*Curve25519*` and
 `*Curve448*` are also supported. `CAMELLIA` encryption requires either the

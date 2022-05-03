@@ -449,7 +449,7 @@ Thu Nov 11 22:12:31 2021
 The _Accounting-Stop_ message additionally adds
 {RFC2866}#section-5.7[`*Acct-Session-Time*`],
 {RFC2866}#section-5.3[`*Acct-Input-Octets*`],
-{RFC2866}#section-5.4[`*Acct-Output-Octets*]`,
+{RFC2866}#section-5.4[`*Acct-Output-Octets*`],
 {RFC2866}#section-5.8[`*Acct-Input-Packets*`] and
 {RFC2866}#section-5.9[`*Acct-Output-Packets*`].
 The plugin optionally adds
@@ -553,7 +553,7 @@ image::a-m-c.png[topology,276,190,link={EX3}]
 
 |{RFC2866}#section-5.9[Acct-Output-Packets]
 |Number of sent packets
-|- - ✔ ✔
+|– – ✔ ✔
 |Total number of sent packets over all CHILD_SAs of this IKE_SA
 
 |{RFC2866}#section-5.3[Acct-Input-Octets]
