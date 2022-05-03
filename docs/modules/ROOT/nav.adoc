@@ -159,6 +159,7 @@
 ** xref:tnc/tncClient.adoc[]
 ** xref:tnc/tncServer.adoc[]
 ** xref:tnc/optimumTncSizes.adoc[]
+** xref:tnc/strongTnc.adoc[]
 
 .Support
 * xref:support/helpRequests.adoc[Help Requests]

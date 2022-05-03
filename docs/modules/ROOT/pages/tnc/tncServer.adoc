@@ -459,7 +459,7 @@ standard subtype `*Operating System*`
 The  `TCPOP` and `UDPOP` workitems are handled by the `*Scanner IMV*` which
 compares the list of open TCP and UDP ports contained in the received
 `*Port Filter*` attribute with the allowed ports configured in the TNC policy
-database . Since TCP port `*41963*` is not allowed to be open, the value
+database . Since TCP port `*38953*` is not allowed to be open, the value
 `*non-compliant minor*` is assigned to the standard PA-TNC attribute
 `*Assessment Result*` and the recommendation on behalf of the TNC server is set
 to `*Access Denied*`.
@@ -467,8 +467,8 @@ to `*Access Denied*`.
 09[IMV] IMV 2 handles TCPOP workitem 2
 09[IMV] IMV 2 handles UDPOP workitem 3
 09[IMV] list of tcp ports that are allowed to be open:
-09[IMV] tcp port 41963 open: fatal
-09[IMV] IMV 2 handled TCPOP workitem 2: no access - violating tcp ports: 41963
+09[IMV] tcp port 38953 open: fatal
+09[IMV] IMV 2 handled TCPOP workitem 2: no access - violating tcp ports: 38953
 09[IMV] list of udp ports that are allowed to be open:
 09[IMV]   500 -   500
 09[IMV]  4500 -  4500
@@ -786,5 +786,5 @@ device identities that are permanently stored in the TNC database can be viewed
 1 device found
 ----
 In a next step we are going to used the much more powerful
-xref:tnc/strongTNC.adoc[`*strongTNC*`] to manage TNC policies and store the
-TNC measurement results.
+xref:tnc/strongTnc.adoc[`*strongTNC*`] framework to manage TNC policies and store
+the TNC measurement results.
