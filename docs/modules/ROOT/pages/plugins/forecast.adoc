@@ -48,47 +48,16 @@ A unique mark per negotiated SA is required, so the SAs can be distinguished.
 The plugin automatically configures Netfilter rules in the `*mangle*` table to
 send multicast/broadcast packets over multiple SAs.
 
-Some additional global xref:config/strongswanConf.adoc[`*strongswan.conf*`]
-options are used by the `*forecast*` plugin:
+The plugin also uses additional global options in the
+xref:config/strongswanConf.adoc#_charon_plugins_forecast[`*charon.plugins.forecast*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="1,3"]
+[cols="2,1,8"]
 |===
+|Key|Default|Description
 
-|charon.plugins.forecast.groups
-|224.0.0.1,224.0.0.22,224.0.0.251,224.0.0.252,239.255.255.250
+include::partial$config/plugins/forecast.adoc[]
 |===
-
-_Comma-separated list of multicast groups to join locally. The local host receives
-and forwards packets in the local LAN for joined multicast groups only. Packets
-matching the list of multicast groups get forwarded to connected clients. The
-default group includes host multicasts, IGMP, mDNS, LLMNR and SSDP/WS-Discovery
-and is usually a good choice for Windows clients._
-
-[cols="1,3"]
-|===
-
-|charon.plugins.forecast.interface
-|
-|===
-
-_Name of the local interface to listen for broadcasts messages to forward. If no
-interface is configured, the first usable interface is used, which is usually
-just fine for single-homed hosts. If your host has multiple interfaces, set this
-option to the local LAN interface you want to forward broadcasts from/to._
-
-[cols="1,3"]
-|===
-
-|charon.plugins.forecast.reinject
-|
-|===
-
-_Comma-separated list of `CHILD SA` configuration names for which to perform
-multi/broadcast reinjection. For clients connecting over such a configuration,
-any multi/broadcast received over the tunnel gets reinjected to all active tunnels.
-This makes the broadcasts visible to other peers, and for examples allows clients
-to see others shares. If disabled, multi/broadcast messages received over a tunnel
-are injected to the local network only, but not to other IPsec clients._
 
 == Netfilter Rules and Marks
 

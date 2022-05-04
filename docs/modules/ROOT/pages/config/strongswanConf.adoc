@@ -870,6 +870,13 @@ include::partial$config/plugins/error-notify.adoc[]
 include::partial$config/plugins/ext-auth.adoc[]
 |===
 
+==== xref:plugins/forecast.adoc[charon.plugins.forecast]
+[{COLS}]
+|===
+
+include::partial$config/plugins/forecast.adoc[]
+|===
+
 ==== charon.plugins.gcrypt
 [{COLS}]
 |===
