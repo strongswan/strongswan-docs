@@ -12,9 +12,9 @@
 
 In order to connect to a TPM 2.0 hardware or firmware device a software stack implementing the
 {TCG}/tcg-tss-2-0-system-level-api-sapi-specification/[TCG TSS 2.0 System Level API]
-is needed. An excellent open source {TPM2}/tpm2-tss[`tpm2-tss`] library is available
-from the {TPM2}[`tpm2-software`] project that also offers a set of
-{TPM2}/tpm2-tools[`tpm2-tools`] using the
+is needed. An excellent open source {TPM2}/tpm2-tss[`*tpm2-tss*`] library is available
+from the {TPM2}[`*tpm2-software*`] project that also offers a set of
+{TPM2}/tpm2-tools[`*tpm2-tools*`] using the
 {TCG}/tcg-tss-2-0-enhanced-system-api-esapi-specification/[TCG TSS 2.0 Enhanced System Level API].
 
 When using a *strongSwan* version newer than *5.9.0* with *Linux 5.4* kernel or
@@ -26,7 +26,6 @@ newer, we recommend these latest versions:
 
 In order to test if we can connect to the TPM 2.0 device, we list all persistent
 keys stored in the Non-Volatile (NV) RAM:
-
 ----
 $ tpm2_getcap handles-persistent
 
@@ -34,7 +33,6 @@ $ tpm2_getcap handles-persistent
 - 0x81000002
 - 0x81010001
 ----
-
 The man pages of all `*tpm2-tools*` functions with their arguments can be found
 {TOOLMAN}[here]. The access to the `*/dev/tpmrm0*` TPM resource manager device
 requires `*root*` rights on most Linux platforms. But e.g. with Ubuntu, adding the
@@ -69,7 +67,7 @@ signature algorithm is defined:
 TPM 2.0 via TSS2 v2 available
 signature algorithm is NULL with ERROR hash
 ----
-Debug level 2 shows that xref:pki/pki.adoc[`pki`] extracts the public key from the
+Debug level 2 shows that xref:pki/pki.adoc[`*pki*`] extracts the public key from the
 TPM and converts it into a standard PKCS#1 format:
 ----
 L0 - subjectPublicKeyInfo:
@@ -96,14 +94,14 @@ At the end of the output the fingerprint of the 2048 bit RSA key is listed:
 
 === RSA Endorsement Key
 
-The {TOOLMAN}/tpm2_createek.1.md[`tpm2_createek`] command derives a 2048 bit RSA
+The {TOOLMAN}/tpm2_createek.1.md[`*tpm2_createek*`] command derives a 2048 bit RSA
 Endorsement Key (EK) in a deterministic way from the secret _Endorsement Primary Seed_
 *unique* to each TPM device and makes the key persistent in the non-volatile memory
 of the TPM under the object handle `*0x81010002*`
 
  $ tpm2_createek -G rsa -c 0x81010002
 
-Using the {TOOLMAN}/tpm2_getcap.1.md[`tpm2_getcap`] command we can check that the
+Using the {TOOLMAN}/tpm2_getcap.1.md[`*tpm2_getcap*`] command we can check that the
 newly derived Endorsement Key has been persisted in the NV RAM
 ----
 $ tpm2_getcap handles-persistent
@@ -128,7 +126,7 @@ signature algorithm is NULL with ERROR hash
 === Delete Persisted Keys
 
 We therefore delete the duplicate key with the following
-{TOOLMAN}/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command
+{TOOLMAN}/tpm2_evictcontrol.1.md[`*tpm2_evictcontrol*`] command
 ----
 $ tpm2_evictcontrol -c 0x81010002
 
@@ -146,7 +144,7 @@ $ tpm2_getcap handles-persistent
 
 === ECC Endorsement Key
 
-Again using the {TOOLMAN}/tpm2_createek.1.md[`tpm2_createek`] command we derive a
+Again using the {TOOLMAN}/tpm2_createek.1.md[`*tpm2_createek*`] command we derive a
 256 bit ECC Endorsement Key (EK) in a deterministic way from the secret
 _Endorsement Primary Seed_ *unique* to each TPM device and make the key persistent
 in the non-volatile memory of the TPM under the object handle `*0x81010002*`:
@@ -172,7 +170,7 @@ signature algorithm is NULL with ERROR hash
 
 Endorsement Key certificates issued for Intel firmware TPMs can be automatically
 downloaded from an Intel web server using the
-{TOOLMAN}/tpm2_getekcertificate.1.md[`tpm2_getcertificate`] command:
+{TOOLMAN}/tpm2_getekcertificate.1.md[`*tpm2_getcertificate*`] command:
 
  $ tpm2_getekcertificate -o ek_ecc.crt -u ek_ecc.pub
 
@@ -201,7 +199,7 @@ $ pki --print --type x509 --in ek_ecc.crt
 
 For the RSA 2048 Endorsement Key we first have to extract the public keyfile
 `*ek_rsa.pub*` in the TPM 2.0 proprietary format using the
-{TOOLMAN}/tpm2_readpublic.1.md[`tpm2_readpublic`] command because we forgot to do
+{TOOLMAN}/tpm2_readpublic.1.md[`*tpm2_readpublic*`] command because we forgot to do
 this in the first place:
 
  $ tpm2_readpublic -Q -c 0x81010001 -o ek_rsa.pub
@@ -254,7 +252,7 @@ $ tpm2_getcap handles-nv-index
 - 0x1C10104
 - 0x1C101C0
 ----
-Using the {TOOLMAN}/tpm2_nvreadpublic.1.md[`tpm2_nvreadpublic`] command we can
+Using the {TOOLMAN}/tpm2_nvreadpublic.1.md[`*tpm2_nvreadpublic*`] command we can
 look for large data objects which are prime candidates for X.509 certificates:
 ----
 $ tpm2_nvreadpublic
@@ -328,7 +326,7 @@ loaded certificate from TPM NV index 0x01c0000a
   subjkey:   d1:e8:fc:b2:64:8d:1d:36:a5:bc:d7:c9:63:c1:d6:de:e7:25:09:a4
 ----
 or we can first retrieve the binary certificate blob from the NV RAM using the
-{TOOLMAN}/tpm2_nvread.1.md[`tpm2_nvread`] command:
+{TOOLMAN}/tpm2_nvread.1.md[`*tpm2_nvread*`] command:
 
  $ tpm2_nvread 0x01c00012 -C o -o ek_ecc384.crt
 
@@ -361,12 +359,12 @@ TPM 2.0 - PCR banks: SHA1 SHA256
 === RSA Attestation Key
 
 A 2048 bit RSA Attestation Key (AK) bound to the RSA EK with handle `*0x81010001*`
-can be created with the {TOOLMAN}/tpm2_createak.1.md[`tpm2_createak`] command:
+can be created with the {TOOLMAN}/tpm2_createak.1.md[`*tpm2_createak*`] command:
 
  $ tpm2_createak -C 0x81010001 -G rsa -g sha256 -s rsassa -c ak_rsa.ctx -u ak_rsa.pub -n ak_rsa.name
 
 and made persistent under the handle `*0x81010003*` with the
-{TOOLMAN}/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
+{TOOLMAN}/tpm2_evictcontrol.1.md[`*tpm2_evictcontrol*`] command:
 ----
 $ tpm2_evictcontrol -C o -c ak_rsa.ctx 0x81010003
 
@@ -387,12 +385,12 @@ signature algorithm is RSASSA with SHA256 hash
 === ECC Attestation Key
 
 A 256 bit ECC Attestation Key (AK) bound to the ECC EK with handle `*0x81010002*`
-can be created with the {TOOLMAN}/tpm2_createak.1.md[`tpm2_createak`] command:
+can be created with the {TOOLMAN}/tpm2_createak.1.md[`*tpm2_createak*`] command:
 
  $ tpm2_createak -C 0x81010002 -G ecc -g sha256 -s ecdsa -c ak_ecc.ctx -u ak_ecc.pub -n ak_ecc.name
 
 and made persistent under the handle `*0x81010004*` with the
-{TOOLMAN}/tpm2_evictcontrol.1.md[`tpm2_evictcontrol`] command:
+{TOOLMAN}/tpm2_evictcontrol.1.md[`*tpm2_evictcontrol*`] command:
 ----
 $ tpm2_evictcontrol -C o -c ak_ecc.ctx 0x81010004
 
@@ -414,9 +412,9 @@ signature algorithm is ECDSA with SHA256 hash
 
 === RSA Certificate Request
 
-The xref:pki/pki.adoc[`pki`] tool can directly generate a *PKCS#10* certificate request
-self-signed by the TPM 2.0 private key and containing the corresponding public
-key as well as the desired end entity identity: 
+The xref:pki/pkiReq.adoc[`*pki --req*`] tool can directly generate a *PKCS#10*
+certificate request self-signed by the TPM 2.0 private key and containing the
+corresponding public key as well as the desired end entity identity:
 ----
 $ pki --req --type priv --keyid 0x81010003 --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san edu.strongsec.com --outform pem > ak_rsa_req.pem
 
@@ -425,8 +423,8 @@ signature algorithm is RSASSA with SHA256 hash
 Smartcard PIN: <return>
 ----
 Since we didn't configure a password when creating the AK, just press <return>
-when prompted for the PIN. With *openssl* we can verify the contents of the generated
-certificate request:
+when prompted for the PIN. With `*openssl*` we can verify the contents of the
+generated certificate request:
 ----
 $ openssl req -in ak_rsa_req.pem -noout -text
 
@@ -525,11 +523,13 @@ Certificate Request:
 
 X.509 end entity certificates have to be signed by an in-house or official external
 __Certification Authority__ (CA). In our example we are using the *strongSec 2016
-Root CA* which was generated in 2016 with the xref:pki/pki.adoc[`pki`] command
+Root CA* which was generated in 2016 with the xref:pki/pkiGen.adoc[`*pki --gen*`]
+command
 
  $ pki --gen --type rsa --size 4096 --outform pem > cakey.pem
 
-creating a 4096 bit RSA key pair and then creating a self-signed CA certificate with a lifetime of 10 years
+creating a 4096 bit RSA key pair and then creating a self-signed CA certificate
+with a lifetime of 10 years
 
  $ pki --self --ca --type rsa --in cakey.pem --dn="C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA" --lifetime 3652 --outform pem > cacert.pem
 
@@ -614,16 +614,16 @@ $ ls -l ak_ecc_cert.der
 
 -rw-rw-r-- 1 andi andi 1001 Dez 23 15:31 ak_ecc_cert.der
 ----
-The {TOOLMAN}/tpm2_nvdefine.1.md[`tpm2_nvdefine`] command allocates a memory location
-with a size of 1001 bytes that can be accessed via the handle `*0x01800004*` which
-is also called the NV index
+The {TOOLMAN}/tpm2_nvdefine.1.md[`*tpm2_nvdefine*`] command allocates a memory
+location with a size of 1001 bytes that can be accessed via the handle `*0x01800004*`
+which is also called the NV index
 ----
 $ tpm2_nvdefine 0x01800004 -C o -s 1001 -a 0x2000A
 
 nv-index: 0x1800004
 ----
 Then we write the certificate file to the NV RAM destination using the
-{TOOLMAN}/tpm2_nvwrite.1.md[`tpm2_nvwrite`] command:
+{TOOLMAN}/tpm2_nvwrite.1.md[`*tpm2_nvwrite*`] command:
 
  $ tpm2_nvwrite 0x01800004 -C o -i ak_ecc_cert.der
 
@@ -648,7 +648,7 @@ and finally storing the certificate
 
 We decide to use the RSA AK certificate externally, though. Thus we release the
 memory assigned to NV index `*0x01800003*` via the
-{TOOLMAN}/tpm2_nvundefine.1.md[`tpm2_nvundefine`] command:
+{TOOLMAN}/tpm2_nvundefine.1.md[`*tpm2_nvundefine*`] command:
 
  $ tpm2_nvundefine 0x01800003 -C o
 
@@ -717,32 +717,37 @@ Jan 04 15:18:38 edu charon-systemd[648407]: spawning 16 worker threads
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded certificate 'C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com'
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded certificate 'C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA'
 ----
-The RSA AK private key is attached to the `*charon-systemd*` daemon via the TPM
-2.0 TSS interface
+The RSA AK private key is attached to the
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] daemon via the TPM 2.0 TSS
+interface
 ----
 Jan 04 15:18:38 edu charon-systemd[648407]: TPM 2.0 via TSS2 v2 available
 Jan 04 15:18:38 edu charon-systemd[648407]: signature algorithm is RSASSA with SHA256 hash
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded RSA private key from token
 ----
-The ECC AK private key is attached to the `*charon-systemd*` daemon via the TPM
-2.0 TSS interface
+The ECC AK private key is attached to the
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] daemon via the TPM 2.0 TSS
+interface
 ----
 Jan 04 15:18:38 edu charon-systemd[648407]: TPM 2.0 via TSS2 v2 available
 Jan 04 15:18:38 edu charon-systemd[648407]: signature algorithm is ECDSA with SHA256 hash
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded ECDSA private key from token
 ----
-The ECC AK certificate is loaded by the `*charon-systemd*` daemon via the TPM 2.0
-TSS interface
+The ECC AK certificate is loaded by the
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] daemon via the TPM 2.0 TSS
+interface
 ----
 Jan 04 15:18:38 edu charon-systemd[648407]: TPM 2.0 via TSS2 v2 available
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded certificate from TPM NV index 0x01800004
 ----
-The connection definition is received by the `*charon-systemd*` daemon triggered
-by the xref:swanctl/swanctl.adoc[`swanctl --load-conns`] command via the VICI interface
+The connection definition is received by the
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] daemon triggered by the
+xref:swanctl/swanctlLoadConns.adoc[`*swanctl --load-conns*`] command via the VICI
+interface
 ----
 Jan 04 15:18:38 edu charon-systemd[648407]: added vici connection: host
 ----
-The xref:swanctl/swanctl.adoc[`swanctl`] command line tool reports its actions
+The xref:swanctl/swanctl.adoc[`*swanctl*`] command line tool reports its actions
 ----
 Jan 04 15:18:38 edu swanctl[648429]: loaded certificate from '/etc/swanctl/x509/ak_rsa_cert.der'
 Jan 04 15:18:38 edu swanctl[648429]: loaded certificate from '/etc/swanctl/x509ca/cacert.pem'
