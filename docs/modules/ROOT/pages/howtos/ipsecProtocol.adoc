@@ -1,0 +1,167 @@
+= IPsec Protocol
+:page-toclevels: 4
+
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC3193: {IETF}/rfc3193
+:RFC3948: {IETF}/rfc3948
+:RFC4303: {IETF}/rfc4303
+:RFC7296: {IETF}/rfc7296
+
+The IP security (IPsec) protocol consists of two main components:
+
+* The xref:#_encapsulating_security_payload_esp[Encapsulating Security Payload]
+  (ESP) protocol securing the IP packets transferred between two IPsec endpoints.
+
+* The xref:#_internet_key_exchange_version_2_ikev2[Internet Key Exchange Version 2]
+  (IKEv2) auxiliary protocol responsible for the mutual authentication of the IPsec
+  endpoints and the automated establishment of encryption and data integrity session
+  keys for both the IKev2 management protocol itself and for the ESP payload
+  protection.
+
+We do not treat the authentication-only *Authentication Header* (AH) protocol
+which is rarely used, especially because it is not suited for NAT traversal.
+
+== Encapsulating Security Payload (ESP)
+
+The *Encapsulation Security Payload (ESP)* is defined in {RFC4303}[RFC 4303],
+has IP protocol number `*50*` and doesn't have any ports. ESP allows the encryption
+of *IP packets* on the network layer carrying e.g. Layer 4 TCP traffic
+
+image::ipPacket.png[IP Packet]
+
+=== IPsec Transport Mode
+
+In *IPsec Transport* mode the original IP header is retained and just the Layer 4
+payload carried by the IP packet is encrypted. The ESP header is inserted between
+the original IP header and the encrypted payload.
+
+image::espTransportModePacket.png[ESP Transport Mode Packet]
+
+Originally intended for protecting direct IPv6 host-to-host connections, transport
+mode is currently mainly used to secure the *Layer 2 Tunneling Protocol* (L2TP),
+see {RFC3193}[RFC 3193].
+
+=== IPsec Tunnel Mode
+
+In *IPsec Tunnel* mode the complete IP packet is encapsulated by ESP and an outer
+IP header is prepended:
+
+image::espTunnelModePacket.png[ESP Tunnel Mode Packet]
+
+=== ESP Packet Structure
+
+An ESP packet consists of an ESP header, the encrypted IP payload body and an ESP
+trailer needed for padding. The *Authentication Data* field appended at the end as
+a cryptographic checksum guarantees *data integrity*.
+
+image::espHeader.png[ESP Header]
+
+The 32 bit *Security Parameters Index* (SPI) is used by the receiving IPsec peer
+as an index into its kernel-based database to look up up the session keys needed
+to decrypt and authenticate the ESP packet. The SPI is also needed to determine the
+IPsec security policy that has to be enforced on the inbound plaintext IP packets
+after decryption.
+
+== Internet Key Exchange Version 2 (IKEv2)
+
+Version 2 of the Internet Key Exchange (IKEv2) protocol defined in {RFC7296}[RFC 7296]
+manages the setup of IPsec connections. The IKEv2 auxiliary protocol uses UDP
+datagrams with both source and destination ports set to the well-known UDP port `*500*`.
+
+=== IKE_SA_INIT Request/Response
+
+The *Initiator* starts the negotiation be sending an `IKE_SA_INIT` request which
+is answered by the *Responder* with an `IKE_SA_INIT` response.
+
+image::ikeSaInit.png[IKE_SA_INIT Request/Response Pair]
+
+If the *Responder* comes to the conclusion that it is under a *Denial of Service*
+(DoS) attack, it can request a *Cookie* from the *Initiator*  before sending the
+computationally expensive *Key Exchange* (KE) payload in the `IKE_SA_INIT` response.
+This effectively prevents IP spoofing.
+
+image::ikeCookie.png[IKE_SA_INIT with Cookie]
+
+Based on the exchange of the *Key Exchange* (KE) and *Nonces* (N) payloads in
+`IKE_SA_INIT`, both endpoints can derive a *Shared Secret* which allows them to
+encrypt all following IKE messages based on the `IKE_SA` established via the `SA1i`
+and `SA1r` *Security Association* payloads.
+
+=== IKE_AUTH Request/Response
+
+==== Certificate-based Authentication
+
+In the `ÌKE_AUTH` request the *Initiator* authenticates itself by sending its
+identity `IDi` and a *Digital Signature* in the `AUTHi` payload accompanied by an
+optional *Certificate* payload `CERTi`. The *Responder* verifies the validity and
+trustworthiness of the received end entity certificate by going up the X.509 trust
+chain until a locally stored Root CA certificate is reached.
+
+Additionally the *Initiator* sends a *Security Association* proposal `SA2i` and a
+set of *Traffic Selectors* `TSi` and `TSr` to be used for the first `CHILD_SA`.
+
+image::ikeAuth.png[IKE_AUTH Request/Response Pair]
+
+The *Responder* authenticates itself in turn with a *Digital Signature* in the
+`AUTHr` payload accompanied by an optional *Certificate* payload `CERTr` contained
+in the `IKE_AUTH` response and includes a selected *Security Association* `SA2r`
+proposal and a possibly *narrowed* set of *Traffic Selectors* `TSi` and `TSr`.
+With this information the `CHILD_SA` defining the encryption and data integrity
+of the IPsec payload packets can be installed and activated.
+
+==== PSK-based Authentication
+
+If a *Pre-Shared Key* (PSK) is used for authentication then the `AUTHi` and `AUTHr`
+payloads contain a hash over the exchanged IKEv2 messages and the pre-shared secret.
+
+image::ikeAuthPsk.png[IKE_AUTH Request/Response Pair using PSK]
+
+Since the *Initiator* is the first to send its password hash in the `AUTHi` payload,
+this poses a serious security risk when the PSK is weak and is intercepted by an
+active man-in-the-middle (MITM) who can then do an offline dictionary or brute force
+attack on the `AUTHi` payload and potentially crack the password. Therefore we
+strongly discourage the use of PSK-based authentication if a sufficient password
+strength cannot be enforced.
+
+==== EAP-based Authentication
+
+In order to prevent man-in-the-middle-attacks possible with
+xref:#_psk_based_authentication[PSK-based authentication], EAP-based authentication
+as been introduced by the IKEv2 standard. If the *Initiator* doesn't include an
+`AUTHi` payload in the `IKE_AUTH` request, the *Responder* sends its strong *Digital
+Signature* in the `AUTHr` payload first, in order to establish trust and at the
+same time initiates the EAP protocol by including a first EAP request in the `IKE_AUTH`
+response.
+
+image::ikeAuthEap.png[IKE_AUTH Request/Response Pair using EAP]
+
+The *Initiator* can then use its PSK with EAP-MD5 or EAP-MSCHAPv2 to authenticate
+itself to the trusted *Responder* over the encrypted IKEv2 channel.
+
+=== CREATE_CHILD_SA Request/Response
+
+`CREATE_CHILD_SA` request/response pairs are used to negotiate additional `CHILD_SAs`
+or to do the periodic rekeying of either the `IKE_SA` or the `CHILD_SAs`.
+
+image::createChildSa.png[CREATE_CHILD_SA Request/Response Pair]
+
+Without the `N(REKEY_SA)` notification the `IKE_SA` is rekeyed, the fresh
+*Key Exchange* (KE) payloads guaranteeing *Perfect Forward Secrecy* (PFS). With a
+`N(REKEY_SA)` notification included, a `CHILD_SA` is rekeyed, the *Key Exchange*
+(KE) payloads being optional.
+
+== NAT Traversal
+
+include::partial$nat-t/natTraversal.adoc[]
+
+=== ESP-in-UDP Encapsulation
+
+include::partial$nat-t/espInUdpEncapsulation.adoc[]
+
+=== Non-ESP Marker
+
+include::partial$nat-t/nonEspMarker.adoc[]
+
+=== NAT-T Keepalives
+
+include::partial$nat-t/keepalives.adoc[]

@@ -1,0 +1,31 @@
+Since the ESP protocol with IP protocol number `*50*` doesn't have any ports,
+_per se_ it is not suited for *Port Address Translation*, the standard method of
+traversing a NAT router for the TCP and UDP protocols.
+
+Some NAT routers have a feature, often called something like *IPsec Passthrough*
+that detects outbound IKE traffic from a single host behind the NAT device and
+will forward inbound IKE and ESP packets to that specific host as shown in the
+figure below
+
+image::ipsecForwarding.png[IPsec Forwarding]
+
+Unfortunately this
+won't work with multiple IPsec clients behind the same NAT router that all want
+to communicate with the same VPN gateway as shown in the network topology below
+
+image::natTraversal.png[NAT Traversal]
+
+The solution proposed by {RFC3948}[RFC 3948] is to encapsulate ESP packets in
+UDP datagrams which then allows to apply *Port Address Translation* as shown in
+the figure above. The well-known *NAT Traversal* UDP port `*4500*` is shared with
+the IKE protocol when a {RFC7296}#section-2.23[NAT situation is detected] between
+the two IPsec endpoints. The detection is based on the `NAT_DETECTION_SOURCE_IP`
+and `NAT_DETECTION_DESTINATION_IP` notifications sent in the `IKE_SA_INIT` exchange
+that contain source and destination IP address hashes, respectively.
+
+ESP-in-UDP encapsulation can be enforced even if no NAT situation exists by setting
+`*encap = yes*` for a given connection definition in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. If enabled, the
+xref:daemons/charon.adoc[`*charon*`] daemon will send a manipulated
+`NAT_DETECTION_SOURCE_IP` notify payload so that it will look to the remote peer
+as if there were a NAT situation.

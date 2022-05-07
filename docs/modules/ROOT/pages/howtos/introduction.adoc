@@ -33,9 +33,10 @@ provide remote IPsec access.
 
 == Securing a Network
 
-strongSwan is a complete IPsec solution providing encryption and authentication
-to servers and clients. strongSwan can be used to secure communications with remote
-networks, so that connecting remotely is the same as connecting locally.
+strongSwan is a complete xref:howtos/ipsecProtocol.adoc[IPsec] solution providing
+encryption and authentication to servers and clients. strongSwan can be used to
+secure communications with remote networks, so that connecting remotely is the
+same as connecting locally.
 
 image::topology.png[topology]
 
@@ -68,10 +69,13 @@ xref:config/IKEv2.adoc[configuration examples] covering these and similar situat
 
 == IKE and IPsec Basics
 
-*strongSwan* is basically a keying daemon that uses the {IKE}[Internet Key Exchange]
-(IKE) protocol to establish _Security Associations_ (SAs) between two peers. IKE
-provides strong authentication of both peers and derives unique cryptographically-strong
-session keys.  Such an IKE session is often denoted *IKE_SA* in our documentation.
+*strongSwan* is basically a keying daemon that uses the
+xref:howtos/ipsecProtocol.adoc#_internet_key_exchange_version_2_ikev2[Internet Key Exchange Version 2]
+(IKEv2) protocol to establish *Security Associations* (SAs) between two peers.
+For legacy applications {IKE}[IKEv1] is still supported, although we strongly
+discourage from using IKEv1 due to stability and some security reasons. IKE provides
+strong authentication of both peers and derives unique cryptographically-strong
+session keys. Such an IKE session is often denoted *IKE_SA* in our documentation.
 Besides authentication and key material IKE also provides the means to exchange
 configuration information (e.g. xref:features/vip.adoc[virtual IP] addresses) and
 to negotiate IPsec SAs, which are often called *CHILD_SAs*. IPsec SAs define which

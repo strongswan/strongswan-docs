@@ -1,0 +1,9 @@
+ESP-in-UDP encapsulation means that an eight octet UDP header is inserted between
+the IP Header and the ESP Header of the ESP packet. At the outset the UDP source
+and destination ports are both set to the well-known value `*4500*` but might get
+changed on the way by one or several NAT routers.
+
+image::espInUdpEncapsulation.png[ESP in UDP Encapsulation]
+
+The first field in the ESP header right after the UDP header is the 32 bit non-zero
+*Security Parameters Index* (SPI).
