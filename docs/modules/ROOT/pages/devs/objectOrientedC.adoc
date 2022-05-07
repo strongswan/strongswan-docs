@@ -125,6 +125,6 @@ my_stack_t *my_stack_create()
 == Gedit Snippets
 
 For `*gedit*` users there are some
-link:../_attachments/gedit-snippets-strongswan.tar.gz[snippets] to create
+xref:attachment$gedit-snippets-strongswan.tar.gz[snippets] to create
 interfaces, methods (including implementations and pointer assignement) and
 class implementations.

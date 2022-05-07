@@ -1,6 +1,7 @@
 = Trusted Platform Module 2.0
 
 :TCG:     https://trustedcomputinggroup.org/resource
+:TCGBLOG: https://develop.trustedcomputinggroup.org/2018/04/11/easy-tpm-2-0-access-with-the-strongswan-vpn-solution/
 :TPM2:    https://github.com/tpm2-software
 :TSSV:    3.2.0
 :TOOLV:   5.2
@@ -924,3 +925,8 @@ The IKE and CHILD SAs are terminated
 [IKE] IKE_SA deleted
 terminate completed successfully
 ----
+
+== Publications
+
+* TCG Developer Blog April 2018:
+  {TCGBLOG}[Easy TPM 2.0 Access with the strongSwan VPN Solution].

@@ -133,8 +133,8 @@ named `*droid-gcc*` and `*droid-ld*` in a directory that is included in your
 ==== Build the Library
 
 To simplify building the `*libcurl*` library, a
-link:../_attachments/curl.build[build script] and an
-link:../_attachments/curl.mk[Android Makefile] are attached to this page. Download
+xref:attachment$curl.build[build script] and an
+xref:attachment$curl.mk[Android Makefile] are attached to this page. Download
 the two helper files to an appropriate working directory and then download and
 extract the current source tarball of `*libcurl*`.
 
