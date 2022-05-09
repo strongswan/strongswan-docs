@@ -55,62 +55,61 @@ test runner:
 
 [cols="2,5,1"]
 |===
-|Variable |Description |Since +
-Version
+|Variable |Description |Since Version
 
-|TESTS_PLUGINS
+|`TESTS_PLUGINS`
 |A space-separated list of plugins to load +
  (not implemented by all test runners)
 |5.3.3
 
-|TESTS_REDUCED_KEYLENGTHS
-|If this is set test cases that generate keys will do so only for reduced key
+|`TESTS_REDUCED_KEYLENGTHS`
+|If this is set, test cases that generate keys will do so only for reduced key
  lengths to avoid blocking on hosts with low entropy
 |
 
-|TESTS_STRONGSWAN_CONF
+|`TESTS_STRONGSWAN_CONF`
 |Path to a custom xref:config/strongswanConf.adoc[`*strongswan.conf*`] file used
  for the tests
 |5.2.0
 
-|TESTS_RUNNERS
+|`TESTS_RUNNERS`
 |A comma-separated list of test runners to run
 |5.5.0
 
-|TESTS_SUITES
+|`TESTS_SUITES`
 |A comma-separated list of test suites to run +
  (all suites are run if this is not specified)
 |
 
-|TESTS_SUITES_EXCLUDE
+|`TESTS_SUITES_EXCLUDE`
 |A comma-separated list of test suites excluded from running
 |5.2.1
 
-|TESTS_CASES
+|`TESTS_CASES`
 |A comma-separated list of test cases to run +
  (all cases of selected suites are run if this is not specified)
 |5.9.0
 
-|TESTS_CASES_EXCLUDE
+|`TESTS_CASES_EXCLUDE`
 |A comma-separated list of test cases excluded from running
 |5.9.0
 
-|TESTS_FUNCTIONS
+|`TESTS_FUNCTIONS`
 |A comma-separated list of test functions to run
  (all functions of selected suites/cases are run if this is not specified)
 |5.9.0
 
-|TESTS_FUNCTIONS_EXCLUDE
+|`TESTS_FUNCTIONS_EXCLUDE`
 |A comma-separated list of test functions excluded from running
 |5.9.0
 
-|TESTS_VERBOSITY
+|`TESTS_VERBOSITY`
 |The log level used when running the tests (`*-1*` to `*4*` with a default of
  `*-1*`), see xref:config/logging.adoc[Logging]
 |
 
-|LEAK_DETECTIVE_DISABLE
-|If our custom memory allocator is enabled with `*--enable-leak-detective*` it
+|`LEAK_DETECTIVE_DISABLE`
+|If our custom memory allocator is enabled with `*--enable-leak-detective*`, it
  can be disabled temporarily by setting this variable in order to speed up
  running the tests
 |
@@ -122,7 +121,7 @@ is not recommended for production builds as it disables all optimizations.
 
 The unit tests also run automatically for every commit:
 
-[cols="1,1,1,1,1,1"]
+[cols="1,1,1,1,1,1",frame=none,grid=none]
 |===
 
 |image:{GITHUB}/workflows/Linux/badge.svg[Linux, title=Linux, link={GITHUB}/actions?query=workflow%3ALinux]
@@ -144,7 +143,7 @@ image:{CODECOV}/branch/master/graph/badge.svg[Codecov, title="Code Coverage", li
 
 And the code base is automatically analyzed:
 
-[cols="1,1,1,1"]
+[cols="1,1,1,1",frame=none,grid=none]
 |===
 
 |image:{GITHUB}/workflows/SonarCloud/badge.svg[SonarCloud, title="SonarCloud", link={GITHUB}/actions?query=workflow%3ASonarCloud]
@@ -191,7 +190,7 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 |xref:daemons/charon-svc.adoc[`*charon-svc*`]
 |The Windows IKE service
 
-|xref:daemons/charon-systemd.adoc[`*charon-systemd]*`
+|xref:daemons/charon-systemd.adoc[`*charon-systemd*`]
 |An IKE daemon similar to xref:daemons/charon.adoc[`*charon*`] but specifically
  designed for use with `*systemd*`
 
@@ -245,7 +244,7 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 |RADIUS protocol implementation used by e.g. the
  xref:plugins/eap-radius.adoc[`*eap-radius*`] and `*tnc-pdp*` plugins
 
-|*`libsimaka*`
+|`*libsimaka*`
 |Contains code shared by several EAP-SIM/AKA plugins
 
 |`*libstrongswan*`
