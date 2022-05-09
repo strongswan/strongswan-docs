@@ -20,7 +20,7 @@ The `*swanctl.conf*` file provides connections, secrets and IP address pools for
 the xref:swanctl/swanctl.adoc[`*swanctl --load-**`] commands.
 
 The file uses a xref:config/strongswanConf.adoc[`*strongswan.conf*`]-style syntax
-(referencing sections, since version 5.7.0 and including other files is supported
+(referencing sections, since version 5.7.0, and including other files is supported
 as well) and is located in the xref:swanctl/swanctlDir.adoc[`*swanctl*`]
 configuration directory, usually `*/etc/swanctl*`.
 
