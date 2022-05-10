@@ -154,7 +154,7 @@ sw-collector {
    first_file = /var/log/bootstrap.log
    first_time = 2016-04-22T20:55:14Z
    rest_api {
-      uri = https://admin-user:ietf99hackathon@tnc.strongswan.org/api/
+      uri = https://admin-user:strongSwan@tnc.example.com/api/
       timeout = 120
    }
 }

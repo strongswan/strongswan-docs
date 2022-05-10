@@ -2,7 +2,6 @@
 
 :TCG:   https://trustedcomputinggroup.org
 :IFIMV: {TCG}/wp-content/uploads/TNC_IFIMV_v1_4_r11.pdf
-:IFMSEG:  {TCG}/wp-content/uploads/IFM_Segmentation_v1r5_04042016.final_.pdf
 :IETF:    https://datatracker.ietf.org/doc/html
 :RFC5998: {IETF}/rfc5998
 
@@ -141,7 +140,7 @@ In our example the IMV 1 `*OS*` and IMV 2 `*Scanner*` are enabled which subcribe
 the standard PA-TNC message subtypes `*Operating System*` and `*Firewall*` defined
 in the `*IETF*` namespace, respectively.
 ----
-00[DMN] Starting IKE charon daemon (strongSwan 5.9.5, Linux 5.13.0-35-generic, x86_64)
+00[DMN] Starting IKE charon daemon (strongSwan 5.9.7, Linux 5.13.0-35-generic, x86_64)
 00[TNC] TNC recommendation policy is 'default'
 00[TNC] loading IMVs from '/etc/tnc_config'
 00[TNC] added IETF attributes
@@ -190,9 +189,6 @@ the credentials, the connection configurations and the pool definitions.
 00[DMN] pools: loaded pool 'rw_pool'
 00[DMN] pools: successfully loaded 1 pools, 0 unloaded
 ----
-
-== TNC-Enabled VPN Server Configuration
-
 The TNC-enabled VPN server configuration is based on the following
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file
 ----
@@ -420,14 +416,14 @@ standard PA-TNC attribute `*Port Filter*` which will be analyzed later on
 09[TNC] processing PA-TNC message with ID 0x0dc7be19
 09[TNC] processing PA-TNC attribute type 'IETF/Port Filter' 0x000000/0x00000006
 ----
-The TNC server creates a PA-TNC attribute of type `*Max Attribute Size Request*`
+The TNC server creates a PA-TNC attribute of type `*Segmentation Contract Request*`
 defined in the `*TCG*` namespace which proposes to split up huge PA-TNC
 messages into segments with a maximum size of `*32'698*` bytes each
 (see xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message
 segmentation])
 ----
 09[IMV] IMV 1 requests a segmentation contract for PA message type 'IETF/Operating System' 0x000000/0x00000001
-09[IMV]   maximum attribute size of 100000000 bytes with maximum segment size of 32698 bytes
+09[IMV]   no message size limit, maximum segment size of 32698 bytes
 ----
 The `*imc_policy_manager*` program is executed which connects to the TNC database
 and assigns the session number `*1*` to the current connection `*1*`. The
@@ -445,14 +441,14 @@ following measurement workitems are configured in the database:
 ----
 The `PKCGS` workitem is handled by the `*OS IMV*` which adds a request for a
 standard `*Installed Packages*` PA-TNC attribute to a standard PA-TNC
-`*Attribute Request*` attribute. Together with the `*Max Attribute Size Request*`
+`*Attribute Request*` attribute. Together with the `*Segmentation Contract Request*`
 mentioned above, the `*Attribute Request*` is inserted into a PA-TNC message of
 standard subtype `*Operating System*`
 ----
 09[TNC]   0x000000/0x00000007 'IETF/Installed Packages'
 09[IMV] IMV 1 handles PCKGS workitem 1
 09[TNC] creating PA-TNC message with ID 0xc084b149
-09[TNC] creating PA-TNC attribute type 'TCG/Max Attribute Size Request' 0x005597/0x00000021
+09[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
 09[TNC] creating PA-TNC attribute type 'IETF/Attribute Request' 0x000000/0x00000001
 09[TNC] creating PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
 ----
@@ -522,7 +518,7 @@ bytes and is therefore split into three consecutive EAP-TTLS segments
 10[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
 ----
 The PB-TNC Client Data batch carries a PA-TNC message of standard subtype
-`*Operating System*` containing the PA-TNC attribute `*Max Attribute Size Response*`
+`*Operating System*` containing the PA-TNC attribute `*Segmentation Contract Response*`
 defined in the `*TCG*` namespace and the standard PA-TNC attribute
 `*Installed Packages*` both of which are handled by the `*OS IMC*`
 ----
@@ -530,10 +526,10 @@ defined in the `*TCG*` namespace and the standard PA-TNC attribute
 10[TNC] handling PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
 10[IMV] IMV 1 "OS" received message for Connection ID 1 from IMC 1 to IMV 1
 10[TNC] processing PA-TNC message with ID 0x6e31e351
-10[TNC] processing PA-TNC attribute type 'TCG/Max Attribute Size Response' 0x005597/0x00000022
+10[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
 10[TNC] processing PA-TNC attribute type 'IETF/Installed Packages' 0x000000/0x00000007
 10[IMV] IMV 1 received a segmentation contract response from IMC 1 for PA message type 'IETF/Operating System' 0x000000/0x00000001
-10[IMV]   maximum attribute size of 100000000 bytes with maximum segment size of 32698 bytes
+10[IMV]   no message size limit, maximum segment size of 32698 bytes
 ----
 The `*Installed Packages*` attribute contains a list of the 112 Ubuntu software
 packages installed on the TNC client

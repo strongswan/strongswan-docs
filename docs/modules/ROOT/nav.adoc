@@ -161,6 +161,9 @@
 ** xref:tnc/tncServer.adoc[]
 ** xref:tnc/optimumTncSizes.adoc[]
 ** xref:tnc/strongTnc.adoc[]
+** xref:tnc/swima.adoc[]
+*** xref:tnc/swimaClient.adoc[]
+*** xref:tnc/swimaServer.adoc[]
 
 .Support
 * xref:support/helpRequests.adoc[Help Requests]

@@ -2,7 +2,6 @@
 
 :TCG:     https://trustedcomputinggroup.org
 :IFIMC:   {TCG}/wp-content/uploads/TNC_IFIMC_v1_3_r18.pdf
-:IFMSEG:  {TCG}/wp-content/uploads/IFM_Segmentation_v1r5_04042016.final_.pdf
 :IETF:    https://datatracker.ietf.org/doc/html
 :RFC5998: {IETF}/rfc5998
 
@@ -80,7 +79,7 @@ IMC "Scanner"        /usr/lib/ipsec/imcvs/imc-scanner.so
 # IMC "SWIMA"        /usr/lib/ipsec/imcvs/imc-swima.so
 # IMC "Attestation"  /usr/lib/ipsec/imcvs/imc-attestation.so
 ----
-In the configuration file above, the `*OS IMC*` and the `*Scanner IMV*` are enabled, so
+In the configuration file above, the `*OS IMC*` and the `*Scanner IMC*` are enabled, so
 that these Integrity Measurement Collectors have to be built beforehand with the
 xref:install/autoconf.adoc[`*./configure*`] options
 
@@ -90,7 +89,7 @@ When the xref:daemons/charon.adoc[`*charon*`] daemon starts up, the IMCs are loa
 `*IMC 1 OS*` and `*IMC 2 Scanner*` subcribe to the standard PA-TNC message subtypes
 `*Operating System*` and `*Firewall*` defined in the `*IETF*` namespace, respectively.
 ----
-00[DMN] Starting IKE charon daemon (strongSwan 5.9.5, Linux 5.13.0-35-generic, x86_64)
+00[DMN] Starting IKE charon daemon (strongSwan 5.9.7, Linux 5.13.0-35-generic, x86_64)
 00[TNC] loading IMCs from '/etc/tnc_config'
 00[TNC] added IETF attributes
 00[TNC] added ITA-HSR attributes
@@ -135,9 +134,6 @@ the credentials and the connection configurations.
 00[DMN] conns: loaded connection 'tnc'
 00[DMN] conns: successfully loaded 1 connections, 0 unloaded
 ----
-
-== TNC-Enabled VPN Client Configuration
-
 The TNC-enabled VPN client configuration is based on the following
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file
 ----
@@ -292,8 +288,9 @@ xref:tnc/tncServer.adoc#_eap_ttls_tunnel_setup[TNC Server] >
 === PB-TNC Connection 1
 
 Now within the EAP-TTLS tunnel the PT-EAP transport protocol is started and the
-PB-TNC (TCG TNC IF-TNCCS) Connection ID `*1*` is assigned to the connection by the
-TNC client and a new state is created for both the `*OS IMC*` and the `*Scanner IMC*`
+`*PB-TNC*` (TCG TNC IF-TNCCS 2.0) Connection ID `*1*` is assigned to the connection
+by the TNC client and a new state is created for both the `*OS IMC*` and the
+`*Scanner IMC*`
 ----
 16[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (128 bytes)
 16[ENC] parsed IKE_AUTH response 5 [ EAP/REQ/TTLS ]
@@ -376,23 +373,25 @@ client.
 05[TNC] processing IETF/PB-PA message (432 bytes)
 ----
 The first PA-TNC message is of standard subtype `*Operating System*` and contains
-a PA-TNC attribute of type `*Max Attribute Size Request*` defined in the `*TCG*`
+a PA-TNC attribute of type `*Segmentation Contract Request*` defined in the `*TCG*`
 namespace which proposes to split up huge PA-TNC messages into segments with a
 maximum size of `*32'698*` bytes each (see
-xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message segmentation]), plus a second PA-TNC attribute of the standard type `*Attribute Request*` which requests a PA-TNC attribute of standard type `*Installed Packages*`
+xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message segmentation]),
+plus a second PA-TNC attribute of the standard type `*Attribute Request*` which
+requests a PA-TNC attribute of standard type `*Installed Packages*`
 ----
 05[TNC] handling PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
 05[IMC] IMC 1 "OS" received message for Connection ID 1 from IMV 1
 05[TNC] processing PA-TNC message with ID 0xc084b149
-05[TNC] processing PA-TNC attribute type 'TCG/Max Attribute Size Request' 0x005597/0x00000021
+05[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
 05[TNC] processing PA-TNC attribute type 'IETF/Attribute Request' 0x000000/0x00000001
 05[TNC]   0x000000/0x00000007 'IETF/Installed Packages'
 05[IMC] IMC 1 received a segmentation contract request from IMV 1 for PA message type 'IETF/Operating System' 0x000000/0x00000001
-05[IMC]   maximum attribute size of 100000000 bytes with maximum segment size of 32698 bytes
+05[IMC]   no message size limit, maximum segment size of 32698 bytes
 ----
 The `*OS IMC*` compiles a list of all installed Ubuntu packages for the
 `*Installed Packages*` PA-TNC attribute and puts it into a PA-TNC message of
-standard subtype `*Operating System*` together with the `*Max Attribute Size Response*`
+standard subtype `*Operating System*` together with the `*Segmentation Contract Response*`
 PA-TNC attribute defined in the `*TCG*` namespace
 ----
 05[IMC] package 'adduser' (3.118ubuntu2)
@@ -405,7 +404,7 @@ PA-TNC attribute defined in the `*TCG*` namespace
 05[IMC] package 'util-linux' (2.34-0.1ubuntu9.1)
 05[IMC] package 'zlib1g' (1:1.2.11.dfsg-2ubuntu1.2)
 05[TNC] creating PA-TNC message with ID 0x6e31e351
-05[TNC] creating PA-TNC attribute type 'TCG/Max Attribute Size Response' 0x005597/0x00000022
+05[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
 05[TNC] creating PA-TNC attribute type 'IETF/Installed Packages' 0x000000/0x00000007
 05[TNC] creating PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
 ----

@@ -95,9 +95,9 @@ attributes of the IETF standard types `*Product Information*` and `*String Versi
 whereas the third PA-TNC attribute has the vendor-specific type `*Device ID*`
 defined in the {PEN}[PEN] namespace of the `*ITA-HSR*` organization.
 
-The PA-TNC message is delivered by the xref:tnc/tncClient.adoc[TNC Client] to the
-xref:tnc/tncServer.adoc[TNC Server] in a `CDATA` (ClientData) PB-TNC batch. The
-xref:tnc/tncClient.adoc[TNC Client] can also request the language in which
+The PA-TNC message is delivered by the xref:./tncClient.adoc[TNC Client] to the
+xref:./tncServer.adoc[TNC Server] in a `CDATA` (ClientData) PB-TNC batch. The
+xref:./tncClient.adoc[TNC Client] can also request the language in which
 optional _Access Recommendations_ and _Remediation Parameters_ are going to be
 sent.
 
@@ -106,19 +106,19 @@ IKEv2 EAP.
 
 == TNC Client
 
-There are two ways how the strongSwan xref:tnc/tncClient.adoc[TNC Client] functionality
+There are two ways how the strongSwan xref:./tncClient.adoc[TNC Client] functionality
 can be used to collect the *state-of-health* or *posture* of an endpoint:
 
 * Collocated with a strongSwan VPN client (Network Access Requestor) running a
   xref:daemons/charon.adoc[`*charon*`] daemon that communicates over IKEv2 EAP
   ({RFC7171}[PT-EAP]).
 
-* The stand-alone xref:tnc/pt-tls-client.adoc[`*pt-tls-client*`] communicating
+* The stand-alone xref:./pt-tls-client.adoc[`*pt-tls-client*`] communicating
   over TLS ({RFC6876}[PT-TLS]).
 
 == TNC Server
 
-There are two ways how the strongSwan xref:tnc/tncServer.adoc[TNC Server] functionality
+There are two ways how the strongSwan xref:./tncServer.adoc[TNC Server] functionality
 can can be used to assess the *state-of-health* or *posture* of associated endpoints:
 
 * Collocated with a strongSwan VPN gateway (Policy Enforcement Point) running a

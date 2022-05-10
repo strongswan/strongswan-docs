@@ -73,8 +73,8 @@ LANGUAGE_CODE=en-us
 TIME_ZONE=Europe/Zurich
 
 [admins]
-Your Name: jane.doe@strongswan.org
-Another Admin: joe.doe@strongswan.org
+Your Name: jane.doe@example.com
+Another Admin: joe.doe@example.com
 
 [security]
 SECRET_KEY=strongSwan
@@ -115,7 +115,8 @@ WSGIPythonPath /var/www/tnc
 
 <VirtualHost *:80>
     ServerName tnc.example.com
-    ServerAdmin jane.doe@strongswan.org
+    ServerAlias tnc
+    ServerAdmin jane.doe@example.com
 
     DocumentRoot /var/www/tnc
 

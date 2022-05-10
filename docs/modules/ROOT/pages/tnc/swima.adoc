@@ -1,0 +1,220 @@
+= Software Inventory
+
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC5792: {IETF}/rfc5792
+:RFC6876: {IETF}/rfc6876
+:RFC7171: {IETF}/rfc7171
+:RFC8412: {IETF}/rfc8412
+:SWIDTAG: https://www.iso.org/standard/65666.html
+:TCG:     https://trustedcomputinggroup.org
+:IFPEP:   {TCG}/wp-content/uploads/TNC_IF-PEP-v1.1-rev-0.8.pdf
+:BASHSEC: https://ubuntu.com/security/notices/USN-5380-1
+
+== Software Identification Tags
+
+A `*Software Inventory*` consists of all software packages currently installed on
+an endpoint and is usually described using {SWIDTAG}[ISO/IEC 19770-2:2015 SWID Tags]
+of the form:
+
+.Example of a Software Identification (SWID) Tag
+[source, xml]
+----
+<SoftwareIdentity xmlns="http://standards.iso.org/iso/19770/-2/2015/schema.xsd"
+   xmlns:n8060="http://csrc.nist.gov/ns/swid/2015-extensions/1.0"
+   xmlns:SHA256="http://www.w3.org/2001/04/xmlenc#sha256"
+   name="bash" xml:lang="en-US" tagId="Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1.1"
+   version="5.0-6ubuntu1.1" versionScheme="alphanumeric">
+  <Entity name="strongSwan Project" regid="strongswan.org" role="tagCreator"/>
+  <Meta product="Ubuntu 20.04 x86_64"/>
+  <Payload n8060:pathSeparator="/" n8060:envVarPrefix="$" n8060:envVarSuffix="">
+    <Directory root="/" name="bin">
+      <File name="bash" size="1183448"
+        SHA256:hash="04a484f27a4b485b28451923605d9b528453d6c098a5a5112bec859fb5f2eea9"/>
+      <File name="rbash" size="1183448"
+        SHA256:hash="04a484f27a4b485b28451923605d9b528453d6c098a5a5112bec859fb5f2eea9"/>
+    </Directory>
+    <Directory root="/" name="etc">
+      <File name="bash.bashrc" n8060:mutable="true" size="2319"
+        SHA256:hash="29128d49b590338131373ec431a59c0b5318330050aac9ac61d5098517ac9a25"/>
+        ...
+    </Directory>
+    ...
+  </Payload>
+</SoftwareIdentity>
+----
+The SWID tag shown above describes version `*5.0-6ubuntu1.1*` of the `*Ubuntu 20.04*`
+software package `*bash*` for the `*x86_64*` architecture. The tag optionally
+contains `SHA-2` file hashes that can be used as reference values for remote
+attestation. The unique tag identifier is `*Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1.1*`.
+
+== Software Inventory Attributes
+
+The Software Inventory Message and Attributes (SWIMA) for PA-TNC
+({RFC8412}[RFC 8412]) standard is an extension of {RFC5792}[RFC 5792] and defines
+in the IETF namespace a new SWIMA Attributes PA-TNC message subtype and the
+following new PA-TNC attributes
+----
+- SWIMA Request
+- Software Inventory
+- Software Identifier Inventory
+- Software Events
+- Software Identifier Events
+- Subscription Status Request
+- Subscription Status Response
+- Source Metadata Request
+- Source Metadata Response
+----
+By sending a `*SWIMA Request*` attribute, a
+xref:./swimaServer.adoc#_swima_imv[`*SWIMA IMV*`] can request from a
+xref:./swimaClient.adoc#_swima_imc[`*SWIMA IMC*`] either a complete `*Software
+Inventory*` consisting of SWID tags or a more compact `*Software Identifier
+Inventory*` made of the tag identifiers, only. Alternatively `*Software Events*`
+or `*Software Identifier Events*` can be requested. It is also possible to
+establish `*Subscriptions*` which obliges a
+xref:./swimaClient.adoc#_swima_imc[`*SWIMA IMC*`] to immediately send changes in
+the `*Software Inventory*` or new `*Software Events*` to the
+xref:./swimaServer.adoc#_swima_imv[`*SWIMA IMV*`] as soon as they occur.
+
+== Software Inventory Client
+
+There are two ways how the strongSwan
+xref:./swimaClient.adoc[Software Inventory Client] functionality can be used to
+determine the current state of the software inventory on an endpoint:
+
+* Collocated with a strongSwan VPN client (Network Access Requestor) running a
+  xref:daemons/charon.adoc[`*charon*`] daemon that communicates over IKEv2 EAP
+  ({RFC7171}[PT-EAP]).
+
+* The stand-alone xref:./pt-tls-client.adoc[`*pt-tls-client*`] communicating
+  over TLS ({RFC6876}[PT-TLS]).
+
+In both cases the xref:./swimaClient.adoc#_swima_imc[`*SWIMA IMC*`] is required
+to manage the software inventory measurements on the TNC client.
+
+== Software Inventory Server
+
+There are two ways how the strongSwan
+xref:./swimaServer.adoc[Software Inventory Server] functionality can can be used
+to manage the software inventory of associated endpoints:
+
+* Collocated with a strongSwan VPN gateway (Policy Enforcement Point) running a
+  xref:daemons/charon.adoc[`*charon*`] daemon that communicates over IKEv2 EAP
+  ({RFC7171}[PT-EAP]).
+
+* A stand-alone strongSwan Policy Decision Point (PDP) based on a skeleton
+  xref:daemons/charon.adoc[`*charon*`] daemon with the `*tnc-pdp*` plugin
+  communicating either over TLS ({RFC6876}[PT-TLS]) or RADIUS ({IFPEP}[IF-PEP]).
+
+In both cases the xref:./swimaServer.adoc#_swima_imv[`*SWIMA IMV*`] is required
+to manage the software inventory measurements on the TNC server.
+
+== strongTNC Software Inventory Database
+
+=== Software Tag ID Policy
+
+In order to collect *Software Identifiers* of all software packages installed on
+the associated enpoints, we define a *SWID Tag IDs* policy enforcement for the
+*Default* group in the xref:./strongTnc.adoc[strongTNC] policy manager tool.
+
+.*SWID Tag IDs* Policy Enforcement for the *Default* Group
+image::swidTagIdPolicy.png[Software Tag ID Policy, link=self]
+
+=== Software Identifier Collection
+
+When the *TNC Client* connects to the home network for the first time the
+current state of the *`Software Inventory*` in the form of `*Software Events*` is
+requested
+
+.Successful Collection of Software Identifier Inventory
+image::swidReport.png[Software ID Collection Report, link=self]
+
+We see that currently 176 software packages are installed on the *TNC Client*
+endpoint. When we click on the *Most recent session* we see the session details
+
+.Software ID Collection Session
+image::swidSession.png[Software ID Collection Session, link=self]
+
+In the session 395 `*Software Identifier Events*` and 111 *SWID Tags* were
+collected.
+
+=== Software Events View
+
+When we scroll down in the device report for the *TNC Client*, we see a list of
+collected `*Software Events*`.
+
+.Software Events
+image::swidEvents.png[Software Events, link=self]
+
+These `*Software Events*` are time-stamped. Let's select the ones from
+`*Feb 17 02:18:54 2021*`
+
+.Software Event Details
+image::swidEventDetails.png[Software Event Details, link=self]
+
+The event details show the update of the three `*Ubuntu 20.04*` packages `*apt*`,
+`*base-files*` and `*bash*` on `*Feb 17 02:18:54 2021*`.
+
+=== SWID Tag View
+
+When we click on the `*Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1.1*` tag ID of the
+freshly installed `*bash*` package, we see the details of its SWID tag
+
+.SWID Tag Details of Version 5.0-6ubuntu1.1 of the Ubuntu 20.04 *bash* Package
+image::swidUbuntuBashTag.png[Ubuntu 20.04 bash SWID Tag, link=self]
+
+When we press the blue button the raw XML-encoded SWID tag is shown
+
+.Raw XML-encoded SWID Tag of the Ubuntu 20.04 bash Package
+image::swidUbuntuBashRawTag.png[Ubuntu 20.04 raw bash SWID Tag, link=self]
+
+=== File Information View
+
+Each SWID tag contains a complete list of the files contained in the software
+packages including the path where the file is going to be installed in the file
+system of the endpoint. When we click on the `*/bin/bash*` file we see the file
+details
+
+.Details of the /bin/bash File
+image::swidFileBash.png[Details of the /bin/bash File, link=self]
+
+We see that the `SHA-256` hash of the file has been extracted from the SWID tag
+and can be used as a reference value for *Remote Attestation*.
+
+=== Package View
+
+When we click on the `*bash*` package name we see what versions of this package
+have been registered up to now
+
+.Details of the /bin/bash File
+image::swidPackageBash.png[Details of the /bin/bash File, link=self]
+
+=== Security Updates
+
+The xref:./swimaServer.adoc#_security_updater[`*sec-updater*`] tool is periodically
+run to get security updates from the Debian, Ubuntu and Raspian websites.
+After such a security update the device report of the `*TNC Client*` shows the
+that `*25*` vulnerable software packages have been detected
+
+.Device Report after Security Updater Run
+image::swidVulnerabilityReport.png[Device Report after Security Updater Run, link=self]
+
+At the bottom of the device report the versions of the vulnerable software packages
+that are installed on the device are listed
+
+.Vulnerable Software Package Versions
+image::swidVulnerablePackages.png[Vulnerable Software Package Versions, link=self]
+
+=== Updated Package Information
+
+The xref:./swimaServer.adoc#_security_updater[`*sec-updater*`] tool automatically
+generates SWID tags for the updated software package that fix a vulnerability.
+Thus due to the following `*bash*` {BASHSEC}[vulnerability] the Ubuntu 20.04
+package has been updated
+
+.Vulnerable bash Package Versions
+image::swidPackagesBash.png[Vulnerable bash Package Versions, link=self]
+
+Of course the `SHA-2` file hashes of the updated software package are also available
+
+.Updated /bin/bash File Hashes
+image::swidFilesBash.png[Updated /bin/bash File Hashes, link=self]

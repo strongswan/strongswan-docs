@@ -1,0 +1,550 @@
+= Software Inventory Client
+
+:GITHUB:  https://github.com/strongswan
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC5792: {IETF}/rfc5792
+:RFC8412: {IETF}/rfc8412
+
+== Software Collector
+
+The xref:./sw-collector.adoc[`*sw-collector*`] tool manages the `*Software
+Inventory*` on an endpoint based on an SQLite `*collector.db*` database which
+has to be initialized first, see xref:./sw-collector.adoc#_some_hints[hints].
+
+When the xref:./sw-collector.adoc[`*sw-collector*`] command is executed, the
+tool parses the `*apt*` history file indicated by the `*history*` parameter
+defined in the xref:config/strongswanConf.adoc#_sw_collector[`*sw-collector*`]
+subsection of xref:config/strongswanConf.adoc[`*strongswan.conf*`] for new
+events. The default history file is `*/var/log/apt/history.log*`. Since version
+5.9.5 the compressed `history.log.*<n>*.gz` backup files in the `*/var/log/apt/*`
+directory are automatically searched too if necessary, in order to find all
+new entries.
+----
+# sw-collector
+First-Date: 2021-02-17T01:05:01Z, eid = 1, epoch = 916780987
+Last-Event: 2021-02-17T01:05:01Z, eid = 1, epoch = 916780987
+processing "/etc/os-release" file
+operating system type is 'Ubuntu'
+operating system name is 'Ubuntu'
+operating system version is '20.04 x86_64'
+opened '/var/log/apt/history.log'
+   Warning: 2021-02-17T01:05:11Z of first entry on level 0 is newer
+gzip: /var/log/apt/history.log.1.gz: No such file or directory
+Start-Date: 2021-02-17T01:05:11Z, eid = 2
+Start-Date: 2021-02-17T01:05:20Z, eid = 3
+...
+Start-Date: 2021-02-17T01:18:43Z, eid = 93
+Start-Date: 2021-02-17T01:18:54Z, eid = 94
+  Upgrade:
+   apt (2.0.2, 2.0.4)
+      +strongswan.org__Ubuntu_20.04-x86_64-apt-2.0.4
+      -strongswan.org__Ubuntu_20.04-x86_64-apt-2.0.2
+    bash (5.0-6ubuntu1, 5.0-6ubuntu1.1)
+      +strongswan.org__Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1.1
+      -strongswan.org__Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1
+    base-files (11ubuntu5, 11ubuntu5.3)
+      +strongswan.org__Ubuntu_20.04-x86_64-base-files-11ubuntu5.3
+      -strongswan.org__Ubuntu_20.04-x86_64-base-files-11ubuntu5
+    ...
+Start-Date: 2022-05-11T07:31:09Z, eid = 95
+  Install:
+    libmpc3 (1.1.0-1)
+      +strongswan.org__Ubuntu_20.04-x86_64-libmpc3-1.1.0-1
+    ...
+    tzdata (2022a-0ubuntu0.20.04)
+      +strongswan.org__Ubuntu_20.04-x86_64-tzdata-2022a-0ubuntu0.20.04
+  Upgrade:
+    gcc-10-base (10.2.0-5ubuntu1~20.04, 10.3.0-1ubuntu1~20.04)
+      +strongswan.org__Ubuntu_20.04-x86_64-gcc-10-base-10.3.0-1ubuntu1~20.04
+      -strongswan.org__Ubuntu_20.04-x86_64-gcc-10-base-10.2.0-5ubuntu1~20.04
+    libstdc++6 (10.2.0-5ubuntu1~20.04, 10.3.0-1ubuntu1~20.04)
+      +strongswan.org__Ubuntu_20.04-x86_64-libstdc~~6-10.3.0-1ubuntu1~20.04
+      -strongswan.org__Ubuntu_20.04-x86_64-libstdc~~6-10.2.0-5ubuntu1~20.04
+Start-Date: 2022-05-11T09:33:27Z, eid = 96
+  Remove:
+    libsqlite3-dev (3.31.1-4ubuntu0.3)
+      -strongswan.org__Ubuntu_20.04-x86_64-libsqlite3-dev-3.31.1-4ubuntu0.3
+      ...
+    dpkg-dev (1.19.7ubuntu3)
+      -strongswan.org__Ubuntu_20.04-x86_64-dpkg-dev-1.19.7ubuntu3
+Start-Date: 2022-05-11T09:33:30Z, eid = 97
+  Remove:
+    libmpc3 (1.1.0-1)
+      -strongswan.org__Ubuntu_20.04-x86_64-libmpc3-1.1.0-1
+    ...
+    tzdata (2022a-0ubuntu0.20.04)
+      -strongswan.org__Ubuntu_20.04-x86_64-tzdata-2022a-0ubuntu0.20.04
+Merging:
+  merged 173 installed packages, 173 registered in database
+----
+In a last step xref:./sw-collector.adoc[`*sw-collector*`] calls
+`*dpkg-query --list*` in order to check whether all packages currently installed
+on the endpoint match the ones found in the `*apt*` history. In our example there
+are 173 installed packages and exactly the same number has been registed in the
+local `*collector.db*` database.
+
+=== Checking for SWID Tags
+
+Via the REST-API of the global xref:./strongTnc.adoc[strongTNC] website the
+xref:./sw-collector.adoc[`*sw-collector --unregistered*`] command can
+be used to check whether the SWID tags of the currently installed and earlier
+removed packages are already present in the xref:tnc/strongTnc.adoc[strongTNC]
+database:
+----
+# sw-collector --unregistered --installed
+  sending request to 'http://xxxx@tnc/api/sessions/0/swid-measurement/'...
+strongswan.org__Ubuntu_20.04-x86_64-adduser-3.118ubuntu2,1
+strongswan.org__Ubuntu_20.04-x86_64-apt-2.0.4,1
+strongswan.org__Ubuntu_20.04-x86_64-base-files-11ubuntu5.3,1
+strongswan.org__Ubuntu_20.04-x86_64-base-passwd-3.5.47,1
+strongswan.org__Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1.1,1
+...
+strongswan.org__Ubuntu_20.04-x86_64-zlib1g-1~1.2.11.dfsg-2ubuntu1.3,1
+strongswan.org__Ubuntu_20.04-x86_64-zlib1g-dev-1~1.2.11.dfsg-2ubuntu1.3,1
+173 installed software identifiers not registered
+----
+This doesn't seem to be the case since the xref:tnc/strongTnc.adoc[strongTNC]
+manager has just been freshly initialized.
+----
+# sw-collector --unregistered --removed
+  sending request to 'http://xxxx@tnc/api/sessions/0/swid-measurement/'...
+strongswan.org__Ubuntu_20.04-x86_64-apt-2.0.2,0
+strongswan.org__Ubuntu_20.04-x86_64-base-files-11ubuntu5,0
+strongswan.org__Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1,0
+...
+strongswan.org__Ubuntu_20.04-x86_64-zlib1g-1~1.2.11.dfsg-2ubuntu1,0
+strongswan.org__Ubuntu_20.04-x86_64-zlib1g-1~1.2.11.dfsg-2ubuntu1.2,0
+111 removed software identifiers not registered
+----
+The same for the previously removed packages. In principle the `*SWIMA IMC*` is
+capable to generate the full SWID tags containing all SHA-2 file hashes of the
+locally installed packages but it is preferable to do a
+xref:./swimaServer.adoc#_importing_swid_tags_into_strongtnc_database[bulk import]
+of trusted SWID tags for a given Linux distribution directly into the
+xref:./swimaServer.adoc#_importing_swid_tags_into_strongtnc_database[strongTNC database].
+
+xref:./swimaServer.adoc#_importing_swid_tags_into_strongtnc_database[SWIMA Server] >
+
+== SWIMA IMC
+
+The `*SWIMA IMC*` implements the
+{RFC8412}[Software Inventory Message and Attributes] (SWIMA) extension of the
+{RFC5792}[`*PA-TNC*`] measurement protocol.
+
+=== Plugin Configuration
+
+In the xref:config/strongswanConf.adoc#_libimcv_plugins_imc_swima[`*imc-swima*`]
+subsection of xref:config/strongswanConf.adoc[`*strongswan.conf*`] some parameters
+have to be configured. As a minimum the following entries are needed
+----
+libimcv {
+  plugins {
+      imc-swima {
+         swid_full = yes
+         swid_database = sqlite:///etc/pts/collector.db
+      }
+    }
+  }
+}
+----
+In the `*/etc/tnc_config*` configuration file the `*OS IMC*` and the `*SWIMA IMC*`
+have to enabled:
+----
+#IMC-Configuration
+
+IMC "OS"      /usr/lib/ipsec/imcvs/imc-os.so
+IMC "SWIMA"   /usr/lib/ipsec/imcvs/imc-swima.so
+----
+These two Integrity Measurement Collectors have to be built beforehand with the
+xref:install/autoconf.adoc[`*./configure*`] options
+
+  --enable-imc-os --enable-imc-swima
+
+When the xref:daemons/charon.adoc[`*charon*`] daemon starts up, the IMCs are loaded.
+`*IMC 1 OS*` and `*IMC 2 SWIMA*` subcribe to the standard PA-TNC message subtypes
+`*Operating System*` and `*SWIMA*` defined in the `*IETF*` namespace, respectively.
+----
+00[DMN] Starting IKE charon daemon (strongSwan 5.9.7, Linux 5.13.0-40-generic, x86_64)
+00[TNC] loading IMCs from '/etc/tnc_config'
+00[TNC] added IETF attributes
+00[TNC] added ITA-HSR attributes
+00[TNC] added PWG attributes
+00[TNC] added TCG attributes
+00[LIB] libimcv initialized
+00[IMC] IMC 1 "OS" initialized
+00[IMC] processing "/etc/os-release" file
+00[IMC] operating system type is 'Ubuntu'
+00[IMC] operating system name is 'Ubuntu'
+00[IMC] operating system version is '20.04 x86_64'
+00[TNC] IMC 1 supports 1 message type: 'IETF/Operating System' 0x000000/0x00000001
+00[TNC] IMC 1 "OS" loaded from '/usr/lib/ipsec/imcvs/imc-os.so'
+00[IMC] IMC 2 "SWIMA" initialized
+00[TNC] IMC 2 supports 1 message type: 'IETF/SWIMA' 0x000000/0x00000009
+00[TNC] IMC 2 "SWIMA" loaded from '/usr/lib/ipsec/imcvs/imc-swima.so'
+----
+
+xref:./swimaServer.adoc#_swima_imv[SWIMA Server] >
+
+=== VPN Configuration
+
+The VPN configuration choses for this example is the same as for the general
+xref:./tncClient.adoc#_tnc_enabled_vpn_client_configuration[TNC client] but for
+reasons of brevity we will just omit the `*PT-EAP*` and `*IKEv2 EAP*` transport
+layers. Authentication is based on a TLS client certificate.
+
+=== PB-TNC Connection
+
+The PB-TNC (TCG TNC IF-TNCCS 2.0) Connection ID `*1*` is assigned to the connection
+by the TNC client and a new state is created for both the `*OS IMC*` and the
+`*SWIMA IMC*`
+----
+01[TNC] assigned TNCCS Connection ID 1
+01[IMC] IMC 1 "OS" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+01[IMC]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 32722 bytes
+01[IMC] IMC 2 "SWIMA" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+01[IMC]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 32722 bytes
+01[IMC] IMC 1 "OS" changed state of Connection ID 1 to 'Handshake'
+01[IMC] IMC 2 "SWIMA" changed state of Connection ID 1 to 'Handshake'
+----
+
+xref:tnc/swimaServer.adoc#_pb_tnc_connection[SWIMA Server] >
+
+=== OS Information
+
+The `*OS IMC*` gathers information on the operating system and creates seven PA-TNC
+attributes and puts them in a PA-TNC message of the standard subtype
+`*Operating System*`
+----
+01[IMC] operating system numeric version is 20.4
+01[IMC] last boot: May 13 07:23:44 UTC 2022, 13550 s ago
+01[IMC] IPv4 forwarding is enabled
+01[IMC] factory default password is disabled
+01[IMC] device ID is a488651e36664792b306cf8be72dd630
+01[TNC] creating PA-TNC message with ID 0x5331d56c
+01[TNC] creating PA-TNC attribute type 'IETF/Product Information' 0x000000/0x00000002
+01[TNC] creating PA-TNC attribute type 'IETF/String Version' 0x000000/0x00000004
+01[TNC] creating PA-TNC attribute type 'IETF/Numeric Version' 0x000000/0x00000003
+01[TNC] creating PA-TNC attribute type 'IETF/Operational Status' 0x000000/0x00000005
+01[TNC] creating PA-TNC attribute type 'IETF/Forwarding Enabled' 0x000000/0x0000000b
+01[TNC] creating PA-TNC attribute type 'IETF/Factory Default Password Enabled' 0x000000/0x0000000c
+01[TNC] creating PA-TNC attribute type 'ITA-HSR/Device ID' 0x00902a/0x00000008
+01[TNC] creating PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
+----
+The `*SWIMA IMC*` creates a `*Segmentation Contract Request*` attribute defined
+in the `*TCG*` namespace which proposes to split up huge PA-TNC messages into
+segments with a maximum size of `*32'698*` bytes each
+(see xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message
+segmentation]). This attribute is put into a PA-TNC message of standard subtype
+`*SWIMA*`
+----
+01[IMC] IMC 2 requests a segmentation contract for PA message type 'IETF/SWIMA' 0x000000/0x00000009
+01[IMC]   no message size limit, maximum segment size of 32698 bytes
+01[TNC] creating PA-TNC message with ID 0x853e6d25
+01[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
+01[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+Both PA-TNC messages are sent in a TNC Client Data batch to the TNC server
+----
+01[TNC] PB-TNC state transition from 'Init' to 'Server Working'
+01[TNC] creating PB-TNC CDATA batch
+01[TNC] adding IETF/PB-Language-Preference message
+01[TNC] adding IETF/PB-PA message
+01[TNC] adding IETF/PB-PA message
+01[TNC] sending PB-TNC CDATA batch (313 bytes) for Connection ID 1
+----
+
+xref:tnc/swimaServer.adoc#_os_information[SWIMA Server] >
+
+=== Software Identifier Events
+
+The TNC client receives three PA-TNC messages in a PB-TNC Server Data batch from
+the TNC server
+----
+12[TNC] received TNCCS batch (277 bytes)
+12[TNC] TNC client is handling inbound connection
+12[TNC] processing PB-TNC SDATA batch for Connection ID 1
+12[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+12[TNC] processing IETF/PB-PA message (52 bytes)
+12[TNC] processing IETF/PB-PA message (141 bytes)
+12[TNC] processing IETF/PB-PA message (76 bytes)
+----
+The first PA-TNC message of standard subtye `*SWIMA*` is handled by the `*SWIMA IMC*`
+and contains the `*Segmentation Contract Response*` defined in the `*TCG*` namespace
+----
+12[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+12[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+12[TNC] processing PA-TNC message with ID 0x7ac776c3
+12[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
+12[IMC] IMC 2 received a segmentation contract response from IMV 2 for PA message type 'IETF/SWIMA' 0x000000/0x00000009
+12[IMC]   no message size limit, maximum segment size of 32698 bytes
+----
+The second PA-TNC message of standard subtype `*Operating System*` is handled by
+the `*OS IMC*` and contains the standard `*Assessment Result*` and `*Remediation
+Instructions*` attributes
+----
+12[TNC] handling PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
+12[IMC] IMC 1 "OS" received message for Connection ID 1 from IMV 1
+12[TNC] processing PA-TNC message with ID 0xd86290ad
+12[TNC] processing PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+12[TNC] processing PA-TNC attribute type 'IETF/Remediation Instructions' 0x000000/0x0000000a
+12[IMC] ***** assessment of IMC 1 "OS" from IMV 1 *****
+12[IMC] assessment result is 'don't know'
+12[IMC] remediation string: [en]
+12[IMC] IP Packet Forwarding
+12[IMC]   Please disable the forwarding of IP packets
+12[IMC] ***** end of assessment *****
+----
+The third PA-TNC message of standard subtype `*SWIMA*` is handled by the `*SWIMA IMC*`
+and contains a `*Segmentation Contract Request*` defined in the `*TCG*` namespace as
+well as standard `*SWIMA Request*` attribute
+----
+12[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+12[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2
+12[TNC] processing PA-TNC message with ID 0x60a9b2c0
+12[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
+12[TNC] processing PA-TNC attribute type 'IETF/SWIMA Request' 0x000000/0x0000000d
+12[IMC] IMC 2 received a segmentation contract request from IMV 2 for PA message type 'IETF/SWIMA' 0x000000/0x00000009
+12[IMC]   no message size limit, maximum segment size of 32698 bytes
+----
+As a reply to the first request, a `*Segmentation Contract Response*` attribute is
+inserted into a PA-TNC message of standard subtype `*SWIMA*` and the `*SWIMA Request*`
+causes a total of 395 event items to be collected and encoded as a  `*Software
+Identifier Events*` attribute.
+
+Adding this second attribute to the PA-TNC message would exceed the maximum size
+of `*32'722*` octets. Therefore
+xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message segmentation]
+is applied to the `*Software Identifier Events*` attribute and a first segment is
+encapsulated in a `*Segment Envelope*` attribute defined in the `*TCG*` namespace.
+The segment size is optimally chosen so that the `*Segment Envelope*` attribute will
+neatly fit into a maximum-size PA-TNC message
+----
+12[IMC] collected 395 SW ID events at last eid 97 of epoch 0x36a4f7bb
+12[TNC] creating PA-TNC attribute type 'IETF/SW Identifier Events' 0x000000/0x0000000f
+12[TNC] creating first segment for base message ID 1 (32678 bytes)
+12[TNC] creating PA-TNC message with ID 0xbc19b497
+12[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
+12[TNC] creating PA-TNC attribute type 'TCG/Segment Envelope' 0x005597/0x00000023
+12[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+The PA-TNC message is sent in a maximum-size PB-TNC Client Data batch to the TNC server
+----
+12[TNC] TNC client is handling outbound connection
+12[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+12[TNC] creating PB-TNC CDATA batch
+12[TNC] adding IETF/PB-PA message
+12[TNC] sending PB-TNC CDATA batch (32754 bytes) for Connection ID 1
+----
+The TNC client receives a PB-TNC Server Data batch containing a PA-TNC message
+----
+08[TNC] received TNCCS batch (56 bytes)
+08[TNC] TNC client is handling inbound connection
+08[TNC] processing PB-TNC SDATA batch for Connection ID 1
+08[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+08[TNC] processing IETF/PB-PA message (48 bytes)
+----
+The PA-TNC message of standard subtype `*SWIMA*` contains a `*Next Segment*`
+attribute defined in the `*TCG*` namespace
+----
+08[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+08[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+08[TNC] processing PA-TNC message with ID 0x37422fc4
+08[TNC] processing PA-TNC attribute type 'TCG/Next Segment' 0x005597/0x00000024
+----
+The second and last segment is wrapped in a `*Segment Envelope*` attribute defined
+in the `*TCG*` namespace and inserted into a PA-TNC message of standard subtype
+`*SWIMA*`
+----
+08[TNC] creating last segment for base message ID 1 (6895 bytes)
+08[TNC] creating PA-TNC message with ID 0x08899819
+08[TNC] creating PA-TNC attribute type 'TCG/Segment Envelope' 0x005597/0x00000023
+08[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+The PA-TNC message is sent in a PB-TNC Client Data batch to the TNC server
+----
+08[TNC] TNC client is handling outbound connection
+08[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+08[TNC] creating PB-TNC CDATA batch
+08[TNC] adding IETF/PB-PA message
+08[TNC] sending PB-TNC CDATA batch (6951 bytes) for Connection ID 1
+----
+
+xref:tnc/swimaServer.adoc#_software_identifier_events[SWIMA Server] >
+
+=== Missing SWID Tags
+
+The TNC client receives a PB-TNC Server Data batch containing a PA-TNC message
+----
+08[TNC] received TNCCS batch (7167 bytes)
+08[TNC] TNC client is handling inbound connection
+08[TNC] processing PB-TNC SDATA batch for Connection ID 1
+08[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+08[TNC] processing IETF/PB-PA message (7159 bytes)
+----
+The PA-TNC message of standard subtype `*SWIMA*` contains a targeted `*SWIMA Request*`
+requesting 111 SWID tags matching the sent `*Software Identifiers*`
+----
+08[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+08[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+08[TNC] processing PA-TNC message with ID 0x60d53991
+08[TNC] processing PA-TNC attribute type 'IETF/SWIMA Request' 0x000000/0x0000000d
+08[IMC] targeted SWID tag generation
+08[IMC]   strongswan.org__Ubuntu_20.04-x86_64-apt-2.0.2
+08[IMC]   strongswan.org__Ubuntu_20.04-x86_64-base-files-11ubuntu5
+08[IMC]   strongswan.org__Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1
+          ...
+08[IMC]   strongswan.org__Ubuntu_20.04-x86_64-wget-1.20.3-1ubuntu2
+08[IMC]   strongswan.org__Ubuntu_20.04-x86_64-xdg-user-dirs-0.17-2ubuntu1
+----
+A search for the requested SWID tags is started consulting the  local
+`*collector.db*` SQLite database, the `*dpkg-query*` command and by browsing the
+`*/usr/share/strongswan*` directory. Since the requested tags belong to software
+packages removed some time ago, the file information is not available any more, so
+that the `*SWIMA IMC*` uses the {GITHUB}/swidGenerator[`*swid_generator*`] command
+to generate a pro forma tag based on the `*Software Identifier*` information, e.g.
+
+.Compact SWID Tag for the Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1 Software Package
+[source, xml]
+----
+<SoftwareIdentity xmlns="http://standards.iso.org/iso/19770/-2/2015/schema.xsd"
+   xmlns:n8060="http://csrc.nist.gov/ns/swid/2015-extensions/1.0"
+   name="bash" xml:lang="en-US" tagId="Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1"
+   version="5.0-6ubuntu1" versionScheme="alphanumeric">
+  <Entity name="strongSwan Project" regid="strongswan.org" role="tagCreator"/>
+  <Meta product="Ubuntu 20.04 x86_64"/>
+</SoftwareIdentity>
+----
+All 111 generated SWID tags are put into a standard `*Software Inventory*` attribute.
+Even though no file information is included in the tags, the inclusion of the attribute
+in a PA-TNC message would still exceed the maximum size of `*32'722*` octets. Therefore
+the message is segmented and a first segment is sent encapsulated in a `*Segment
+Envelope*` attribute defined in the `*TCG*` namespace in a maximum-size PA-TNC
+message of standard subtype `*SWIMA*`
+----
+08[IMC] SWID tag collection
+08[IMC] entering /usr/share/strongswan
+08[IMC] leaving /usr/share/strongswan
+08[IMC] collected 111 SW records
+08[TNC] creating PA-TNC attribute type 'IETF/SW Inventory' 0x000000/0x00000010
+08[TNC] creating first segment for base message ID 2 (32698 bytes)
+08[TNC] creating PA-TNC message with ID 0xbaca4544
+08[TNC] creating PA-TNC attribute type 'TCG/Segment Envelope' 0x005597/0x00000023
+08[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+The PA-TNC message is sent in a maximum-size PB-TNC Client Data batch to the TNC server
+----
+08[TNC] TNC client is handling outbound connection
+08[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+08[TNC] creating PB-TNC CDATA batch
+08[TNC] adding IETF/PB-PA message
+08[TNC] sending PB-TNC CDATA batch (32754 bytes) for Connection ID 1
+----
+The TNC client receives a PB-TNC Server Data batch containing a PA-TNC message
+----
+06[TNC] received TNCCS batch (56 bytes)
+06[TNC] TNC client is handling inbound connection
+06[TNC] processing PB-TNC SDATA batch for Connection ID 1
+06[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+06[TNC] processing IETF/PB-PA message (48 bytes)
+----
+The PA-TNC message of standard subtype `*SWIMA*` contains a `*Next Segment*`
+attribute defined in the `*TCG*` namespace
+----
+06[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+06[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+06[TNC] processing PA-TNC message with ID 0x23377689
+06[TNC] processing PA-TNC attribute type 'TCG/Next Segment' 0x005597/0x00000024
+----
+The second and last segment is wrapped in a `*Segment Envelope*` attribute defined
+in the `*TCG*` namespace and inserted into a PA-TNC message of standard subtype
+`*SWIMA*`
+----
+06[TNC] creating last segment for base message ID 2 (27267 bytes)
+06[TNC] creating PA-TNC message with ID 0x300b30f7
+06[TNC] creating PA-TNC attribute type 'TCG/Segment Envelope' 0x005597/0x00000023
+06[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+The PA-TNC message is sent in a PB-TNC Client Data batch to the TNC server
+----
+06[TNC] TNC client is handling outbound connection
+06[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+06[TNC] creating PB-TNC CDATA batch
+06[TNC] adding IETF/PB-PA message
+06[TNC] sending PB-TNC CDATA batch (27323 bytes) for Connection ID 1
+----
+
+xref:tnc/swimaServer.adoc#_missing_swid_tags[SWIMA Server] >
+
+=== TNC Assessment Result
+
+The TNC client receives a PB-TNC Result batch containing a PA-TNC message as well
+as both a PB-TNC `*Assessment-Result*` and a PB-TNC `*Access-Recommendation*` payload
+----
+10[TNC] received TNCCS batch (88 bytes)
+10[TNC] TNC client is handling inbound connection
+10[TNC] processing PB-TNC RESULT batch for Connection ID 1
+10[TNC] PB-TNC state transition from 'Server Working' to 'Decided'
+10[TNC] processing IETF/PB-PA message (48 bytes)
+10[TNC] processing IETF/PB-Assessment-Result message (16 bytes)
+10[TNC] processing IETF/PB-Access-Recommendation message (16 bytes)
+----
+The `*Assessment Result*` attribute received in the PA-TNC message of standard
+subtype `*SWIMA*` as well as the overall PB-TNC assessment says `*compliant*` and
+the recommendation is `*Access Allowed*`
+----
+10[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+10[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+10[TNC] processing PA-TNC message with ID 0x088727cd
+10[TNC] processing PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+10[IMC] ***** assessment of IMC 2 "SWIMA" from IMV 2 *****
+10[IMC] assessment result is 'compliant'
+10[IMC] ***** end of assessment *****
+10[TNC] PB-TNC assessment result is 'compliant'
+10[TNC] PB-TNC access recommendation is 'Access Allowed'
+10[IMC] IMC 1 "OS" changed state of Connection ID 1 to 'Allowed'
+10[IMC] IMC 2 "SWIMA" changed state of Connection ID 1 to 'Allowed'
+----
+A PB-TNC Close batch is sent to the TNC server
+----
+10[TNC] TNC client is handling outbound connection
+10[TNC] PB-TNC state transition from 'Decided' to 'End'
+10[TNC] creating PB-TNC CLOSE batch
+10[TNC] sending PB-TNC CLOSE batch (8 bytes) for Connection ID 1
+----
+
+xref:tnc/swimaServer.adoc#_tnc_assessment_result[SWIMA Server] >
+
+=== IKEv2 Authentication Success
+
+An `EAP-SUCCESS` message is received from the EAP server. The EAP client authenticates
+itself via an IKEv2 `AUTH` payload based on the `MSK` (Master Session Key) derived
+from the `EAP-TTLS` session
+----
+09[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (80 bytes)
+09[ENC] parsed IKE_AUTH response 114 [ EAP/SUCC ]
+09[IKE] EAP method EAP_TTLS succeeded, MSK established
+09[IKE] authentication of '192.168.0.3' (myself) with EAP
+09[ENC] generating IKE_AUTH request 115 [ AUTH ]
+09[NET] sending packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (112 bytes)
+----
+The IKEv2 server in turn authenticates itself again via an `AUTH` payload depending
+on the `EAP-TTLS MSK` as well. The PB-TNC connection is deleted
+----
+13[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (256 bytes)
+13[ENC] parsed IKE_AUTH response 115 [ AUTH CPRP(ADDR) SA TSi TSr N(MOBIKE_SUP) N(ADD_4_ADDR) ]
+13[IKE] authentication of 'server.strongswan.org' with EAP successful
+13[IMC] IMC 1 "OS" deleted the state of Connection ID 1
+13[IMC] IMC 2 "SWIMA" deleted the state of Connection ID 1
+13[TNC] removed TNCCS Connection ID 1
+----
+The IKEv2 connection has been successfully established.
+----
+13[IKE] IKE_SA tnc[1] established between 192.168.0.3[192.168.0.3]...192.168.0.2[server.strongswan.org]
+13[IKE] scheduling rekeying in 14104s
+13[IKE] maximum IKE_SA lifetime 15544s
+13[IKE] installing new virtual IP 10.3.0.1
+13[CFG] selected proposal: ESP:AES_GCM_16_256/NO_EXT_SEQ
+13[IKE] CHILD_SA tnc{1} established with SPIs c7d3372f_i cf7fb53d_o and TS 10.3.0.1/32 === 10.1.0.0/24 192.168.0.2/32
+----
+
+xref:tnc/swimaServer.adoc#_ikev2_authentication_success[SWIMA Server] >
