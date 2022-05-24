@@ -43,8 +43,8 @@ user to the `*tss*` group enables direct access to the TPM device:
 
 === Enable the strongSwan tpm Plugin
 
-The strongSwan libtpmtss `*tpm*` plugin and the TSS2 interface are enabled and
-built with the following options
+The strongSwan libtpmtss xref:plugins/tpm.adoc[`*tpm*` plugin] and the TSS2
+interface are enabled and built with the following options
 
  $ ./configure --enable-tss-tss2 --enable-tpm  ...
 
@@ -57,7 +57,7 @@ With debug level 2 some basic information on the TPM device is shown.
 A second generation Intel firmware TPM running on the Intel Management Engine is
 employed. Both SHA1 and SHA256 PCR banks are available:
 ----
-TPM 2.0 - manufacturer: INTC (Intel) rev: 01.38 2018 
+TPM 2.0 - manufacturer: INTC (Intel) rev: 01.38 2018
 TPM 2.0 - algorithms: RSA SHA1 HMAC AES MGF1 KEYEDHASH XOR SHA256 RSASSA RSAES RSAPSS OAEP ECDSA ECDH ECDAA ECSCHNORR KDF1_SP800_56A KDF1_SP800_108 ECC SYMCIPHER CTR OFB CBC CFB ECB
 TPM 2.0 - ECC curves: NIST_P256 BN_P256
 TPM 2.0 - PCR banks: SHA1 SHA256
@@ -333,7 +333,7 @@ or we can first retrieve the binary certificate blob from the NV RAM using the
 
 and then list the properties of the EK certificate file:
 ----
-$ pki --print --type x509 --in ek_ecc384.crt 
+$ pki --print --type x509 --in ek_ecc384.crt
 
   subject:  ""
   issuer:   "C=CH, O=STMicroelectronics NV, CN=STM TPM ECC384 Intermediate CA 01"
@@ -458,7 +458,7 @@ Certificate Request:
                 Exponent: 65537 (0x10001)
         Attributes:
         Requested Extensions:
-            X509v3 Subject Alternative Name: 
+            X509v3 Subject Alternative Name:
                 DNS:edu.strongsec.com
     Signature Algorithm: sha256WithRSAEncryption
          35:89:16:59:fc:ab:64:a9:a1:89:cc:d0:e6:a9:06:19:e1:5e:
@@ -509,7 +509,7 @@ Certificate Request:
                 NIST CURVE: P-256
         Attributes:
         Requested Extensions:
-            X509v3 Subject Alternative Name: 
+            X509v3 Subject Alternative Name:
                 DNS:edu.strongsec.com
     Signature Algorithm: ecdsa-with-SHA256
          30:46:02:21:00:a0:3a:98:28:79:4b:bf:bd:90:92:d0:86:a2:
@@ -536,14 +536,14 @@ with a lifetime of 10 years
 
 as the following listing shows:
 ----
-$ pki --print --type x509 --in cacert.pem 
+$ pki --print --type x509 --in cacert.pem
 
   subject:  "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   validity:  not before Sep 02 10:25:01 2016, ok
              not after  Sep 02 10:25:01 2026, ok (expires in 2067 days)
   serial:    7c:24:43:4b:b7:dc:ef:7e
-  flags:     CA CRLSign self-signed 
+  flags:     CA CRLSign self-signed
   subjkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
   pubkey:    RSA 4096 bits
   keyid:     6c:79:f3:7a:b0:df:ac:69:03:b2:ac:6a:ed:82:3a:d2:66:93:b1:21
@@ -559,7 +559,7 @@ RSA Attestation Key certificate signed by the Root CA:
 
 having the following content
 ----
-$ pki --print --type x509 --in ak_rsa_cert.der 
+$ pki --print --type x509 --in ak_rsa_cert.der
 
   subject:  "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
@@ -567,7 +567,7 @@ $ pki --print --type x509 --in ak_rsa_cert.der
              not after  Dec 23 15:26:22 2025, ok (expires in 1814 days)
   serial:    79:e5:74:2f:a4:df:b8:d2
   altNames:  edu.strongsec.com
-  flags:     serverAuth 
+  flags:     serverAuth
   CRL URIs:  http://www.strongsec.com/ca/strongsec.crl
   authkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
   subjkeyId: 48:82:62:15:74:a2:10:c5:75:70:c2:d6:7d:59:9f:22:d9:4f:9c:07
@@ -585,7 +585,7 @@ an ECC Attestation Key certificate signed by the Root CA:
 
 having the following content
 ----
-$ pki --print --type x509 --in ak_ecc_cert.der 
+$ pki --print --type x509 --in ak_ecc_cert.der
 
   subject:  "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
@@ -593,7 +593,7 @@ $ pki --print --type x509 --in ak_ecc_cert.der
              not after  Dec 23 15:27:40 2025, ok (expires in 1814 days)
   serial:    65:fd:5b:98:47:11:f6:45
   altNames:  edu.strongsec.com
-  flags:     serverAuth 
+  flags:     serverAuth
   CRL URIs:  http://www.strongsec.com/ca/strongsec.crl
   authkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
   subjkeyId: cc:83:49:87:2b:9e:f3:cb:b8:35:12:02:87:ff:14:89:28:44:a6:04
@@ -602,7 +602,7 @@ $ pki --print --type x509 --in ak_ecc_cert.der
   subjkey:   cc:83:49:87:2b:9e:f3:cb:b8:35:12:02:87:ff:14:89:28:44:a6:04
 ----
 
-=== Storing Certificates in the NV RAM 
+=== Storing Certificates in the NV RAM
 
 A TPM 2.0 has a certain amount of Non Volatile Random Access Memory (NV RAM) that
 can be used to store arbitrary data, e.g. the X.509 certificates matching the
@@ -611,7 +611,7 @@ the system disk of the host can be reformatted at any time without loosing the
 machine or user credentials.As with smartcards the needed amount of memory must
 be reserved first so we check the size of the X.509 ECC certificate
 ----
-$ ls -l ak_ecc_cert.der 
+$ ls -l ak_ecc_cert.der
 
 -rw-rw-r-- 1 andi andi 1001 Dez 23 15:31 ak_ecc_cert.der
 ----
@@ -633,7 +633,7 @@ Then we write the certificate file to the NV RAM destination using the
 First we store the RSA AK certificate in the NV RAM under the handle `*0x0180003*`,
 again by first determining the size of the object to be persisted:
 ----
-$ ls -l ak_rsa_cert.der 
+$ ls -l ak_rsa_cert.der
 
 -rw-rw-r-- 1 andi andi 1204 Dez 23 15:30 ak_rsa_cert.der
 ----
