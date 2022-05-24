@@ -3,8 +3,11 @@
 == Purpose
 
 The `*tpm*` plugin for `*libtpmtss*` allows to access persistent RSA and ECDSA
-private keys bound to a xref:tpm/tpm2.adoc[TPM 2.0]. Optionally the
+private keys bound to a xref:tpm/tpm2.adoc[TPM 2.0]. Optionally, the
 xref:tpm/tpm2.adoc[TPM 2.0] can be enabled as a true random number source.
+
+IMPORTANT: Keys bound to a TPM 2.0 can only be used with IKEv2, because IKEv1's
+           legacy signature schemes are not supported.
 
 The plugin is disabled by default and can be enabled with the
 xref:install/autoconf.adoc[`*./configure*`] option
