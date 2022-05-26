@@ -43,7 +43,7 @@ user to the `*tss*` group enables direct access to the TPM device:
 
 === Enable the strongSwan tpm Plugin
 
-The strongSwan libtpmtss xref:plugins/tpm.adoc[`*tpm*` plugin] and the TSS2
+The strongSwan libtpmtss xref:plugins/tpm.adoc[`*tpm*`] plugin and the TSS2
 interface are enabled and built with the following options
 
  $ ./configure --enable-tss-tss2 --enable-tpm  ...
