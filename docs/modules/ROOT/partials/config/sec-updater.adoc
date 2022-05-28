@@ -1,5 +1,8 @@
-|load                                   |
+|database                               |
+|Global IMV policy database URI. If it contains a password, make sure to adjust
+ the access permissions of the config file accordingly
 
+|load                                   |
 |Plugins to load in xref:tnc/sec-updater.adoc[`*sec-updater*`] tool
 
 |tmp.deb_file                           |[->]

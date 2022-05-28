@@ -16,9 +16,11 @@ sec-updater -h | --help
 
 The `*sec-updater*` tool extracts information about security updates and backports
 of Linux repositories (e.g. Debian or Ubuntu). This information is used to update
-the package version information stored in the  strongTNC  SQLite database. The
-`*dpkg --compare-versions*` command is used to determine which package versions
-are affected by a given security update.
+the package version information stored in the
+xref:tnc/swimaServer.adoc#_security_updater[SQLite database] of the
+xref:/tnc/swima.adoc#_security_updates[strongTNC] tool and also provide SWID tags
+of the updated package versions. The `*dpkg --compare-versions*` command is used
+to determine which package versions are affected by a given security update.
 
 == Options
 

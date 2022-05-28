@@ -31,7 +31,8 @@ The `*sw-collector*` tool extracts information about software package installati
 update or removal events from the {APT}[`*apt*`] history log and stores the software
 events in an SQLite database. The retrieved history information is then merged
 and made consistent with the actual list of installed software packages obtained
-with {DPKG-QUERY}[`*dpkg-query*`].
+with {DPKG-QUERY}[`*dpkg-query*`]. The `*sw-collector*` is used to manage the
+local xref:./swimaClient.adoc[Software Inventory] on an endpoint.
 
 == Options
 

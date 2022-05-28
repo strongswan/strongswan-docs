@@ -129,6 +129,16 @@ can can be used to assess the *state-of-health* or *posture* of associated endpo
   xref:daemons/charon.adoc[`*charon*`] daemon with the `*tnc-pdp*` plugin
   communicating either over TLS ({RFC6876}[PT-TLS]) or RADIUS ({IFPEP}[IF-PEP]).
 
+== Software Inventory
+
+One important application of the TNC framework is the management of
+xref:./swima.adoc[Software Inventories]. Storing the complete version history of
+all software packages installed on an endpoint in a central database allows to
+proactively take countermeasures when a new vulnerability is discovered in a software
+package because immediately all endpoints that are concerned can be
+xref:./swima.adoc#_security_updates[listed] by the
+xref:./strongTnc.adoc[strongTNC] tool.
+
 == Publications
 
 * TCG Developer Blog July 2018:

@@ -9,6 +9,7 @@
 :TCG:     https://trustedcomputinggroup.org
 :IFPEP:   {TCG}/wp-content/uploads/TNC_IF-PEP-v1.1-rev-0.8.pdf
 :BASHSEC: https://ubuntu.com/security/notices/USN-5380-1
+:NISTIR:  https://nvlpubs.nist.gov/nistpubs/ir/2016/NIST.IR.8060.pdf
 
 == Software Identification Tags
 
@@ -46,6 +47,7 @@ The SWID tag shown above describes version `*5.0-6ubuntu1.1*` of the `*Ubuntu 20
 software package `*bash*` for the `*x86_64*` architecture. The tag optionally
 contains `SHA-2` file hashes that can be used as reference values for remote
 attestation. The unique tag identifier is `*Ubuntu_20.04-x86_64-bash-5.0-6ubuntu1.1*`.
+For more details on SWID tags see {NISTIR}[NISTIR 8060].
 
 == Software Inventory Attributes
 
