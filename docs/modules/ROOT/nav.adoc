@@ -171,3 +171,7 @@
 * xref:support/flawReporting.adoc[Flaw Reporting]
 * xref:support/free.adoc[]
 * xref:support/commercial.adoc[]
+
+.Publications
+* xref:publications/publications.adoc[]
+* https://strongswan.org/blog[strongSwan Blog]

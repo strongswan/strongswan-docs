@@ -4,7 +4,7 @@
 :IFTNCCS: {TCG}/wp-content/uploads/IF-TNCCS_v2_0_r21-a.pdf
 :IFM:     {TCG}/wp-content/uploads/TNC_IFM_v1_0_r41-a.pdf
 :IFPEP:   {TCG}/wp-content/uploads/TNC_IF-PEP-v1.1-rev-0.8.pdf
-:TCGBLOG: https://develop.trustedcomputinggroup.org/2018/07/26/use-of-the-software-inventory-message-and-attribute-swima-standard/
+:TCGBLOG: https://develop.trustedcomputinggroup.org
 :RSACONF: https://www.youtube.com/watch?t=45&v=Eozph-Y4_5Q
 :IANA:    https://www.iana.org/assignments
 :EAPTYPE: {IANA}/eap-numbers/eap-numbers.xhtml#eap-numbers-4
@@ -141,35 +141,4 @@ xref:./strongTnc.adoc[strongTNC] tool.
 
 == Publications
 
-* TCG Developer Blog July 2018:
-  {TCGBLOG}[Use of the Software Inventory Message and Attribute (SWIMA) Standard].
-
-* Connect Security World September 2016 Marseille:
-  xref:attachment$ConnectSecurityWorld_2016.pdf[Mutual Attestation of IoT Devices]
-
-* TCG Members Meeting June 2016 Vienna:
-  xref:attachment$TCG_Vienna_2016.pdf[Mutual Attestation of IoT Devices and TPM 2.0 Support].
-
-* CeBIT 2016 Hannover:
-  xref:attachment$CeBIT_Hannover_2016.pdf[Mutual Attestation of IoT Devices via strongSwan VPN].
-
-* TCG Members Meeting June 2015 Edinburgh:
-  xref:attachment$TCG_Edinburgh_2015.pdf[Mutual Attestation of IoT Devices].
-
-* TCG Demo at RSA Conference 2015 San Francisco:
-  {RSACONF}[Securing IoT with Trusted Computing].
-
-* TCG Members Meeting June 2014 Barcelona:
-  xref:attachment$TCG_Barcelona_2014.pdf[TNC Endpoint Compliance and Network Access Control Profiles].
-
-* Trusted Computing Conference September 2013 Orlando:
-  xref:attachment$TCC_Orlando_2013.pdf[Android BYOD Security using Trusted Network Control Protocol Suite].
-
-* TCG Members Meeting June 2013 Dublin:
-  xref:attachment$TCG_Dublin_2013.pdf[strongSwan TNC Activities Update].
-
-* Linux Security Summit August 30 2012 San Diego:
-  xref:attachment$LSS_San_Diego_2012.pdf[The Linux Integrity Subsystem and TPM-based Network Endpoint Assessment].
-
-* TCG Members Meeting June 2011 Munich:
-  xref:attachment$TCG_Munich_2011.pdf[The strongSwan IPsec Solution with TNC Support].
+include::partial$publications/tnc.adoc[]

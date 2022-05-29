@@ -1,0 +1,2 @@
+* TCG Developer Blog April 2018:
+  {TCGBLOG}/2018/04/11/easy-tpm-2-0-access-with-the-strongswan-vpn-solution/[Easy TPM 2.0 Access with the strongSwan VPN Solution].

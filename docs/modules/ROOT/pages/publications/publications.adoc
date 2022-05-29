@@ -1,0 +1,17 @@
+= Publications and Presentations
+
+:TCGBLOG: https://develop.trustedcomputinggroup.org
+:RSACONF: https://www.youtube.com/watch?t=45&v=Eozph-Y4_5Q
+:HEISE:   https://www.heise.de/security/artikel
+
+== strongSwan
+
+include::partial$publications/strongswan.adoc[]
+
+== Trusted Platform Module 2.0
+
+include::partial$publications/tpm2.adoc[]
+
+== Trusted Network Connect
+
+include::partial$publications/tnc.adoc[]

@@ -1,0 +1,37 @@
+* TCG Developer Blog July 2018:
+  {TCGBLOG}/2018/07/26/use-of-the-software-inventory-message-and-attribute-swima-standard/[Use of the Software Inventory Message and Attribute (SWIMA) Standard].
+
+* Cyber-Security Event Singapore, March 2017:
+  xref:attachment$CyberSecurity_Singapore_2017.pdf[TPM-Based Attestation of IoT Devices]
+
+* Connect Security World Marseille, September 2016:
+  xref:attachment$ConnectSecurityWorld_2016.pdf[Mutual Attestation of IoT Devices]
+
+* TCG Members Meeting Vienna, June 2016:
+  xref:attachment$TCG_Vienna_2016.pdf[Mutual Attestation of IoT Devices and TPM 2.0 Support].
+
+* CeBIT Hannover, March 2016:
+
+** Flyer:
+   xref:attachment$CeBIT_Hannover_2016.pdf[Mutual Attestation of IoT Devices via strongSwan VPN].
+
+* TCG Members Meeting Edinburgh, June 2015 :
+  xref:attachment$TCG_Edinburgh_2015.pdf[Mutual Attestation of IoT Devices].
+
+* TCG Demo at RSA Conference San Francisco, April 2015:
+  {RSACONF}[Securing IoT with Trusted Computing].
+
+* TCG Members Meeting Barcelona, June 2014:
+  xref:attachment$TCG_Barcelona_2014.pdf[TNC Endpoint Compliance and Network Access Control Profiles].
+
+* Trusted Computing Conference Orlando, September 2013: +
+  xref:attachment$TCC_Orlando_2013.pdf[Android BYOD Security using Trusted Network Control Protocol Suite].
+
+* TCG Members Meeting Dublin, June 2013:
+  xref:attachment$TCG_Dublin_2013.pdf[strongSwan TNC Activities Update].
+
+* Linux Security Summit San Diego, August 2012: +
+  xref:attachment$LSS_San_Diego_2012.pdf[The Linux Integrity Subsystem and TPM-based Network Endpoint Assessment].
+
+* TCG Members Meeting Munich, June 2011:
+  xref:attachment$TCG_Munich_2011.pdf[The strongSwan IPsec Solution with TNC Support].
