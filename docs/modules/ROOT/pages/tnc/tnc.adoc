@@ -136,8 +136,22 @@ xref:./swima.adoc[Software Inventories]. Storing the complete version history of
 all software packages installed on an endpoint in a central database allows to
 proactively take countermeasures when a new vulnerability is discovered in a software
 package because immediately all endpoints that are concerned can be
-xref:./swima.adoc#_security_updates[listed] by the
-xref:./strongTnc.adoc[strongTNC] tool.
+xref:./swima.adoc#_security_updates[listed] by the xref:./strongTnc.adoc[strongTNC]
+tool.
+
+== Measured Boot
+
+xref:./measuredBoot.adoc[Remote Attestation] of the boot phase by measuring the
+xref:./pcrBootEvents.adoc[BIOS/UEFI entries] and the boot loader before executing
+them is also supported by the xref:./strongTnc.adoc[strongTNC] tool.
+
+== File Integrity Measurements
+
+The Linux xref:./ima.adoc[Integrity Measurement Architecture] (IMA) allows to
+measure all system files and libraries before executing them. The file hashes
+are extended into `*PCR10*` of the endpoint's xref:tpm/tpm2.adoc[Trusted Platform
+Module] (TPM). The xref:./strongTnc.adoc[strongTNC] database stores reference values
+of all file hashes so that tampering of system files by root kits can be detected.
 
 == Publications
 

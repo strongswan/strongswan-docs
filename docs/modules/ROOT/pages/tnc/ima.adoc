@@ -1,0 +1,70 @@
+= Integrity Measurement Architecture
+
+:IMA: https://sourceforge.net/p/linux-ima/wiki/Home/
+
+The Linux {IMA}[Integrity Measurement Architecture] (IMA) maintains a runtime
+measurement list and, if anchored in a hardware
+xref:tpm/tpm2.adoc[Trusted Platform Module] (TPM), an aggregate integrity value
+over this list. The benefit of anchoring the aggregate integrity value in the TPM
+is that the measurement list cannot be compromised by any software attack without
+being detectable. Hence on a trusted boot system, IMA can be used to attest the
+system's runtime integrity.
+
+== strongTNC IMA Database
+
+=== TPM BIOS/IMA Measurements and SW ID Subscription Policy
+
+In order to enable `BIOS` and `IMA` measurements, add the `*TPM BIOS/IMA*` group
+in the *Device Info* menu for a given device.
+
+.Assignment of Group Memberships
+image::tnc_ima_device.png[Assignment of Group Memeberships, link=self]
+
+Since `IMA` measurements needs current file reference hashes, the
+`*SW ID Subscription Policy*` is added via a special `*PT-TLS*` group.
+
+.Add SW ID Subscription Policy to PT-TLS Gropu
+image::tnc_ima_sw_id_subscription.png[Assignment of Group Memeberships, link=self]
+
+Additionally set the *Trusted* flag in order to put trust into the *Attestation Key*
+sent by the endpoint via the PA-TNC protocol. The *Device ID* is the `*keyid*` of
+the AK, so that the correctness of the public key can be verified.
+
+=== Device Report
+
+The session details of the device report show that 26 SW ID events, 1732 IMA
+measurements and 136 BIOS measurements were received and successfully verified.
+
+.Session Details showing SW ID Events and BIOS/IMA Measurements
+image::tnc_ima_session.png[SW ID Events and BIOS/IMA Measurements, link=self]
+
+=== TPM Evidence
+
+The TPM Evidence consists of 136 BIOS Measurements extended to PCR registers
+`*0..9*` and `*14*`
+
+.Top of TPM Evidence Entries
+image::tnc_ima_tpm_evidence_1.png[Top of TPM Evidence Entries, link=self]
+
+At the very end of the evidence list is the *boot aggregate* (SHA256 hash of the
+concatenated SHA256 hashes of the final state of PCRs `*0..9*` which is the first
+value that is extended into PCR `*10*`)
+
+.Tail of TPM Evidence Entries
+image::tnc_ima_tpm_evidence_2.png[Tail of TPM Evidence Entries, link=self]
+
+== IMA Client
+
+The xref:./imaClient.adoc[IMA Client] is the TNC component located on the client
+side, retrieving and transmitting the TPM BIOS and IMA evidence measurements and
+updating the file hashes via the `*collector.db*` database.
+
+== IMA Server
+
+The xref:./imaServer.adoc[IMA Server] is the TNC component running on the server
+side, receiving the TPM BIOS evidence measurements and storing or verifying them in
+the xref:./strongTnc.adoc[strongTNC] database. The received IMA evidence measurements
+are compared with the reference file hashes stored in the
+xref:./strongTnc.adoc[strongTNC] database that are periodically updated.
+
+

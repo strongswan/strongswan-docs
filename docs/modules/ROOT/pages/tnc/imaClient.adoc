@@ -1,0 +1,930 @@
+= IMA Client
+
+:USRMERGE: https://www.linux-magazine.com/Issues/2019/228/Debian-usr-Merge
+
+The *IMA Client* is based on the basic xref:./tncClient.adoc[TNC Client] configuration
+and combines the xref:./swimaClient.adoc[SWIMA Client] and
+xref:./attestationClient.adoc[Attestation Client] functionality. The `*Attestation IMC*`
+collects IMA events in addition to BIOS events and certifies the measurements based
+on the local xref:tpm/tpm2.adoc[TPM 2.0].
+
+== Activate IMA in the Linux Kernel
+
+*Ubuntu* is one of the Linux distributions which have IMA capability already compiled
+into their Linux kernel (`CONFIG_IMA=y`). This has the advantage that no special kernel
+must be built which can become quite involved if you intend to use IMA in conjunction
+with *Secure Boot* requiring a signed kernel. With *Ubuntu*, activating IMA in the kernel
+is a piece of cake: Just add the boot option *ima_tcb* to the `*/etc/default/grub*`
+configuration file
+
+ GRUB_CMDLINE_LINUX="ima_tcb ima_hash=sha256"
+
+and automatically generate an updated `*/boot/grub/grub.cfg*` file using the command
+
+ sudo update-grub
+
+Since SHA-1 has been "shattered" we strongly recommend to use SHA-256 for the file
+measurement hashes since the xref:tpm/tpm2.adoc[TPM 2.0] comes by default with a
+SHA-256 PCR bank.
+
+== Configure the IMA Policy
+
+The default IMA policy that is hard-coded into the kernel causes quite a lot of
+measurement violations which corrupt the content of the `*PCR10*` register so that
+reliable remote attestation becomes impossible. The cause for the violations is
+the following default policy entry
+
+ measure func=FILE_CHECK mask=MAY_READ uid=0
+
+which measures all files which are read by `*root*`. These are mainly configuration
+files, some of which seem to change during the actual measurement, thus causing the
+violations. We want to overwrite the default IMA policy at the earliest possible
+boot stage which can be done by adding the following `*ima_policy*` script to the
+`*/etc/initramfs-tools/scripts/init-top/*` directory
+----
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+  echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+  prereqs
+  exit 0
+  ;;
+esac
+
+# mount securityfs
+SECURITYFSDIR="/sys/kernel/security"
+mount -t securityfs securityfs ${SECURITYFSDIR} >/dev/null 2>&1
+
+# set IMA policy
+cat << @EOF > ${SECURITYFSDIR}/ima/policy
+# PROC_SUPER_MAGIC
+dont_measure fsmagic=0x9fa0
+# SYSFS_MAGIC
+dont_measure fsmagic=0x62656572
+# DEBUGFS_MAGIC
+dont_measure fsmagic=0x64626720
+# TMPFS_MAGIC
+dont_measure fsmagic=0x01021994
+# RAMFS_MAGIC
+dont_measure fsmagic=0x858458f6
+# SECURITYFS_MAGIC
+dont_measure fsmagic=0x73636673
+# MEASUREMENTS
+measure func=BPRM_CHECK
+measure func=FILE_MMAP mask=MAY_EXEC
+measure func=MODULE_CHECK uid=0
+@EOF
+----
+Make this script executable
+
+ $ sudo chmod a+x /etc/initramfs-tools/scripts/init-top/ima_policy
+
+and include it in the *initramfs* of the latest kernel by executing
+
+ $ sudo update-initramfs -u
+
+== IMA Enabled
+
+With the updated `*/boot/grub/grub.cfg*` boot menu and the modified `*initramfs*`
+in place, you can reboot the Linux client and you should then be able to see the
+enabled IMA measurements
+----
+$ ls -l /sys/kernel/security/integrity/ima/
+total 0
+-r--r----- 1 root root 0 Jun 25 12:41 ascii_runtime_measurements
+-r--r----- 1 root root 0 Jun 25 12:41 binary_runtime_measurements
+-r--r----- 1 root root 0 Jun 25 12:41 runtime_measurements_count
+-r--r----- 1 root root 0 Jun 25 12:41 violations
+----
+The current number of measured files can be seen with the following command
+----
+$ sudo cat /sys/kernel/security/ima/runtime_measurements_count
+1732
+----
+We can also check that there are no violations
+----
+$ sudo cat /sys/kernel/security/ima/violations
+0
+----
+
+== IMA-NG Measurement Log
+
+With the `*ima_hash=sha256*` boot option SHA-256 file measurement hashes are computed
+before they are extended into the SHA-1 and SHA-256 based `*PCR10*`
+xref:tpm/tpm2.adoc[TPM 2.0] registers.
+
+`*sys/kernel/security/ima/ascii_runtime_measurements*` ::
+   This human-readable file shows only the SHA-1 hashes
+----
+10 0aedf435fa6da8f3ac01b53f6dcb2634dc2b41ad ima-ng sha256:fe824c47b289ddcdb919a46c477ff9da377de57668f2d8b679d57df2402b9331 boot_aggregate
+10 0b5a1ee5112b581fc74040146ce5bdb607c1e1ac ima-ng sha256:d9d1775d643f6f70a1a6f646dfe023052765f558a167ec58951ad2f1013b3e46 /init
+10 dbc038c03d50fed2ac6f7f8eb210f7e670d1c720 ima-ng sha256:4cf7b8e820dda4c1154ab59d994278c2bfb95942bce75bd4a3047d33f2d63206 /usr/bin/sh
+10 b6a0d6a27247a1af40cd7101130c688f77142513 ima-ng sha256:b30a5d834a1c820db8eda3a6bafbc5d1b0e51d29de47579ada264f69c18003dd /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+10 fa5df98ea572ec24c06f0ef9452a9ab23a1a41a7 ima-ng sha256:9dc532785eead16b446ff85deefb011f36a733f7217440bb5f660d8f5cacd26a /etc/ld.so.cache
+10 b0594fefde8e4981dfded3099cf0c45968e64c88 ima-ng sha256:ebaed8bd64291875c908cc6e7f5115ae7bf605a5da56ce3da4028e2fcfb0d8e5 /usr/lib/x86_64-linux-gnu/libc.so.6
+10 0f8b2256c6159adfec34fc26b0f70f62b189e9a6 ima-ng sha256:91f2413151b7b0451ce0b6cedc7e5919931acf792d9a26645c0deb3bc230d9fe /conf/arch.conf
+10 4ca27c56eba7dd5535fc2c4d5d733e39c490e510 ima-ng sha256:5235ceda36f17ee742839d8c0210350142c35f61a51046627a308a3822f592c2 /conf/initramfs.conf
+10 010d880f5ed8c0ebb0c79e6689c29e710846339c ima-ng sha256:1b575a98aa5e5b4e71045564fad7e32bb90a7db2577d354a25c3bb5e92a71a94 /scripts/functions
+10 3f43a151e6f6a6761f03565c9b746e13aad582d5 ima-ng sha256:fee37fb19f7fafa3ddcd6a035b4655647c3720fdb38e5214dd5f0529a7f22197 /scripts/init-top/ORDER
+10 53348acf965694b535dbabadf80b4220cb911940 ima-ng sha256:d6e4045a43660a69a33d623c8dc8fb3fd219def71efacf75dccc4bd024ca497f /scripts/init-top/all_generic_ide
+10 0d0059a86ebd7752476a86167a54abb11a76f6df ima-ng sha256:50d990344cb18e8fad0d77992e68ca2c504283d578abb358ffbd90342a03ebf2 /scripts/init-top/blacklist
+10 1618f1b6075cf0890e4399ba987ecb895a4209dc ima-ng sha256:6b64b35475cb78a76c7b11f6cbaf311027758f347aee128565b67e55a6d596fe /scripts/init-top/ima_policy
+10 f2c218e142ec0e97b647580d5b0f8ae3f93ff77e ima-ng sha256:22369e9244b4705443f65980a64d8398f146e908c7f6d691ad368ace52102bdd /usr/lib/systemd/systemd
+10 1f3296dd47365478fdf482c9db4e79ca78a876f0 ima-ng sha256:ba47fe82527cfc237756ce09d80fc0a38a6f57952275fcc75dea0a3f878cf982 /usr/lib/systemd/libsystemd-shared-249.so
+10 6d6fbb86316216b7dcbe7715ee7c1b897ccdc514 ima-ng sha256:d60148325d84cab666b226676c5009a61eea24f3902598829fe714da87ef3587 /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.3
+10 70dc3756ce4ddbbf707adbe36987877b51e4d9ad ima-ng sha256:624eb1e6a7510e0983e9caa1bbf3e1966acb64fd6d3ad4db94528addbe1e7224 /usr/lib/x86_64-linux-gnu/libselinux.so.1
+10 777f6fb3e3b4726a2e6eb462193ecc982b867931 ima-ng sha256:50f2409908922a65f827a160a855bf5cf7f9548c17a9158cce29fc03d91afeae /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+10 10fa01fb4900a66814949b35a139cbb524f546a0 ima-ng sha256:aa6dd3339ab3cb94615d20c38352b9b35e79c936be967a34b58662c9c46ad47e /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+...
+----
+`*sys/kernel/security/ima/binary_runtime_measurements*`::
+   This binary file contains all the hashes supported by the
+   xref:tpm/tpm2.adoc[TPM 2.0] PCR banks and is parsed by the `*Attestation IMC*`.
+
+== Plugin Configuration
+
+For the *IMA* use case, the `*OS IMC*`, `*SWIMA IMC*` and the `*Attestation IMC*`
+have to be enabled in the `*/etc/tnc_config*` configuration file
+----
+#IMC-Configuration
+
+IMC "OS"           /usr/lib/ipsec/imcvs/imc-os.so
+IMC "SWIMA"        /usr/lib/ipsec/imcvs/imc-swima.so
+IMC "Attestation"  /usr/lib/ipsec/imcvs/imc-attestation.so
+----
+These Integrity Measurement Collectors have to be built beforehand with the
+xref:install/autoconf.adoc[`*./configure*`] options
+
+  --enable-imc-os --enable-imc-swima --enable-imc-attestation
+
+In the
+xref:config/strongswanConf.adoc#_libimcv_plugins_imc_os[`*imc-os*`],
+xref:config/strongswanConf.adoc#_libimcv_plugins_imc_swima[`*imc-swima*`], and
+xref:config/strongswanConf.adoc#_libimcv_plugins_imc_attestation[`*imc-attestation*`]
+subsections of xref:config/strongswanConf.adoc[`*strongswan.conf*`] some parameters
+have to be configured. As a minimum the following entries are needed
+----
+libimcv {
+  plugins {
+    imc-os {
+      device_handle = 0x81010003
+    }
+    imc-swima {
+      swid_full = yes
+      swid_database = sqlite:///etc/pts/collector.db
+      # subscription = yes
+    }
+    imc-attestation {
+      aik_handle = 0x81010003
+    }
+  }
+}
+----
+Both the `*device_handle*` and `*aik_handle*` point to an RSA or ECC
+xref:tpm/tpm2.adoc#_generate_persistent_attestation_keys[Attestation Key] (AK)
+stored in the xref:tpm/tpm2.adoc[TPM 2.0]. This means that the `*keyid*` of
+the AK public key is used as a strong hardware ID of the endpoint and the final state
+of the PCRs after the boot measurements will be signed by the AK private key.
+As an alternative to `*aik_handle*`, the `*aik_cert*` option can be chosen to specify
+the path to an X.509 certificate containing the AK public key.
+
+
+When the xref:daemons/charon.adoc[`*charon*`] daemon starts up, it establishes a
+connection to the xref:tpm/tpm2.adoc[TPM 2.0] device
+----
+00[DMN] Starting IKE charon daemon (strongSwan 5.9.7, Linux 5.13.0-44-generic, x86_64)
+00[PTS] TPM 2.0 - "/dev/tpmrm0" in-kernel resource manager is present
+00[PTS] TPM 2.0 - "libtss2-tcti-device.so.0" successfully loaded
+----
+The `*OS IMC*`, `*SWIMA IMC*` and `*Attestaton IMC*` are dynamically loaded and
+subscribe to the PA-TNC subtypes `*IETF/Operating System*`, `*IETF/SWIMA*` and
+`*TCG/PTS*`, respectively
+----
+00[TNC] loading IMCs from '/etc/tnc_config'
+00[TNC] added IETF attributes
+00[TNC] added ITA-HSR attributes
+00[TNC] added PWG attributes
+00[TNC] added TCG attributes
+00[PTS] added TCG functional component namespace
+00[PTS] added ITA-HSR functional component namespace
+00[PTS] added ITA-HSR functional component 'Trusted GRUB Boot Loader'
+00[PTS] added ITA-HSR functional component 'Trusted Boot'
+00[PTS] added ITA-HSR functional component 'Linux IMA'
+00[LIB] libimcv initialized
+00[IMC] IMC 1 "OS" initialized
+00[IMC] processing "/etc/os-release" file
+00[IMC] operating system type is 'Ubuntu'
+00[IMC] operating system name is 'Ubuntu'
+00[IMC] operating system version is '20.04 x86_64'
+00[TNC] IMC 1 supports 1 message type: 'IETF/Operating System' 0x000000/0x00000001
+00[TNC] IMC 1 "OS" loaded from '/usr/lib/ipsec/imcvs/imc-os.so'
+00[IMC] IMC 2 "SWIMA" initialized
+00[TNC] IMC 2 supports 1 message type: 'IETF/SWIMA' 0x000000/0x00000009
+00[TNC] IMC 2 "SWIMA" loaded from '/usr/lib/ipsec/imcvs/imc-swima.so'
+00[IMC] IMC 3 "Attestation" initialized
+00[PTS]   mandatory PTS measurement algorithm HASH_SHA1[openssl] available
+00[PTS]   mandatory PTS measurement algorithm HASH_SHA2_256[openssl] available
+00[PTS]   optional  PTS measurement algorithm HASH_SHA2_384[openssl] available
+00[PTS]   optional  PTS measurement algorithm HASH_SHA2_512[openssl] available
+00[PTS]   optional  PTS DH group MODP_2048[openssl] available
+00[PTS]   optional  PTS DH group MODP_1536[openssl] available
+00[PTS]   optional  PTS DH group MODP_1024[openssl] available
+00[PTS]   mandatory PTS DH group ECP_256[openssl] available
+00[PTS]   optional  PTS DH group ECP_384[openssl] available
+00[TNC] IMC 3 supports 1 message type: 'TCG/PTS' 0x005597/0x00000001
+00[TNC] IMC 3 "ATTESTATION" loaded from '/usr/lib/ipsec/imcvs/imc-attestation.so'
+----
+
+xref:tnc/imaServer.adoc#_plugin_configuration[IMA Server] >
+
+== VPN Configuration
+
+The VPN configuration choses for this example is the same as for the general
+xref:./tncClient.adoc#_tnc_enabled_vpn_client_configuration[TNC client] but just
+uses different client and server identities. For reasons of brevity we will omit
+the `*PT-EAP*` and `*IKEv2 EAP*` transport layers. Authentication is based on a
+TLS client certificate.
+
+xref:tnc/imaServer.adoc#_vpn_configuration[IMA Server] >
+
+== PB-TNC Connection
+
+The PB-TNC (TCG TNC IF-TNCCS 2.0) Connection ID `*1*` is assigned to the connection
+by the TNC client and a new state is created for the `*OS IMC*`, the `*SWIMA IMC*`
+and the `*Attestation IMC*`
+----
+11[TNC] assigned TNCCS Connection ID 1
+11[IMC] IMC 1 "OS" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+11[IMC]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 32722 bytes
+11[IMC] IMC 2 "SWIMA" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+11[IMC]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 32722 bytes
+11[IMC] IMC 3 "Attestation" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+11[IMC]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 32722 bytes
+11[IMC] IMC 1 "OS" changed state of Connection ID 1 to 'Handshake'
+11[IMC] IMC 2 "SWIMA" changed state of Connection ID 1 to 'Handshake'
+11[IMC] IMC 3 "Attestation" changed state of Connection ID 1 to 'Handshake'
+----
+
+xref:tnc/imaServer.adoc#_pb_tnc_connection[IMA Server] >
+
+== OS Information
+
+The `*OS IMC*` gathers information on the operating system, creates seven PA-TNC
+attributes and puts them in a PA-TNC message of the standard subtype
+`*Operating System*`
+----
+11[IMC] operating system numeric version is 20.4
+11[IMC] last boot: May 31 08:26:24 UTC 2022, 45859 s ago
+11[IMC] IPv4 forwarding is enabled
+11[IMC] factory default password is disabled
+11[PTS] signature algorithm is ECDSA with SHA256 hash
+11[IMC] device ID is 732c769e8d1b2efef8b64d5ae83f84d129733fdd
+11[TNC] creating PA-TNC message with ID 0x9db26aae
+11[TNC] creating PA-TNC attribute type 'IETF/Product Information' 0x000000/0x00000002
+11[TNC] creating PA-TNC attribute type 'IETF/String Version' 0x000000/0x00000004
+11[TNC] creating PA-TNC attribute type 'IETF/Numeric Version' 0x000000/0x00000003
+11[TNC] creating PA-TNC attribute type 'IETF/Operational Status' 0x000000/0x00000005
+11[TNC] creating PA-TNC attribute type 'IETF/Forwarding Enabled' 0x000000/0x0000000b
+11[TNC] creating PA-TNC attribute type 'IETF/Factory Default Password Enabled' 0x000000/0x0000000c
+11[TNC] creating PA-TNC attribute type 'ITA-HSR/Device ID' 0x00902a/0x00000008
+11[TNC] creating PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
+----
+
+xref:tnc/imaServer.adoc#_os_information[IMA Server] >
+
+== SWIMA Segmentation Contract
+
+The `*SWIMA IMC*` creates a `*Segmentation Contract Request*` attribute defined
+in the `*TCG*` namespace which proposes to split up huge PA-TNC messages into
+segments with a maximum size of `*32'698*` bytes each
+(see xref:tnc/optimumTncSizes.adoc#_pa_tnc_message_segmentation[PA-TNC message
+segmentation]). This attribute is put into a PA-TNC message of standard subtype
+`*SWIMA*`
+----
+11[IMC] IMC 2 requests a segmentation contract for PA message type 'IETF/SWIMA' 0x000000/0x00000009
+11[IMC]   no message size limit, maximum segment size of 32698 bytes
+11[TNC] creating PA-TNC message with ID 0xc9a4e2e5
+11[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
+11[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+Both PA-TNC messages are sent in a TNC Client Data batch to the TNC server
+----
+11[TNC] PB-TNC state transition from 'Init' to 'Server Working'
+11[TNC] creating PB-TNC CDATA batch
+11[TNC] adding IETF/PB-Language-Preference message
+11[TNC] adding IETF/PB-PA message
+11[TNC] adding IETF/PB-PA message
+11[TNC] sending PB-TNC CDATA batch (321 bytes) for Connection ID 1
+----
+
+xref:tnc/imaServer.adoc#_swima_segmentation_contract[IMA Server] >
+
+== PDP-Referral
+
+The TNC client receives a PB-TNC `*PDP-Referral*` payload defined in the `*TGC*`
+namespace and four PA-TNC messages in a PB-TNC Server Data batch
+----
+06[TNC] received TNCCS batch (402 bytes)
+06[TNC] TNC client is handling inbound connection
+06[TNC] processing PB-TNC SDATA batch for Connection ID 1
+06[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+06[TNC] processing TCG/PB-PDP-Referral message (41 bytes)
+06[TNC] processing IETF/PB-PA message (52 bytes)
+06[TNC] processing IETF/PB-PA message (141 bytes)
+06[TNC] processing IETF/PB-PA message (76 bytes)
+06[TNC] processing IETF/PB-PA message (84 bytes)
+----
+In the PB-TNC `*PDP-Referral*` payload, the TNC server forwards the hostname
+of the  *Policy Decision Point* (PDP) and the TCP port through which the PDP
+will be reachable via `PT-TLS` transport after the IPsec connection has been
+successfully established.
+----
+06[TNC] PDP server 'edu.strongsec.com' is listening on port 271
+----
+Thus after the endpoint has connected to the internal network via VPN, continuous
+health measurements would be possible. This dynamic switch-over from `PT-EAP` to
+`PT-TLS` transport of the PB-TNC connection hasn't been implemented yet, though.
+
+The first PA-TNC message of standard subtype `*SWIMA*` is handled by the `*SWIMA IMC*`
+and contains a `*Segmentation Contract Response*` attribute defined in the `*TCG*`
+namespace
+----
+06[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+06[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+06[TNC] processing PA-TNC message with ID 0x3c431f74
+06[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
+06[IMC] IMC 2 received a segmentation contract response from IMV 2 for PA message type 'IETF/SWIMA' 0x000000/0x00000009
+06[IMC]   no message size limit, maximum segment size of 32698 bytes
+----
+
+== OS Assessment Result
+
+The second PA-TNC message of standard subtype `*Operating System*` is handled by
+the `*OS IMC*` and contains the standard `*Assessment Result*` and `*Remediation
+Instructions*` attributes
+----
+06[TNC] handling PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
+06[IMC] IMC 1 "OS" received message for Connection ID 1 from IMV 1
+06[TNC] processing PA-TNC message with ID 0x37f97573
+06[TNC] processing PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+06[TNC] processing PA-TNC attribute type 'IETF/Remediation Instructions' 0x000000/0x0000000a
+06[IMC] ***** assessment of IMC 1 "OS" from IMV 1 *****
+06[IMC] assessment result is 'don't know'
+06[IMC] remediation string: [en]
+06[IMC] IP Packet Forwarding
+06[IMC]   Please disable the forwarding of IP packets
+06[IMC] ***** end of assessment *****
+----
+
+xref:tnc/imaServer.adoc#_os_assessment_result[IMA Server] >
+
+== Software Identifier Events
+
+The third PA-TNC message of standard subtype `*SWIMA*` is handled by the `*SWIMA IMC*`
+and contains a `*Segmentation Contract Request*` defined in the `*TCG*` namespace
+and a standard `*SWIMA Request*` attribute
+----
+06[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+06[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2
+06[TNC] processing PA-TNC message with ID 0x2eabec55
+06[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
+06[TNC] processing PA-TNC attribute type 'IETF/SWIMA Request' 0x000000/0x0000000d
+06[IMC] IMC 2 received a segmentation contract request from IMV 2 for PA message type 'IETF/SWIMA' 0x000000/0x00000009
+06[IMC]   no message size limit, maximum segment size of 65466 bytes
+06[IMC]   lowered maximum segment size to 32698 bytes
+----
+The `*SWIMA IMC*` creates the following three PA-TNC attributes:
+
+* `*Segmentation Contract Response*` defined in the `*TCG*` namespace: +
+  The maximum segment size is reduced from to proposed `*65'366*` bytes to `*32'698*`
+  bytes.
+
+* `*PA-TNC Error*` defined in the standard `*IETF*` namespace: +
+  The `*SWIMA Request*` contained a subscription request for `*SW Identifier Events*`
+  which is not enabled on the TNC client (`*imc-swima.subscription*` option).
+  Therefore an informational error message is generated.
+
+* `*SW Identifier Events*` defined in the standard `*IETF*` namespace: +
+  26 new SW ID events were collected since the last run.
+
+and inserts them into a PA-TNC message of standard subtype `*SWIMA*`
+----
+06[IMC] collected 26 SW ID events at last eid 323 of epoch 0x38cd4cc6
+06[TNC] creating PA-TNC message with ID 0x58b37554
+06[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
+06[TNC] creating PA-TNC attribute type 'IETF/PA-TNC Error' 0x000000/0x00000008
+06[TNC] creating PA-TNC attribute type 'IETF/SW Identifier Events' 0x000000/0x0000000f
+06[TNC] creating PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+----
+
+xref:tnc/imaServer.adoc#_software_identifier_event_request[IMA Server] >
+
+== PTS Configuration
+
+The fourth PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace is
+handled by the `*Attestation IMC*` and contains the following three attributes
+defined in the `*TCG*` namespace
+----
+- Segmentation Contract Request
+- Request PTS Protocol Capabilities
+- PTS Measurement Algorithm Request
+----
+Since the local xref:tpm/tpm2.adoc[TPM 2.0] only supports SHA1 and SHA256 PCR banks,
+the PTS measurement algorithm is set to `SHA2_256`
+----
+06[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+06[IMC] IMC 3 "Attestation" received message for Connection ID 1 from IMV 3
+06[TNC] processing PA-TNC message with ID 0xe6a89ae6
+06[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
+06[TNC] processing PA-TNC attribute type 'TCG/Request PTS Protocol Capabilities' 0x005597/0x01000000
+06[TNC] processing PA-TNC attribute type 'TCG/PTS Measurement Algorithm Request' 0x005597/0x06000000
+06[IMC] IMC 3 received a segmentation contract request from IMV 3 for PA message type 'TCG/PTS' 0x005597/0x00000001
+06[IMC]   no message size limit, maximum segment size of 65466 bytes
+06[IMC]   lowered maximum segment size to 32698 bytes
+06[PTS] supported PTS protocol capabilities: .VDT.
+06[PTS] selected PTS measurement algorithm is HASH_SHA2_256
+----
+As a response the following three attributes defined in the `*TCG*` namespace
+----
+- Segmentation Contract Response
+- PTS Protocol Capabilities
+- PTS Measurement Algorithm
+----
+are put into a PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace
+----
+06[TNC] creating PA-TNC message with ID 0x03a3bf23
+06[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
+06[TNC] creating PA-TNC attribute type 'TCG/PTS Protocol Capabilities' 0x005597/0x02000000
+06[TNC] creating PA-TNC attribute type 'TCG/PTS Measurement Algorithm' 0x005597/0x07000000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The two PA-TNC messages created above are sent in a TNC Client Data batch to the TNC server
+----
+06[TNC] TNC client is handling outbound connection
+06[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+06[TNC] creating PB-TNC CDATA batch
+06[TNC] adding IETF/PB-PA message
+06[TNC] adding IETF/PB-PA message
+06[TNC] sending PB-TNC CDATA batch (2847 bytes) for Connection ID 1
+----
+The TNC client receives a PB-TNC Server Data batch containing two PA-TNC messages
+----
+09[TNC] received TNCCS batch (104 bytes)
+09[TNC] TNC client is handling inbound connection
+09[TNC] processing PB-TNC SDATA batch for Connection ID 1
+09[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+09[TNC] processing IETF/PB-PA message (48 bytes)
+09[TNC] processing IETF/PB-PA message (48 bytes)
+----
+The first PA-TNC message of standard subtype `*SWIMA*` is handled by the `*SWIMA IMC*`
+and contains a standard `*Assessment Result*` with content `*compliant*`
+----
+09[TNC] handling PB-PA message type 'IETF/SWIMA' 0x000000/0x00000009
+09[IMC] IMC 2 "SWIMA" received message for Connection ID 1 from IMV 2 to IMC 2
+09[TNC] processing PA-TNC message with ID 0xcf298442
+09[TNC] processing PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+09[IMC] ***** assessment of IMC 2 "SWIMA" from IMV 2 *****
+09[IMC] assessment result is 'compliant'
+09[IMC] ***** end of assessment *****
+----
+The second PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace contains
+a `*DH Nonce Parameters Request*`. The `ECP_256` Diffie-Hellman group and a nonce
+length of 20 bytes is chosen
+----
+09[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+09[IMC] IMC 3 "Attestation" received message for Connection ID 1 from IMV 3
+09[TNC] processing PA-TNC message with ID 0x87cd81b4
+09[TNC] processing PA-TNC attribute type 'TCG/DH Nonce Parameters Request' 0x005597/0x03000000
+09[PTS] selected PTS DH group is ECP_256
+09[PTS] nonce length is 20
+----
+The `*DH Nonce Parameters Response*` is put into a PA-TNC message of subtype `*PTS*`
+defined in the `*TCG*` namespace
+----
+09[TNC] creating PA-TNC message with ID 0x0949ab4c
+09[TNC] creating PA-TNC attribute type 'TCG/DH Nonce Parameters Response' 0x005597/0x04000000
+09[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The PA-TNC message is sent in a TNC Client Data batch to the TNC server
+----
+09[TNC] TNC client is handling outbound connection
+09[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+09[TNC] creating PB-TNC CDATA batch
+09[TNC] adding IETF/PB-PA message
+09[TNC] sending PB-TNC CDATA batch (144 bytes) for Connection ID 1
+----
+The TNC client receives a PB-TNC Server Data batch containing a PA-TNC message
+----
+05[TNC] received TNCCS batch (172 bytes)
+05[TNC] TNC client is handling inbound connection
+05[TNC] processing PB-TNC SDATA batch for Connection ID 1
+05[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+05[TNC] processing IETF/PB-PA message (164 bytes)
+----
+The PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace
+contains the following three attributes defined in the `*TCG*` namespace
+----
+- DH Nonce Finish
+- Get TPM Version Information
+- Get Attestation Identity Key
+----
+----
+05[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+05[IMC] IMC 3 "Attestation" received message for Connection ID 1 from IMV 3
+05[TNC] processing PA-TNC message with ID 0x385528f6
+05[TNC] processing PA-TNC attribute type 'TCG/DH Nonce Finish' 0x005597/0x05000000
+05[TNC] processing PA-TNC attribute type 'TCG/Get TPM Version Information' 0x005597/0x08000000
+05[TNC] processing PA-TNC attribute type 'TCG/Get Attestation Identity Key' 0x005597/0x0d000000
+05[PTS] selected DH hash algorithm is HASH_SHA2_256
+----
+The `*TPM Version Information*` and the `*Attestation Identity Key*` attributes,
+both defined in the `*TCG*` namespace are inserted into a PA-TNC message of subtype
+`*PTS*` defined in the `*TCG*` namespace
+----
+05[TNC] creating PA-TNC message with ID 0xf413fa9e
+05[TNC] creating PA-TNC attribute type 'TCG/TPM Version Information' 0x005597/0x09000000
+05[TNC] creating PA-TNC attribute type 'TCG/Attestation Identity Key' 0x005597/0x0e000000
+05[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The PA-TNC message is sent in a TNC Client Data batch to the TNC server
+----
+05[TNC] TNC client is handling outbound connection
+05[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+05[TNC] creating PB-TNC CDATA batch
+05[TNC] adding IETF/PB-PA message
+05[TNC] sending PB-TNC CDATA batch (172 bytes) for Connection ID 1
+----
+
+xref:tnc/imaServer.adoc#_pts_configuration[IMA Server] >
+
+== Boot and IMA Event Measurements
+
+The TNC client receives a PB-TNC Server Data batch containing a PA-TNC message
+----
+06[TNC] received TNCCS batch (105 bytes)
+06[TNC] TNC client is handling inbound connection
+06[TNC] processing PB-TNC SDATA batch for Connection ID 1
+06[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+06[TNC] processing IETF/PB-PA message (97 bytes)
+----
+The PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace contains
+three attributes:
+
+* `*Get Symlinks*` defined in the `*ITA-HSR*` namespace: +
+  Request a list of symbolic links created by the operating system due to
+  {USRMERGE}[UsrMerge] (eg. `/bin -> /usr/bin`).
+
+* `*Request Functional Component Evidence*` defined in the `*TCG*` namespace: +
+  BIOS pre-boot and IMA runtime evidence is requested.
+
+* `*Generate Attestation Evidence*` definedd in the `*TDG*` namespace: +
+  Generate a *TPM Quote Signature* over the final state of the PCR registers
+  involved in the evidence measurement.
+
+----
+06[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+06[IMC] IMC 3 "Attestation" received message for Connection ID 1 from IMV 3
+06[TNC] processing PA-TNC message with ID 0xe05b2cac
+06[TNC] processing PA-TNC attribute type 'ITA-HSR/Get Symlinks' 0x00902a/0x00000009
+06[TNC] processing PA-TNC attribute type 'TCG/Request Functional Component Evidence' 0x005597/0x00100000
+06[TNC] processing PA-TNC attribute type 'TCG/Generate Attestation Evidence' 0x005597/0x00200000
+06[IMC] evidence requested for 2 functional components
+06[PTS] TPM 2.0 - locality indicator set to 3
+06[PTS] No. PCR Event Type  (Size)
+----
+The xref:./pcrBootEvents.adoc[Boot Events] log containing 136 entries and the
+corresponding PCR event hashes are extracted
+----
+06[PTS] loaded bios measurements '/sys/kernel/security/tpm0/binary_bios_measurements' (136 entries)
+----
+The runtime IMA file measurement log containing 1733 entries and the corresponding
+PCR event hashes are extracted
+----
+06[PTS] loaded ima measurements '/sys/kernel/security/ima/binary_runtime_measurements' (1733 entries)
+----
+The final state of the PCRs `*0..10*` and `*14*` are concatenaded into a *PCR Composite*
+value, hashed into a digest and then signed together with additional system information
+into a `*TPM Quote Signature*`
+----
+06[PTS] boot aggregate computed over PCR0..PCR9 is correct
+06[PTS] PCR values hashed into PCR Composite:
+06[PTS] PCR  0 06:15:6c:e6:46:85:9e:e3:81:09:57:54:9a:18:4b:7a:2e:a6:c6:c0:4f:3d:db:8a:2c:d3:a3:67:f4:93:16:71  ok
+06[PTS] PCR  1 6c:b0:42:07:6e:c2:b8:67:a9:2b:cb:8e:12:f9:14:d6:4a:06:e2:9b:a1:08:0c:e4:e0:27:55:c0:21:23:6c:81  ok
+06[PTS] PCR  2 30:3b:09:87:95:4c:d0:9c:a1:78:b8:6b:dd:60:55:40:f4:00:40:e8:e6:42:bd:11:73:ac:45:bc:9b:36:a3:49  ok
+06[PTS] PCR  3 3d:45:8c:fe:55:cc:03:ea:1f:44:3f:15:62:be:ec:8d:f5:1c:75:e1:4a:9f:cf:9a:72:34:a1:3f:19:8e:79:69  ok
+06[PTS] PCR  4 a3:1d:bf:9d:3b:ce:32:03:f2:54:59:8d:69:35:1d:8e:4b:7e:1b:54:cd:43:3d:1c:71:07:92:52:24:6a:ec:ef  ok
+06[PTS] PCR  5 bb:49:6d:97:1f:ab:ac:31:bc:4d:1c:a2:f2:ea:f7:c0:82:f3:e9:3c:25:6f:07:93:e0:cf:67:14:fd:36:40:4d  ok
+06[PTS] PCR  6 3d:45:8c:fe:55:cc:03:ea:1f:44:3f:15:62:be:ec:8d:f5:1c:75:e1:4a:9f:cf:9a:72:34:a1:3f:19:8e:79:69  ok
+06[PTS] PCR  7 44:6f:7a:67:d5:78:b2:f9:47:c4:e1:12:f7:69:96:e7:e3:67:d2:74:af:af:be:77:89:94:c4:1a:4b:67:bc:fe  ok
+06[PTS] PCR  8 36:77:2c:b7:7b:34:c1:bc:dc:41:6e:3c:c0:50:e7:26:7b:64:c2:91:28:12:9b:6a:3a:13:8a:74:c6:58:73:ad  ok
+06[PTS] PCR  9 e2:09:7c:e2:17:04:a8:46:b3:55:3f:24:df:4e:57:26:f1:b9:86:dc:31:c3:11:b8:30:28:8d:86:00:21:ee:57  ok
+06[PTS] PCR 10 a2:7f:76:a0:91:10:eb:d4:37:a0:35:fe:9f:ce:70:bc:c6:5a:05:ed:aa:81:ca:bb:37:7f:b5:49:01:a1:4e:b6  ok
+06[PTS] PCR 14 e3:99:1b:7d:dd:47:be:7e:92:72:6a:83:2d:68:74:c5:34:9b:52:b7:89:fa:0d:b8:b5:58:c6:9f:ea:29:57:4e  ok
+06[PTS] PCR Composite digest: => 32 bytes @ 0x7f4747e5ebf3
+06[PTS]    0: 86 88 05 24 23 5E 82 D2 4E 3A 21 88 2A F6 F0 E0  ...$#^..N:!.*...
+06[PTS]   16: C7 46 4D 35 FF A1 FE 93 88 FE 2E C0 02 95 70 86  .FM5..........p.
+06[PTS] TPM Quote Info: => 145 bytes @ 0x7f4747e5eb82
+06[PTS]    0: FF 54 43 47 80 18 00 22 00 0B BD E2 F1 F3 E7 B6  .TCG..."........
+06[PTS]   16: 0C A6 6D 93 1C EC AC 7D 25 B4 69 F0 E3 9E 96 9D  ..m....}%.i.....
+06[PTS]   32: 3D B8 A8 79 89 FB E2 C1 9B C5 00 20 C0 82 AC F2  =..y....... ....
+06[PTS]   48: 74 2A AB 92 A1 A7 48 8A 8B 74 DC 29 0A 4E 82 30  t*....H..t.).N.0
+06[PTS]   64: 9B D6 11 43 53 B1 95 21 5B B2 3F 59 00 00 00 00  ...CS..![.?Y....
+06[PTS]   80: 5F AE 07 C5 00 00 01 13 00 00 00 00 01 00 01 01  _...............
+06[PTS]   96: 02 00 00 00 00 00 00 00 01 00 0B 03 FF 47 00 00  .............G..
+06[PTS]  112: 20 86 88 05 24 23 5E 82 D2 4E 3A 21 88 2A F6 F0   ...$#^..N:!.*..
+06[PTS]  128: E0 C7 46 4D 35 FF A1 FE 93 88 FE 2E C0 02 95 70  ..FM5..........p
+06[PTS]  144: 86                                               .
+06[PTS] qualifiedSigner: => 34 bytes @ 0x7f4747e5eb8a
+06[PTS]    0: 00 0B BD E2 F1 F3 E7 B6 0C A6 6D 93 1C EC AC 7D  ..........m....}
+06[PTS]   16: 25 B4 69 F0 E3 9E 96 9D 3D B8 A8 79 89 FB E2 C1  %.i.....=..y....
+06[PTS]   32: 9B C5                                            ..
+06[PTS] extraData: => 32 bytes @ 0x7f4747e5ebae
+06[PTS]    0: C0 82 AC F2 74 2A AB 92 A1 A7 48 8A 8B 74 DC 29  ....t*....H..t.)
+06[PTS]   16: 0A 4E 82 30 9B D6 11 43 53 B1 95 21 5B B2 3F 59  .N.0...CS..![.?Y
+06[PTS] clockInfo: => 17 bytes @ 0x7f4747e5ebce
+06[PTS]    0: 00 00 00 00 5F AE 07 C5 00 00 01 13 00 00 00 00  ...._...........
+06[PTS]   16: 01                                               .
+06[PTS] firmwareVersion: => 8 bytes @ 0x7f4747e5ebdf
+06[PTS]    0: 00 01 01 02 00 00 00 00                          ........
+06[PTS] pcrSelect: => 10 bytes @ 0x7f4747e5ebe7
+06[PTS]    0: 00 00 00 01 00 0B 03 FF 47 00                    ........G.
+06[PTS] PCR digest algorithm is SHA256
+06[PTS] TPM Quote Signature: => 64 bytes @ 0x7f4724075610
+06[PTS]    0: 67 38 58 0E 75 97 16 7C 9E F5 66 C1 4E 62 9E 88  g8X.u..|..f.Nb..
+06[PTS]   16: C3 EF C9 62 04 7A A9 A8 9F ED 28 D8 11 0B 84 63  ...b.z....(....c
+06[PTS]   32: 98 77 A8 C2 37 72 BE 3B EF 32 E5 8C 9C 99 A5 DA  .w..7r.;.2......
+06[PTS]   48: AE 7C 4C E1 B6 E5 7D 82 5F 11 50 7B 0C A9 F1 A5  .|L...}._.P{....
+----
+The `*Symlinks*` attribute defined in the `*ITA-HSR*` namespace, 136 + 1733
+`*Simple Component Evidence*` attributes plus the `*Simple Evidence Final*` attribute
+defined in the `*TCG*` namespace are inserted into a series of PA-TNC messages of
+subtype `*PTS*` defined in the `*TCG*` namespace
+----
+06[TNC] creating PA-TNC message with ID 0x895b637c
+06[TNC] creating PA-TNC attribute type 'ITA-HSR/Symlinks' 0x00902a/0x0000000a
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Second PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0x04e49de2
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Third PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0x71bfc1a0
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Fourth PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0x93f33309
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Fifth PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0xe031c311
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Sixth PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0xa8f82bc7
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Seventh PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0xe9d4eb18
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Eighth PA-TNC message
+----
+06[TNC] creating PA-TNC message with ID 0xfc858c90
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] creating PA-TNC attribute type 'TCG/Simple Evidence Final' 0x005597/0x00400000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+Sending first PB-TNC Client Data batch
+----
+06[TNC] TNC client is handling outbound connection
+06[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+06[TNC] creating PB-TNC CDATA batch
+06[TNC] adding IETF/PB-PA message
+06[TNC] sending PB-TNC CDATA batch (32745 bytes) for Connection ID 1
+06[TNC] queued 7 PB-TNC messages for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending second PB-TNC Client Data batch
+----
+09[TNC] received TNCCS batch (8 bytes)
+09[TNC] TNC client is handling inbound connection
+09[TNC] processing PB-TNC SDATA batch for Connection ID 1
+09[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+09[TNC] TNC client is handling outbound connection
+09[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+09[TNC] creating PB-TNC CDATA batch
+09[TNC] adding IETF/PB-PA message
+09[TNC] sending PB-TNC CDATA batch (32671 bytes) for Connection ID 1
+09[TNC] queued 6 PB-TNC messages for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending third PB-TNC Client Data batch
+----
+13[TNC] received TNCCS batch (8 bytes)
+13[TNC] TNC client is handling inbound connection
+13[TNC] processing PB-TNC SDATA batch for Connection ID 1
+13[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+13[TNC] TNC client is handling outbound connection
+13[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+13[TNC] creating PB-TNC CDATA batch
+13[TNC] adding IETF/PB-PA message
+13[TNC] sending PB-TNC CDATA batch (32680 bytes) for Connection ID 1
+13[TNC] queued 5 PB-TNC messages for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending fourth PB-TNC Client Data batch
+----
+11[TNC] received TNCCS batch (8 bytes)
+11[TNC] TNC client is handling inbound connection
+11[TNC] processing PB-TNC SDATA batch for Connection ID 1
+11[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+11[TNC] TNC client is handling outbound connection
+11[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+11[TNC] creating PB-TNC CDATA batch
+11[TNC] adding IETF/PB-PA message
+11[TNC] sending PB-TNC CDATA batch (32644 bytes) for Connection ID 1
+11[TNC] queued 4 PB-TNC messages for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending fifth PB-TNC Client Data batch
+----
+08[TNC] received TNCCS batch (8 bytes)
+08[TNC] TNC client is handling inbound connection
+08[TNC] processing PB-TNC SDATA batch for Connection ID 1
+08[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+08[TNC] TNC client is handling outbound connection
+08[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+08[TNC] creating PB-TNC CDATA batch
+08[TNC] adding IETF/PB-PA message
+08[TNC] sending PB-TNC CDATA batch (32614 bytes) for Connection ID 1
+08[TNC] queued 3 PB-TNC messages for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending sixth PB-TNC Client Data batch
+----
+06[TNC] received TNCCS batch (8 bytes)
+06[TNC] TNC client is handling inbound connection
+06[TNC] processing PB-TNC SDATA batch for Connection ID 1
+06[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+06[TNC] TNC client is handling outbound connection
+06[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+06[TNC] creating PB-TNC CDATA batch
+06[TNC] adding IETF/PB-PA message
+06[TNC] sending PB-TNC CDATA batch (32671 bytes) for Connection ID 1
+06[TNC] queued 2 PB-TNC messages for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending seventh PB-TNC Client Data batch
+----
+14[TNC] received TNCCS batch (8 bytes)
+14[TNC] TNC client is handling inbound connection
+14[TNC] processing PB-TNC SDATA batch for Connection ID 1
+14[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+14[TNC] TNC client is handling outbound connection
+14[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+14[TNC] creating PB-TNC CDATA batch
+14[TNC] adding IETF/PB-PA message
+14[TNC] sending PB-TNC CDATA batch (32630 bytes) for Connection ID 1
+14[TNC] queued 1 PB-TNC message for next CDATA batch
+----
+Receiving empty PB-TNC Server Data batch and sending eighth PB-TNC Client Data batch
+----
+05[TNC] received TNCCS batch (8 bytes)
+05[TNC] TNC client is handling inbound connection
+05[TNC] processing PB-TNC SDATA batch for Connection ID 1
+05[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+05[TNC] TNC client is handling outbound connection
+05[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+05[TNC] creating PB-TNC CDATA batch
+05[TNC] adding IETF/PB-PA message
+05[TNC] sending PB-TNC CDATA batch (23330 bytes) for Connection ID 1
+----
+
+xref:tnc/imaServer.adoc#_boot_and_ima_event_measurements[IMA Server] >
+
+== TNC Assessment Result
+
+The TNC client receives a PB-TNC Result batch containing a PA-TNC message as well
+as both a PB-TNC `*Assessment-Result*` and a PB-TNC `*Access-Recommendation*` payload
+----
+13[TNC] received TNCCS batch (88 bytes)
+13[TNC] TNC client is handling inbound connection
+13[TNC] processing PB-TNC RESULT batch for Connection ID 1
+13[TNC] PB-TNC state transition from 'Server Working' to 'Decided'
+13[TNC] processing IETF/PB-PA message (48 bytes)
+13[TNC] processing IETF/PB-Assessment-Result message (16 bytes)
+13[TNC] processing IETF/PB-Access-Recommendation message (16 bytes)
+13[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The `*Assessment Result*` attribute received in the PA-TNC message of subtype `*PTS*`
+defined in the `*TCG*` namespace  as well as the overall PB-TNC assessment says
+`*compliant*` and the recommendation is `*Access Allowed*`
+----
+13[IMC] IMC 3 "Attestation" received message for Connection ID 1 from IMV 3
+13[TNC] processing PA-TNC message with ID 0x5553fd69
+13[TNC] processing PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+13[IMC] ***** assessment of IMC 3 "Attestation" from IMV 3 *****
+13[IMC] assessment result is 'compliant'
+13[IMC] ***** end of assessment *****
+13[TNC] PB-TNC assessment result is 'compliant'
+13[TNC] PB-TNC access recommendation is 'Access Allowed'
+13[IMC] IMC 1 "OS" changed state of Connection ID 1 to 'Allowed'
+13[IMC] IMC 2 "SWIMA" changed state of Connection ID 1 to 'Allowed'
+13[IMC] IMC 3 "Attestation" changed state of Connection ID 1 to 'Allowed'
+----
+A PB-TNC Close batch is sent to the TNC server
+----
+13[TNC] TNC client is handling outbound connection
+13[TNC] PB-TNC state transition from 'Decided' to 'End'
+13[TNC] creating PB-TNC CLOSE batch
+13[TNC] sending PB-TNC CLOSE batch (8 bytes) for Connection ID 1
+----
+
+xref:tnc/imaServer.adoc#_tnc_assessment_result[IMA Server] >
+
+== IKEv2 Authentication Success
+
+An `EAP-SUCCESS` message is received from the EAP server. The EAP client authenticates
+itself via an IKEv2 `AUTH` payload based on the `MSK` (Master Session Key) derived
+from the `EAP-TTLS` session
+----
+15[NET] received packet: from 10.10.0.150[4500] to 10.10.1.52[4500] (80 bytes)
+15[ENC] parsed IKE_AUTH response 269 [ EAP/SUCC ]
+15[IKE] EAP method EAP_TTLS succeeded, MSK established
+15[IKE] authentication of 'mijas.strongsec.com' (myself) with EAP
+15[ENC] generating IKE_AUTH request 270 [ AUTH ]
+15[NET] sending packet: from 10.10.1.52[4500] to 10.10.0.150[4500] (112 bytes)
+----
+The IKEv2 server in turn authenticates itself again via an `AUTH` payload depending
+on the `EAP-TTLS MSK` as well. The `*OS IMC*`, `*SWIMA IMC*` and `*Attestation IMC*`
+states as well as the PB-TNC connection are deleted
+----
+10[NET] received packet: from 10.10.0.150[4500] to 10.10.1.52[4500] (272 bytes)
+10[ENC] parsed IKE_AUTH response 270 [ AUTH CPRP(ADDR DNS) SA TSi TSr N(AUTH_LFT) N(MOBIKE_SUP) N(ADD_6_ADDR) ]
+10[IKE] authentication of 'vpn.strongswan.org' with EAP successful
+10[TNC] TODO: setup PT-TLS connection to edu.strongsec.com:271
+10[IMC] IMC 1 "OS" deleted the state of Connection ID 1
+10[IMC] IMC 2 "SWIMA" deleted the state of Connection ID 1
+10[IMC] IMC 3 "Attestation" deleted the state of Connection ID 1
+10[TNC] removed TNCCS Connection ID 1
+----
+The IKEv2 connection has been successfully established.
+----
+10[IKE] IKE_SA tnc[1] established between 10.10.1.52[mijas.strongsec.com]...10.10.0.150[vpn.strongswan.org]
+10[IKE] scheduling reauthentication in 10179s
+10[IKE] maximum IKE_SA lifetime 11259s
+10[IKE] installing DNS server 10.10.0.1 to /etc/resolv.conf
+10[IKE] installing new virtual IP 10.10.1.65
+10[CFG] selected proposal: ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+10[IKE] CHILD_SA tnc{1} established with SPIs c28cd4ab_i c3c268a8_o and TS 10.10.1.65/32 === 10.10.0.150/32
+----
+
+xref:tnc/imaServer.adoc#_ikev2_authentication_success[IMA Server] >

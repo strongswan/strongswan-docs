@@ -1,0 +1,440 @@
+= PCR Boot Events
+
+:TCG:     https://trustedcomputinggroup.org/wp-content/uploads
+:BIOS:    {TCG}/TCG_PCClientImplementation_1-21_1_00.pdf
+:EFI:     {TCG}/TCG_EFI_Platform_1_22_Final_-v15.pdf
+:TPM2:    https://github.com/tpm2-software
+:TOOLV:   5.2
+:TOOLMAN: {TPM2}/tpm2-tools/tree/{TOOLV}/man
+
+== PCR Usage
+
+=== Legacy BIOS Platforms
+
+On platforms with a traditional BIOS, the PCR usage is defined by the
+{BIOS}[TCG PC Client Specific Implementation Specification for Conventional BIOS v1.21]
+and summarized in the table below.
+[cols="1,10"]
+|===
+|PCR |Usage
+
+| 0 |S-CRTM, BIOS, Host Platform Extensions, and Embedded Option ROMs
+
+| 1    |Host Platform Configuration
+
+| 2    |Option ROM Code
+
+| 3    |Option ROM Configuration and Data
+
+| 4    |IPL Code (usually the MBR) and Boot Attempts
+
+| 5    |IPL Code Configuration and Data (for use by the IPL Code)
+
+| 6    |State Transitions and Wake Events
+
+| 7    |Host Platform Manufacturer Specific
+
+| 8-15 |Defined for use by the Static OS
+
+| 16   |Debug
+
+| 23   |Application Support
+|===
+
+=== Modern UEFI Platforms
+
+On modern EFI or UEFI platforms, the PCR usage and the EFI events are defined by
+the {EFI}[TCG EFI Platform Specification v1.22] and summarized in the graph below
+
+image::efiPcrUsage.png[EFI PCR Usage, link=self]
+
+== PCR Boot Event Log
+
+The following boot event log has been extracted from the binary file
+
+ /sys/kernel/security/tpm0/binary_bios_measurements
+
+on an Intel `*x86_64*` platform running *Ubuntu* on a Linux `*5.13.0-44-generic*`
+kernel. The parsed log consists of three informational event entries at the top
+that are not extended into any PCR, followed by 136 event entries that were extended
+into one of the Platform Configuration Registers (PCRs) `*0..9*` or `*14*`
+----
+No. PCR Event Type  (Size)
+     0  No Action  (0 bytes)
+        ''
+        Not extended into PCR!
+     0  Preboot Cert  (37 bytes)
+        'Spec ID Event03'
+        Not extended into PCR!
+     0  No Action  (17 bytes)
+        'StartupLocality' 3
+        Not extended into PCR!
+  1  0  S-CRTM Contents  (27 bytes)
+        'Boot Guard Measured S-CRTM'
+  2  0  S-CRTM Version  (20 bytes)
+  3  0  EFI Platform Firmware Blob  (16 bytes)
+  4  0  EFI Platform Firmware Blob  (16 bytes)
+  5  0  EFI Platform Firmware Blob  (16 bytes)
+  6  2  EFI Boot Services Driver  (76 bytes)
+  7  0  POST Code  (9 bytes)
+        'ACPI DATA'
+  8  0  POST Code  (9 bytes)
+        'ACPI DATA'
+  9  7  EFI Variable Driver Config  (53 bytes)
+ 10  7  EFI Variable Driver Config  (1019 bytes)
+ 11  7  EFI Variable Driver Config  (2583 bytes)
+ 12  7  EFI Variable Driver Config  (5116 bytes)
+ 13  7  EFI Variable Driver Config  (13434 bytes)
+ 14  7  Separator  (4 bytes)
+ 15  2  EFI Boot Services Driver  (76 bytes)
+ 16  2  EFI Boot Services Driver  (76 bytes)
+ 17  1  EFI Variable Driver Config  (301 bytes)
+ 18  1  EFI Variable Driver Config  (102 bytes)
+ 19  1  EFI Variable Driver Config  (211 bytes)
+ 20  2  EFI Boot Services Driver  (76 bytes)
+ 21  2  EFI Boot Services Driver  (76 bytes)
+ 22  2  EFI Boot Services Driver  (76 bytes)
+ 23  2  EFI Boot Services Driver  (76 bytes)
+ 24  2  EFI Boot Services Driver  (76 bytes)
+ 25  2  EFI Boot Services Driver  (76 bytes)
+ 26  4  EFI Boot Services Application  (76 bytes)
+ 27  1  EFI Handoff Tables  (32 bytes)
+ 28  1  EFI Variable Boot  (76 bytes)
+ 29  1  EFI Variable Boot  (348 bytes)
+ 30  1  EFI Variable Boot  (166 bytes)
+ 31  1  EFI Variable Boot  (108 bytes)
+ 32  1  EFI Variable Boot  (110 bytes)
+ 33  1  EFI Variable Boot  (107 bytes)
+ 34  1  EFI Variable Boot  (107 bytes)
+ 35  1  EFI Variable Boot  (113 bytes)
+ 36  1  EFI Variable Boot  (113 bytes)
+ 37  1  EFI Variable Boot  (110 bytes)
+ 38  1  EFI Variable Boot  (112 bytes)
+ 39  1  EFI Variable Boot  (179 bytes)
+ 40  1  EFI Variable Boot  (113 bytes)
+ 41  1  EFI Variable Boot  (115 bytes)
+ 42  4  EFI Action  (40 bytes)
+ 43  0  Separator  (4 bytes)
+ 44  1  Separator  (4 bytes)
+ 45  2  Separator  (4 bytes)
+ 46  3  Separator  (4 bytes)
+ 47  4  Separator  (4 bytes)
+ 48  5  Separator  (4 bytes)
+ 49  6  Separator  (4 bytes)
+ 50  7  EFI Variable Authority  (1608 bytes)
+ 51  5  EFI GPT Event  (740 bytes)
+ 52  4  EFI Boot Services Application  (170 bytes)
+ 53 14  IPL  (8 bytes)
+        'MokList'
+ 54 14  IPL  (9 bytes)
+        'MokListX'
+ 55  7  EFI Variable Authority  (68 bytes)
+ 56  4  EFI Boot Services Application  (88 bytes)
+ 57  7  EFI Variable Authority  (1120 bytes)
+ 58  9  IPL  (31 bytes)
+        '(hd0,gpt1)/EFI/ubuntu/grub.cfg'
+ 59  8  IPL  (67 bytes)
+        'grub_cmd: search.fs_uuid 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee root'
+ 60  8  IPL  (42 bytes)
+        'grub_cmd: set prefix=(hd0,gpt5)/boot/grub'
+ 61  9  IPL  (44 bytes)
+        '(hd0,gpt5)/boot/grub/x86_64-efi/command.lst'
+ 62  9  IPL  (39 bytes)
+        '(hd0,gpt5)/boot/grub/x86_64-efi/fs.lst'
+ 63  9  IPL  (43 bytes)
+        '(hd0,gpt5)/boot/grub/x86_64-efi/crypto.lst'
+ 64  9  IPL  (45 bytes)
+        '(hd0,gpt5)/boot/grub/x86_64-efi/terminal.lst'
+ 65  8  IPL  (51 bytes)
+        'grub_cmd: configfile (hd0,gpt5)/boot/grub/grub.cfg'
+ 66  9  IPL  (30 bytes)
+        '(hd0,gpt5)/boot/grub/grub.cfg'
+ 67  8  IPL  (46 bytes)
+        'grub_cmd: [ -s (hd0,gpt5)/boot/grub/grubenv ]'
+ 68  9  IPL  (29 bytes)
+        '(hd0,gpt5)/boot/grub/grubenv'
+ 69  8  IPL  (32 bytes)
+        'grub_cmd: set have_grubenv=true'
+ 70  8  IPL  (19 bytes)
+        'grub_cmd: load_env'
+ 71  9  IPL  (29 bytes)
+        '(hd0,gpt5)/boot/grub/grubenv'
+ 72  8  IPL  (19 bytes)
+        'grub_cmd: [  = 2 ]'
+ 73  8  IPL  (19 bytes)
+        'grub_cmd: [  = 1 ]'
+ 74  8  IPL  (15 bytes)
+        'grub_cmd: [  ]'
+ 75  8  IPL  (24 bytes)
+        'grub_cmd: set default=0'
+ 76  8  IPL  (22 bytes)
+        'grub_cmd: [ xy = xy ]'
+ 77  8  IPL  (35 bytes)
+        'grub_cmd: menuentry_id_option=--id'
+ 78  8  IPL  (37 bytes)
+        'grub_cmd: export menuentry_id_option'
+ 79  8  IPL  (15 bytes)
+        'grub_cmd: [  ]'
+ 80  8  IPL  (22 bytes)
+        'grub_cmd: [ xy = xy ]'
+ 81  8  IPL  (23 bytes)
+        'grub_cmd: font=unicode'
+ 82  8  IPL  (27 bytes)
+        'grub_cmd: loadfont unicode'
+ 83  9  IPL  (39 bytes)
+        '(hd0,gpt5)/boot/grub/fonts/unicode.pf2'
+ 84  8  IPL  (27 bytes)
+        'grub_cmd: set gfxmode=auto'
+ 85  8  IPL  (21 bytes)
+        'grub_cmd: load_video'
+ 86  8  IPL  (22 bytes)
+        'grub_cmd: [ xy = xy ]'
+ 87  8  IPL  (27 bytes)
+        'grub_cmd: insmod all_video'
+ 88  8  IPL  (25 bytes)
+        'grub_cmd: insmod gfxterm'
+ 89  8  IPL  (53 bytes)
+        'grub_cmd: set locale_dir=(hd0,gpt5)/boot/grub/locale'
+ 90  8  IPL  (25 bytes)
+        'grub_cmd: set lang=en_US'
+ 91  8  IPL  (25 bytes)
+        'grub_cmd: insmod gettext'
+ 92  8  IPL  (34 bytes)
+        'grub_cmd: terminal_output gfxterm'
+ 93  8  IPL  (19 bytes)
+        'grub_cmd: [  = 1 ]'
+ 94  8  IPL  (22 bytes)
+        'grub_cmd: [ xy = xy ]'
+ 95  8  IPL  (35 bytes)
+        'grub_cmd: set timeout_style=hidden'
+ 96  8  IPL  (25 bytes)
+        'grub_cmd: set timeout=10'
+ 97  8  IPL  (44 bytes)
+        'grub_cmd: set menu_color_normal=white/black'
+ 98  8  IPL  (52 bytes)
+        'grub_cmd: set menu_color_highlight=black/light-gray'
+ 99  8  IPL  (20 bytes)
+        'grub_cmd: [  != 1 ]'
+100  8  IPL  (55 bytes)
+        'grub_cmd: [ -e (hd0,gpt5)/boot/grub/gfxblacklist.txt ]'
+101  8  IPL  (24 bytes)
+        'grub_cmd: [ efi != pc ]'
+102  8  IPL  (34 bytes)
+        'grub_cmd: set linux_gfx_mode=keep'
+103  8  IPL  (32 bytes)
+        'grub_cmd: export linux_gfx_mode'
+104  8  IPL  (707 bytes)
+        'grub_cmd: menuentry Ubuntu --class ubuntu --class gnu-linux --class gnu --class os --id gnulinux-simple-956f1d5b-ce31-4ece-8c1f-90d0b11a02ee {
+           recordfail
+          load_video
+          gfxmode $linux_gfx_mode
+          insmod gzio
+          if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+          insmod part_gpt
+          insmod ext2
+          if [ x$feature_platform_search_hint = xy ]; then
+            search --no-floppy --fs-uuid --set=root  956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+          else
+            search --no-floppy --fs-uuid --set=root 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+          fi
+          linux  /boot/vmlinuz-5.13.0-44-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro ima_tcb ima_hash=sha256 quiet splash $vt_handoff
+          initrd  /boot/initrd.img-5.13.0-44-generic
+        }'
+105  8  IPL  (3566 bytes)
+        'grub_cmd: submenu Advanced options for Ubuntu --id gnulinux-advanced-956f1d5b-ce31-4ece-8c1f-90d0b11a02ee {
+          menuentry 'Ubuntu, with Linux 5.13.0-44-generic' --class ubuntu --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-5.13.0-44-generic-advanced-956f1d5b-ce31-4ece-8c1f-90d0b11a02ee' {
+            recordfail
+            load_video
+            gfxmode $linux_gfx_mode
+            insmod gzio
+            if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+            insmod part_gpt
+            insmod ext2
+            if [ x$feature_platform_search_hint = xy ]; then
+              search --no-floppy --fs-uuid --set=root  956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            else
+              search --no-floppy --fs-uuid --set=root 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            fi
+            echo  'Loading Linux 5.13.0-44-generic ...'
+            linux  /boot/vmlinuz-5.13.0-44-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro ima_tcb ima_hash=sha256 quiet splash $vt_handoff
+            echo  'Loading initial ramdisk ...'
+            initrd  /boot/initrd.img-5.13.0-44-generic
+          }
+          menuentry 'Ubuntu, with Linux 5.13.0-44-generic (recovery mode)' --class ubuntu --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-5.13.0-44-generic-recovery-956f1d5b-ce31-4ece-8c1f-90d0b11a02ee' {
+            recordfail
+            load_video
+            insmod gzio
+            if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+            insmod part_gpt
+            insmod ext2
+            if [ x$feature_platform_search_hint = xy ]; then
+              search --no-floppy --fs-uuid --set=root  956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            else
+              search --no-floppy --fs-uuid --set=root 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            fi
+            echo  'Loading Linux 5.13.0-44-generic ...'
+            linux  /boot/vmlinuz-5.13.0-44-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro recovery nomodeset dis_ucode_ldr ima_tcb ima_hash=sha256
+            echo  'Loading initial ramdisk ...'
+            initrd  /boot/initrd.img-5.13.0-44-generic
+          }
+          menuentry 'Ubuntu, with Linux 5.13.0-41-generic' --class ubuntu --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-5.13.0-41-generic-advanced-956f1d5b-ce31-4ece-8c1f-90d0b11a02ee' {
+            recordfail
+            load_video
+            gfxmode $linux_gfx_mode
+            insmod gzio
+            if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+            insmod part_gpt
+            insmod ext2
+            if [ x$feature_platform_search_hint = xy ]; then
+              search --no-floppy --fs-uuid --set=root  956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            else
+              search --no-floppy --fs-uuid --set=root 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            fi
+            echo  'Loading Linux 5.13.0-41-generic ...'
+            linux  /boot/vmlinuz-5.13.0-41-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro ima_tcb ima_hash=sha256 quiet splash $vt_handoff
+            echo  'Loading initial ramdisk ...'
+            initrd  /boot/initrd.img-5.13.0-41-generic
+          }
+          menuentry 'Ubuntu, with Linux 5.13.0-41-generic (recovery mode)' --class ubuntu --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-5.13.0-41-generic-recovery-956f1d5b-ce31-4ece-8c1f-90d0b11a02ee' {
+            recordfail
+            load_video
+            insmod gzio
+            if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+            insmod part_gpt
+            insmod ext2
+            if [ x$feature_platform_search_hint = xy ]; then
+              search --no-floppy --fs-uuid --set=root  956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            else
+              search --no-floppy --fs-uuid --set=root 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee
+            fi
+            echo  'Loading Linux 5.13.0-41-generic ...'
+            linux  /boot/vmlinuz-5.13.0-41-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro recovery nomodeset dis_ucode_ldr ima_tcb ima_hash=sha256
+            echo  'Loading initial ramdisk ...'
+            initrd  /boot/initrd.img-5.13.0-41-generic
+          }
+        }'
+106  8  IPL  (362 bytes)
+        'grub_cmd: menuentry Windows Boot Manager (on /dev/nvme0n1p1) --class windows --class os --id osprober-efi-1A1F-D13C {
+          insmod part_gpt
+          insmod fat
+          if [ x$feature_platform_search_hint = xy ]; then
+            search --no-floppy --fs-uuid --set=root  1A1F-D13C
+          else
+            search --no-floppy --fs-uuid --set=root 1A1F-D13C
+          fi
+          chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+        }'
+107  8  IPL  (33 bytes)
+        'grub_cmd: set timeout_style=menu'
+108  8  IPL  (21 bytes)
+        'grub_cmd: [ 10 = 0 ]'
+109  8  IPL  (75 bytes)
+        'grub_cmd: menuentry UEFI Firmware Settings --id uefi-firmware {
+          fwsetup
+        }'
+110  8  IPL  (49 bytes)
+        'grub_cmd: [ -f (hd0,gpt5)/boot/grub/custom.cfg ]'
+111  8  IPL  (76 bytes)
+        'grub_cmd: [ -z (hd0,gpt5)/boot/grub -a -f (hd0,gpt5)/boot/grub/custom.cfg ]'
+112  8  IPL  (27 bytes)
+        'grub_cmd: setparams Ubuntu'
+113  8  IPL  (21 bytes)
+        'grub_cmd: recordfail'
+114  8  IPL  (27 bytes)
+        'grub_cmd: set recordfail=1'
+115  8  IPL  (22 bytes)
+        'grub_cmd: [ -n true ]'
+116  8  IPL  (18 bytes)
+        'grub_cmd: [ -z  ]'
+117  8  IPL  (30 bytes)
+        'grub_cmd: save_env recordfail'
+118  8  IPL  (21 bytes)
+        'grub_cmd: load_video'
+119  8  IPL  (22 bytes)
+        'grub_cmd: [ xy = xy ]'
+120  8  IPL  (27 bytes)
+        'grub_cmd: insmod all_video'
+121  8  IPL  (23 bytes)
+        'grub_cmd: gfxmode keep'
+122  8  IPL  (30 bytes)
+        'grub_cmd: set gfxpayload=keep'
+123  8  IPL  (26 bytes)
+        'grub_cmd: [ keep = keep ]'
+124  8  IPL  (38 bytes)
+        'grub_cmd: set vt_handoff=vt.handoff=7'
+125  8  IPL  (22 bytes)
+        'grub_cmd: insmod gzio'
+126  8  IPL  (26 bytes)
+        'grub_cmd: [ xefi = xxen ]'
+127  8  IPL  (26 bytes)
+        'grub_cmd: insmod part_gpt'
+128  8  IPL  (22 bytes)
+        'grub_cmd: insmod ext2'
+129  8  IPL  (22 bytes)
+        'grub_cmd: [ xy = xy ]'
+130  8  IPL  (87 bytes)
+        'grub_cmd: search --no-floppy --fs-uuid --set=root 956f1d5b-ce31-4ece-8c1f-90d0b11a02ee'
+131  8  IPL  (148 bytes)
+        'grub_cmd: linux /boot/vmlinuz-5.13.0-44-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro ima_tcb ima_hash=sha256 quiet splash vt.handoff=7'
+132  9  IPL  (32 bytes)
+        '/boot/vmlinuz-5.13.0-44-generic'
+133  4  EFI Boot Services Application  (32 bytes)
+134  8  IPL  (148 bytes)
+        'kernel_cmdline: /boot/vmlinuz-5.13.0-44-generic root=UUID=956f1d5b-ce31-4ece-8c1f-90d0b11a02ee ro ima_tcb ima_hash=sha256 quiet splash vt.handoff=7'
+135  8  IPL  (52 bytes)
+        'grub_cmd: initrd /boot/initrd.img-5.13.0-44-generic'
+136  9  IPL  (35 bytes)
+        '/boot/initrd.img-5.13.0-44-generic'
+----
+We see that besides the pre-boot phase actually measured by the UEFI, also the
+bootloader `*grub*` is measured before it is executed.
+
+== PCR File Hash Extension
+
+The graph shown below shows how multiple file measurements can be extended into
+a Platform Configuration Register (PCR). The PCR acts as a kind of blockchain
+securing the files against modification.
+
+.Multiple File Hashes extended into PCR n
+image::pcrExtension.png[PCR Hash Extension, link=self]
+
+== Final PCR State
+
+After all 136 boot event hashes listed above have been extended into the corresponding
+Platform Configuration Registers, the SHA-256 PCR bank has taken on the following
+final state as displayed by the {TOOLMAN}/tpm2_pcrread.1.md[`*tpm2_pcrread*`] command
+----
+$ tpm2_pcrread sha256
+  sha256:
+    0 : 0x06156CE646859EE3810957549A184B7A2EA6C6C04F3DDB8A2CD3A367F4931671
+    1 : 0x6CB042076EC2B867A92BCB8E12F914D64A06E29BA1080CE4E02755C021236C81
+    2 : 0x303B0987954CD09CA178B86BDD605540F40040E8E642BD1173AC45BC9B36A349
+    3 : 0x3D458CFE55CC03EA1F443F1562BEEC8DF51C75E14A9FCF9A7234A13F198E7969
+    4 : 0xA31DBF9D3BCE3203F254598D69351D8E4B7E1B54CD433D1C71079252246AECEF
+    5 : 0xBB496D971FABAC31BC4D1CA2F2EAF7C082F3E93C256F0793E0CF6714FD36404D
+    6 : 0x3D458CFE55CC03EA1F443F1562BEEC8DF51C75E14A9FCF9A7234A13F198E7969
+    7 : 0x446F7A67D578B2F947C4E112F76996E7E367D274AFAFBE778994C41A4B67BCFE
+    8 : 0x36772CB77B34C1BCDC416E3CC050E7267B64C29128129B6A3A138A74C65873AD
+    9 : 0xE2097CE21704A846B3553F24DF4E5726F1B986DC31C311B830288D860021EE57
+    10: 0xD36EBB1BC3F6DF8292F9A13BD4BCA0AC639D2EEB2646ED76DCD06429BDF7A82B
+    11: 0x0000000000000000000000000000000000000000000000000000000000000000
+    12: 0x0000000000000000000000000000000000000000000000000000000000000000
+    13: 0x0000000000000000000000000000000000000000000000000000000000000000
+    14: 0xE3991B7DDD47BE7E92726A832D6874C5349B52B789FA0DB8B558C69FEA29574E
+    15: 0x0000000000000000000000000000000000000000000000000000000000000000
+    16: 0x0000000000000000000000000000000000000000000000000000000000000000
+    17: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    18: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    19: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    20: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    21: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    22: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    23: 0x0000000000000000000000000000000000000000000000000000000000000000
+----
+
+=== Boot Aggregate Value
+
+At the end of the boot attestation phase, the concatenated final hashes from
+`*PCR 0..9*` are extended into `*PCR 10*` to form the so-called *boot aggregate*
+value which is used as a starting value for the file measurements done by the
+xref:./ima.adoc[Integrity Measurement Architecture] (IMA).

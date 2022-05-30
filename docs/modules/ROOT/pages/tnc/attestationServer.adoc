@@ -1,0 +1,563 @@
+= Attestation Server
+
+:TCG:      https://trustedcomputinggroup.org/wp-content/uploads
+:PTS:      {TCG}/IFM_PTS_v1_0_r28.pdf
+:IFIMV:    {TCG}/TNC_IFIMV_v1_4_r11.pdf
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC5792:  {IETF}/rfc5792
+:USRMERGE: https://www.linux-magazine.com/Issues/2019/228/Debian-usr-Merge
+
+The Attestation Server manages the remote attestation of endpoints running
+Platform Security Services (PTS) based on a local Trusted Platform Module (TPM).
+The requested xref:./pcrBootEvents.adoc#_pcr_boot_event_log[Boot Event Log] and
+the corresponding xref:./pcrBootEvents.adoc#_final_pcr_state[final state] of the
+*Platform Configuration Registers* (PCRs) are stored by the `*Attestation IMV*` in
+the SQLite `*config.db*` database which is shared with the powerful
+xref:./strongTnc.adoc[strongTNC] policy management tool.
+
+== Attestation IMV
+
+The `*Attestation IMV*` implements the over-engineered, feature-laden
+{PTS}[TCG Attestation PTS Protocol: Binding to TNC IF-M v1.0], an extension to
+the {RFC5792}[`*PA-TNC*`] (`*TCG TNC IF-M*`) measurement protocol.
+
+xref:tnc/attestationClient.adoc#_attestation_imc[Attestation Client] >
+
+== Plugin Configuration
+
+For *Remote Attestation*, the `*OS IMV*` and the `*Attestation IMV*` have to be
+enabled in the `*/etc/tnc_config*` configuration file
+----
+#IMV-Configuration
+
+IMV "OS"           /usr/lib/ipsec/imcvs/imv-os.so
+IMV "Attestation"  /usr/lib/ipsec/imcvs/imv-attestation.so
+----
+These two Integrity Measurement Verifiers have to be built beforehand with the
+xref:install/autoconf.adoc[`*./configure*`] options
+
+  --enable-imv-os --enable-imv-attestation
+
+When the xref:daemons/charon.adoc[`*charon*`] daemon starts up, the IMVs are loaded.
+`*IMV 1 OS*` and `*IMV 2 Attestation*` both subscribe to the standard PA-TNC message
+subtype `*Operating System*` and the `*Attestation IMV*`additionally subscribes to
+the *PTS*`message subtype defined in the `*TCG*` namespace
+----
+00[DMN] Starting IKE charon daemon (strongSwan 5.9.7, Linux 5.13.0-44-generic, x86_64)
+00[TNC] TNC recommendation policy is 'default'
+00[TNC] loading IMVs from '/etc/tnc_config'
+00[TNC] added IETF attributes
+00[TNC] added ITA-HSR attributes
+00[TNC] added PWG attributes
+00[TNC] added TCG attributes
+00[PTS] added TCG functional component namespace
+00[PTS] added ITA-HSR functional component namespace
+00[PTS] added ITA-HSR functional component 'Trusted GRUB Boot Loader'
+00[PTS] added ITA-HSR functional component 'Trusted Boot'
+00[PTS] added ITA-HSR functional component 'Linux IMA'
+00[LIB] libimcv initialized
+00[IMV] IMV 1 "OS" initialized
+00[TNC] IMV 1 supports 1 message type: 'IETF/Operating System' 0x000000/0x00000001
+00[TNC] IMV 1 "OS" loaded from '/usr/lib/ipsec/imcvs/imv-os.so'
+00[IMV] IMV 2 "Attestation" initialized
+00[PTS] loading PTS ca certificates from '/etc/pts/cacerts'
+00[PTS]   mandatory PTS measurement algorithm HASH_SHA1[openssl] available
+00[PTS]   mandatory PTS measurement algorithm HASH_SHA2_256[openssl] available
+00[PTS]   optional  PTS measurement algorithm HASH_SHA2_384[openssl] available
+00[PTS]   optional  PTS measurement algorithm HASH_SHA2_512[openssl] available
+00[PTS]   optional  PTS DH group MODP_2048[openssl] available
+00[PTS]   optional  PTS DH group MODP_1536[openssl] available
+00[PTS]   optional  PTS DH group MODP_1024[openssl] available
+00[PTS]   mandatory PTS DH group ECP_256[openssl] available
+00[PTS]   optional  PTS DH group ECP_384[openssl] available
+00[TNC] IMV 2 supports 2 message types: 'TCG/PTS' 0x005597/0x00000001 'IETF/Operating System' 0x000000/0x00000001
+00[TNC] IMV 2 "ATTESTATION" loaded from '/usr/lib/ipsec/imcvs/imv-attestation.so'
+----
+
+xref:tnc/attestationClient.adoc#_plugin_configuration[Attestation Client] >
+
+== VPN Configuration
+
+The VPN configuration choses for this example is the same as for the general
+xref:./tncServer.adoc#_tnc_enabled_vpn_server_configuration[TNC server] but just
+uses different client and server identities. For reasons of brevity we will omit
+the `*PT-EAP*` and `*IKEv2 EAP*` transport layers.
+
+xref:tnc/attestationClient.adoc#_vpn_configuration[Attestation Client] >
+
+== PB-TNC Connection
+
+The TNC server receives the first PB-TNC Client Data batch and assigns the PB-TNC
+(TCG TNC IF-TNCCS 2.0) Connection ID `*1*` to the connection and also  creates a
+new state for both the `*OS IMV*` and the `*Attestation IMV*`. The `*OS IMV*` gets the
+Access requestor's identities `*mijas.strongsec.com*` and `*10.10.1.52*` from
+the TNC server via the {IFIMV}[TNC IF-IMV] API.
+----
+13[TNC] assigned TNCCS Connection ID 1
+13[IMV] IMV 1 "OS" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+13[IMV]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 65490 bytes
+13[IMV]   user AR identity 'mijas.strongsec.com' of type username authenticated by certificate
+13[IMV]   machine AR identity '10.10.1.52' of type IPv4 address authenticated by unknown method
+13[IMV] IMV 2 "Attestation" created a state for IF-TNCCS 2.0 Connection ID 1: +long +excl -soh
+13[IMV]   over IF-T for Tunneled EAP 2.0 with maximum PA-TNC message size of 65490 bytes
+13[IMV] IMV 1 "OS" changed state of Connection ID 1 to 'Handshake'
+13[IMV] IMV 2 "Attestation" changed state of Connection ID 1 to 'Handshake'
+----
+
+xref:tnc/attestationClient.adoc#_pb_tnc_connection[Attestation Client] >
+
+== OS Information
+
+The TNC server receives a PB-TNC Client Data batch containing a standard
+`*PB-Language-Preference*` message which sets the preferred language to
+English [`*en*`] and a PA-TNC message
+----
+13[TNC] received TNCCS batch (269 bytes)
+13[TNC] TNC server is handling inbound connection
+13[TNC] processing PB-TNC CDATA batch for Connection ID 1
+13[TNC] PB-TNC state transition from 'Init' to 'Server Working'
+13[TNC] processing IETF/PB-Language-Preference message (31 bytes)
+13[TNC] processing IETF/PB-PA message (230 bytes)
+13[TNC] setting language preference to 'en'
+----
+The PA-TNC message of standard subtype `*Operating System*` containing seven PA-TNC
+attributes is processed by the `*OS IMV*`. The most important attribute
+is the `*Device ID*` defined in the `*ITA-HSR*` namespace. Based on the keyid of
+the endpoint's *Attestation Key* it uniquely identfies the endpoint to be measured
+----
+13[TNC] handling PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
+13[IMV] IMV 1 "OS" received message for Connection ID 1 from IMC 1
+13[TNC] processing PA-TNC message with ID 0xa8ddde49
+13[TNC] processing PA-TNC attribute type 'IETF/Product Information' 0x000000/0x00000002
+13[TNC] processing PA-TNC attribute type 'IETF/String Version' 0x000000/0x00000004
+13[TNC] processing PA-TNC attribute type 'IETF/Numeric Version' 0x000000/0x00000003
+13[TNC] processing PA-TNC attribute type 'IETF/Operational Status' 0x000000/0x00000005
+13[TNC] processing PA-TNC attribute type 'IETF/Forwarding Enabled' 0x000000/0x0000000b
+13[TNC] processing PA-TNC attribute type 'IETF/Factory Default Password Enabled' 0x000000/0x0000000c
+13[TNC] processing PA-TNC attribute type 'ITA-HSR/Device ID' 0x00902a/0x00000008
+13[IMV] operating system name is 'Ubuntu' from vendor Canonical
+13[IMV] operating system version is '20.04 x86_64'
+13[IMV] operating system numeric version is 20.4
+13[IMV] operational status: operational, result: successful
+13[IMV] last boot: May 31 08:26:18 UTC 2022
+13[IMV] IPv4 forwarding is enabled
+13[IMV] factory default password is disabled
+13[IMV] device ID is 732c769e8d1b2efef8b64d5ae83f84d129733fdd
+----
+The `*Attestation IMV*` has subscribed to messages of subtype `*Operating System*`
+as well
+----
+13[IMV] IMV 2 "Attestation" received message for Connection ID 1 from IMC 1
+13[TNC] processing PA-TNC message with ID 0xa8ddde49
+13[TNC] processing PA-TNC attribute type 'IETF/Product Information' 0x000000/0x00000002
+13[TNC] processing PA-TNC attribute type 'IETF/String Version' 0x000000/0x00000004
+13[TNC] processing PA-TNC attribute type 'IETF/Numeric Version' 0x000000/0x00000003
+13[TNC] processing PA-TNC attribute type 'IETF/Operational Status' 0x000000/0x00000005
+13[TNC] processing PA-TNC attribute type 'IETF/Forwarding Enabled' 0x000000/0x0000000b
+13[TNC] processing PA-TNC attribute type 'IETF/Factory Default Password Enabled' 0x000000/0x0000000c
+13[TNC] processing PA-TNC attribute type 'ITA-HSR/Device ID' 0x00902a/0x00000008
+13[IMV] operating system name is 'Ubuntu' from vendor Canonical
+13[IMV] operating system version is '20.04 x86_64'
+13[IMV] device ID is 732c769e8d1b2efef8b64d5ae83f84d129733fdd
+----
+
+xref:tnc/attestationClient.adoc#_os_information[Attestation Client] >
+
+== IMV Policy Workitems
+
+The `*imv_policy_manager*` program is executed which connects to the TNC database
+and assigns the session number `*354*` to the current connection `*1*`. Only one
+measurement workitem is configured in the database:
+
+ * `TPMRA` - TPM Remote Attestation
+
+which is handled by the `*Attestation IMV*`
+----
+13[IMV] assigned session ID 354 to Connection ID 1
+13[IMV] policy: imv_policy_manager start successful
+13[IMV] TPMRA workitem 650
+----
+
+== OS Assessment Result
+
+No policy enforcements are defined for the `*OS IMV*`, so standard `*Assessment
+Result*` and `*Remediation Instructions*` are generated and inserted into a first
+PA-TNC message of standard subtype `*Operating Systems*`
+----
+13[IMV] IMV 1 has no workitems - no evaluation requested
+13[TNC] creating PA-TNC message with ID 0xc82bacd2
+13[TNC] creating PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+13[TNC] creating PA-TNC attribute type 'IETF/Remediation Instructions' 0x000000/0x0000000a
+13[TNC] creating PB-PA message type 'IETF/Operating System' 0x000000/0x00000001
+13[TNC] IMV 1 provides recommendation 'allow' and evaluation 'don't know'
+----
+
+xref:tnc/attestationClient.adoc#_os_assessment_result[Attestation Client] >
+
+== PTS Configuration
+
+The `*Attestation IMV*` generates the following three PA-TNC attributes defined in
+the `*TCG*` namespace
+----
+- Segmentation Contract Request
+- Request PTS Protocol Capabilities
+- PTS Measurement Algorithm Request
+----
+and inserts them into a second PA-TNC message of subtype `*PTS*` defined in the
+`*TCG*` namespace
+----
+13[IMV] IMV 2 requests a segmentation contract for PA message type 'TCG/PTS' 0x005597/0x00000001
+13[IMV]   no message size limit, maximum segment size of 65466 bytes
+13[TNC] creating PA-TNC message with ID 0x0c1897a0
+13[TNC] creating PA-TNC attribute type 'TCG/Segmentation Contract Request' 0x005597/0x00000021
+13[TNC] creating PA-TNC attribute type 'TCG/Request PTS Protocol Capabilities' 0x005597/0x01000000
+13[TNC] creating PA-TNC attribute type 'TCG/PTS Measurement Algorithm Request' 0x005597/0x06000000
+13[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The two PA-TNC messages together with a PB-TNC `PDP-Referral*` message defined
+in the `*TCG*` namespace are sent in a PB-TNC Server Data batch to the TNC client
+----
+13[TNC] TNC server is handling outbound connection
+13[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+13[TNC] creating PB-TNC SDATA batch
+13[TNC] adding TCG/PB-PDP-Referral message
+13[TNC] adding IETF/PB-PA message
+13[TNC] adding IETF/PB-PA message
+13[TNC] sending PB-TNC SDATA batch (274 bytes) for Connection ID 1
+----
+The TNC server receives a PB-TNC Client Data batch containing a PA-TNC message
+----
+05[TNC] received TNCCS batch (92 bytes)
+05[TNC] TNC server is handling inbound connection
+05[TNC] processing PB-TNC CDATA batch for Connection ID 1
+05[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+05[TNC] processing IETF/PB-PA message (84 bytes)
+----
+The PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace contains
+the following three attributes defined in the `*TCG*` namespace
+----
+- Segmentation Contract Response
+- PTS Protocol Capabilities
+- PTS Measurement Algorithm
+----
+as a response to the previous requests.
+----
+05[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+05[IMV] IMV 2 "Attestation" received message for Connection ID 1 from IMC 2 to IMV 2
+05[TNC] processing PA-TNC message with ID 0x056d62cb
+05[TNC] processing PA-TNC attribute type 'TCG/Segmentation Contract Response' 0x005597/0x00000022
+05[TNC] processing PA-TNC attribute type 'TCG/PTS Protocol Capabilities' 0x005597/0x02000000
+05[TNC] processing PA-TNC attribute type 'TCG/PTS Measurement Algorithm' 0x005597/0x07000000
+05[IMV] IMV 2 received a segmentation contract response from IMC 2 for PA message type 'TCG/PTS' 0x005597/0x00000001
+05[IMV]   no message size limit, maximum segment size of 32698 bytes
+05[PTS] supported PTS protocol capabilities: .VDT.
+05[PTS] selected PTS measurement algorithm is HASH_SHA2_256
+05[IMV] IMV 2 handles TPMRA workitem 650
+----
+The `*Attestation IMV*` creates a `*DH Nonce Parameters Request*` in the `*TCG*`
+namespace and inserts it into a PA-TNC message of subtype `*PTS*` defined in the
+`*TCG*` namespace
+----
+05[TNC] creating PA-TNC message with ID 0x87e01f73
+05[TNC] creating PA-TNC attribute type 'TCG/DH Nonce Parameters Request' 0x005597/0x03000000
+05[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The PA-TNC message is sent in a PB-TNC Server Data batch to the TNC client
+----
+05[TNC] TNC server is handling outbound connection
+05[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+05[TNC] creating PB-TNC SDATA batch
+05[TNC] adding IETF/PB-PA message
+05[TNC] sending PB-TNC SDATA batch (56 bytes) for Connection ID 1
+----
+The TNC server receives a PB-TNC Client Data batch containing a PA-TNC message
+----
+01[TNC] received TNCCS batch (144 bytes)
+01[TNC] TNC server is handling inbound connection
+01[TNC] processing PB-TNC CDATA batch for Connection ID 1
+01[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+01[TNC] processing IETF/PB-PA message (136 bytes)
+----
+The PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace contains
+the `*DH Nonce Parameters Response*` defined in the `*TCG*` namespace which sets
+the Diffie-Hellman group to `*ECP_256*`. the hash algorithm to `SHA_256` and the
+nonce length to 20 bytes
+----
+01[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+01[IMV] IMV 2 "Attestation" received message for Connection ID 1 from IMC 2 to IMV 2
+01[TNC] processing PA-TNC message with ID 0x9b6ae702
+01[TNC] processing PA-TNC attribute type 'TCG/DH Nonce Parameters Response' 0x005597/0x04000000
+01[PTS] selected DH hash algorithm is HASH_SHA2_256
+01[PTS] selected PTS DH group is ECP_256
+01[PTS] nonce length is 20
+----
+The `*Attestation IMV*` creates the following three attributes defined in the `*TCG*`
+namespace
+----
+- DH Nonce Finish
+- Get TPM Version Information
+- Get Attestation Identity Key
+----
+and inserts them in a PA-TNC message of subtype `*PTS*` defined in the `*TCG*`
+namespace
+----
+01[TNC] creating PA-TNC message with ID 0xfbdd9494
+01[TNC] creating PA-TNC attribute type 'TCG/DH Nonce Finish' 0x005597/0x05000000
+01[TNC] creating PA-TNC attribute type 'TCG/Get TPM Version Information' 0x005597/0x08000000
+01[TNC] creating PA-TNC attribute type 'TCG/Get Attestation Identity Key' 0x005597/0x0d000000
+01[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The PA-TNC message is sent in a PB-TNC Server Data batch to the TNC client
+----
+01[TNC] TNC server is handling outbound connection
+01[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+01[TNC] creating PB-TNC SDATA batch
+01[TNC] adding IETF/PB-PA message
+01[TNC] sending PB-TNC SDATA batch (172 bytes) for Connection ID 1
+----
+The TNC server receives a PB-TNC Client Data batch containing a PA-TNC message
+----
+06[TNC] received TNCCS batch (172 bytes)
+06[TNC] TNC server is handling inbound connection
+06[TNC] processing PB-TNC CDATA batch for Connection ID 1
+06[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+06[TNC] processing IETF/PB-PA message (164 bytes)
+----
+The PA-TNC message of subtype `*PTS*` defined in the `*TCG*` namespace contains
+two attributes defined in the `*TCG*` namespace:
+
+* `*TPM Version Information*`: +
+  Indicates the version of the implemented TPM standard (`*rev. 1.38*`), the chip
+  or firmware vendor (`*STM*`) as well as the startup locality (`*3*`) that is
+  important to correctly initialize `*PCR0*` of the IMV's own PCR bank emulation
+
+* `*Attestation Identity Key*`: +
+  This is the public part of the enpoint's *Attestation Key* (AK) which is used by
+  the `*Attestion IMV*` to verify the *TPM Quote Signature*. The keyid is usually
+  equivalent to the endpoint's hardware ID. Using
+  xref:./measuredBoot.adoc#_tpm_bios_measurement_policy[strongTNC], the *Trusted* flag
+  must be set in the *Device Info* view. As an alternative the attribute can transport
+  the endpoint's AK certificate.
+
+----
+06[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+06[IMV] IMV 2 "Attestation" received message for Connection ID 1 from IMC 2 to IMV 2
+06[TNC] processing PA-TNC message with ID 0x436bed34
+06[TNC] processing PA-TNC attribute type 'TCG/TPM Version Information' 0x005597/0x09000000
+06[TNC] processing PA-TNC attribute type 'TCG/Attestation Identity Key' 0x005597/0x0e000000
+06[PTS] Version Information: TPM 2.0 rev. 1.38 2018 STM  - startup locality: 3
+06[IMV] verifying AIK with keyid 73:2c:76:9e:8d:1b:2e:fe:f8:b6:4d:5a:e8:3f:84:d1:29:73:3f:dd
+06[IMV] AIK public key is trusted
+06[IMV] evidence request by
+----
+
+xref:tnc/attestationClient.adoc#_pts_configuration[Attestation Client] >
+
+== Boot Event Measurements
+
+The following three attributes are inserted into a PA-TNC message of subtype `*PTS*`
+defined in the `*TCG*` namespace:
+
+* `*Get Symlinks*` defined in the `*ITA-HSR*` namespace: +
+  Request a list of symbolic links created by the operating system due to
+  {USRMERGE}[UsrMerge] (eg. `/bin -> /usr/bin`).
+
+* `*Request Functional Component Evidence*` defined in the `*TCG*` namespace: +
+  Request BIOS pre-boot evidence.
+
+* `*Generate Attestation Evidence*` defined in the `*TCG*` namespace: +
+  Request a *TPM Quote Signature* over the final state of the PCR registers
+  involved in the evidence measurement.
+
+----
+06[TNC] creating PA-TNC message with ID 0xcf126135
+06[TNC] creating PA-TNC attribute type 'ITA-HSR/Get Symlinks' 0x00902a/0x00000009
+06[TNC] creating PA-TNC attribute type 'TCG/Request Functional Component Evidence' 0x005597/0x00100000
+06[TNC] creating PA-TNC attribute type 'TCG/Generate Attestation Evidence' 0x005597/0x00200000
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+----
+The PA-TNC message is sent in a PB-TNC Server Data batch to the TNC client
+----
+06[TNC] TNC server is handling outbound connection
+06[TNC] PB-TNC state transition from 'Server Working' to 'Client Working'
+06[TNC] creating PB-TNC SDATA batch
+06[TNC] adding IETF/PB-PA message
+06[TNC] sending PB-TNC SDATA batch (93 bytes) for Connection ID 1
+----
+The TNC server receives a PB-TNC Client Data batch containing a PA-TNC message
+----
+06[TNC] received TNCCS batch (11789 bytes)
+06[TNC] TNC server is handling inbound connection
+06[TNC] processing PB-TNC CDATA batch for Connection ID 1
+06[TNC] PB-TNC state transition from 'Client Working' to 'Server Working'
+06[TNC] processing IETF/PB-PA message (11781 bytes)
+----
+The PA-TNC message of subtype `*PTS*` contains the following attributes:
+
+* `*Symlinks*` defined in the `*ITA-HSR*` namespace: +
+  If the endpoint's Linux distribution supports {USRMERGE}[UsrMerge] then it sends
+  a list of directory symbolic links.
+* `*Simple Component Evidence*` (136 instances): +
+  Each attribute instance contains a single Boot Event measurement (SHA256 hash
+  value plus event log entry).
+* `*Simple Evidence Final*`: +
+  Contains a *TPM Quote Signature* over the PCR Composite digest and some additional
+  system information.
+
+----
+06[TNC] handling PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+06[IMV] IMV 2 "Attestation" received message for Connection ID 1 from IMC 2 to IMV 2
+06[TNC] processing PA-TNC message with ID 0x23ebec16
+06[TNC] processing PA-TNC attribute type 'ITA-HSR/Symlinks' 0x00902a/0x0000000a
+06[TNC] processing PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] processing PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+        ...
+06[TNC] processing PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] processing PA-TNC attribute type 'TCG/Simple Component Evidence' 0x005597/0x00300000
+06[TNC] processing PA-TNC attribute type 'TCG/Simple Evidence Final' 0x005597/0x00400000
+06[PTS] adding directory symlinks:
+06[PTS]   /lib32 -> /usr/lib32
+06[PTS]   /lib -> /usr/lib
+06[PTS]   /libx32 -> /usr/libx32
+06[PTS]   /sbin -> /usr/sbin
+06[PTS]   /bin -> /usr/bin
+06[PTS]   /lib64 -> /usr/lib64
+06[PTS] TPM 2.0 - locality indicator set to 3
+06[PTS] registering BIOS evidence measurements
+06[PTS] constructed PCR Composite: => 352 bytes @ 0x7f9758029790
+06[PTS]    0: 06 15 6C E6 46 85 9E E3 81 09 57 54 9A 18 4B 7A  ..l.F.....WT..Kz
+06[PTS]   16: 2E A6 C6 C0 4F 3D DB 8A 2C D3 A3 67 F4 93 16 71  ....O=..,..g...q
+06[PTS]   32: 6C B0 42 07 6E C2 B8 67 A9 2B CB 8E 12 F9 14 D6  l.B.n..g.+......
+06[PTS]   48: 4A 06 E2 9B A1 08 0C E4 E0 27 55 C0 21 23 6C 81  J........'U.!#l.
+06[PTS]   64: 30 3B 09 87 95 4C D0 9C A1 78 B8 6B DD 60 55 40  0;...L...x.k.`U@
+06[PTS]   80: F4 00 40 E8 E6 42 BD 11 73 AC 45 BC 9B 36 A3 49  ..@..B..s.E..6.I
+06[PTS]   96: 3D 45 8C FE 55 CC 03 EA 1F 44 3F 15 62 BE EC 8D  =E..U....D?.b...
+06[PTS]  112: F5 1C 75 E1 4A 9F CF 9A 72 34 A1 3F 19 8E 79 69  ..u.J...r4.?..yi
+06[PTS]  128: A3 1D BF 9D 3B CE 32 03 F2 54 59 8D 69 35 1D 8E  ....;.2..TY.i5..
+06[PTS]  144: 4B 7E 1B 54 CD 43 3D 1C 71 07 92 52 24 6A EC EF  K~.T.C=.q..R$j..
+06[PTS]  160: BB 49 6D 97 1F AB AC 31 BC 4D 1C A2 F2 EA F7 C0  .Im....1.M......
+06[PTS]  176: 82 F3 E9 3C 25 6F 07 93 E0 CF 67 14 FD 36 40 4D  ...<%o....g..6@M
+06[PTS]  192: 3D 45 8C FE 55 CC 03 EA 1F 44 3F 15 62 BE EC 8D  =E..U....D?.b...
+06[PTS]  208: F5 1C 75 E1 4A 9F CF 9A 72 34 A1 3F 19 8E 79 69  ..u.J...r4.?..yi
+06[PTS]  224: 44 6F 7A 67 D5 78 B2 F9 47 C4 E1 12 F7 69 96 E7  Dozg.x..G....i..
+06[PTS]  240: E3 67 D2 74 AF AF BE 77 89 94 C4 1A 4B 67 BC FE  .g.t...w....Kg..
+06[PTS]  256: 36 77 2C B7 7B 34 C1 BC DC 41 6E 3C C0 50 E7 26  6w,.{4...An<.P.&
+06[PTS]  272: 7B 64 C2 91 28 12 9B 6A 3A 13 8A 74 C6 58 73 AD  {d..(..j:..t.Xs.
+06[PTS]  288: E2 09 7C E2 17 04 A8 46 B3 55 3F 24 DF 4E 57 26  ..|....F.U?$.NW&
+06[PTS]  304: F1 B9 86 DC 31 C3 11 B8 30 28 8D 86 00 21 EE 57  ....1...0(...!.W
+06[PTS]  320: E3 99 1B 7D DD 47 BE 7E 92 72 6A 83 2D 68 74 C5  ...}.G.~.rj.-ht.
+06[PTS]  336: 34 9B 52 B7 89 FA 0D B8 B5 58 C6 9F EA 29 57 4E  4.R......X...)WN
+06[PTS] constructed PCR Composite digest: => 32 bytes @ 0x7f97580281f0
+06[PTS]    0: 29 6C 1D BC 8B F0 3D A1 AD 87 AC 08 45 34 78 64  )l....=.....E4xd
+06[PTS]   16: 78 EE 63 92 1B D0 E5 E2 C8 54 AB 4E A7 7D 53 E6  x.c......T.N.}S.
+06[PTS] constructed TPM Quote Info: => 145 bytes @ 0x7f9758028f50
+06[PTS]    0: FF 54 43 47 80 18 00 22 00 0B BD E2 F1 F3 E7 B6  .TCG..."........
+06[PTS]   16: 0C A6 6D 93 1C EC AC 7D 25 B4 69 F0 E3 9E 96 9D  ..m....}%.i.....
+06[PTS]   32: 3D B8 A8 79 89 FB E2 C1 9B C5 00 20 7E 42 B5 09  =..y....... ~B..
+06[PTS]   48: 42 91 35 72 87 1A 47 61 8F FF F5 C0 FE CD 4D A7  B.5r..Ga......M.
+06[PTS]   64: AE 2C 98 F0 A9 81 F9 B7 F7 C4 27 19 00 00 00 00  .,........'.....
+06[PTS]   80: 5F A7 4E 12 00 00 01 13 00 00 00 00 01 00 01 01  _.N.............
+06[PTS]   96: 02 00 00 00 00 00 00 00 01 00 0B 03 FF 43 00 00  .............C..
+06[PTS]  112: 20 29 6C 1D BC 8B F0 3D A1 AD 87 AC 08 45 34 78   )l....=.....E4x
+06[PTS]  128: 64 78 EE 63 92 1B D0 E5 E2 C8 54 AB 4E A7 7D 53  dx.c......T.N.}S
+06[PTS]  144: E6                                               .
+06[IMV] TPM Quote Info signature verification successful
+----
+The first time the *BIOS Event Measurements* are received, they are stored in the
+xref:./measuredBoot.adoc#_device_report[strongTNC] database.
+----
+06[PTS] registered 136 BIOS evidence measurements
+06[IMV] IMV 2 handled TPMRA workitem 650: allow - registered 136 BIOS evidence measurements
+----
+The second time and in every session after, the received *BIOS Event Measurements*
+are compared to the reference values stored in the
+xref:./measuredBoot.adoc#_tpm_evidence[strongTNC] database
+----
+10[PTS] 136 BIOS evidence measurements are ok
+10[IMV] IMV 2 handled TPMRA workitem 651: allow - 136 BIOS evidence measurements are ok
+----
+
+xref:tnc/attestationClient.adoc#_boot_event_measurements[Attestation Client] >
+
+== TNC Assessment Result
+
+Since all 136 BIOS evidence measurements and the TPM Quote Signature were correct,
+the `*Attestation IMV*` generates a standard `*Assessment Result*` attribute with
+the evaluation `*compliant*` and the recommendation `*allow*` and inserts it in a
+PA-TNC message of subtype `*PTS*` defined in the `*TGC*` namespace
+----
+06[TNC] creating PA-TNC message with ID 0x6d4576ee
+06[TNC] creating PA-TNC attribute type 'IETF/Assessment Result' 0x000000/0x00000009
+06[TNC] creating PB-PA message type 'TCG/PTS' 0x005597/0x00000001
+06[TNC] IMV 2 provides recommendation 'allow' and evaluation 'compliant'
+----
+The overall policy recommendation issued by the TNC server is `*allow*` and
+communicated to the TNC client in the form of a PB-TNC `*Assessment-Result*`
+and a PB-TNC `*Access-Recommendation*` payload, both of which are sent together
+with the PA-TNC message from the `*Attestation IMV*` in a PB-TNC Result batch to the
+TNC client
+----
+06[TNC] TNC server is handling outbound connection
+06[IMV] policy: recommendation for access requestor 10.10.1.52 is allow
+06[IMV] policy: imv_policy_manager stop successful
+06[IMV] IMV 1 "OS" changed state of Connection ID 1 to 'Allowed'
+06[IMV] IMV 2 "Attestation" changed state of Connection ID 1 to 'Allowed'
+06[TNC] PB-TNC state transition from 'Server Working' to 'Decided'
+06[TNC] creating PB-TNC RESULT batch
+06[TNC] adding IETF/PB-PA message
+06[TNC] adding IETF/PB-Assessment-Result message
+06[TNC] adding IETF/PB-Access-Recommendation message
+06[TNC] sending PB-TNC RESULT batch (88 bytes) for Connection ID 1
+----
+The TNC client replies with a PB-TNC Close batch which causes the causes the `*OS IMV*`,
+and `*Attestation IMV*` states as well as the PB-TNC connection to be deleted.
+Due to the positive final recommendation, the IKEv2 connection is allowed to complete
+----
+15[TNC] received TNCCS batch (8 bytes)
+15[TNC] TNC server is handling inbound connection
+15[TNC] processing PB-TNC CLOSE batch for Connection ID 1
+15[TNC] PB-TNC state transition from 'Decided' to 'End'
+15[TNC] final recommendation is 'allow' and evaluation is 'compliant'
+15[TNC] policy enforced on peer 'mijas.strongsec.com' is 'allow'
+15[TNC] policy enforcement point added group membership 'allow'
+15[IKE] EAP_TTLS phase2 authentication of 'mijas.strongsec.com' with EAP_PT_EAP successful
+15[IMV] IMV 1 "OS" deleted the state of Connection ID 1
+15[IMV] IMV 2 "Attestation" deleted the state of Connection ID 1
+15[TNC] removed TNCCS Connection ID 1
+----
+
+xref:tnc/attestationClient.adoc#_tnc_assessment_result[Attestation Client] >
+
+== IKEv2 Authentication Success
+
+The EAP TTLS authentication based on a TLS client certificate plus the TNC
+measurements was successful. Thus an `EAP-SUCCESS` message is sent to the EAP client
+----
+15[IKE] EAP method EAP_TTLS succeeded, MSK established
+15[ENC] generating IKE_AUTH response 25 [ EAP/SUCC ]
+15[NET] sending packet: from 10.10.0.150[4500] to 10.10.1.52[4500] (80 bytes)
+----
+The IKEv2 client sends an `AUTH` payload depending on the `MSK` (Master Secret Key)
+derived from the `EAP-TTLS` session
+----
+07[NET] received packet: from 10.10.1.52[4500] to 10.10.0.150[4500] (112 bytes)
+07[ENC] parsed IKE_AUTH request 26 [ AUTH ]
+07[IKE] authentication of 'mijas.strongsec.com' with EAP successful
+07[IKE] authentication of 'vpn.strongswan.org' (myself) with EAP
+07[IKE] IKE_SA eap[1] established between 10.10.0.150[vpn.strongswan.org]...10.10.1.52[mijas.strongsec.com]
+----
+The IKEv2 server in turn authenticates itself again via an `AUTH` payload depending
+on the `EAP-TTLS MSK` as well
+----
+07[IKE] maximum IKE_SA lifetime 11522s
+07[IKE] peer requested virtual IP %any
+07[CFG] assigning new lease to 'mijas.strongsec.com'
+07[IKE] assigning virtual IP 10.10.1.65 to peer 'mijas.strongsec.com'
+07[CFG] selected proposal: ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+07[IKE] CHILD_SA eap{1} established with SPIs ce4c682b_i cbc81685_o and TS 10.10.0.150/32 == 10.10.1.65/32
+07[ENC] generating IKE_AUTH response 26 [ AUTH CPRP(ADDR DNS) SA TSi TSr N(AUTH_LF>
+07[NET] sending packet: from 10.10.0.150[4500] to 10.10.1.52[4500] (272 bytes)
+----
+The IKEv2 connection has been successfully established.
+
+xref:tnc/attestationClient.adoc#_ikev2_authentication_success[Attestation Client] >

@@ -73,7 +73,7 @@ have to enabled:
 IMV "OS"      /usr/lib/ipsec/imcvs/imv-os.so
 IMV "SWIMA"   /usr/lib/ipsec/imcvs/imv-swima.so
 ----
-These two Integrity Measurement Collectors have to be built beforehand with the
+These two Integrity Measurement Verifiers have to be built beforehand with the
 xref:install/autoconf.adoc[`*./configure*`] options
 
   --enable-imv-os --enable-imv-swima
@@ -167,7 +167,7 @@ identfies the endpoint to be measured
 10[IMV] factory default password is disabled
 10[IMV] device ID is a488651e36664792b306cf8be72dd630
 ----
-The first PA-TNC message is of standard subtype `*SWIMA*` and contains a
+The second PA-TNC message is of standard subtype `*SWIMA*` and contains a
 `*Segmentation Contract Request*` attribute defined in the `*TCG*` namespace which
 proposes to split up huge PA-TNC messages into segments with a maximum size of
 `*32'698*` bytes each (see
@@ -205,7 +205,7 @@ which is handled by the `*SWID IMV*`
 10[IMV] SWIDT workitem 1
 10[IMV] IMV 2 handles SWIDT workitem 1
 ----
-No policy enforcements are defined for the `*OS IMV*` so standard `*Assessment
+No policy enforcements are defined for the `*OS IMV*`, so standard `*Assessment
 Result*` and `*Remediation Instructions*` are generated and inserted into a
 PA-TNC message of standard subtype `*Operating Systems*`
 ----
@@ -285,7 +285,7 @@ The PA-TNC message is sent in a PB-TNC Server Data batch to the TNC client
 16[TNC] adding IETF/PB-PA message
 16[TNC] sending PB-TNC SDATA batch (56 bytes) for Connection ID 1
 ----
-THE TNC server receives a PB-TNC Client Data batch containing a PA-TNC message
+The TNC server receives a PB-TNC Client Data batch containing a PA-TNC message
 ----
 12[TNC] received TNCCS batch (6951 bytes)
 12[TNC] TNC server is handling inbound connection
@@ -420,7 +420,7 @@ subtype `*SWIMA*`
 The overall policy recommendation issued by the TNC server is `*allow*` and
 communicated to the TNC client in the form of a PB-TNC `*Assessment-Result*`
 and a PB-TNC `*Access-Recommendation*` payload, both of which are sent together
-with the PA-TNC message from the `*SWIMA IMV*` in PB-TNC Result batch to the
+with the PA-TNC message from the `*SWIMA IMV*` in a PB-TNC Result batch to the
 TNC client
 ----
 07[TNC] TNC server is handling outbound connection
@@ -436,7 +436,7 @@ TNC client
 07[TNC] sending PB-TNC RESULT batch (88 bytes) for Connection ID 1
 ----
 The TNC client replies with a PB-TNC Close batch which causes the PB-TNC connection
-to be deleted. Due to the positive final recommandation, the IKEv2 connection is
+to be deleted. Due to the positive final recommendation, the IKEv2 connection is
 allowed to complete
 ----
 10[TNC] received TNCCS batch (8 bytes)
@@ -463,7 +463,7 @@ measurements was successful. Thus an `EAP-SUCCESS` message is sent to the EAP cl
 10[ENC] generating IKE_AUTH response 114 [ EAP/SUCC ]
 10[NET] sending packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (80 bytes)
 ----
-The IKEv2 client sents an `AUTH` payload depending on the `MSK` (Master Secret Key)
+The IKEv2 client sends an `AUTH` payload depending on the `MSK` (Master Secret Key)
 derived from the `EAP-TTLS` session
 ----
 09[NET] received packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (112 bytes)

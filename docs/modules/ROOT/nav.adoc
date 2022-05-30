@@ -164,6 +164,13 @@
 ** xref:tnc/swima.adoc[]
 *** xref:tnc/swimaClient.adoc[]
 *** xref:tnc/swimaServer.adoc[]
+** xref:tnc/measuredBoot.adoc[]
+*** xref:tnc/attestationClient.adoc[]
+*** xref:tnc/attestationServer.adoc[]
+*** xref:tnc/pcrBootEvents.adoc[]
+** xref:tnc/ima.adoc[]
+*** xref:tnc/imaClient.adoc[]
+*** xref:tnc/imaServer.adoc[]
 
 .Support
 * xref:support/helpRequests.adoc[Help Requests]

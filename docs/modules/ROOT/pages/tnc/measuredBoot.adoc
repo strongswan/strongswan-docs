@@ -1,0 +1,66 @@
+= Measured Boot
+
+Using *Remote Attestation*, the pre-boot phase based on the `BIOS/UEFI` and the
+ensuing bootload process are measured, certified by the *Trusted Platform Module*
+(TPM) residing on the endpoint.
+
+== strongTNC Remote Attestation Database
+
+=== TPM BIOS Measurement Policy
+
+In order to enable `BIOS` measurements, add the `*TPM BIOS*` group in the *Device
+Info* menu for a given device. Additionally set the *Trusted* flag in order to
+put trust into the *Attestation Key* sent by the endpoint via the PA-TNC protocol.
+The *Device ID* is the `*keyid*` of the AK, so that the correctness of the public
+key can be verified.
+
+.Assign Device to TPM BIOS Group
+image::tnc_bios_device.png[TPM BIOS Group Assignment, link=self]
+
+=== Device Report
+
+After the first run, the device report shows that a signed TPM-based BIOS
+measurement has been successfully retrieved from the remote device.
+
+.Device Report on TPM BIOS Measurements
+image::tnc_bios_report.png[TPM BIOS Device Report, link=self]
+
+The session details show that during the first run 136 BIOS measurements have been
+registered in the xref:./strongTnc.adoc[strongTNC] database.
+
+.First Session registering TPM BIOS Measurements
+image::tnc_bios_session_1.png[TPM BIOS Registration Session, link=self]
+
+During the second and each subsequent run the received BIOS measurements are
+compared with the 136 reference values stored in the *TPM Evidence* table.
+
+.Second Session verifiying TPM BIOS Measurements
+image::tnc_bios_session_2.png[TPM BIOS Verification Session, link=self]
+
+=== TPM Evidence
+
+The registered BIOS measurements are stored in the *TPM Evidence* table and correspond
+to the xref:./pcrBootEvents.adoc#_pcr_boot_event_log[PCR Boot Event Log]. Only
+the SHA256 hashes but not the log entries are transferred by the
+xref:./attestationClient#_attestation_imc[`*Attestation IMC*`] to the
+xref:./attestationServer#_attestation_imv[`*Attestation IMV*`].
+
+.TPM Evidence
+image::tnc_tpm_evidence.png[TPM Evidence, link=self]
+
+The xref:./pcrBootEvents.adoc#_pcr_boot_event_log[PCR Boot Event Log] shows that
+several bootload events (`*104*`, `*105*`, `*131..136*`) depend on the Linux kernel
+version. Thus after a kernel update and a subsequent reboot on the endpoint, these
+SHA256 hashes change, so that currently all *Component Hashes* have to be cleared
+using the red *Delete* button.
+
+== Attestation Client
+
+The xref:./attestationClient.adoc[Attestation Client] is the TNC component located
+on the client side, retrieving and transmitting the TPM BIOS evidence.
+
+== Attestation Server
+
+The xref:./attestationServer.adoc[Attestation Server] is the TNC component running
+on the server side, receiving the TPM BIOS evidence and storing or verifying it in
+the xref:./strongTnc.adoc[strongTNC] database.

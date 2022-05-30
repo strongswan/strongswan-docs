@@ -720,8 +720,7 @@ daemon is started via `*systemd*`:
  $ sudo systemctl start strongswan
 
 ----
-Jan 04 15:18:38 edu xref:daemons/charon.adoc[`*charon*`][1]: Starting stro
-gSwan IPsec IKEv1/IKEv2 daemon using swanctl...
+Jan 04 15:18:38 systemd[1]: Starting strongSwan IPsec IKEv1/IKEv2 daemon using swanctl...
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded plugins: charon-systemd random nonce drbg x509 revocation constraints pubkey pkcs1 pkcs8 pkcs12 pem openssl curl tpm kernel-netl>
 Jan 04 15:18:38 edu charon-systemd[648407]: spawning 16 worker threads
 Jan 04 15:18:38 edu charon-systemd[648407]: loaded certificate 'C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com'

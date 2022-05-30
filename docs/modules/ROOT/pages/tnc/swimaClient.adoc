@@ -139,10 +139,9 @@ have to be configured. As a minimum the following entries are needed
 ----
 libimcv {
   plugins {
-      imc-swima {
-         swid_full = yes
-         swid_database = sqlite:///etc/pts/collector.db
-      }
+    imc-swima {
+      swid_full = yes
+      swid_database = sqlite:///etc/pts/collector.db
     }
   }
 }
@@ -528,7 +527,8 @@ from the `EAP-TTLS` session
 09[NET] sending packet: from 192.168.0.3[4500] to 192.168.0.2[4500] (112 bytes)
 ----
 The IKEv2 server in turn authenticates itself again via an `AUTH` payload depending
-on the `EAP-TTLS MSK` as well. The PB-TNC connection is deleted
+on the `EAP-TTLS MSK` as well. The `*OS IMC*` and `*SWIMA IMC*` states as well as the
+PB-TNC connection are deleted
 ----
 13[NET] received packet: from 192.168.0.2[4500] to 192.168.0.3[4500] (256 bytes)
 13[ENC] parsed IKE_AUTH response 115 [ AUTH CPRP(ADDR) SA TSi TSr N(MOBIKE_SUP) N(ADD_4_ADDR) ]
