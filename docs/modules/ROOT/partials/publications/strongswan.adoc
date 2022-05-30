@@ -4,17 +4,20 @@
 * IPsec Workshop Dresden, March 2018:
   xref:attachment$IPsecWorkshop_Dresden_2018.pdf[The strongSwan Project].
 
+* Polish-Swiss ICT Sector Meeting Rapperswil, September 2015: +
+  xref:attachment$PolishSwissICT_Rapperswil_2015.pdf[Swiss Open Source Security Software for the World Market].
+
 * GUUG Frühjahrsfachgespräch Stuttgart, March 2015:
-  xref:attachment$GUUG_Stuttgart_2015.pdf[New strongSwan VPN Features]
+  xref:attachment$GUUG_Stuttgart_2015.pdf[New strongSwan VPN Features].
 
 * Open Source Trend Days Steinfurt, September 2013:
-  xref:attachment$OSTD_Steinfurt_2013.pdf[The strongSwan Open Source VPN Solution]
+  xref:attachment$OSTD_Steinfurt_2013.pdf[The strongSwan Open Source VPN Solution].
 
 * DFN Betriebstagung Berlin, October 2011 :
-  xref:attachment$DFN_Berlin_2011.pdf[VPN with Mobile Devices]
+  xref:attachment$DFN_Berlin_2011.pdf[VPN with Mobile Devices].
 
 ** Technical Talk:
-   xref:attachment$DFN_Berlin_2011_Technical.pdf[VPN with Mobile Devices revisited]
+   xref:attachment$DFN_Berlin_2011_Technical.pdf[VPN with Mobile Devices revisited].
 
 * LinuxTag Berlin, June 2010:
   xref:attachment$LinuxTag_Berlin_2010.pdf[strongSwan News].
@@ -34,7 +37,7 @@
    xref:attachment$LinuxTag_Berlin_2009_Flyer_VPN_Solution.pdf[The VPN Solution for Mixed Platforms].
 
 * AusCERT Computer Security Day Brisbane, November 2008:
-  xref:attachment$AusCERT_Brisbane_2008.pdf[strongSwan - The Linux IPsec Solution]
+  xref:attachment$AusCERT_Brisbane_2008.pdf[strongSwan - The Linux IPsec Solution].
 
 * LinuxTag Berlin May 2008:
   xref:attachment$LinuxTag_Berlin_2008.pdf[strongSwan VPNs - scalable and modularized].
@@ -46,7 +49,7 @@
    xref:attachment$LinuxTag_Berlin_2008_Flyer_Mediation_Service.pdf[IKEv2 Mediation Service for IPsec].
 
 * heise Security, January 2008:
-  {HEISE}/Einfacher-VPN-Tunnelbau-dank-IKEv2-270056.html[Einfacher VPN-Tunnelbau dank IKEv2]
+  {HEISE}/Einfacher-VPN-Tunnelbau-dank-IKEv2-270056.html[Einfacher VPN-Tunnelbau dank IKEv2].
 
 * LinuxTag Berlin, May 2007:
   xref:attachment$LinuxTag_Berlin_2007.pdf[strongSwan - The new Linux IKEv2 VPN Solution].
@@ -70,10 +73,10 @@
   xref:attachment$LinuxTag_Karlsruhe_2005.pdf[Advanced Features of Linux strongSwan].
 
 * DFN Arbeitstagung Düsseldorf, June 2005:
-  xref:attachment$DFN_Duesseldorf_2005.pdf[Advanced Network Simulation under User-Mode Linux]
+  xref:attachment$DFN_Duesseldorf_2005.pdf[Advanced Network Simulation under User-Mode Linux].
 
 * DFN Arbeitstagung Düsseldorf, June 2003:
-  xref:attachment$DFN_Duesseldorf_2003.pdf[Virtual Private Networks - Coping with Complexity]
+  xref:attachment$DFN_Duesseldorf_2003.pdf[Virtual Private Networks - Coping with Complexity].
 
 * IPsec Global Summit Paris, December 2002: +
-  xref:attachment$IPsecGlobalSummit_Paris_2002.pdf[Large-Scale Road Warrior Access based on X.509 Certificates and DHCP-over-IPsec]
+  xref:attachment$IPsecGlobalSummit_Paris_2002.pdf[Large-Scale Road Warrior Access based on X.509 Certificates and DHCP-over-IPsec].

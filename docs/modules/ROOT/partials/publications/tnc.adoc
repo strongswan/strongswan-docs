@@ -1,11 +1,14 @@
 * TCG Developer Blog July 2018:
   {TCGBLOG}/2018/07/26/use-of-the-software-inventory-message-and-attribute-swima-standard/[Use of the Software Inventory Message and Attribute (SWIMA) Standard].
 
+* Information Security in Healthcare Conference Rotkreuz, June 2018: +
+  xref:attachment$InfoSecHealth_Rotkreuz_2018.pdf[Starke Identität und Sicherheit von IoT Geräten].
+
 * Cyber-Security Event Singapore, March 2017:
-  xref:attachment$CyberSecurity_Singapore_2017.pdf[TPM-Based Attestation of IoT Devices]
+  xref:attachment$CyberSecurity_Singapore_2017.pdf[TPM-Based Attestation of IoT Devices].
 
 * Connect Security World Marseille, September 2016:
-  xref:attachment$ConnectSecurityWorld_2016.pdf[Mutual Attestation of IoT Devices]
+  xref:attachment$ConnectSecurityWorld_2016.pdf[Mutual Attestation of IoT Devices].
 
 * TCG Members Meeting Vienna, June 2016:
   xref:attachment$TCG_Vienna_2016.pdf[Mutual Attestation of IoT Devices and TPM 2.0 Support].
