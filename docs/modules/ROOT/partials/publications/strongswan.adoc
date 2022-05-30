@@ -1,3 +1,9 @@
+* IPsec Workshop Prague, March 2019:
+  xref:attachment$IPsecWorkshop_Prague_2019.pdf[The strongSwan Project].
+
+* IPsec Workshop Dresden, March 2018:
+  xref:attachment$IPsecWorkshop_Dresden_2018.pdf[The strongSwan Project].
+
 * GUUG Frühjahrsfachgespräch Stuttgart, March 2015:
   xref:attachment$GUUG_Stuttgart_2015.pdf[New strongSwan VPN Features]
 
