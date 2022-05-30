@@ -283,13 +283,13 @@ kernel.
 |{IETF}/rfc8983[RFC 8983]:
  IKEv2 Notification Status Types for IPv4/IPv6 Coexistence
 
+|6.0
+|{IETF}/rfc9242[RFC 9242]:
+ Intermediate Exchange in the IKEv2 Protocol
+
 |
 |{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
  Labeled IPsec Traffic Selector support for IKEv2
-
-|6.0
-|{IETF}/draft-ietf-ipsecme-ikev2-intermediate[draft-ietf-ipsecme-ikev2-intermediate]:
- Intermediate Exchange in the IKEv2 Protocol
 
 |6.0
 |{IETF}/draft-ietf-ipsecme-ikev2-multiple-ke[draft-ietf-ipsecme-ikev2-multiple-ke]:
