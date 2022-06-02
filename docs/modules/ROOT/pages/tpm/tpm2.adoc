@@ -21,9 +21,16 @@ from the {TPM2}[`*tpm2-software*`] project that also offers a set of
 When using a *strongSwan* version newer than *5.9.0* with *Linux 5.4* kernel or
 newer, we recommend these latest versions:
 
-* *tpm2-tss* version {TSSV}: {TPM2}/tpm2-tss/releases/tag/{TSSV}
+* *tpm2-tss* version *{TSSV}*: {TPM2}/tpm2-tss/releases/tag/{TSSV}
 
-* *tpm2-tools* version {TOOLV}: {TPM2}/tpm2-tools/releases/tag/{TOOLV}
+* *tpm2-tools* version *{TOOLV}*: {TPM2}/tpm2-tools/releases/tag/{TOOLV}
+
+NOTE: *Ubuntu 22.04* comes with version *3.2.0* of the *tpm2-tss* library and version
+      *5.2* of the  *tpm2-tools*, whereas *Debian 11* supports the slightly older
+      *tpm2-tss 3.0.3* and *tpm2-tools 5.0* versions, so that for these Linux
+      distributions no manual compilation of the two packages is necessary. For
+      older Linux versions it is recommended to download and install the latest
+      tarballs from the {TPM2}[`*tpm2-software*`] site.
 
 In order to test if we can connect to the TPM 2.0 device, we list all persistent
 keys stored in the Non-Volatile (NV) RAM:
