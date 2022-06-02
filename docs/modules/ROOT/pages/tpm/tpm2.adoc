@@ -18,6 +18,9 @@ from the {TPM2}[`*tpm2-software*`] project that also offers a set of
 {TPM2}/tpm2-tools[`*tpm2-tools*`] using the
 {TCG}/tcg-tss-2-0-enhanced-system-api-esapi-specification/[TCG TSS 2.0 Enhanced System Level API].
 
+.TPM 2.0 implemented as a hardware device
+image::tpm_Infineon_SLB_9665.jpg[Infineon TPM 2.0, width=50%]
+
 When using a *strongSwan* version newer than *5.9.0* with *Linux 5.4* kernel or
 newer, we recommend these latest versions:
 
