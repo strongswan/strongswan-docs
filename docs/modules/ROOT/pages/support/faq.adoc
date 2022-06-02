@@ -274,10 +274,20 @@ vulnerable to online attacks if weak user passwords are used.
 
 === Matching CN field in Distinguished Names
 
-*Q:* _Does strongSwan support checking the ID against the Common Name (CN) field
-of a Distinguished Name (DN) in X.509 certificates?_
+*Q:* _Does strongSwan support checking a FQDN identity against the Common Name (CN)
+field of a Distinguished Name (DN) in X.509 certificates?_
 
-*A:*: No, it doesn't. The ID must be present in a SAN field of the correct type.
+*A:*: No, it doesn't. Distinguished Names of certificates (and with that any RDNs,
+such as CN) are only matched against identities of type `*DN*`. For instance, the
+identity `*vpn.strongswan.org*` won't match a certificate's subject DN such as
+`*C=CH, O=strongSwan, CN=vpn.strongswan.org*`. However, the `*DN*` identity
+`*C=&ast;, O=&ast;, CN=vpn.strongswan.org*` would match it (also see
+`*charon.rdn_matching*` in xref:config/strongswanConf.adoc[`*strongswan.conf*`]).
+
+To match an identity of type `*FQDN*` (fully qualified domain name) or
+`*USER_FQDN*` (email address) against a certificate, it has to be present in
+a subjectAltName (SAN) extension of the correct type.  In the above example
+`*vpn.strongswan.org*` would have to be contained in a SAN of type `*dNSName*`.
 
 === X.509 Certificate Chain Files
 
