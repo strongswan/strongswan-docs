@@ -72,11 +72,10 @@ TPM 2.0 - algorithms: RSA SHA1 HMAC AES MGF1 KEYEDHASH XOR SHA256 RSASSA RSAES R
 TPM 2.0 - ECC curves: NIST_P256 BN_P256
 TPM 2.0 - PCR banks: SHA1 SHA256
 ----
-Apparently the analyzed persistent key can be used for encryption only because no
-signature algorithm is defined:
+Apparently the analyzed persistent key can be used for encryption only:
 ----
 TPM 2.0 via TSS2 v2 available
-signature algorithm is NULL with ERROR hash
+encryption algorithm is AES-CFB with 128 bits
 ----
 Debug level 2 shows that xref:pki/pki.adoc[`*pki*`] extracts the public key from the
 TPM and converts it into a standard PKCS#1 format:
@@ -128,7 +127,7 @@ under the handle `*0x81010001*` analyzed in the previous section
 $ pki --print --type priv --keyid 0x81010002
 
 TPM 2.0 via TSS2 v2 available
-signature algorithm is NULL with ERROR hash
+encryption algorithm is AES-CFB with 128 bits
   privkey:   RSA 2048 bits
   keyid:     ee:c7:bf:5a:de:0f:11:84:2c:86:2b:69:84:ba:65:b9:81:d2:a9:45
   subjkey:   df:f2:e9:e7:79:98:f0:d2:0b:62:db:c0:5c:2c:eb:45:73:85:e9:79
@@ -169,7 +168,7 @@ with the command
 $ pki --print --type priv --keyid 0x81010002
 
 TPM 2.0 via TSS2 v2 available
-signature algorithm is NULL with ERROR hash
+encryption algorithm is AES-CFB with 128 bits
   privkey:   ECDSA 256 bits
   keyid:     25:db:73:13:0f:c9:c8:91:68:30:8e:02:89:c1:0d:65:bd:ad:69:2a
   subjkey:   9c:b9:fb:b0:32:81:24:82:a7:07:b2:bd:bd:d3:7c:2b:22:7f:74:bf
