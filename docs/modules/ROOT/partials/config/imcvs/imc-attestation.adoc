@@ -1,5 +1,5 @@
 |aik_blob            |
-|AIK encrypted private key blob file
+|AIK encrypted private key blob file (TPM 1.2 only)
 
 |aik_cert            |
 |AIK certificate file
