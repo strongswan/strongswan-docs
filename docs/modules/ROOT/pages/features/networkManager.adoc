@@ -99,7 +99,7 @@ apt-get install libnma-dev libgtk-3-dev libsecret-1-dev intltool
 
 To build with GTK 4 support (available since NetworkManager-strongswan 1.6.0),
 additionally install `libnma-gtk4-dev` and `libgtk-4-dev` and pass
-`*--with-gkt4*` below.
+`*--with-gtk4*` below.
 
 ----
 # get the NetworkManager strongSwan plugin as a tarball
