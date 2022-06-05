@@ -1,12 +1,11 @@
-= swanctl --list-version
-:prewrap!:
+= swanctl --version
 
 == Synopsis
 
 ----
-swanctl --list-version [--daemon]
+swanctl --version [--daemon]
 
-swanctl --list-version --help
+swanctl --version --help
 ----
 
 == Description
@@ -40,7 +39,7 @@ strongSwan swanctl 5.9.5dr2
 * List software and kernel version of running xref:daemons/charon.adoc[`*charon*`]
   daemon
 ----
-$ swanctl 5.9.4 --version --daemon
+$ swanctl --version --daemon
 
-strongSwan charon-systemd (Linux, 5.11.0-44-generic, x86_64)
+strongSwan 5.9.4 charon-systemd (Linux, 5.11.0-44-generic, x86_64)
 ----
