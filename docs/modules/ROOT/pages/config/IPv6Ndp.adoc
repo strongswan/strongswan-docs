@@ -39,7 +39,7 @@ Router Advertisement (RA): 134 ::
   not be able to reach each other or a router after establishing the tunnel (could
   take a while if link local addresses are cached).
 
- Redirect (R): 137 ::
+ Redirect \(R): 137 ::
    Could be used by routers to send hosts a better first hop router for a destination
    (from a link-local address to the source address of the packet that triggered
    the redirect).
