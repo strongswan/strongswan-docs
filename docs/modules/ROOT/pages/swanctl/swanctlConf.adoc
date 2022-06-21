@@ -709,7 +709,7 @@ include::partial$config/swanctl-rekey-child.adoc[]
  appended to the mark, separated by `*/*`. The default mask if omitted is
  `*0xffffffff*`. [`0/0x00000000`]
 
-|(<child>.set_mark_in     |[->]
+|<child>.set_mark_in      |[->]
 |Since version 5.7.0. Netfilter mark applied to packets after the inbound IPsec
  SA processed them. This way it's not necessary to mark packets via Netfilter
  before decryption or right afterwards to match policies or process them

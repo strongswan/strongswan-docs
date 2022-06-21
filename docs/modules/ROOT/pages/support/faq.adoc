@@ -269,7 +269,7 @@ vulnerable to online attacks if weak user passwords are used.
 
 *Q:* _Does strongSwan support wildcard certificates?_
 
-*A:*: No, it doesn't. The reason for that is that wildcard certificates were declared
+*A:* No, it doesn't. The reason for that is that wildcard certificates were declared
 {RFC6125}#section-7.2[deprecated in RFC 6125].
 
 === Matching CN field in Distinguished Names
@@ -277,7 +277,7 @@ vulnerable to online attacks if weak user passwords are used.
 *Q:* _Does strongSwan support checking a FQDN identity against the Common Name (CN)
 field of a Distinguished Name (DN) in X.509 certificates?_
 
-*A:*: No, it doesn't. Distinguished Names of certificates (and with that any RDNs,
+*A:* No, it doesn't. Distinguished Names of certificates (and with that any RDNs,
 such as CN) are only matched against identities of type `*DN*`. For instance, the
 identity `*vpn.strongswan.org*` won't match a certificate's subject DN such as
 `*C=CH, O=strongSwan, CN=vpn.strongswan.org*`. However, the `*DN*` identity
