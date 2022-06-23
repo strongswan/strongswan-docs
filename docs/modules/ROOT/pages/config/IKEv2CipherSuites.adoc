@@ -12,6 +12,7 @@ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to define IKE or ESP/AH cipher
 suites. IANA provides a complete list of algorithm identifiers registered for
 {IANA}[IKEv2].
 
+[#ike-support]
 == IKE Support Options
 
 The single-character options in the list below are used throughout this document
@@ -40,6 +41,7 @@ cryptographically *weak* and thus prone to attacks.
 |*a* |AF_ALG userland Linux crypto API |`*af-alg*`  | Linux kernel 2.6.38
 |===
 
+[#esp-support]
 == ESP Support Options
 
 The single-character options in the list below are used throughout this document
@@ -71,7 +73,7 @@ cryptographically *weak* and thus prone to attacks.
 
 [cols="5,6,1,3,1,3"]
 |===
-|Keyword |Description |{IANA}#ikev2-parameters-5[IANA] |xref:#_ike_support[IKE] |xref:#_esp_support[ESP] |Plugins
+|Keyword |Description |{IANA}#ikev2-parameters-5[IANA] |xref:#ike-support[IKE] |xref:#esp-support[ESP] |Plugins
 
 |*3des*
 |168 bit 3DES-EDE-CBC
@@ -155,7 +157,7 @@ explicitly in such proposals.
 
 [cols="5,6,1,3,1,3"]
 |===
-|Keyword |Description |{IANA}#ikev2-parameters-5[IANA] |xref:#_ike_support[IKE] |xref:#_esp_support[ESP] |Plugins
+|Keyword |Description |{IANA}#ikev2-parameters-5[IANA] |xref:#ike-support[IKE] |xref:#esp-support[ESP] |Plugins
 
 |*aes128ccm8*  or +
  *aes128ccm64*
@@ -313,7 +315,7 @@ explicitly in such proposals.
 
 [cols="5,6,1,3,1,3"]
 |===
-|Keyword |Description |{IANA}#ikev2-parameters-7[IANA] |xref:#_ike_support[IKE] |xref:#_esp_support[ESP] |Plugins
+|Keyword |Description |{IANA}#ikev2-parameters-7[IANA] |xref:#ike-support[IKE] |xref:#esp-support[ESP] |Plugins
 
 |*md5*
 |MD5 HMAC (96 bit)
@@ -382,7 +384,7 @@ to derive PRFs. Thus PRF algorithms have to be configured explicitly.
 
 [cols="5,6,1,4,3"]
 |===
-|Keyword |Description |{IANA}#ikev2-parameters-6[IANA] |xref:#_ike_support[IKE] |Plugins
+|Keyword |Description |{IANA}#ikev2-parameters-6[IANA] |xref:#ike-support[IKE] |Plugins
 
 |*prfmd5*
 |MD5 PRF
@@ -423,7 +425,7 @@ Based on the negotiated PRF, IKEv2 derives key material in two separate steps
 
 [cols="6,4,3"]
 |===
-|Base PRF |xref:#_ike_support[IKE] |Plugins
+|Base PRF |xref:#ike-support[IKE] |Plugins
 
 |MD5 PRF
 |*s* x w o     |md5, hmac, kdf
@@ -458,7 +460,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 [cols="5,6,1,4,3"]
 |===
-|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
 
 |*modp768*
 |768 bits
@@ -497,7 +499,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 [cols="5,3,3,1,4,3"]
 |===
-|Keyword |Modulus |Subgroup |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+|Keyword |Modulus |Subgroup |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
 
 |*modp1024s160*
 |1024 bits |160 bits
@@ -516,7 +518,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 [cols="5,6,1,4,3"]
 |===
-|Keyword |Prime Size |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+|Keyword |Prime Size |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
 
 |*ecp192*
 |192 bits
@@ -543,7 +545,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 [cols="5,6,1,4,3"]
 |===
-|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
 
 |*ecp224bp*
 |224 bits
@@ -566,7 +568,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 [cols="5,6,1,4,3"]
 |===
-|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#_ike_support[IKE] | Plugins
+|Keyword |Modulus |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
 
 |*curve25519* or *x25519*
 |256 bits
