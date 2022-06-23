@@ -30,8 +30,11 @@ macOS 10.11 and newer support IKEv2. Earlier versions only support IKEv1.
 
 === Known Issues
 
-* ASN.1 Distinguished Names can't be used as identities because the client currently
-  sends them as identities of type `*FQDN*`.
+* ASN.1 Distinguished Names can't be used as identities because the client
+  currently sends them as identities of type `*FQDN*`.
+* Apple clients can only process PKCS#12 containers that are protected with
+  3DES and the legacy KDF. So when using `*openssl pkcs12*` with OpenSSL 3.0 and
+  newer, the `*-legacy*` option is required.
 
 === Authentication Options
 
