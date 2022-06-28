@@ -1,11 +1,11 @@
 = Contributions
 
-:MIT:      https://opensource.org/licenses/mit-license.php
 :GITHUB:   https://github.com/strongswan/strongswan
 :DEV:      https://lists.strongswan.org/mailman/listinfo/dev
 :SECUNET:  https://www.secunet.com/en/
 :HSR:      https://en.wikipedia.org/wiki/Hochschule_f%C3%BCr_Technik_Rapperswil
 :FREESWAN: https://www.freeswan.org/
+:LIC_MAIL: info@strongswan.org
 
 Contributions to the strongSwan project are very welcome. Before you start your
 development, please get in contact with our developers via one of our
@@ -13,18 +13,15 @@ xref:support/free.adoc[support channels]. We might already have some plans for
 such a feature or are even working on it. We can also give you some useful hints
 on how to integrate your work into the strongSwan architecture.
 
-Depending on the form and affected components of your contribution, you *must not*
-submit the code under a GPL license but under the {MIT}[MIT license] (see below
-for details).
+For non-trivial submissions we'll require that you sign a Contributor License
+Agreement (see below for details).
 
-Patches may be submitted as *pull requests* on {GITHUB}/pulls/[Github] or as emails
-to our {DEV}[Developer mailing list] (please use `*git format-patch*` or
-`*git send-email*`).
+Patches may be submitted as *pull requests* on {GITHUB}/pulls/[GitHub].
 
 == strongSwan License
 
 strongSwan is an open source project distributed under the GPLv2 license. We
-think the open source model has several advantages over a commercial product:
+think the open source model has several advantages over a proprietary product:
 
 * You can review the code, which is of utmost importance in security software.
 
@@ -35,6 +32,14 @@ think the open source model has several advantages over a commercial product:
 
 We strongly believe in open source and will *always* distribute strongSwan under
 a GPL license.
+
+=== Commercial License
+
+A commercial, non-GPL license is available for most of the components of the
+strongSwan project (see below for a xref:#gpl-only[list of GPL-only components]).
+
+Please contact us at mailto:{LIC_MAIL}[{LIC_MAIL}] for details if you are
+interested.
 
 == Copyright
 
@@ -55,8 +60,8 @@ to several people.
 
 == Contributing
 
-Depending on the strongSwan components of your contribution, you have to use
-different license for your contribution:
+Depending on the strongSwan components of your contribution, a signed
+Contributor License Agreement (CLA) will usually be required:
 
 === Core Libraries, Front Ends and Tools
 
@@ -64,34 +69,42 @@ If your (non-trivial) contributions are targeting
 
 * the core libraries:
 
-** `*libcharon*` daemon core ({GITHUB}/tree/master/src/libcharon[`src/libcharon`]).
+** `*libcharon*` daemon core ({GITHUB}/tree/master/src/libcharon[`src/libcharon`])
+  and its plugins ({GITHUB}/tree/master/src/libcharon/plugins[`src/libcharon/plugins`])
 
 ** `*libstrongswan*` ({GITHUB}/tree/master/src/libstrongswan[`src/libstrongswan`])
-  and other related libraries.
+  and other related libraries and their plugins
+
+** any new plugins created by a contribution
 
 * the front ends:
 
 ** xref:daemons/charon.adoc[`*charon*`]
    ({GITHUB}/tree/master/src/charon[`src/charon`]) and
    xref:daemons/charon-systemd.adoc[`*charon-systemd*`]
-   ({GITHUB}/tree/master/src/charon-systemd[`src/charon-systemd`]).
+   ({GITHUB}/tree/master/src/charon-systemd[`src/charon-systemd`])
 
 ** xref:daemons/charon-cmd.adoc[`*charon-cmd*`] command line utility
-   ({GITHUB}/tree/master/src/charon-cmd[`src/charon-cmd`]).
+   ({GITHUB}/tree/master/src/charon-cmd[`src/charon-cmd`])
 
 ** the xref:os/androidVpnClient.adoc[Android app], etc.
 
 * the tools, e.g.:
 
-** xref:pki/pki.adoc[`*pki*`].
+** xref:pki/pki.adoc[`*pki*`]
 
-** xref:swanctl/swanctl.adoc[`*swanctl*`].
+** xref:swanctl/swanctl.adoc[`*swanctl*`]
 
-we will require contributions to be under the GPL-compatible {MIT}[MIT license].
+we will require that contributors have signed a Contributor License
+Agreement (CLA).
+
+TIP: When submitting a *pull request*, a bot will automatically check if all
+     authors have signed the CLA and otherwise provide instructions on how to
+     proceed.
 
 This allows us to:
 
-* Integrate your work in our GPLed strongSwan project, keeping your copyright
+* Integrate your work in our GPLed strongSwan project
 
 * To switch the project's license to GPLv3 if required
 
@@ -100,45 +113,80 @@ This allows us to:
 Providing alternative licensing will give us additional revenue to keep the
 project rolling. We cannot improve strongSwan without a constant income.
 
-Other projects require you to assign your copyright to the project/foundation/company.
-We think this is much more complicated or not even possible in some countries.
-With an MIT license, you will keep your copyright.
-
 If you submit non-trivial patches:
 
- * send new files with the following MIT license in the header (without any GPL
-   header at all)
+ * if you extend existing files in a non-trivial way, you may add your own
+   copyright to the existing header
 
- * if you extend existing files in a non-trivial way, add the following MIT
-   license below the existing GPL license header
+ * for new files, add the following header
+
 +
 ----
 /*
  * Copyright (C) <year> <copyright holders>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Copyright (C) secunet Security Networks AG
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
  */
 ----
 
-=== Plugins
+[#gpl-only]
+=== Legacy and Other GPL-only Components
 
-If you are writing your own plugin, you are free to use a GPL license. We will
-not require you to send it under the MIT license (although, we'd obviously prefer
-it). If you extend existing plugins, contributing under the MIT license will
-usually be required. Contact us if you are unsure about the license.
+If your contributions are targeting any of the following components we will
+*not require* contributors to have signed a Contributor License Agreement (CLA).
+
+The files in these components use regular GPLv2-headers, if any.
+
+* legacy components:
+
+** `*starter*` ({GITHUB}/tree/master/src/starter[`src/starter`])
+
+** `*ipsec*` ({GITHUB}/tree/master/src/ipsec[`src/ipsec`])
+
+** `*&lowbar;updown*` ({GITHUB}/tree/master/src/&lowbar;updown[`src/&lowbar;updown`])
+
+* the GPL-only NetworkManager front- and backend:
+
+** `*NM plugin*` ({GITHUB}/tree/master/src/frontends/gnome[`src/frontends/gnome`])
+
+** `*charon-nm*` ({GITHUB}/tree/master/src/charon-nm[`src/charon-nm`])
+
+* the GPL-only plugins:
+
+** `*tnccs_11*` ({GITHUB}/tree/master/src/libtnccs/plugins/tnccs_11[`src/libtnccs/plugins/tnccs_11`])
+
+** `*eap_sim_pcsc*` ({GITHUB}/tree/master/src/libcharon/plugins/eap_sim_pcsc[`src/libcharon/plugins/eap_sim_pcsc`])
+
+* legacy crypto plugins:
+
+** `*aes*` ({GITHUB}/tree/master/src/libstrongswan/plugins/aes[`src/libstrongswan/aes`])
+
+** `*blowfish*` ({GITHUB}/tree/master/src/libstrongswan/plugins/blowfish[`src/libstrongswan/blowfish`])
+
+** `*des*` ({GITHUB}/tree/master/src/libstrongswan/plugins/des[`src/libstrongswan/des`])
+
+** `*gmp*` ({GITHUB}/tree/master/src/libstrongswan/plugins/gmp[`src/libstrongswan/gmp`])
+
+** `*ntru*` ({GITHUB}/tree/master/src/libstrongswan/plugins/ntru[`src/libstrongswan/ntru`])
+
+** `*md4*` ({GITHUB}/tree/master/src/libstrongswan/plugins/md4[`src/libstrongswan/md4`])
+
+** `*md5*` ({GITHUB}/tree/master/src/libstrongswan/plugins/md5[`src/libstrongswan/md5`])
+
+** `*sha1*` ({GITHUB}/tree/master/src/libstrongswan/plugins/sha1[`src/libstrongswan/sha1`])
+
+** `*sha2*` ({GITHUB}/tree/master/src/libstrongswan/plugins/sha2[`src/libstrongswan/sha2`])
+
+* the testing framework:
+
+** `*testing*` ({GITHUB}/tree/master/testing[`testing`])
