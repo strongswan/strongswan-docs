@@ -92,6 +92,11 @@ NOTE: If no profile ID is passed or it doesn't match the ID of the currently
 
 == Server Configuration
 
+The app is compatible to the xref:interop/windowsClients.adoc[Windows example configurations]
+we provide (although the app supports stronger algorithms than Windows clients
+do, so adding additional algorithms or `default` to the configured proposals is
+advised).
+
 Since strongSwan version 5.2.1 and version xref:#_1_4_5_2014_11_06[1.4.5] of the
 app, `*connections.<conn>.fragmentation = yes*` may be added to the server
 xref:swanctl/swanctlConf.adoc[configuration] to use IKEv2 fragmentation which
