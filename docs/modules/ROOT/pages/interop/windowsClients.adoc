@@ -16,6 +16,7 @@ a strongSwan VPN gateway using these protocols. The Windows client does *not*
 currently support IKE redirection ({RFC5685}[RFC 5685]) and multiple authentication
 rounds ({RFC4739}[RFC 4739]).
 
+[#strong_ke]
 == Enable Strong Key Exchange
 
 By default Windows 7 up to Windows 11 propose only the weak `*modp1024*`

@@ -24,13 +24,7 @@ connections {
     children {
       eap-tls {
         local_ts = 0.0.0.0/0, ::/0
-
-        rekey_time = 1h
-        esp_proposals = aes256-sha256-sha1-modp2048
        }
-      version = 2
-      reauth_time = 3h
-      proposals = aes256-sha256-modp2048
     }
   }
 }
@@ -45,6 +39,12 @@ pools {
   }
 }
 ----
+
+NOTE: `*aes256-sha256-modp2048*` for IKE and `*aes256-sha1-modp2048*` for ESP
+      are the xref:interop/windowsClients.adoc#strong_ke[strongest proposals]
+      the Windows client is able to offer unless PowerShell is used. These
+      proposals are not explicitly configured here to accept stronger algorithms
+      proposed by such and other clients via strongSwan's default proposals.
 
 pools = ipv4, ipv6 ::
   The gateway assigns an IPv4 and and IPv6 xref:features/vip.adoc[virtual IP]
@@ -82,10 +82,3 @@ remote.eap_id = %any ::
 children.eap-tls.local_ts = 0.0.0.0/0, ::/0 ::
   All IPv4 and IPv6 traffic will be tunneled from the Windows client to the
   strongSwan VPN gateway (no split-tunneling use case).
-
-children.eap-tls.esp_proposals = aes256-sha256-sha1-modp2048 ::
-  `aes256-sha1-modp2048` is the strongest ESP proposal the Windows client is able
-  to offer.
-
-proposals = aes256-sha256-modp2048 ::
-  This is the strongest IKE proposal the Windows client is able to offer.
