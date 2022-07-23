@@ -3,7 +3,7 @@
 :BLISS:     https://eprint.iacr.org/2017/490.pdf
 :BOTAN:     https://botan.randombit.net/
 :GMP:       https://gmplib.org/
-:NISTPQC:   https://csrc.nist.gov/projects/post-quantum-cryptography/round-3-submissions
+:NISTPQC:   https://csrc.nist.gov/projects/post-quantum-cryptography
 :OPENSSL:   https://openssl.org/
 :PQ:        https://github.com/strongX509/docker/tree/master/pq-strongswan
 :TKM:       https://www.codelabs.ch/tkm/
@@ -94,9 +94,10 @@ plugins.
 |--enable-bliss                                              |5.2.2
 |enable deprecated Bimodal Lattice Signature Scheme (BLISS) software
  implementation plugin. Since a {BLISS}[side-channel attack] on our BLISS
- implementation has been reported, please use the {NISTPQC}[NIST PQC Round 3]
- signature algorithms offered by the post-quantum {PQ}[strongSwan 6.0] version
- instead.
+ implementation has been reported, please use the NIST PQC (Post-Quantum
+ Cryptography) {NISTPQC}/selected-algorithms-2022[Selected Algorithms] and
+ {NISTPQC}/round-4-submissions[Round 4 Submissions] signature algorithms offered
+ by the post-quantum {PQ}[strongSwan 6.0] version instead.
 
 |--enable-blowfish                                           |
 |enable Blowfish software implementation plugin

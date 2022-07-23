@@ -1,6 +1,6 @@
 = IKEv2 Cipher Suites
 
-:NISTPQC: https://csrc.nist.gov/projects/post-quantum-cryptography/round-3-submissions
+:NISTPQC: https://csrc.nist.gov/projects/post-quantum-cryptography
 :PQ:      https://github.com/strongX509/docker/tree/master/pq-strongswan#readme
 :CNSA:    https://apps.nsa.gov/iaarchive/programs/iad-initiatives/cnsa-suite.cfm
 :IANA:    https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml
@@ -581,8 +581,10 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 == Post-Quantum Key Exchange Methods
 
-The forthcoming {PQ}[strongSwan 6.0 release] supports the {NISTPQC}[NIST PQC]
-(Post-Quantum Cryptography) Round 3 Key Exchange Method (KEM) candidates.
+The forthcoming {PQ}[strongSwan 6.0 release] supports the NIST PQC (Post-Quantum
+Cryptography) {NISTPQC}/selected-algorithms-2022[Selected Algorithms] and
+{NISTPQC}/round-4-submissions[Round 4 Submissions] Key Exchange Method (KEM)
+candidates.
 
 == Commercial National Security Algorithm Suite
 
