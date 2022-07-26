@@ -108,6 +108,12 @@ test runner:
  `*-1*`), see xref:config/logging.adoc[Logging]
 |
 
+|`TESTS_VERBOSITY_<GROUP>`
+|The log level used for a specific log group (`*CFG*`, `*IKE*`, etc.) when
+ running the tests (`*-1*` to `*4*` with a default of `*TESTS_VERBOSITY*`),
+ see xref:config/logging.adoc[Logging]
+|5.9.7
+
 |`LEAK_DETECTIVE_DISABLE`
 |If our custom memory allocator is enabled with `*--enable-leak-detective*`, it
  can be disabled temporarily by setting this variable in order to speed up
