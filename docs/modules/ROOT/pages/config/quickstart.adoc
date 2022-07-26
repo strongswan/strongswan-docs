@@ -490,3 +490,82 @@ Configuration on roadwarrior `*carol*`:
     }
    }
 ----
+
+== Passthrough/bypass policies
+
+Passthrough or bypass policies allow excluding specific traffic from IPsec
+processing.
+
+=== For a local LAN
+
+To automatically install passthrough policies for locally connected subnets,
+the xref:plugins/bypass-lan.adoc[`*bypass-lan*` plugin] may be used.
+
+The following is a manual passthrough policy that applies to packets from and
+to the `*10.0.0.0/8*` subnet. `*remote_addrs*` is set to `*127.0.0.1*` to
+prevent this connection from being considered if a peer connects.
+
+----
+/etc/swanctl/swanctl.conf:
+
+  connections {
+    passthrough-lan {
+      remote_addrs = 127.0.0.1
+      children {
+        passthrough-lan {
+          local_ts  = 10.0.0.0/8
+          remote_ts = 10.0.0.0/8
+          mode = pass
+          start_action = trap
+        }
+      }
+    }
+  }
+----
+
+=== For arbitrary subnets/addresses
+
+The following is a passthrough policy that applies to packets that are sent
+from an address in `*192.168.2.0/24*` to an address in `*10.1.0.0/24*` or
+vice-versa.
+
+----
+/etc/swanctl/swanctl.conf:
+
+  connections {
+    passthrough-subnet {
+      remote_addrs = 127.0.0.1
+      children {
+        passthrough-subnet {
+          local_ts  = 10.1.0.0/24
+          remote_ts = 192.168.2.0/24
+          mode = pass
+          start_action = trap
+        }
+      }
+    }
+  }
+----
+
+=== For specific protocols and/or ports
+
+The following is a passthrough policy that allows traffic to the local SSH port
+from any remote address/port.
+
+----
+/etc/swanctl/swanctl.conf:
+
+  connections {
+    passthrough-ssh {
+      remote_addrs = 127.0.0.1
+      children {
+        passthrough-ssh {
+          local_ts  = dynamic[tcp/22]
+          remote_ts = 0.0.0.0/0
+          mode = pass
+          start_action = trap
+        }
+      }
+    }
+  }
+----
