@@ -75,7 +75,7 @@ plugins.
 
 |--enable-all                                                |5.1.3
 |enable all optional plugins and features
- (they can be disabled with their respective --disable options)
+ (they can be disabled with their respective --disable options).
  Mainly intended for testing
 
 |--enable-android                                            |
@@ -516,6 +516,10 @@ plugins.
 
 |--enable-unwind-backtraces                                   |5.1.0
 |use libunwind to create backtraces for memory leaks and segfaults
+
+|--enable-warnings                                           |5.9.7
+|enable extended compiler warnings and -Werror (auto-enabled when building from
+ the repository)
 
 |xref:plugins/whitelist.adoc[--enable-whitelist]              |
 |enable peer identity whitelisting plugin
