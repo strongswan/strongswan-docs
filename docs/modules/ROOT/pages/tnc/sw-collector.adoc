@@ -44,7 +44,7 @@ local xref:./swimaClient.adoc[Software Inventory] on an endpoint.
 |Prints usage information and a short summary of the available commands
 
 |`-v`
-|`--debug <level>`
+|`--debug`
 |Set debug level, default: `*2*`
 
 |`-q`

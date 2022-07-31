@@ -34,55 +34,55 @@ client or server data batches which in turn are transported via `PT-TLS`.
 
 === Options
 
-[cols="1,5,8"]
+[cols="1,3,13"]
 |===
 
 |`-h` |`--help`
 |Prints usage information and a short summary of the available commands
 
-|`-c` |`--connect <hostname\|address>`
+|`-c` |`--connect`
 |Set the hostname or IP address of the PT-TLS server
 
-|`-p` |`--port <port>`
+|`-p` |`--port`
 |Set the port of the `PT-TLS` server, default: `*271*`
 
-|`-x` |`--cert <file>`
+|`-x` |`--cert`
 |Set the path to an X.509 certificate file. This option can be repeated to load
  multiple client and CA certificates
 
-|`-X` |`--certid <hex>`
+|`-X` |`--certid`
 |Set the handle of the certificate stored in a smartcard or a
  xref:tpm/tpm2.adoc[TPM 2.0] Trusted Platform Module
 
-|`-k` |`--key <file>
+|`-k` |`--key`
 |Set the path to the client's `PKCS#1` or `PKCS#8` private key file
 
-|`-K` |`--keyid <hex>`
+|`-K` |`--keyid`
 |Set the keyid of the private key stored in a smartcard or a
  xref:tpm/tpm2.adoc[TPM 2.0] Trusted Platform Module
 
-|`-t` |`--key-type <type>`
+|`-t` |`--key-type`
 |Define the type of the private key if stored in `PKCS#1` format. Can be omitted
  with `PKCS#8` keys
 
-|`-i` |`--client <id>`
+|`-i` |`--client`
 |Set the username or client ID of the client required for password-based `SASL`
  authentication
 
-|`-s` |`--secret <password>`
+|`-s` |`--secret`
 |Set the preshared secret or client password required for password-based  `SASL`
  authentication
 
 |`-q` |`--mutual`
 |Enable mutual attestation between `PT-TLS` client and `PT-TLS` server
 
-|`-v` |`--debug <level>`
+|`-v` |`--debug`
 |Set debug level, default: `*1*`
 
 |`-q` |`--quiet`
 |Disable debug output to stderr
 
-|`-+` |`--optionsfrom <file>`
+|`-+` |`--options`
 |Read command line options from file.
 |===
 

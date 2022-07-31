@@ -24,7 +24,7 @@ to determine which package versions are affected by a given security update.
 
 == Options
 
-[cols="1,3,10"]
+[cols="1,3,13"]
 |===
 
 |`-h`
@@ -32,7 +32,7 @@ to determine which package versions are affected by a given security update.
 |Prints usage information and a short summary of the available commands
 
 |`-v`
-|`--debug level`
+|`--debug`
 |Set debug level, default: `*1*`
 
 |`-q`
@@ -44,19 +44,19 @@ to determine which package versions are affected by a given security update.
 |Set when parsing a distributions file with security updates.
 
 |`-o`
-|`--os <string>`
+|`--os`
 |Name of operating system (OS). eg. `Ubuntu 16.04`
 
 |`-a`
-|`--arch <string>>
+|`--arch`
 |Name of HW architecture. eg. `x86_64`
 
 |`-u`
-|`--uri <uri>`
+|`--uri`
 |URI where to download `*deb*` package from
 
 |`-f`
-|`--file <filename>`
+|`--file`
 |Linux package information file to parse
 |===
 
