@@ -21,7 +21,8 @@ pki --print   (-a)  print a credential in a human readable form
 pki --dn      (-d)  extract the subject DN of an X.509 certificate
 pki --pub     (-p)  extract the public key from a private key/certificate
 pki --verify  (-v)  verify a certificate using the CA certificate
-pki --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server.
+pki --scep    (-S)  Enroll an X.509 certificate with a SCEP server
+pki --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server
 pki --help    (-h)  show usage information
 ----
 
@@ -67,7 +68,7 @@ Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
 
 |xref:./pkiReq.adoc[`pki --req`]
 |xref:./pkiScepCa.adoc[`pki --scepca`]
-|
+|xref:./pkiScep.adoc[`pki --scep`]
 |
 |===
 
