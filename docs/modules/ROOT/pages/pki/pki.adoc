@@ -75,6 +75,19 @@ Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
 Each subcommand has additional options. Pass `*--help*` to a subcommand to get
 additional information.
 
+== Configuration
+
+The following parameters can be configured in the
+xref:config/strongswanConf.adoc#_pki[`*pki*`] section of
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key |Default |Description
+
+include::partial$config/pki.adoc[]
+|===
+
 == Tutorial
 
 * A xref:./pkiQuickstart.adoc[quickstart] tutorial on the use of the `*pki*` tool
