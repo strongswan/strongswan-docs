@@ -89,13 +89,13 @@
 .Tools
 ** xref:swanctl/swanctl.adoc[]
 ** xref:pki/pki.adoc[]
-** xref:tools/scepclient.adoc[]
 ** xref:tnc/pt-tls-client.adoc[]
 ** xref:tnc/sw-collector.adoc[]
 ** xref:tnc/sec-updater.adoc[]
 ** xref:tools/pool.adoc[]
 ** xref:tnc/attest.adoc[]
 ** xref:tools/conftest.adoc[]
+** xref:tools/scepclient.adoc[]
 
 .Plugins
 * xref:plugins/plugins.adoc[]

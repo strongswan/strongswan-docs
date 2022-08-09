@@ -1,4 +1,4 @@
-= scepclient Tool
+= ipsec scepclient Tool
 
 :IETF:     https://datatracker.ietf.org/doc/html
 :RFC8894:  {IETF}/rfc8894
@@ -14,13 +14,19 @@ ipsec scepclient --help
 
 == Description
 
-The `*scepclient*` tool is a client implementation of the _Simple Certificate
-Enrollment Protocol_ (SCEP).
+The `*ipsec scepclient*` tool was an early client implementation of the
+_Simple Certificate Enrollment Protocol_ (SCEP).
 
-NOTE: This tool was written in 2005 and only got marginal updates since then.
-      Hence it implements an old version of the SCEP Internet Draft (version
-      10/11 of {IDSCEP}[draft-nourse-scep]). The new SCEP {RFC8894}[RFC 8894] was
-      released in September 2020, so the tool might not be compatible with newer
-      SCEP servers. It also uses default algorithms that are really not
-      state-of-the-art anymore (e.g. `MD5` to hash/sign and single `DES` to
-      encrypt).
+[NOTE]
+====
+This tool was written in 2005 and only got marginal updates since then. Hence it
+implemented an old version of the SCEP Internet Draft (version 10/11 of
+{IDSCEP}[draft-nourse-scep]) and used the broken `MD5` hash and single `DES`
+encryption algorithms as defaults.
+
+With strongSwan version 5.9.8 `*ipsec scepclient*` will be replaced by the
+xref:pki/pki.adoc[`*pki*`] subcommands xref:pki/pkiScep.adoc[`*pki --scep*`] and
+xref:pki/pkiScepCa.adoc[`*pki --scepca*`] which implement the new SCEP
+{RFC8894}[RFC 8894] standard that was released in September 2020 and which
+supports trusted *certificate renewal* based on the existing client certificate.
+====

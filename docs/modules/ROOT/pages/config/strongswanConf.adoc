@@ -1333,13 +1333,6 @@ include::partial$config/pool.adoc[]
 include::partial$config/pt-tls-client.adoc[]
 |===
 
-=== xref:tools/scepclient.adoc[scepclient]
-[{COLS}]
-|===
-
-include::partial$config/scepclient.adoc[]
-|===
-
 === xref:tnc/sec-updater.adoc[sec-updater]
 [{COLS}]
 |===
