@@ -1,7 +1,8 @@
 = pki --scep
 
-:IETF:    https://datatracker.ietf.org/doc/html
-:RFC8894: {IETF}/rfc8894
+:OPENXPKI: https://github.com/openxpki/openxpki
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC8894:  {IETF}/rfc8894
 
 == Synopsis
 
@@ -65,6 +66,13 @@ read from `*STDIN*`
 |`-a`
 |`--san`
 |`*subjectAltName*` extension to include in request. Can be used multiple times
+
+|`-P`
+|`--profile`
+|Certificate profile name to be included in the certificate request. Can be any
+UTF8 string. Supported e.g. by the {OPENXPKI}[`*openxpki*`] SCEP server with
+profiles (`*pc-client*`, `*tls-server*`, etc.) that are translated into corresponding
+Extended Key Usage (EKU) flags in the generated X.509 certificate
 
 |`-p`
 |`--password`
