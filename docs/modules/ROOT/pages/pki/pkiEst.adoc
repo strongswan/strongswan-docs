@@ -1,0 +1,200 @@
+= pki --est
+
+:LETSENCRYPT: https://letsencrypt.org/
+:OPENXPKI:    https://github.com/openxpki/openxpki
+:IETF:        https://datatracker.ietf.org/doc/html
+:RFC7030:     {IETF}/rfc7030
+
+== Synopsis
+
+----
+
+pki --est --url url [--in file] [--cacert file]+
+         [--cert file|--certid hex --key file|--keyid hex]
+         [--userpass username:password] [--interval time]
+         [--maxpolltime time] [--outform der|pem]
+            
+pki --est --help
+----
+
+== Description
+
+This xref:./pki.adoc[`*pki*`] subcommand sends a PKCS#10 certificate request via
+HTTPS to a server using the *Enrollment over Secure Transport* (EST) Protocol
+({RFC7030}[RFC 7030]). After successful authorization which with manual authentication
+requires periodic polling by the enrollment client, the EST server returns an
+X.509 certificate signed by the CA.
+
+Before the expiry of the current certificate, a new client certificate based on
+a fresh private key can be requested, using the old certificate and the old
+key for automatic TLS client authentication with the EST server.
+
+Supported since version 5.9.8.
+
+== Options
+
+
+[cols="1,3,13"]
+|===
+
+|`-h`
+|`--help`
+|Prints usage information and a short summary of the available options
+
+|`-v`
+|`--debug`
+|Set debug level, default: `*1*`
+
+|`-+`
+|`--options`
+|Read command line options from file
+
+|`-u`
+|`--url`
+|URL of the EST server
+
+|`-i`
+|`--in`
+|PKCS#10 certificate request. If not given, the certificate request is read from
+ `*STDIN*`
+
+|`-C`
+|`--cacert`
+|CA certificate in the trust chain used for signature verification. Can be used
+ multiple times
+
+|`-c`
+|`--cert`
+|Client certificate to be renewed
+
+|`-X`
+|`--certid`
+|Smartcard or TPM 2.0 client certficate object handle
+
+|`-k`
+|`--key`
+|Client private key to be replaced
+
+|`-x`
+|`--keyid`
+|Smartcard or TPM 2.0 client private key object handle
+
+|`-p`
+|`--userpass`
+|Optional username:password that may be used for HTTP basic authentication
+
+|`-t`
+|`--interval`
+|Poll interval in seconds, defaults to `*60s*`. This value might get overridden
+ by the `*Retry-After*` header in the `HTTP 202` reply from the EST server
+
+
+|`-m`
+|`--maxpolltime`
+|Maximum poll time in seconds, defaults to `*0*` which means unlimited polling
+
+|`-f`
+|`--outform`
+|Encoding of the created certificate file. Either `*der*` (`ASN.1 DER`) or
+`*pem*` (`Base64 PEM`), defaults to `*der*`
+|===
+
+== libtls Options
+
+The following options can be set in the
+xref:config/strongswanConf.adoc#_libtls[`*libtls*`] section of
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+
+[cols="4,1,8"]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+include::partial$config/libtls.adoc[]
+|===
+
+And overview on the configuration of the
+xref:plugins/eap-tls.adoc#_tls_stack_options[TLS stack options] is given
+xref:plugins/eap-tls.adoc#_tls_stack_options[here]. It is especially recommended
+to set `*version_max = 1.3*` in order to profit from the latest TLS 1.3 version.
+
+== Examples
+
+* To save some typing work the following command line options are stored in a
+  `*est.opt*` file:
+----
+--url https://pki.strongswan.org:8443
+--cacert tlsca.crt
+--cacert tlsca-1.crt
+--cacert myca.crt
+--cacert myca-1.crt
+----
+
+[NOTE]
+====
+For a successful `HTTPS` connection, trust must be established into the EST
+server certificate. The TLS trust chain including the root CA certificate and
+optionally intermediate CA certificates must be given using [multiple]
+*--cacert*` options.
+
+The `*--cacert*` option must also be used to be able to verify the received client
+certificate issued by the CA. This second trust chain might be identical to the
+TLS trust chain (if the EST server is using a TLS server certificate issued by
+its own CA) or might be totally different, e.g. if a {LETSENCRYPT}[Let's Encrypt]
+EST server certificate is used.
+====
+
+* With the following command, an X.509 certificate signed by the intermediate CA
+  is requested from an EST server based on a PKCS#10 certificate request:
+----
+pki --options est.opt --in moonReq.pem > moonCert.der
+----
+----
+negotiated TLS 1.3 using suite TLS_AES_256_GCM_SHA384
+received TLS server certificate 'C=CH, O=strongSwan Project, CN=pki.strongswan.org'
+  using certificate "C=CH, O=strongSwan Project, CN=pki.strongswan.org"
+  using trusted intermediate ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
+  using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  reached self-signed root ca with a path length of 1
+  EST request pending, polling indefinitely every 300 seconds
+  going to sleep for 300 seconds
+  ...
+Issued certificate "C=CH, O=strongSwan Project, CN=moon.strongswan.org"
+  serial: 1a:ff:de:66:d9:38:ea:d5:b6:da
+  using certificate "C=CH, O=strongSwan Project, CN=moon.strongswan.org"
+  using trusted intermediate ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
+  using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  reached self-signed root ca with a path length of 1
+Issued certificate is trusted, valid from Aug 22 15:19:43 2022 until Aug 22 15:19:43 2023 (currently valid)
+----
+
+* This certificate can be renewed some time before it expires with the command:
+----
+pki --options est.opt --in moonReqNew.der --cert moonCert.der --key moonKey.der > moonCertNew.der
+----
+----
+negotiated TLS 1.3 using suite TLS_AES_256_GCM_SHA384
+received TLS server certificate 'C=CH, O=strongSwan Project, CN=pki.strongswan.org'
+  using certificate "C=CH, O=strongSwan Project, CN=pki.strongswan.org"
+  using trusted intermediate ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
+  using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  reached self-signed root ca with a path length of 1
+sending TLS client certificate 'C=CH, O=strongSwan Project, CN=moon.strongswan.org'
+sending TLS intermediate certificate 'C=CH, O=strongSwan Project, CN=strongSwan Issuing CA'
+Issued certificate "C=CH, O=strongSwan Project, CN=moon.strongswan.org"
+  serial: 1b:ff:ad:dc:2f:50:c4:cb:a1:44
+  using certificate "C=CH, O=strongSwan Project, CN=moon.strongswan.org"
+  using trusted intermediate ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
+  using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  reached self-signed root ca with a path length of 1
+Issued certificate is trusted, valid from Jul 20 12:21:00 2023 until Jul 20 12:21:00 2024 (currently valid)
+----
+
+* If the private key and the certificate of the client is stored in a TPM 2.0,
+  the renewal can be done  wtih the following options:
+----
+pki --options est.opt --in moonReqNew.der --certid 0x01800004 --keyid 0x81010004 > moonCertNew.der
+----
+Details on creating and storing private RSA and ECDSA keys and matching X.509
+certificates in a xref:tpm/tpm2.adoc[TPM 2.0] as well as generating PKCS#10
+certificate requests using the xref:./pkiReq.adoc[`*pki --req*`] command can be
+found in the following xref:tpm/tpm2.adoc[tutorial].
