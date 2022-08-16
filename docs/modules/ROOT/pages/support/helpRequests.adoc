@@ -177,7 +177,6 @@ for version < 5.7.0
     /var/log/charon_debug.log {
       time_format = %a, %Y-%m-%d, %H:%M:%S
       default = 2
-      mgr = 0
       net = 1
       enc = 1
       asn = 1
@@ -199,7 +198,6 @@ for version >= 5.7.0
       path = /var/log/charon_debug.log
       time_format = %a, %Y-%m-%d, %H:%M:%S
       default = 2
-      mgr = 0
       net = 1
       enc = 1
       asn = 1
