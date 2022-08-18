@@ -60,7 +60,7 @@ or in earlier FreeBSD releases with
 
 === Install Packages
 
-Our test-system was installed using the Developer and Kern-Developer distributions
+Our test system was installed using the Developer and Kern-Developer distributions
 in `*sysinstall*`. So there are maybe additional packages required on your system.
 
 The packages required to build strongSwan are as follows:
@@ -75,12 +75,9 @@ compiles the GMP plugin, so `*libgmp*` is required). For details refer to the
 xref:install/install.adoc[installation documentation].
 ----
 ./configure --enable-kernel-pfkey --enable-kernel-pfroute --disable-kernel-netlink \
-            --disable-scripts --with-group=wheel
+            --disable-scripts --with-printf-hooks=builtin --with-group=wheel
 ----
 
-== Limitations
-
-Because there is currently no way to change the IP addresses of an installed
-`IPsec SA` in the FreeBSD kernel, `IPsec SAs` are rekeyed when a client's IP
-address changes. This {BSD_FORUM}[discussion] on the FreeBSD forums has more on
-this.
+NOTE: While FreeBSD's C library implements the GNU extensions for custom
+`printf()` conversion specifiers, the implementation seems to leak memory, so
+using `*--with-printf-hooks=builtin*` is recommended.
