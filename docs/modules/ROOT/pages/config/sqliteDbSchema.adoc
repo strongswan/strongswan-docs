@@ -13,6 +13,7 @@
 :SRC9:   src/libstrongswan/ipsec/ipsec_types.h
 :SRC10:  src/libstrongswan/selectors/traffic_selector.h
 :SRC11:  src/libcharon/plugins/sql/sql_config.c
+:SRC12:  scripts/bin2sql.c
 
 The database schema for SQLite as used by the xref:plugins/sql.adoc[`*sql*`] and
 xref:plugins/attr-sql.adoc[`*attr-sql*`] plugins is defined in
@@ -162,6 +163,33 @@ INSERT INTO identities (
 |6 |CERT_TRUSTED_PUBKEY
 |Trusted public key
 |===
+
+=== Certificate Encoding
+
+The `*bin2sql*` script in {GITHUB}/{SRC12}[`{SRC12}`] can be used to convert X.509
+certificates in binary ASN.1-encoded `*der*` format to the `*hex*` blob format
+needed by the SQL `*certificates*` table.
+
+The `*bin2sql*` utility can be compiled by changing via the `*cd*` command into the
+`*scripts*` subdirectory and executing the `*make*` command there.
+
+Example:
+
+* Certificate `*myCert.der*` in binary `*der*` format
+----
+od -t x1 myCert.der
+0000000 30 82 05 55 30 82 03 3d a0 03 02 01 02 02 08 7c
+0000020 24 43 4b b7 dc ef 7e 30 0d 06 09 2a 86 48 86 f7
+...
+0002500 d6 03 54 9c 77 71 de 4c 15 29 03 2f fb 07 b6 e4
+0002520 fe 81 c7 7f a6 3f dc 27 61
+----
+
+* Convert the binary content of the certificate file to SQL `*hex*` blob
+----
+cat myCert.der | ./bin2sql
+X'308205553082033da00302010202087c24434bb7dcef7e300d06092a864886f7...d603549c7771de4c1529032ffb07b6e4fe81c77fa63fdc2761'
+----
 
 == TABLE shared_secrets
 
