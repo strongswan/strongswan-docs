@@ -5,7 +5,7 @@
 :UBUNTU:  https://packages.ubuntu.com/search?keywords=strongswan&searchon=names&suite=all&section=all
 :SUSE:    https://software.opensuse.org/search?utf8=%E2%9C%93&baseproject=ALL&q=strongswan
 :GENTOO:  https://packages.gentoo.org/packages/search?q=strongswan
-:FEDORA:  https://apps.fedoraproject.org/packages/strongswan/overview/
+:FEDORA:  https://packages.fedoraproject.org/pkgs/strongswan/strongswan/
 :REDHAT:  https://pkgs.org/download/strongswan
 :FREEBSD: https://www.freshports.org/security/strongswan/
 :BREW:    https://formulae.brew.sh/formula/strongswan#default
