@@ -156,6 +156,11 @@ openssl pkcs12 -export -inkey carolKey.pem \
 The strongSwan xref:./pki.adoc[`*pki*`] tool currently is not able to create
 `PKCS#12` containers so that `*openssl*` must be used.
 
+IMPORTANT: *Apple* and *Android* clients can only process PKCS#12 containers that
+           are protected with 3DES and the legacy KDF. So when using
+           `*openssl pkcs12*` with OpenSSL 3.0 and newer, the `*-legacy*` option
+           is required.
+
 Omitting the `*-certfile*` argument from the command above is indicated in the
 following situation:
 
