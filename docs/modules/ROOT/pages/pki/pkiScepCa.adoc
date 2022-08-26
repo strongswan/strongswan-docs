@@ -123,10 +123,10 @@ Root CA cert "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
 Root CA cert is untrusted, valid until Aug 12 15:51:34 2032, written to 'scep/myca.pem'
 Sub CA cert "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
   ...
-Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'scep/myca-1.crt'
+Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'scep/myca-1.pem'
 RA cert "C=CH, O=strongSwan Project, CN=SCEP RA"
   ...
-RA cert is trusted, valid until Aug 10 15:51:34 2023, 'scep/myca-ra.crt'
+RA cert is trusted, valid until Aug 10 15:51:34 2023, 'scep/myca-ra.pem'
 ----
 
 * If the `*--caout*` option is omitted as well, then only the certificate information
