@@ -105,7 +105,7 @@ Sub CA cert "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
  using certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
  using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
  reached self-signed root ca with a path length of 0
-Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'mycacert-1.crt'
+Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'myca-1.crt'
 ----
 
 NOTE: Unless the TLS trustchain coincides with the CA trustchain as in the
