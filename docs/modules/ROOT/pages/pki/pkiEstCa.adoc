@@ -99,12 +99,12 @@ Root CA cert "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
 Root CA equals trusted TLS Root CA
 Root CA cert is trusted, valid until Aug 12 15:51:34 2032, 'myca.crt'
 Sub CA cert "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
- serial: 74:f9:7e:72:7d:b8:fd:f2:c6:e5:1b:fa:37:f9:cb:87:bf:9c:ea:e2
- SHA256: a3:5b:4b:12:d5:8f:68:7b:05:11:08:27:f5:42:62:b8:b5:01:1b:19:37:9c:28:78:5d:37:08:69:6a:8c:07:bf
- SHA1  : 8c:e6:67:67:c2:23:89:7b:d0:bc:b1:50:d2:1c:bc:8d:8d:69:15:11 (jOZnZ8IjiXvQvLFQ0hy8jY1pFRE)
- using certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
- using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
- reached self-signed root ca with a path length of 0
+  serial: 74:f9:7e:72:7d:b8:fd:f2:c6:e5:1b:fa:37:f9:cb:87:bf:9c:ea:e2
+  SHA256: a3:5b:4b:12:d5:8f:68:7b:05:11:08:27:f5:42:62:b8:b5:01:1b:19:37:9c:28:78:5d:37:08:69:6a:8c:07:bf
+  SHA1  : 8c:e6:67:67:c2:23:89:7b:d0:bc:b1:50:d2:1c:bc:8d:8d:69:15:11 (jOZnZ8IjiXvQvLFQ0hy8jY1pFRE)
+  using certificate "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
+  using trusted ca certificate "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
+  reached self-signed root ca with a path length of 0
 Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'myca-1.crt'
 ----
 
