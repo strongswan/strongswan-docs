@@ -652,9 +652,6 @@ specific plugins.
 |--disable-revocation                                         |
 |disable X.509 CRL/OCSP revocation check plugin
 
-|--disable-scepclient                                         |5.2.0
-|disable tools/scepClient.adoc[SCEP client] tool
-
 |--disable-scripts                                            |
 |disable the build of additional utilities found in `scripts` directory
 

@@ -516,6 +516,10 @@ Auto-Discovery VPN Problem Statement and Requirements
  X.509 Internet PKI Online Certificate Status Protocol - OCSP
 
 |
+|{IETF}/rfc7030[RFC 7030]:
+ Enrollment over Secure Transport (EST)
+
+|
 |{IETF}/rfc7468[RFC 7468]:
  Textual Encodings of PKIX, PKCS, and CMS Structures
 

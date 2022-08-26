@@ -1,5 +1,9 @@
 = pki Tool
-:prewrap!:
+
+:OPENXPKI: https://github.com/openxpki/openxpki
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC7030:  {IETF}/rfc7030
+:RFC8894:  {IETF}/rfc8894
 
 == Synopsis
 
@@ -17,6 +21,10 @@ pki --print   (-a)  print a credential in a human readable form
 pki --dn      (-d)  extract the subject DN of an X.509 certificate
 pki --pub     (-p)  extract the public key from a private key/certificate
 pki --verify  (-v)  verify a certificate using the CA certificate
+pki --scep    (-S)  Enroll an X.509 certificate with a SCEP server
+pki --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server
+pki --est     (-E)  Enroll an X.509 certificate with an EST server
+pki --estca   (-e)  Get CA certificate[s] from an EST server
 pki --help    (-h)  show usage information
 ----
 
@@ -29,6 +37,17 @@ certificates, issue end entity and intermediate CA certificates signed by the
 private key of a CA and containing `subjectAltNames`, CRL distribution points and
 URIs of OCSP servers. You can also extract raw public keys from private keys,
 certificate requests and certificates and compute two kinds of SHA1-based key IDs.
+
+[NOTE]
+====
+Starting with version 5.9.8, the `*pki*` command supports certificate enrollment
+via the *Simple Certificate Enrollment Protocol* (SCEP) as defined by
+{RFC8894}[RFC 8894], replacing the obsoleted
+xref:tools/scepclient.adoc[`*ipsec scepclient*`] tool.
+
+Additionally, with version 5.9.8 the newer `*https*` based *Enrollment over Secure
+Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
+====
 
 == Subcommands
 
@@ -50,13 +69,31 @@ certificate requests and certificates and compute two kinds of SHA1-based key ID
 |xref:./pkiDn.adoc[`pki --dn`]
 
 |xref:./pkiReq.adoc[`pki --req`]
+|xref:./pkiScepCa.adoc[`pki --scepca`]
+|xref:./pkiScep.adoc[`pki --scep`]
 |
+
 |
+|xref:./pkiEstCa.adoc[`pki --estca`]
+|xref:./pkiEst.adoc[`pki --est`]
 |
 |===
 
 Each subcommand has additional options. Pass `*--help*` to a subcommand to get
 additional information.
+
+== Configuration
+
+The following parameters can be configured in the
+xref:config/strongswanConf.adoc#_pki[`*pki*`] section of
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key |Default |Description
+
+include::partial$config/pki.adoc[]
+|===
 
 == Tutorial
 

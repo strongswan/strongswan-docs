@@ -5,7 +5,7 @@
 
 ----
 pki --req [--in file|--keyid hex] [--type rsa|ecdsa|priv] --dn distinguished-name
-          [--san subjectAltName]+ [--password challengePassword]
+          [--san subjectAltName]+ [--profile profile] [--password challengePassword]
           [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
           [--rsa-padding pkcs1|pss] [--outform der|pem]
 
@@ -24,6 +24,7 @@ This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request
 --type        (-t)  type of input key, default: priv
 --dn          (-d)  subject distinguished name
 --san         (-a)  subjectAltName to include in cert request
+--profile     (-P)  certificate profile name to include in cert request
 --password    (-p)  challengePassword to include in cert request
 --digest      (-g)  digest for signature creation, default: key-specific
 --rsa-padding (-R)  padding for RSA signatures, default: pkcs1
@@ -35,13 +36,15 @@ This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request
 
 == Examples
 
-* Generate a certificate request for an RSA public key
+* Generate a certificate request for an RSA public key with a TLS-server profile
 ----
-pki --req --in myKey.der --dn "C=CH, O=strongSwan, CN=moon.strongswan.org" > myReq.de
+pki --req --in myKey.der --dn "C=CH, O=strongSwan, CN=moon.strongswan.org"
+          --profile server > myReq.der
 ----
 * Generate a certificate request for an ECDSA public key
 ----
-pki --req --in myKey.der --type ecdsa --dn "C=CH, O=strongSwan, CN=carol@strongswan.org" --digest sha256 > myReq.der
+pki --req --in myKey.der --type ecdsa --dn "C=CH, O=strongSwan, CN=carol@strongswan.org"
+          --digest sha256 > myReq.der
 ----
 * Create an options file supporting ECDSA keys with SHA256 digests
 ----
@@ -51,5 +54,6 @@ cat > req.opt
 ----
 * Generate a certificate request for an ECDSA public key including a subjectAltName
 ----
-pki --req --options req.opt --in myKey.der --dn "C=CH, O=strongSwan, CN=carol@strongswan.org" --san carol@strongswan.org > myReq.der
+pki --req --options req.opt --in myKey.der --dn "C=CH, O=strongSwan, CN=carol@strongswan.org"
+          --san carol@strongswan.org > myReq.der
 ----

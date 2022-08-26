@@ -1,2 +1,0 @@
-|load                                    |
-|Plugins to load in xref:tools/scepclient.adoc[`*scepclient*`] tool
