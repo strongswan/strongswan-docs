@@ -126,7 +126,7 @@ Sub CA cert "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
 Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'mycacert-1.crt'
 RA cert "C=CH, O=strongSwan Project, CN=SCEP RA"
   ...
-RA cert is trusted, valid until Jul 24 10:07:01 2023, written to 'scep/myca-ra.pem'
+RA cert is trusted, valid until Aug 10 15:51:34 2023, 'myra.crt'
 ----
 
 * If the `*--caout*` option is omitted as well, then only the certificate information
@@ -137,13 +137,13 @@ pki --scepca --url http://pki.strongswan.org:8080/scep
 ----
 Root CA cert "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
   ...
-Root CA cert is untrusted, valid until Jul 26 10:07:01 2032, 'not written'
+Root CA cert is untrusted, valid until Aug 12 15:51:34 2032, 'not written'
 Sub CA cert "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA"
   ...
-Sub CA cert is trusted, valid until Jul 26 10:07:01 2027, 'not written'
+Sub CA cert is trusted, valid until Aug 12 15:51:34 2027, 'not written'
 RA cert "C=CH, O=strongSwan Project, CN=SCEP RA"
   ...
-RA cert is trusted, valid until Jul 24 10:07:01 2023, 'not written'
+RA cert is trusted, valid until Aug 10 15:51:34 2023, 'not written'
 ----
 
 * A CA certificate bundle in PEM format is written to stdout:
