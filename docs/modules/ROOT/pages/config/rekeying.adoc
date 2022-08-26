@@ -99,6 +99,13 @@ due to asymmetric authentication like EAP) it will close the `IKE_SA` if the cli
 fails to reauthenticate the `SA` in time. The responder sends the calculated and
 randomized reauthentication time to the client (not the hard lifetime of the `SA`).
 
+IMPORTANT: Starting with version 5.9.4, the criteria for sending an `AUTH_LIFETIME`
+           notification by the IKE responder have changed: When IKE reauthentication
+           is enabled (`*reauth_time > 0*`), `AUTH_LIFETIME` notifies are now only
+           sent by a responder if it can't reauthenticate the IKE_SA itself due to
+           asymmetric authentication (i.e. EAP) or the assignment of virtual IP
+           addresses.
+
 Note that strongSwan as a client will adhere to `AUTH_LIFETIME` notifies even if
 reauthentication is disabled in the config (or configured differently). It
 subtracts the locally configured `*over_time*` or `*margintime*` from the received
