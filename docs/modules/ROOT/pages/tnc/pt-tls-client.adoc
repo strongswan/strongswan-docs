@@ -32,9 +32,9 @@ to a list defined by `*/etc/tnc_config*`. PA-TNC messages that contain one or
 several `PA-TNC` attributes are multiplexed into `PB-TNC` ({RFC5793}[RFC 5793])
 client or server data batches which in turn are transported via `PT-TLS`.
 
-=== Options
+== Options
 
-[cols="1,3,13"]
+[cols="1,3,12"]
 |===
 
 |`-h` |`--help`
@@ -85,6 +85,14 @@ client or server data batches which in turn are transported via `PT-TLS`.
 |`-+` |`--options`
 |Read command line options from file.
 |===
+
+=== TLS Options
+
+The `*pt-tl-client*` command uses the strongSwan `*libtls*` library that can be
+configured and fine-tuned with the following xref:config/tlsOptions.adoc[TLS options].
+
+It is especially recommended to set `*version_max = 1.3*` in order to profit from
+the latest TLS 1.3 version.
 
 == Examples
 

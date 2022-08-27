@@ -22,7 +22,7 @@ Supported since version 5.9.8.
 
 == Options
 
-[cols="1,3,13"]
+[cols="1,3,12"]
 |===
 
 |`-h`
@@ -65,6 +65,14 @@ Supported since version 5.9.8.
 |`--force`
 |Force overwrite of existing files
 |===
+
+=== TLS Options
+
+The `*pki --estca*` command uses the strongSwan `*libtls*` library that can be
+configured and fine-tuned with the following xref:config/tlsOptions.adoc[TLS options].
+
+It is especially recommended to set `*version_max = 1.3*` in order to profit from
+the latest TLS 1.3 version.
 
 == Examples
 

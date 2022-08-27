@@ -34,7 +34,7 @@ Supported since version 5.9.8.
 == Options
 
 
-[cols="1,3,13"]
+[cols="1,3,12"]
 |===
 
 |`-h`
@@ -99,23 +99,13 @@ Supported since version 5.9.8.
 `*pem*` (`Base64 PEM`), defaults to `*der*`
 |===
 
-== libtls Options
+=== TLS Options
 
-The following options can be set in the
-xref:config/strongswanConf.adoc#_libtls[`*libtls*`] section of
-xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+The `*pki --est*` command uses the strongSwan `*libtls*` library that can be
+configured and fine-tuned with the following xref:config/tlsOptions.adoc[TLS options].
 
-[cols="4,1,8"]
-|===
-|*Key*|*Default*|*Description [Default]*
-
-include::partial$config/libtls.adoc[]
-|===
-
-And overview on the configuration of the
-xref:plugins/eap-tls.adoc#_tls_stack_options[TLS stack options] is given
-xref:plugins/eap-tls.adoc#_tls_stack_options[here]. It is especially recommended
-to set `*version_max = 1.3*` in order to profit from the latest TLS 1.3 version.
+It is especially recommended to set `*version_max = 1.3*` in order to profit from
+the latest TLS 1.3 version.
 
 == Examples
 

@@ -18,6 +18,7 @@
 * xref:config/lookupTuning.adoc[]
 * xref:config/rekeying.adoc[]
 * xref:config/retransmission.adoc[]
+* xref:config/tlsOptions.adoc[]
 * xref:config/sqliteDbSchema.adoc[]
 * xref:config/IPv6Ndp.adoc[]
 
