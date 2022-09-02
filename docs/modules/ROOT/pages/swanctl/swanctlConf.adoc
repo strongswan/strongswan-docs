@@ -815,7 +815,7 @@ include::partial$config/swanctl-rekey-child.adoc[]
  the connection only, which then can be manually initiated or used as a responder
  configuration. The value `*trap*` installs a trap policy which triggers the tunnel
  as soon as matching traffic has been detected. The value `*start*` initiates the
- connection actively. These two modes can be combined with `*trap\|start*`, to
+ connection actively. *Since version 5.9.6* these two modes can be combined with `*trap\|start*`, to
  immediately initiate a connection for which trap policies have been installed.
 
  When unloading or replacing a CHILD_SA configuration having a `*start_action*`
