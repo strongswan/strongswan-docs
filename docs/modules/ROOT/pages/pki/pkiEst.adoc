@@ -34,7 +34,7 @@ Supported since version 5.9.8.
 == Options
 
 
-[cols="1,3,12"]
+[cols="1,3,11"]
 |===
 
 |`-h`
