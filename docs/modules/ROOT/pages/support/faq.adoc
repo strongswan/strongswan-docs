@@ -35,7 +35,7 @@ xref:install/trafficDumps.adoc[dump traffic] on the IPsec endpoint.
 *Q:* _Can I use a local non-standard port for IKE?_
 
 *A:* The default socket implementation `*socket-default*` can only listen on two
-predetermined ports. By default one is used for xref:features/natTraversal.adoc[].
+predetermined ports. By default one is used for xref:features/natTraversal.adoc[NAT traversal].
 There are compile time options and two settings in
 xref:config/strongswanConf.adoc[`*strongswan.conf*`] to determine these ports,
 but clients usually will only use the default ports (`*500/4500*`). To use
@@ -172,7 +172,7 @@ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
 xref:features/highAvailability.adoc[active-active/passive HA clusters] that are
 comprised of two nodes. It only supports such configurations when both peers
 receive the same packets by use of an multicast group, as described on
-xref:features/highAvailability.adoc[].
+xref:features/highAvailability.adoc[HighAvailability].
 
 Failover configurations with policy-based tunnels are, while not impossible, tricky
 to implement. However, with xref:features/routeBasedVpn.adoc[route-based tunnels]
