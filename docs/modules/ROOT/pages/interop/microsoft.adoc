@@ -1,0 +1,12 @@
+= Microsoft IPsec implementations
+
+:MICROSOFT: https://docs.microsoft.com
+
+IPsec implementations made by Microsoft often support the MS_STATUS notify which sends a WIN32 error code (32 Bit value) to the other peer. strongSwan supports printing the error code in decimal, but does not transform it into the human readable description. The error code can be looked up in hexadecimal here: {MICROSOFT}/en-us/openspecs/windows_protocols/ms-erref/1bc92ddf-b79e-413c-bbaa-99a5281a6c90[`*MS-ERREF*`].
+
+== Example
+
+From the logs:
+`parsed IKE_AUTH response 1 [ N(MS_STATUS(87)) ]` -> 87 decimal -> 57 hexadecimal, look for 0x00000057
+
+The name for 0x00000057 is ERROR_INVALID_PARAMETER, which means "The parameter is incorrect.". This particular error does not provide any more information about the exact cause.
