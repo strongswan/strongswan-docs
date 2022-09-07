@@ -598,6 +598,11 @@ connection attempts are blocked
 |rsa_pss                                     |`no`
 |Whether to use RSA with PSS padding instead of PKCS#1 padding by default
 
+|rsa_pss_trailerfield                       |`no`
+|Whether to encode an explicit `*trailerField*` value of `*0x01*` in the RSA-PSS
+ `*algorithmIdentifier*` (as documented in {RFC7427}#appendix-A.4.3[RFC 7427])
+ or using the DEFAULT value by omitting the `*trailerField*` (since version 5.9.8)
+
 |send_delay                                  |`0`
 |Delay in ms for sending packets, to simulate a larger Round Trip Time (RTT)
 
