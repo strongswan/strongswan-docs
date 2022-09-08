@@ -83,6 +83,7 @@
 **** xref:interop/windowsEapConnect.adoc[]
 **** xref:interop/windowsEapServerConf.adoc[]
 **** xref:interop/windowsEapServerStatus.adoc[]
+*** xref:interop/microsoftStatusNotify.adoc[]
 ** xref:interop/ios.adoc[]
 *** xref:interop/appleIkev2Profile.adoc[]
 ** xref:interop/fortinet.adoc[]

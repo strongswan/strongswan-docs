@@ -1,0 +1,23 @@
+= Microsoft Status Notify
+
+:MS:      https://docs.microsoft.com/
+:MSERREF: {MS}/en-us/openspecs/windows_protocols/ms-erref/1bc92ddf-b79e-413c-bbaa-99a5281a6c90
+
+Microsoft IPsec implementations often use the proprietary  `MS_STATUS` (`*12345*`)
+notify to send a `WIN32` error code (32 bit value) to the other peer.
+strongSwan supports printing the error code in decimal, but does not translate it
+into a human-readable description. A reference list of {MSERREF}[`*MS-ERREF*`]
+Windows Error Codes is available for download {MSERREF}[here].
+
+== Example
+
+From the strongSwan log: `*parsed IKE_AUTH response 1 [ N(MS_STATUS(87)) ]*`
+
+The decimal error code `*87*` translates into a hexadecimal 32 bit `*0x00000057*`
+Windows Error Code. The lookup in the {MSERREF}/[`*MS-ERREF*`] reference list
+results in
+
+ ERROR_INVALID_PARAMETER ("The parameter is incorrect.")
+
+Unfortunately this particular error code does not provide any more specific
+information about the exact cause.
