@@ -40,7 +40,9 @@ Supported since version 5.9.8.
 
 |`-u`
 |`--url`
-|URL of the SCEP server
+|URL of the SCEP server. According to {RFC8894}#section-4.1[RFC 8894], the URL
+ should be of the form `*http&#58;//<hostname>[:<port>]/cgi-bin/pkiclient.exe*` but
+ depending on the SCEP server the path might be different
 
 |`-c`
 |`--caout`
