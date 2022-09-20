@@ -37,7 +37,7 @@ WARNING: If you do not exactly know what you are doing then stop here and read
 Traffic dumps are generally not useful for debugging of IKE, because charon
 optionally logs the complete structure of the IKE packets. However the graphical
 interface provided by Wireshark could be helpful. If you're debugging problems with
-ESP or AH encoding or other fancy things, it isbuseful, though.
+ESP or AH encoding or other fancy things, it is useful, though.
 
 This method can only capture traffic before `*nat POSTROUTING*` which is the last
 chain before IPsec processing of outgoing packets happen. To check if packets match
