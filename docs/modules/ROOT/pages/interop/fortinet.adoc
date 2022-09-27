@@ -102,6 +102,8 @@ config vpn ipsec phase1-interface
         set authmethod signature
         set net-device disable
         set proposal aes128-sha256 aes256-sha384
+        set localid "fortigate.strongswan.org"
+        set localid-type fqdn
         set dpd on-idle
         set comments "VPN: strongswan (Created by AS)"
         set dhgrp 31 15 14
@@ -150,7 +152,7 @@ connections {
     }
     remote {
       auth = pubkey-sha256-sha384
-      id = "C=CH, O=strongSwan Project, CN=fortigate.strongswan.org"
+      id = fortigate.strongswan.org
       cacerts = issuingCaCert.pem
     }
     children {
@@ -253,7 +255,7 @@ xref:swanctl/swanctlInitiate.adoc[`*swanctl --initiate*`] command
 [CFG]   using cached crl
 [CFG] certificate status is good
 [CFG]   reached self-signed root ca with a path length of 1
-[IKE] authentication of 'C=CH, O=strongSwan Project, CN=fortigate.strongswan.org' with RSA_EMSA_PSS_SHA2_256_SALT_32 successful
+[IKE] authentication of 'fortigate.strongswan.org' with RSA_EMSA_PSS_SHA2_256_SALT_32 successful
 [IKE] IKE_SA fortigate[1] established between 192.168.0.1[client1.strongswan.org]...192.168.0.254[C=CH, O=strongSwan Project, CN=fortigate.strongswan.org]
 [IKE] scheduling reauthentication in 9993s
 [IKE] maximum IKE_SA lifetime 11073s
@@ -287,7 +289,7 @@ xref:swanctl/swanctlListSas.adoc[`*swanctl --list-sas*`] command
 
 fortigate: #1, ESTABLISHED, IKEv2, 41188a5051bf3473_i* 009b2e2e7f9247c8_r
   local  'client1.strongswan.org' @ 192.168.0.1[500]
-  remote 'C=CH, O=strongSwan Project, CN=fortigate.strongswan.org' @ 192.168.0.254[500]
+  remote 'fortigate.strongswan.org' @ 192.168.0.254[500]
   AES_CBC-128/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/CURVE_25519
   established 1939s ago, reauth in 8054s
   fortigate: #1, reqid 1, INSTALLED, TUNNEL, ESP:AES_GCM_16-128
