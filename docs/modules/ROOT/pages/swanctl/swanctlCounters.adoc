@@ -1,4 +1,4 @@
-= swanctl --list-counters
+= swanctl --counters
 :prewrap!:
 
 == Synopsis
@@ -6,7 +6,7 @@
 ----
 swanctl --counters [--name <name>|--all] [--reset]
 
-swanctl --list-counters --help
+swanctl --counters --help
 ----
 
 == Description
@@ -62,7 +62,7 @@ global:
 
 * List the counters of all tracked connections
 ----
-$ swanctl --list-pols --all
+$ swanctl --counters --all
 
 qske:
   ike-rekey-init        : 0
