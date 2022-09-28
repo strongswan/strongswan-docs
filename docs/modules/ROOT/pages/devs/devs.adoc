@@ -103,6 +103,11 @@ test runner:
 |A comma-separated list of test functions excluded from running
 |5.9.0
 
+|`TESTS_ITERATIONS`
+|A comma-separated list of iterations of a loop-based test function to run
+ (all iterations are run if this is not specified)
+|5.9.8
+
 |`TESTS_VERBOSITY`
 |The log level used when running the tests (`*-1*` to `*4*` with a default of
  `*-1*`), see xref:config/logging.adoc[Logging]
