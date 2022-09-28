@@ -84,6 +84,9 @@ plugins.
 |--enable-android-log                                        |
 |enable Android specific logger plugin
 
+|--enable-asan                                               |5.9.8
+|enable build with AddressSanitizer (ASan)
+
 |xref:plugins/attr-sql.adoc[--enable-attr-sql]               |
 |enable SQL-based configuration attributes. This is a plugin for VPN gateways
  only, serving virtual IP addresses
@@ -236,12 +239,9 @@ plugins.
 |xref:plugins/forecast.adoc[--enable-forecast]               |5.3.0
 |enable plugin that forwards broadcast/multicast messages
 
-|xref:devs/fuzzing.adoc[--enable-fuzzing]                   |5.5.3
+|xref:devs/fuzzing.adoc[--enable-fuzzing]                    |5.5.3
 |enable fuzzing scripts (found in directory `fuzz` and intended for use on the
  OSS-Fuzz infrastructure)
-
-|--enable-gcm                                                |
-|enable GCM AEAD wrapper crypto plugin
 
 |--enable-gcrypt                                             |
 |enable gcrypt plugin. Requires the GNU *libgcrypt* library
@@ -586,6 +586,9 @@ specific plugins.
 
 |--disable-fips-prf                                           |
 |disable default FIPS PRF software implementation plugin
+
+|--disable-gcm                                                |
+|disable GCM AEAD wrapper crypto plugin (was disabled by default prior to 5.9.8)
 
 |--disable-gmp                                                |
 |disable default {GMP}[GNU Multi Precision] based public key cryptography
