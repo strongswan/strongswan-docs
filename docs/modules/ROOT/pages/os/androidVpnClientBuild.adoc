@@ -59,7 +59,7 @@ The easiest way to get these sources is to check them out directly from our Git
 server (similar for OpenSSL, but the code in our repository is currently too old
 and Google will reject apps built with it in the Play store):
 
- git clone git://git.strongswan.org/android-ndk-boringssl.git -b ndk-static openssl
+ git clone https://github.com/strongswan/boringssl.git -b ndk-static openssl
 
 === Building the App
 
