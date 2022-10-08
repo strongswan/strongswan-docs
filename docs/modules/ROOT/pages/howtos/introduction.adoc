@@ -41,7 +41,7 @@ same as connecting locally.
 image::topology.png[topology]
 
 Gateway ::
-  The gateway is usually your firewall but this can be any host within your network.
+  The gateway is usually your firewall, but this can be any host within your network.
   Often the gateway is also able to serve a small network with DHCP and DNS.
   In the image above the hosts `*moon*` and `*sun*` serve as gateways for the
   internal hosts `*alice*`, `*venus*` and `*bob*`, respectively.
@@ -59,7 +59,7 @@ Remote Hosts / Host-to-Host ::
 
 Remote Sites / Site-to-Site ::
   Hosts in two or more subnets at different locations should be able to access
-  each other. Again referring to the image above, the two subnets `*10.1.0.0/16*`
+  each other. Again, referring to the image above, the two subnets `*10.1.0.0/16*`
   and `*10.2.0.0/24*` behind gateways `*moon*` and `*sun*`, respectively, might be
   connected, so that e.g. the hosts `*alice*` and `*bob*` may securely communicate
   with one another.
@@ -105,13 +105,13 @@ For instance, referring to the image above, if host `*moon*` has a site-to-site
 tunnel to host `*sun*` (connecting the two networks `*10.1.0.0/16*` and
 `*10.2.0.0/24*`) and host `*carol*` has a roadwarrior connection to host `*sun*`
 (from which `*carol*` received a virtual IP address of `*10.3.0.10*`). Then `*carol*`
-wont be able to automatically communicate with `*alice*`, even if forwarding is
+won't be able to automatically communicate with `*alice*`, even if forwarding is
 enabled on `*sun*`.  This is because there is no IPsec policy allowing traffic
 between `*carol*` (`*10.3.0.10*`) and `*alice*` (`*10.1.0.10*`). An additional SA
 between `*moon*` and `*sun*` connecting the virtual subnet `*10.3.0.0/24*` with
 `*10.1.0.0/16*` would be a possible solution to this issue.
 
-Generally IPsec processing and routing are two different topics. IPsec is often
+Generally, IPsec processing and routing are two different topics. IPsec is often
 just bumped into the stack (policy based) and the original routing decision for
 the unprotected packet also applies to the protected packet. This is the reason
 that strongSwan xref:daemons/charon.adoc[`*charon*`] IKE daemon by default installs
@@ -173,7 +173,7 @@ Extensible Authentication Protocol (EAP) ::
 
 eXtended Authentication (XAuth) ::
   XAuth provides a flexible authentication framework within IKEv1. It is mainly
-  used for username/password-based authentication. Also it is generally used as a
+  used for username/password-based authentication. Also, it is generally used as a
   second authentication method after a mutual authentication based on either
   X.509 certificates or PSK. With _IKEv1 hybrid authentication_ it is however
   possible to authenticate the gateway with a certificate and use XAuth to
@@ -285,7 +285,7 @@ xref:config/strongswanConf.adoc[`*strongswan.conf*`] man page. Recommended log
 settings for debugging problems may be found xref:support/helpRequests.adoc[here].
 
 Whenever you encounter a log message similar to `*received ... error notify*` where
-the placeholder `*...*` is e.g. `NO_PROPOSAL_CHOSEN` or `TS_UNACCEPTABLE`, you
+the placeholder `*...*` is e.g., `NO_PROPOSAL_CHOSEN` or `TS_UNACCEPTABLE`, you
 should consult the logs of the *remote peer* in order to find out why that
 error notify was generated in the first place.
 
