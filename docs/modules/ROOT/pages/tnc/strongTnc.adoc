@@ -1,7 +1,9 @@
 = strongTNC
 :experimental:
 
-:STRONGTNC:   https://github.com/strongswan/strongTNC
+:GITHUB:      https://github.com
+:STRONGTNC:   {GITHUB}/strongswan/strongTNC
+:DOCKERTNC:   {GITHUB}/strongX509/docker
 :DJANGO:      https://www.djangoproject.com/
 :LETSENCRYPT: https://letsencrypt.org/
 
@@ -255,3 +257,13 @@ image::tnc_report_2.png[strongTNC Device Report 2, link=self]
 and the most recent *Session details* show that there are no TNC policy violations
 
 image::tnc_session_2.png[strongTNC Session 2, link=self]
+
+== Docker Image
+
+The {DOCKERTNC}/tree/master/tnc[TNC measurement scenarios] described above can be
+practically tested with a
+{DOCKERTNC}/blob/master/tnc/Dockerfile.server[`*tnc-server*`] and a
+{DOCKERTNC}/blob/master/tnc/Dockerfile.client[`*tnc-client*`] docker container
+connected via a
+{DOCKERTNC}/blob/master/tnc/docker-compose.yml[virtual test network] available
+for download from {DOCKERTNC}[{DOCKERTNC}].
