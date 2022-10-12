@@ -52,7 +52,7 @@
   containing the security fix. Also the {NVD}[CVE entry] will be published.
 
  * Minor vulnerabilities  of *low* severity usually will be fixed immediately and
-   the corresponding patch will be posted on the strongSwan mailing list.
+   the corresponding patch will be pushed to the repository on GitHub.
 
 === List of Reported and Fixed Security Flaws
 
@@ -64,10 +64,10 @@
 == Functional Flaws
 
  * Please report all non-security-related flaws and bugs by opening a
-   {GITHUB}/issues[*new issue*] on our {GITHUB}/issues[strongSwan Github site].
+   {GITHUB}/issues[*new issue*] on our {GITHUB}/issues[strongSwan GitHub site].
    Of course it is helpful if you can already pinpoint the code file where you
    suspect the bug or in the case of a crash to provide a backtrack analysis of
    the core dump.
 
  * User patches fixing flaws are always welcome can be posted as a
-   {GITHUB}/pulls[*pull request*] on our {GITHUB}/pulls[strongSwan Github site].
+   {GITHUB}/pulls[*pull request*] on our {GITHUB}/pulls[strongSwan GitHub site].

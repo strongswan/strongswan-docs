@@ -1,23 +1,24 @@
 = Free Support
 
 :GITHUB:  https://github.com/strongswan/strongswan
-:MAILMAN: https://lists.strongswan.org/mailman/listinfo
+:LIBERA:  https://libera.chat
+:IRC:     irc://irc.libera.chat/strongswan
 
-== strongSwan Github Repository
+IMPORTANT: Please read xref:support/helpRequests.adoc[] before asking the
+           community for help.
+
+== strongSwan GitHub Repository
 
 * {GITHUB}/discussions[Discussions]: General questions concerning strongSwan
-  configuration problems and solution finding. +
-  Please read {GITHUB}/discussions/196[*this*] before posting!
+  configuration problems and solution finding. But also developer questions
+  regarding strongSwan deficiencies or bugs, performance issues or enhancement
+  requests. Please read {GITHUB}/discussions/196[*this*] before posting!
 
-* {GITHUB}/issues[Issues]: Post suspected *bugs* and *enhancement* requests.
+* {GITHUB}/issues[Issues]: Post detailed *bug reports* and *enhancement* requests.
 
 * {GITHUB}/pulls[Pull Requests]: Upload pull requests with strongSwan feature
   enhancements or bug fixes.
 
-== strongSwan Mailing List
+== IRC Channel
 
-* {MAILMAN}/users[Users List]: User questions concerning strongSwan configuration
-  problems and solution finding.
-
-* {MAILMAN}/dev[Dev List]: Developer questions concerning strongSwan deficiences
-  or bugs, performance issues or enhancement requests.
+ * strongSwan support channel (#strongswan) on {LIBERA}[libera.chat]: {IRC}

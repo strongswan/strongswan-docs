@@ -1,12 +1,14 @@
 = Requesting Help and Reporting Bugs
 
+:GITHUB:   https://github.com/strongswan/strongswan
+:DISCUSS:  https://github.com/strongswan/strongswan/discussions
 :SEARCH:   https://wiki.strongswan.org/projects/strongswan/search
 :LISTS:    https://lists.strongswan.org/
 :APPARMOR: https://help.ubuntu.com/community/AppArmor
 :SELINUX:  https://wiki.archlinux.org/index.php/SELinux
 :DOCS:     https://docs.strongswan.org
 
-Before you request help or report bugs, please give the following items some
+Before you request help or ask questions, please give the following items some
 consideration to avoid wasting your and our time and for optimizing the time it
 takes to find a solution.
 
@@ -24,8 +26,8 @@ takes to find a solution.
   xref:support/flawReporting.adoc[security flaw reporting instructions].
 
 * If you require help with *configuring special strongSwan features*, browse
-  the *Configuration*, *Features* and *Howtos* tabs in the {DOCS}[documentation]
-  first.
+  the *Configuration*, *Features* and *Howtos* sections in the
+  {DOCS}[documentation] first.
 
 == Finding Problem Solutions Effectively and Efficiently
 
@@ -33,9 +35,8 @@ For other problems please follow these steps:
 
 . Read the xref:support/faq.adoc[Frequently Asked Questions] (FAQ).
 
-. Read the manuals (i.e. the man pages that come with *your* strongSwan version).
-
-. Make sure your version of the man page corresponds to strongSwan and not FreeS/WAN,
+. Read the manuals (i.e. the man pages that come with *your* strongSwan version). +
+  Make sure your version of the man pages correspond to strongSwan and not FreeS/WAN,
   Openswan or Libreswan. The software that a man page belongs to is usually printed
   in the center top of the man page when it's initially opened.
 
@@ -49,21 +50,22 @@ For other problems please follow these steps:
 . Make sure your strongSwan version is up to date. A lot of actual bugs (not user
   errors) are fixed in the latest strongSwan versions.
 
-. Search the bug tracker using the {SEARCH}[search function] for keywords from the
-  logs or keywords that describe your issue. Make sure to include issues.
+. Search issues and {DISCUSS}[discussion threads] using {GITHUB}[GitHub's
+  search function] for keywords from the logs or keywords that describe your
+  problem. +
+  Perhaps also search the old bug tracker via its {SEARCH}[search function]
+  or the old {LISTS}[mailing list archives] (e.g. via `*site:lists.strongswan.org*`
+  in a search engine). +
+  However, it's usually easiest to use your favorite search engine directly as
+  you might also find answers on Stack Exchange etc.
 
-. Search the {LISTS}[mailing list archives]. You may also use your favorite search
-  engine by restricting the results to *lists.strongswan.org* (usually the syntax
-  is `*site:lists.strongswan.org*`).
-
-. Now, you may ask for help. Please write issues and emails to the mailing lists
-  in English only. Do not write your messages in any other language. Please attach
-  your complete config files (xref:config/strongswanConf.adoc[`*strongswan.conf*`],
+. Now, you may ask for help. Please write your posts in English only. Do not
+  write your posts in any other language. Please include or attach your
+  complete config files (xref:config/strongswanConf.adoc[`*strongswan.conf*`],
   xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`], etc.) and a complete log file
-  showing the problem. Please supply text files. Pictures are not useful. If the
-  files are large (over 1 MB), please use a pastebin of your choice or host it
-  somewhere yourself. If you are told to provide the data in the IRC channel of
-  strongSwan, then please use a pastebin and provide links to your pastes. Use
+  showing the problem. Please supply text files. Pictures are not useful.
+  If you are told to provide the data in the IRC channel of strongSwan, then
+  please use a pastebin of your choice and provide links to your pastes. Use
   different pastes for different data.
 
 We generally require *all* of the following from you:
