@@ -57,7 +57,7 @@ a cryptographic checksum guarantees *data integrity*.
 image::espHeader.png[ESP Header]
 
 The 32 bit *Security Parameters Index* (SPI) is used by the receiving IPsec peer
-as an index into its kernel-based database to look up up the session keys needed
+as an index into its kernel-based database to look up the session keys needed
 to decrypt and authenticate the ESP packet. The SPI is also needed to determine the
 IPsec security policy that has to be enforced on the inbound plaintext IP packets
 after decryption.
@@ -127,7 +127,7 @@ strength cannot be enforced.
 
 In order to prevent man-in-the-middle-attacks possible with
 xref:#_psk_based_authentication[PSK-based authentication], EAP-based authentication
-as been introduced by the IKEv2 standard. If the *Initiator* doesn't include an
+has been introduced by the IKEv2 standard. If the *Initiator* doesn't include an
 `AUTHi` payload in the `IKE_AUTH` request, the *Responder* sends its strong *Digital
 Signature* in the `AUTHr` payload first, in order to establish trust and at the
 same time initiates the EAP protocol by including a first EAP request in the `IKE_AUTH`

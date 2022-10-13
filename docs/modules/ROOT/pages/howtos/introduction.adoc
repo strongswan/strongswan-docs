@@ -105,7 +105,7 @@ For instance, referring to the image above, if host `*moon*` has a site-to-site
 tunnel to host `*sun*` (connecting the two networks `*10.1.0.0/16*` and
 `*10.2.0.0/24*`) and host `*carol*` has a roadwarrior connection to host `*sun*`
 (from which `*carol*` received a virtual IP address of `*10.3.0.10*`). Then `*carol*`
-wont be able to automatically communicate with `*alice*`, even if forwarding is
+won't be able to automatically communicate with `*alice*`, even if forwarding is
 enabled on `*sun*`.  This is because there is no IPsec policy allowing traffic
 between `*carol*` (`*10.3.0.10*`) and `*alice*` (`*10.1.0.10*`). An additional SA
 between `*moon*` and `*sun*` connecting the virtual subnet `*10.3.0.0/24*` with
@@ -409,7 +409,7 @@ e.g. running on a system that receives a lot of routes via dynamic routing.
 Connectivity change detection can be disabled by setting `*charon.process_route = no*`
 in xref:config/strongswanConf.adoc[`*strongswan.conf*`].
 
-If IPv6 is used then make sure to xref:config/IPv6Ndp.adoc[bypass] Neighbor Discovery
+If IPv6 is used, then make sure to xref:config/IPv6Ndp.adoc[bypass] Neighbor Discovery
 Protocol (NDP) traffic if necessary. It is possible that you encounter MSS/MTU
 problems when tunneling traffic. Please refer to
 xref:howtos/forwarding.adoc#_mtumss_issues[Forwarding and Split-Tunneling] for

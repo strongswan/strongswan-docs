@@ -225,7 +225,7 @@ if there are any questions about its usage.
 
 The `*charon.plugins.kernel-netlink.mss*` and `*charon.plugins.kernel-netlink.mtu*`
 options may be used, too, but the values set there apply to the routes that
-teh `*kernel-netlink*` plugin installs and the impact of them onto the traffic and
+the `*kernel-netlink*` plugin installs and the impact of them onto the traffic and
 the behavior of the kernel is currently quite unclear.
 
 Add the following `*iptables*` rules on the IKE responder to reduce the MSS (as
