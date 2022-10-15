@@ -1,5 +1,6 @@
 name: docs
 title: strongSwan Docs
-version: 5.9
+version: '6.0'
+prerelease: Beta
 nav:
         - modules/ROOT/nav.adoc
