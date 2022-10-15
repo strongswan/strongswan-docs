@@ -1,11 +1,13 @@
 = Trusted Platform Module 2.0
 
-:TCG:     https://trustedcomputinggroup.org/resource
-:TCGBLOG: https://develop.trustedcomputinggroup.org
-:TPM2:    https://github.com/tpm2-software
-:TSSV:    3.2.0
-:TOOLV:   5.2
-:TOOLMAN: {TPM2}/tpm2-tools/tree/{TOOLV}/man
+:TCG:         https://trustedcomputinggroup.org/resource
+:TCGBLOG:     https://develop.trustedcomputinggroup.org
+:TPM2:        https://github.com/tpm2-software
+:TSSV:        3.2.0
+:TOOLV:       5.3
+:TOOLMAN:     {TPM2}/tpm2-tools/tree/{TOOLV}/man
+:IBM_TPM2]:   https://sourceforge.net/projects/ibmswtpm2
+:DOCKER_TPM2: https://github.com/strongX509/docker/tree/master/tpm
 
 == Connect to a TPM 2.0 Device
 
@@ -661,6 +663,50 @@ memory assigned to NV index `*0x01800003*` via the
 {TOOLMAN}/tpm2_nvundefine.1.md[`*tpm2_nvundefine*`] command:
 
  $ tpm2_nvundefine 0x01800003 -C o
+
+== New TPM 2.0 Devices with stronger RSA and ECC Keys
+
+Starting with version `*5.3*` of the `*tpm2-tools*`, RSA keys with lengths > 2048
+bits and ECC keys with lengths > 256 bits are supported. Also signatures can be
+based on `*sha384*` or `*sha512*` hashes if the TPM 2.0 firmware supports them.
+
+E.g. the following TPM 2.0 device manufactured by STMicroelectronics has support
+for `*NIST_P384*` ECC keys and signatures based on `"SHA384" hashes:
+----
+TPM 2.0 - manufacturer: STM  () rev: 01.38 2018 FIPS 140-2
+TPM 2.0 - algorithms: RSA SHA1 HMAC AES MGF1 KEYEDHASH XOR SHA256 SHA384 RSASSA RSAES RSAPSS OAEP ECDSA ECDH ECDAA ECSCHNORR KDF1_SP800_56A KDF1_SP800_108 ECC SYMCIPHER SHA3_256 SHA3_384 CTR OFB CBC CFB ECB
+TPM 2.0 - ECC curves: NIST_P256 NIST_P384 BN_P256
+TPM 2.0 - PCR banks: SHA1 SHA256
+----
+
+=== Endorsement Keys
+
+An `EK` with an RSA 3072 bit key is derived with the following command
+----
+$ tpm2_createek -G rsa3072 -c 0x81010001
+----
+and an `EK` with an ECC 384 bit key with the command
+----
+$ tpm2_createek -G ecc384 -c 0x81010002
+----
+
+=== Attestation Keys
+
+An `AK` with an RSA 3072 bit key is derived with the following command
+----
+$ tpm2_createak -C 0x81010001 -G rsa3072 -g sha256 -s rsassa -c ak_rsa.ctx -u ak_rsa.pub -n ak_rsa.name
+----
+and an `AK` with an ECC 384 bit key with the command
+----
+$ tpm2_createak -C 0x81010002 -G ecc384 -g sha384 -s ecdsa -c ak_ecc.ctx -u ak_ecc.pub -n ak_ecc.name
+----
+
+=== IBM TPM 2.0 Simulator
+
+A {DOCKER_TPM2}[`*tpm-server*`] Docker container with a readily installed
+{IBM_TPM2}[IBM TPM 2.0 Simulator] plus the {TPM2}/tpm2-tools[`*tpm2-tools*`] and
+the strongSwan xref:pki/pki.adoc[`*pki*`] tool allows you to freely experiment
+with the larger RSA and ECC keys.
 
 == Using TPM 2.0 Keys with strongSwan
 
