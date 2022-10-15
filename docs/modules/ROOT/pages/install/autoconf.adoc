@@ -1,10 +1,10 @@
 = Autoconf Options
 
-:BLISS:     https://eprint.iacr.org/2017/490.pdf
 :BOTAN:     https://botan.randombit.net/
 :GMP:       https://gmplib.org/
 :NISTPQC:   https://csrc.nist.gov/projects/post-quantum-cryptography
 :OPENSSL:   https://openssl.org/
+:LIBOQS:    https://github.com/open-quantum-safe/liboqs
 :PQ:        https://github.com/strongX509/docker/tree/master/pq-strongswan
 :TKM:       https://www.codelabs.ch/tkm/
 :UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
@@ -61,6 +61,9 @@ plugins.
 |xref:plugins/addrblock.adoc[--enable-addrblock]             |
 |enable {RFC3779}[RFC 3779] address block constraint support plugin
 
+|--enable-aes                                                |
+|enable AES software implementation plugin
+
 |--enable-aesni                                              |5.3.1
 |enable Intel AES-NI crypto plugin
 
@@ -94,14 +97,6 @@ plugins.
 |--enable-bfd-backtraces                                     |5.0.1
 |use binutil's libbfd to resolve backtraces for memory leaks and segfaults
 
-|--enable-bliss                                              |5.2.2
-|enable deprecated Bimodal Lattice Signature Scheme (BLISS) software
- implementation plugin. Since a {BLISS}[side-channel attack] on our BLISS
- implementation has been reported, please use the NIST PQC (Post-Quantum
- Cryptography) {NISTPQC}/selected-algorithms-2022[Selected Algorithms] and
- {NISTPQC}/round-4-submissions[Round 4 Submissions] signature algorithms offered
- by the post-quantum {PQ}[strongSwan 6.0] version instead.
-
 |--enable-blowfish                                           |
 |enable Blowfish software implementation plugin
 
@@ -129,6 +124,9 @@ plugins.
 |xref:plugins/connmark.adoc[--enable-connmark]               |5.3.0
 |enable conntrack based marks to select return path SA
 
+|--enable-curve25519                                         |5.5.2
+|enable plugin providing X25519 DH group and Ed25519 public key authentication
+
 |xref:plugins/counters.adoc[--enable-counters]               |5.6.1
 |enable plugin that collects several performance counters
 
@@ -150,6 +148,10 @@ plugins.
 |--enable-dbghelp-backtraces                                 |5.2.0
 |use dbghlp.dll on Windows to create and print backtraces for memory leaks and
  segfaults
+
+|--enable-des                                                |
+|enable DES/3DES software implementation plugin
+
 
 |xref:plugins/dhcp.adoc[--enable-dhcp]                       |
 |enable DHCP based attribute provider plugin
@@ -236,18 +238,36 @@ plugins.
 |--enable-files                                              |5.3.0
 |enable simple `file://` URI fetcher
 
+|--enable-fips-prf                                           |
+|enable FIPS PRF software implementation plugin. Required for `*eap-aka*` and
+ `*eap-sim*` plugins.
+
 |xref:plugins/forecast.adoc[--enable-forecast]               |5.3.0
 |enable plugin that forwards broadcast/multicast messages
+
+|--enable-frodo                                              |6.0
+|enable FrodoKEM post-quantum key exchange method plugin
+
 
 |xref:devs/fuzzing.adoc[--enable-fuzzing]                    |5.5.3
 |enable fuzzing scripts (found in directory `fuzz` and intended for use on the
  OSS-Fuzz infrastructure)
+
+|--enable-gcm                                                |
+|enable GCM AEAD wrapper crypto plugin
 
 |--enable-gcrypt                                             |
 |enable gcrypt plugin. Requires the GNU *libgcrypt* library
 
 |--enable-git-version                                        |
 |use output of `git describe` as version information in executables
+
+|--enable-gmp                                                |
+|enable {GMP}[GNU Multi Precision] based public key cryptography
+ implementation plugin. Requires `libgmp` library.
+
+|--enable-hmac                                               |
+|enable HMAC crypto implementation plugin
 
 |xref:plugins/ha.adoc[--enable-ha]                           |
 |enable xref:features/highAvailability.adoc[high availability] cluster plugin
@@ -346,7 +366,10 @@ plugins.
 |build the deprecated strongSwan manager web application
 
 |--enable-md4                                                |
-|enable MD4 software implementation plugin. Required for `eap-mschapv2` plugin
+|enable MD4 software implementation plugin. Required for `*eap-mschapv2*` plugin
+
+|--enable-md5                                                |
+|enable MD5 software implementation plugin
 
 |--enable-medcli                                             |
 |enable deprecated mediation client web front end and daemon plugin
@@ -361,25 +384,18 @@ plugins.
 |enable MGF1 software implementation plugin
 
 |--enable-monolithic                                         |
-|build monolithic versions of `libstrongswan` and `libcharon` that include
+|build monolithic versions of `*libstrongswan*` and `*libcharon*` that include
  all enabled plugins
 
 |--enable-mysql                                              |
 |enable MySQL database support. Requires `libmysqlclient_r`
 
-|--enable-newhope                                            |5.5.1
-|enable deprecated NewHope post-quantum key exchange plugin.
- Use the post-quantum {PQ}[strongSwan 6.0] version instead
-
 |--enable-nm                                                 |
 |enable xref:features/networkManager.adoc[NetworkManager] backend
 
-|--enable-ntru                                               |5.1.2
-|enable deprecated `NTRUEncrypt` key exchange plugin.
- Use the post-quantum {PQ}[strongSwan 6.0] version instead
-
-|--enable-openssl                                            |
-|enable [OpenSSL] crypto plugin. Requires `libcrypto` library
+|--enable-oqs                                                |6.0
+|enable oqs post-quantum key exchange methods and signatures plugin.
+ Requires the {LIBOQS}[`*liboqs*`] library
 
 |--enable-osx-attr                                           |5.1.0
 |enable macOS SystemConfiguration attribute handler
@@ -401,6 +417,9 @@ plugins.
 |xref:plugins/pkcs11.adoc[--enable-pkcs11]                   |
 |enable PKCS#11 crypto token support plugin
 
+|--enable-pkcs12                                             |5.1.0
+|enable PKCS#12 container support plugin
+
 |--enable-python-eggs                                        |5.3.0
 |enable build of provided python eggs e.g. for the
  xref:plugins/vici.adoc[`*vici*`] protocol
@@ -410,6 +429,9 @@ plugins.
 
 |xref:plugins/radattr.adoc[--enable-radattr]                 |
 |enable plugin to inject and process custom RADIUS attributes as IKEv2 client
+
+|--enable-rc2                                                |5.1.0
+|enable RC2 software implementation plugin. Required for `*pkcs12*` plugin
 
 |--enable-rdrand                                             |
 |enable Intel RDRAND random generator plugin
@@ -428,6 +450,12 @@ plugins.
 |xref:plugins/selinux.adoc[--enable-selinux]                 |5.9.6
 |enable SELinux support for labeled IPsec and the
  xref:plugins/selinux.adoc[selinux] plugin
+
+|--enable-sha1                                               |
+|enable SHA-1 software implementation plugin
+
+|--enable-sha2                                               |
+|enable SHA-256/SHA-384/SHA-512 software implementation plugin
 
 |--enable-sha3                                               |5.3.4
 |enable SHA3 and SHAKE software implementation plugin
@@ -451,6 +479,9 @@ plugins.
 
 |--enable-sqlite                                             |
 |enable SQLite database support. Requires `libsqlite3` library
+
+|--enable-stroke                                             |
+|enable legacy `stroke` configuration backend for `charon` daemon
 
 |--enable-svc                                                |5.2.0
 |enable xref:daemons/charon-svc.adoc[charon Windows service]
@@ -550,9 +581,6 @@ specific plugins.
 |===
 |Option |Since{SINCE_Ref} |Description
 
-|--disable-aes                                                |
-|disable default AES software implementation plugin
-
 |xref:plugins/attr.adoc[--disable-attr]                       |
 |disable xref:config/strongswanConf.adoc[`*strongswan.conf*`] based
  configuration of DNS and WINS server attributesfootnote:[
@@ -568,34 +596,15 @@ specific plugins.
 |xref:plugins/constraints.adoc[--disable-constraints]         |
 |disable advanced X.509 constraint checking plugin
 
-|--disable-curve25519                                         |5.5.2
-|disable plugin providing X25519 DH group and Ed25519 public key authentication
-
 |--disable-defaults                                           |5.0.3
 |disable all features that are enabled by default. Basically it's short for
  removing all options listed in this section.
-
-|--disable-des                                                |
-|disable default DES/3DES software implementation plugin
 
 |--disable-dnskey                                             |
 |disable {RFC4034}[DNS Resource Records] key decoding plugin
 
 |--disable-drgb                                               |5.8.2
 |disable the NIST Deterministic Random Bit Generator plugin
-
-|--disable-fips-prf                                           |
-|disable default FIPS PRF software implementation plugin
-
-|--disable-gcm                                                |
-|disable GCM AEAD wrapper crypto plugin (was disabled by default prior to 5.9.8)
-
-|--disable-gmp                                                |
-|disable default {GMP}[GNU Multi Precision] based public key cryptography
- implementation plugin. Requires `libgmp` library.
-
-|--disable-hmac                                               |
-|disable default HMAC crypto implementation plugin
 
 |--disable-ikev1                                              |
 |disable IKEv1 protocol support in `charon` daemon
@@ -612,11 +621,11 @@ specific plugins.
 |--disable-load-warning                                       |
 |disable the `charon` plugin load option warning in starter
 
-|--disable-md5                                                |
-|disable default MD5 software implementation plugin
-
 |--disable-nonce                                              |
 |disable nonce generation plugin
+
+|--disable-openssl                                            |
+|disable default {OPENSSL}[OpenSSL] crypto plugin. Requires the `*libcrypto*` library
 
 |--disable-pem                                                |
 |disable PEM decoding plugin
@@ -633,9 +642,6 @@ specific plugins.
 |--disable-pkcs8                                              |
 |disable PKCS#8 private key decoding plugin
 
-|--disable-pkcs12                                             |5.1.0
-|disable PKCS#12 container support plugin
-
 |xref:pki/pki.adoc[--disable-pki]                             |5.2.0
 |disable xref:pki/pki.adoc[`*pki*`] public key and certificate utility
 
@@ -644,9 +650,6 @@ specific plugins.
 
 |--disable-random                                             |
 |disable default RNG implementation using the raw `/dev/[u]random` devices
-
-|--disable-rc2                                                |5.1.0
-|disable RC2 software implementation plugin
 
 |xref:plugins/resolve.adoc[--disable-resolve]                 |
 |disable writing DNS information received via configuration payload to
@@ -658,20 +661,11 @@ specific plugins.
 |--disable-scripts                                            |
 |disable the build of additional utilities found in `scripts` directory
 
-|--disable-sha1                                               |
-|disable default SHA-1 software implementation plugin
-
-|--disable-sha2                                               |
-|disable default SHA-256/SHA-384/SHA-512 software implementation plugin
-
 |--disable-socket-default                                     |
 |disable default socket implementation for `charon` daemon
 
 |--disable-sshkey                                             |5.1.0
 |disable SSH key decoding plugin
-
-|--disable-stroke                                             |
-|disable legacy `stroke` configuration backend for `charon` daemon
 
 |xref:swanctl/swanctl.adoc[--disable-swanctl]                 |5.2.0
 |disable xref:swanctl/swanctl.adoc[`*swanctl*`] configuration and control tool

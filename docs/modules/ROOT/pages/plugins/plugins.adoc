@@ -13,6 +13,7 @@ for specific needs.
 :GCRYPT:    https://gnupg.org/software/libgcrypt/
 :GMP:       https://gmplib.org/
 :OPENSSL:   https://openssl.org/
+:LIBOQS:    https://github.com/open-quantum-safe/liboqs
 :UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
 :WIRESHARK: https://www.wireshark.org/
 :WOLFSSL:   https://github.com/wolfSSL/wolfssl
@@ -35,7 +36,7 @@ for specific needs.
 |acert                                    | |s
 |Support of X.509 attribute certificates
 
-|aes                                      |x|s
+|aes                                      | |s
 |AES-128/192/256 cipher software implementation
 
 |aesni                                    | |s
@@ -46,9 +47,6 @@ for specific needs.
 
 |agent                                    | |s
 |RSA/ECDSA private key backend connecting to ssh-agent
-
-|bliss                                    | |e
-|Bimodal Lattice Signature Scheme (BLISS) post-quantum computer signature scheme
 
 |blowfish                                 | |s
 |Blowfish cipher software implementation
@@ -74,24 +72,26 @@ for specific needs.
 |xref:./curl.adoc[curl]                   | |s
 |libcurl based HTTP/FTP fetcher
 
-|curve25519                               |x|s
+|curve25519                               | |s
 |X25519 DH group and Ed25519 public key authentication
 
-|des                                      |x|s
+|des                                      | |s
 |DES/3DES cipher software implementation
 
 |dnskey                                   |x|s
 |Parse {RFC4034}[DNS] public keys
 
 |drbg                                     |x|s
-|NIST Deterministic Random Bit Generator based on AES-CTR and HMAC-SHA2 modes.
- Required by the ntru plugins
+|NIST Deterministic Random Bit Generator based on AES-CTR and HMAC-SHA2 modes
 
 |files                                    | |s
 |Fetcher for local file:// URIs
 
-|fips-prf                                 |x|s
+|fips-prf                                 | |s
 |PRF specified by FIPS, used by EAP-SIM/AKA algorithms
+
+|frodo                                    | |e
+|FrodoKEM post quantum safe key exchange method
 
 |gcm                                      | |s
 |GCM cipher mode wrapper
@@ -99,10 +99,10 @@ for specific needs.
 |gcrypt                                   | |s
 |Crypto backend based on {GCRYPT}[libgcrypt]
 
-|gmp                                      |x|s
+|gmp                                      | |s
 |RSA/DH crypto backend based on {GMP}[libgmp]
 
-|hmac                                     |x|s
+|hmac                                     | |s
 |HMAC wrapper using various hashers
 
 |kdf                                      |x|s
@@ -117,7 +117,7 @@ for specific needs.
 |md4                                      | |s
 |MD4 hasher software implementation
 
-|md5                                      |x|s
+|md5                                      | |s
 |MD5 hasher software implementation
 
 |mgf1                                     | |s
@@ -126,17 +126,14 @@ for specific needs.
 |mysql                                    | |s
 |MySQL database backend based on libmysqlclient
 
-|newhope                                  | |e
-|Key exchange based on post-quantum computer New Hope algorithm
-
 |nonce                                    |x|s
 |Default nonce generation plugin
 
-|ntru                                     | |e
-|Key exchange based on post-quantum computer NTRU encryption
-
-|openssl                                  | |s
+|openssl                                  |x|s
 |Crypto backend based on the {OPENSSL}[OpenSSL] library
+
+|oqs                                      | |e
+|Open quantum safe plugin based on the {LIBOQS}[`*liboqs*`] library
 
 |padlock                                  | |e
 |VIA padlock crypto backend, provides AES128/SHA1
@@ -159,7 +156,7 @@ for specific needs.
 |xref:./pkcs11.adoc[pkcs11]               | |s
 |PKCS#11 smart card backend
 
-|pkcs12                                   |x|s
+|pkcs12                                   ||s
 |PKCS#12 decoding routines
 
 |pubkey                                   |x|s
@@ -168,7 +165,7 @@ for specific needs.
 |random                                   |x|s
 |RNG reading from /dev/[u]random
 
-|rc2                                      |x|s
+|rc2                                      | |s
 |RC2 cipher software implementation
 
 |rdrand                                   | |e
@@ -177,10 +174,10 @@ for specific needs.
 |revocation                               |x|s
 |X.509 CRL/OCSP revocation checking
 
-|sha1                                     |x|s
+|sha1                                     | |s
 |SHA1 hasher software implementation
 
-|sha2                                     |x|s
+|sha2                                     | |s
 |SHA-2 hasher software implementation
 
 |sha3                                     | |s
@@ -403,7 +400,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./sql.adoc[sql]                     | |s
 |SQL configuration backend reading configurations/credentials from a database
 
-|stroke                                   |x|s
+|stroke                                   | |s
 |Deprecated stroke configuration/control backend, to use with ipsec script and starter
 
 |xref:./tnc-ifmap.adoc[tnc-ifmap]         | |s
@@ -481,14 +478,11 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 
 == Default Plugins
 
-The following 36 plugins are built and loaded by default:
+The following 25 plugins are built and loaded by default:
 
 [cols="5,1,1,20"]
 |===
 |Plugin Name                              |E{E_ref}|S{S_ref}|Description
-
-|aes                                      |x|s
-|AES-128/192/256 cipher software implementation
 
 |cmac                                     |x|s
 |CMAC cipher mode wrapper
@@ -496,36 +490,21 @@ The following 36 plugins are built and loaded by default:
 |xref:./constraints.adoc[constraints]     |x|s
 |X.509 certificate advanced constraint checking
 
-|curve25519                               |x|s
-|X25519 DH group and Ed25519 public key authentication
-
-|des                                      |x|s
-|DES/3DES cipher software implementation
-
 |dnskey                                   |x|s
 |Parse {RFC4034}[RFC 4034] public keys
 
 |drbg                                     |x|s
 |NIST Deterministic Random Bit Generator based on AES-CTR and HMAC-SHA2 modes.
- Required by the `*gmp*` and `*ntru*` plugins
-
-|fips-prf                                 |x|s
-|PRF specified by FIPS, used by EAP-SIM/AKA algorithms
-
-|gmp                                      |x|s
-|RSA/DH crypto backend based on {GMP}[libgmp]
-
-|hmac                                     |x|s
-|HMAC wrapper using various hashers
+ Required by the `*gmp*` plugin
 
 |kdf                                      |x|s
 |IKEv2 key derivation wrapper using various PRFs
 
-|md5                                      |x|s
-|MD5 hasher software implementation
-
 |nonce                                    |x|s
 |Default nonce generation plugin
+
+|openssl                                  |x|s
+|Crypto backend based on the {OPENSSL}[OpenSSL] library
 
 |pem                                      |x|s
 |PEM encoding/decoding routines
@@ -542,26 +521,14 @@ The following 36 plugins are built and loaded by default:
 |pkcs8                                    |x|s
 |PKCS#8 decoding routines
 
-|pkcs12                                   |x|s
-|PKCS#12 decoding routines
-
 |pubkey                                   |x|s
 |Wrapper to handle raw public keys as trusted certificates
 
 |random                                   |x|s
 |RNG reading from /dev/[u]random
 
-|rc2                                      |x|s
-|RC2 cipher software implementation
-
 |revocation                               |x|s
 |X.509 CRL/OCSP revocation checking
-
-|sha1                                     |x|s
-|SHA1 hasher software implementation
-
-|sha2                                     |x|s
-|SHA-2 hasher software implementation
 
 |sshkey                                   |x|s
 |SSH key decoding routines
@@ -572,7 +539,7 @@ The following 36 plugins are built and loaded by default:
 |xcbc                                     |x|s
 |XCBC wrapper using various ciphers
 
-|*libstrongswan*                          |28|
+|*libstrongswan*                          |18|
 |
 
 |xref:./attr.adoc[attr]                   |x|s
@@ -587,9 +554,6 @@ The following 36 plugins are built and loaded by default:
 |socket-default                           |x|s
 |Default socket implementation for IKE messages
 
-|stroke                                   |x|s
-|Deprecated stroke configuration/control backend, to use with ipsec script and starter
-
 |xref:./updown.adoc[updown]               |x|s
 |Shell script invocation during tunnel up/down events
 
@@ -599,6 +563,6 @@ The following 36 plugins are built and loaded by default:
 |xauth-generic                            |x|s
 |Generic XAuth backend that provides passwords from credential sets
 
-|*libcharon*                              |8|
+|*libcharon*                              |7|
 |
 |===
