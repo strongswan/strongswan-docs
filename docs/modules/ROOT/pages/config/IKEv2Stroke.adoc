@@ -1,6 +1,6 @@
 = IKEv2 Legacy Configuration Examples
 
-:TESTS: https://www.strongswan.org/testing/testresults
+:TESTS: https://www.strongswan.org/testing/testresults6
 
 == Remote Access
 

@@ -1,6 +1,6 @@
 = Notes on Configuration Examples
 
-:RESULTS: https://www.strongswan.org/testing/testresults
+:RESULTS: https://www.strongswan.org/testing/testresults6
 :GITHUB:  https://github.com/strongswan/strongswan/tree/master
 :TESTS:   testing/tests
 

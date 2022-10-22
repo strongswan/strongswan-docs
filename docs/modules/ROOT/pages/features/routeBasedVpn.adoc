@@ -1,6 +1,6 @@
 = Route-based VPN
 
-:TESTS:    https://www.strongswan.org/testing/testresults
+:TESTS:    https://www.strongswan.org/testing/testresults6
 :EXGRE:    {TESTS}/route-based/net2net-gre
 :EXVTI:    {TESTS}/route-based/net2net-vti
 :EXXFRM:   {TESTS}/route-based/net2net-xfrmi

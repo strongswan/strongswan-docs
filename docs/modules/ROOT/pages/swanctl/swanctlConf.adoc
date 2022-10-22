@@ -12,7 +12,7 @@
 :RFC7383: {IETF}/rfc7383
 :RFC7427: {IETF}/rfc7427
 :RFC8784: {IETF}/rfc8784
-:TESTS:   https://www.strongswan.org/testing/testresults
+:TESTS:   https://www.strongswan.org/testing/testresults6
 
 == Overview
 
