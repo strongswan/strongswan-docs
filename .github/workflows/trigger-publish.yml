@@ -1,7 +1,7 @@
 name: Trigger publish of docs.strongswan.org
 on:
   push:
-    branches: [master]
+    branches: [master, docs-6.0]
   workflow_dispatch:
 jobs:
   build:
