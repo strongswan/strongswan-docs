@@ -199,6 +199,7 @@
 
 .Platform Security
 * xref:tpm/tpm2.adoc[TPM 2.0]
+** xref:tpm/tpm2Ike.adoc[]
 * xref:tnc/tnc.adoc[]
 ** xref:tnc/tncClient.adoc[]
 ** xref:tnc/tncServer.adoc[]
