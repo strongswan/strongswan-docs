@@ -1,9 +1,9 @@
 = strongSwan VPN Client for Android
 
 :PLAY:      https://play.google.com/
-:PLAYSTORE: {PLAY}/store/apps/details?id=org.strongswan.android
-:PLAYTEST:  {PLAY}//apps/testing/org.strongswan.android
-:FDROID:    https://f-droid.org/en</packages/org.strongswan.android/
+:PLAYSTORE: {PLAY}store/apps/details?id=org.strongswan.android
+:PLAYTEST:  {PLAY}apps/testing/org.strongswan.android
+:FDROID:    https://f-droid.org/en/packages/org.strongswan.android/
 :DOWNLOAD:  https://download.strongswan.org/Android/
 :GITHUB:    https://github.com/strongswan/strongswan
 :GOOGLE:    https://code.google.com/p/android/issues/detail?id=62644
