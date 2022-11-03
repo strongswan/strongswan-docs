@@ -108,6 +108,11 @@ test runner:
  (all iterations are run if this is not specified)
 |5.9.8
 
+|`TESTS_NO_IPV6`
+|Disables IPv6 test cases (e.g. to run the tests in Docker containers that only
+ provide IPv4 networking)
+|5.9.6
+
 |`TESTS_VERBOSITY`
 |The log level used when running the tests (`*-1*` to `*4*` with a default of
  `*-1*`), see xref:config/logging.adoc[Logging]
