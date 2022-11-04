@@ -283,7 +283,7 @@ kernel.
 |{IETF}/rfc8983[RFC 8983]:
  IKEv2 Notification Status Types for IPv4/IPv6 Coexistence
 
-|6.0
+|
 |{IETF}/rfc9242[RFC 9242]:
  Intermediate Exchange in the IKEv2 Protocol
 
@@ -291,7 +291,7 @@ kernel.
 |{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
  Labeled IPsec Traffic Selector support for IKEv2
 
-|6.0
+|
 |{IETF}/draft-ietf-ipsecme-ikev2-multiple-ke[draft-ietf-ipsecme-ikev2-multiple-ke]:
  Multiple Key Exchanges in IKEv2
 
@@ -534,6 +534,18 @@ Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.5
 |
 |{IETF}/rfc8894[RFC 8894]:
  Simple Certificate Enrollment Protocol (SCEP)
+
+|*d*
+|{IETF}/draft-uni-qsckeys-dilithium[draft-uni-qsckeys-dilithium]:
+ Quantum Safe Cryptography Key Information for CRYSTALS-Dilithium
+
+|*d*
+|{IETF}/draft-uni-qsckeys-falcon[draft-uni-qsckeys-falcon]:
+ Quantum Safe Cryptography Key Information for FALCON
+
+|*x*
+|{IETF}/draft-uni-qsckeys-sphincsplus[draft-uni-qsckeys-sphincsplus]:
+ Quantum Safe Cryptography Key Information for SPHINCS-PLUS
 |===
 
 == EAP
