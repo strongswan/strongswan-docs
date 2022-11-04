@@ -288,7 +288,7 @@ kernel.
 |{IETF}/rfc8983[RFC 8983]:
  IKEv2 Notification Status Types for IPv4/IPv6 Coexistence
 
-|6.0
+|
 |{IETF}/rfc9242[RFC 9242]:
  Intermediate Exchange in the IKEv2 Protocol
 
@@ -301,7 +301,7 @@ kernel.
  Aggregation and Fragmentation Mode for ESP and Its Use for IP Traffic Flow
  Security (IP-TFS)
 
-|6.0
+|
 |{IETF}/rfc9370[RFC 9370]:
  Multiple Key Exchanges in the Internet Key Exchange Protocol Version 2 (IKEv2)
 
@@ -571,9 +571,23 @@ Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.5
 |{IETF}/rfc8894[RFC 8894]:
  Simple Certificate Enrollment Protocol (SCEP)
 
+<<<<<<< HEAD
 |
 |{IETF}/rfc8954[RFC 8954]:
  Online Certificate Status Protocol (OCSP) Nonce Extension
+=======
+|*d*
+|{IETF}/draft-uni-qsckeys-dilithium[draft-uni-qsckeys-dilithium]:
+ Quantum Safe Cryptography Key Information for CRYSTALS-Dilithium
+
+|*d*
+|{IETF}/draft-uni-qsckeys-falcon[draft-uni-qsckeys-falcon]:
+ Quantum Safe Cryptography Key Information for FALCON
+
+|*x*
+|{IETF}/draft-uni-qsckeys-sphincsplus[draft-uni-qsckeys-sphincsplus]:
+ Quantum Safe Cryptography Key Information for SPHINCS-PLUS
+>>>>>>> ietf: Added IETF drafts on NIST PQC signature standards
 |===
 
 == EAP
