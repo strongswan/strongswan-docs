@@ -288,7 +288,7 @@ kernel.
 |{IETF}/rfc8983[RFC 8983]:
  IKEv2 Notification Status Types for IPv4/IPv6 Coexistence
 
-|6.0
+|
 |{IETF}/rfc9242[RFC 9242]:
  Intermediate Exchange in the IKEv2 Protocol
 
@@ -301,7 +301,7 @@ kernel.
  Aggregation and Fragmentation Mode for ESP and Its Use for IP Traffic Flow
  Security (IP-TFS)
 
-|6.0
+|
 |{IETF}/rfc9370[RFC 9370]:
  Multiple Key Exchanges in the Internet Key Exchange Protocol Version 2 (IKEv2)
 
@@ -326,7 +326,7 @@ kernel.
 |{IETF}/rfc9611[RFC 9611]:
  Internet Key Exchange Protocol Version 2 (IKEv2) Support for Per-Resource Child  Security Associations (SAs)
 
-|6.0
+|
 |{IETF}/draft-kampanakis-ml-kem-ikev2[draft-kampanakis-ml-kem-ikev2]:
 Post-quantum Hybrid Key Exchange with ML-KEM in IKEv2
 
