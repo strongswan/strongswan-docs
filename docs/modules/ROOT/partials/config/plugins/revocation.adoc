@@ -3,3 +3,6 @@
 
 |enable_ocsp              |`yes`
 |Whether OCSP validation should be enabled
+
+|timeout                  |`10s`|
+|Timeout in seconds when fetching OCSP/CRL

@@ -4,10 +4,10 @@
 |scep.http_bind                                 |
 |Source IP address to bind for HTTP operations
 
-|scep.http_timeout                              |30s
+|scep.http_timeout                              |`30s`
 |Timeout for HTTP operations
 
-|scep.renewal_via_pkcs_req                      |no
+|scep.renewal_via_pkcs_req                      |`no`
 |Some SCEP servers (e.g. {OPENXPKI}[*openxpki*]) are incorrectly doing certificate
  renewal via {RFC8894}#section-3.2.1.2[`*msgType*`] `PKCSReq` (`*19*`) instead of
  `RenewalReq` (`*17*`)

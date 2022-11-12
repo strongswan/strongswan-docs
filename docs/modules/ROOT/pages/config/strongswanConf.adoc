@@ -582,7 +582,7 @@ connection attempts are blocked
 |Number of times to retransmit a packet before giving up, see
  xref:config/retransmission.adoc[Retransmission]
 
-|retry_initiate_interval                     |`0`
+|retry_initiate_interval                     |`0s`
 |Interval in seconds to use when retrying to initiate an `IKE SA` e.g. if DNS
  resolution failed (`*0*` to disable retries)
 

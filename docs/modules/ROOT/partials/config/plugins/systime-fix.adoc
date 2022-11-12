@@ -10,6 +10,6 @@
 |threshold_format |%Y
 |{STRFTIME}[`*strftime(3)*`] format used to parse threshold option
 
-|timeout  |`0`
+|timeout  |`0s`
 |How long to wait for a valid system time if an interval is configured.
  `*0*` to recheck indefinitely
