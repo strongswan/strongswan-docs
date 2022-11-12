@@ -264,11 +264,21 @@ include::partial$config/swanctl-rekey-ike.adoc[]
 
 |<conn>.if_id_in           |`0`
 |Since version 5.8.0. XFRM interface ID set on inbound policies/SA. Can be
- overridden by child config, see there for details
+ overridden by child config, see there for details.
+ +
+ The special value `*%unique*` allocates a unique interface ID per IKE_SA,
+ which is inherited by all its CHILD_SAs (unless overriden there), beyond
+ that the value `*%unique-dir*` assigns a different unique interface ID for
+ each direction (`*in/out*`)
 
 |<conn>.if_id_out          |`0`
 |Since version 5.8.0. XFRM interface ID set on outbound policies/SA. Can be
- overridden by child config, see there for details
+ overridden by child config, see there for details.
+ +
+ The special value `*%unique*` allocates a unique interface ID per IKE_SA,
+ which is inherited by all its CHILD_SAs (unless overriden there), beyond
+ that the value `*%unique-dir*` assigns a different unique interface ID for
+ each direction (`*in/out*`)
 
 |<conn>.mediation          |`no`
 |Since version 5.5.2. Whether this connection is a mediation connection, i.e.
