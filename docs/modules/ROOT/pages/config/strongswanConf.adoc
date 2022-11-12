@@ -216,6 +216,8 @@ will return `*xxx*`.
 Have a look at the settings interface {GITHUB}/{SETTINGS}[`{SETTINGS}`]
 to learn about the details.
 
+include::partial$config/number_formats.adoc[]
+
 == Keys
 
 The following list shows all `*strongswan.conf*` keys that are currently defined
