@@ -128,7 +128,7 @@ are defined:
 |      |`port`
 |Optional server port (default is `*500*`)
 
-|      |`rid`
+|      |`id`
 |Optional IKE identity of the server. If this is not configured it defaults to
  `*addr*` and no `*IDr*` is sent in the IKE_AUTH request
 
