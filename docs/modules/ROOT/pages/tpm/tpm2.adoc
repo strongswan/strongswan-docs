@@ -3,7 +3,7 @@
 :TCG:         https://trustedcomputinggroup.org/resource
 :TCGBLOG:     https://develop.trustedcomputinggroup.org
 :TPM2:        https://github.com/tpm2-software
-:TSSV:        3.2.0
+:TSSV:        3.2.1
 :TOOLV:       5.3
 :TOOLMAN:     {TPM2}/tpm2-tools/tree/{TOOLV}/man
 :IBM_TPM2]:   https://sourceforge.net/projects/ibmswtpm2
