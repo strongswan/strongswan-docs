@@ -1,7 +1,18 @@
 |file                      |[->]
-|File where name servers are written to.
+|File where name servers are written to if not using `*resolvconf(8)*`
 `*[/etc/resolv.conf]*`
 
-|resolv_conf.iface_prefix  |[->]
-|Prefix to be used for interface names provided to `*resolvconf(8)*`.
- `*[lo.inet.ipsec.]*`
+|resolvconf.iface          |[->]
+|The interface name and protocol sent to `*resolvconf(8)*`. This has to be a
+ valid interface name according to the rules defined by `*resolvconf*`.  Also,
+ it should have a high priority according to the order defined in
+ `*interface-order(8)*` if relevant on the system
+ `*[lo.inet]*`
+
+|resolvconf.path           |[->]
+|Path/command for `*resolvconf(8)*` (since version 5.9.9). The command is
+ executed by a shell, so `*"resolvconf"*` will work if it's in `$PATH` of the
+ daemon. If not configured, `*resolvconf(8)*` will be used if found at the
+ default location.  Otherwise, the file in `*charon.plugins.resolve.file*` will
+ be modified directly
+ `*[/sbin/resolvconf]*`

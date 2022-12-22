@@ -33,13 +33,15 @@ include::partial$config/plugins/resolve.adoc[]
 === Support for resolvconf(8)
 
 strongSwan provides support for installing name servers via the
-{RESOLVCONF}[`*resolvconf*`] framework.  If `*resolvconf*` is installed the
-plugin automatically invokes it appropriately instead of modifying `*resolv.conf*`
-directly.
+{RESOLVCONF}[`*resolvconf*`] framework (or e.g. the implementation provided by
+systemd's `*resolvectl*`).  If `*resolvconf*` is found or its path is explicitly
+configured, the plugin automatically invokes it appropriately instead of
+modifying `*resolv.conf*` directly.
 
-The interface names provided to `*resolvconf*` are built by adding the IP
-address of the name server to the prefix configured in
-xref:config/strongswanConf.adoc[strongswan.conf] (or the default).
-The result must be a valid interface name according to the rules specified by
-`*resolvconf(8)*`. Additionally, the resulting interface name should have a high
-priority when the order defined in `*interface-order(5)*` is applied.
+Prior to version 5.9.9, the plugin installed every name server separately and
+generated unique interface names by adding the IP address of the name server to
+a prefix (configured in the now removed `*resolvconf.iface_prefix*` option).
+Since version 5.9.9, all name servers are installed and associated with a
+single, configurable interface/protocol name (`*resolvconf.iface*`). If multiple
+name servers are assigned, `*resolvconf*` will be invoked multiple times but
+each will receive all name servers available at the time.
