@@ -10,8 +10,6 @@
 :CIRRUS:     https://api.cirrus-ci.com/github/strongswan
 :CODECOV:    https://codecov.io/gh/strongswan/strongswan
 :SONARCLOUD: https://sonarcloud.io
-:LGTMGRADE:  https://img.shields.io/lgtm/grade/cpp/github/strongswan/strongswan
-:LGTM:       https://lgtm.com/projects/g/strongswan/strongswan/
 :OSSFUZZ:    https://oss-fuzz-build-logs.storage.googleapis.com/badges/strongswan.svg
 :CHROMIUM:   https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:strongswan
 
@@ -140,13 +138,13 @@ The unit tests also run automatically for every commit:
 [cols="1,1,1,1,1,1",frame=none,grid=none]
 |===
 
-|image:{GITHUB}/workflows/Linux/badge.svg[Linux, title=Linux, link={GITHUB}/actions?query=workflow%3ALinux]
+|image:{GITHUB}/workflows/Linux/badge.svg[Linux, title=Linux, link={GITHUB}/actions/workflows/linux.yml]
 
-|image:{GITHUB}/workflows/Android/badge.svg[Android, title=Android, link={GITHUB}/actions?query=workflow%3AAndroid]
+|image:{GITHUB}/workflows/Android/badge.svg[Android, title=Android, link={GITHUB}/actions/workflows/android.yml]
 
-|image:{GITHUB}/workflows/macOS/badge.svg[macOS, title=macOS, link={GITHUB}/actions?query=workflow%3AmacOS]
+|image:{GITHUB}/workflows/macOS/badge.svg[macOS, title=macOS, link={GITHUB}/actions/workflows/macos.yml]
 
-|image:{GITHUB}/workflows/Windows/badge.svg[Windows, title="Cross-compiled Windows", link={GITHUB}/actions?query=workflow%3AWindows]
+|image:{GITHUB}/workflows/Windows/badge.svg[Windows, title="Cross-compiled Windows", link={GITHUB}/actions/workflows/windows.yml]
 
 |image:{APPVEYOR}/status/186bfuup38t9pu4k?svg=true[Windows, title="Native Windows on AppVeyor", link={APPVEYOR}/tobiasbrunner/strongswan-52lo9]
 
@@ -159,16 +157,14 @@ image:{CODECOV}/branch/master/graph/badge.svg[Codecov, title="Code Coverage", li
 
 And the code base is automatically analyzed:
 
-[cols="1,1,1,1",frame=none,grid=none]
+[cols="1,1,1",frame=none,grid=none]
 |===
 
-|image:{GITHUB}/workflows/SonarCloud/badge.svg[SonarCloud, title="SonarCloud", link={GITHUB}/actions?query=workflow%3ASonarCloud]
+|image:{GITHUB}/workflows/SonarCloud/badge.svg[SonarCloud, title="SonarCloud", link={GITHUB}/actions/workflows/sonarcloud.yml]
 
 |image:{SONARCLOUD}/api/project_badges/measure?project=strongswan&metric=alert_status[Sonarcloud, title=SonarCloud, link={SONARCLOUD}/dashboard?id=strongswan]
 
-|image:{GITHUB}/workflows/lgtm.com/badge.svg[LGTM, title=LGTM, link={GITHUB}//actions?query=workflow%3Algtm.com]
-
-|image:{LGTMGRADE}[LGTM Grade, title="LGTM Grade", link={LGTM}]
+|image:{GITHUB}/workflows/CodeQL/badge.svg[CodeQL, title=CodeQL, link={GITHUB}//actions/workflows/codeql.yml]
 |===
 
 Part of the source code is periodicylly fuzzed by Google OSS-Fuzz:
