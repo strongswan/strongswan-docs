@@ -5,7 +5,7 @@
 :SECUNET:  https://www.secunet.com/en/
 :HSR:      https://en.wikipedia.org/wiki/Hochschule_f%C3%BCr_Technik_Rapperswil
 :FREESWAN: https://www.freeswan.org/
-:LIC_MAIL: info@strongswan.org
+:LICENSE:  https://www.strongswan.org/license.html
 
 Contributions to the strongSwan project are very welcome. Before you start your
 development, please get in contact with our developers via one of our
@@ -38,8 +38,7 @@ a GPL license.
 A commercial, non-GPL license is available for most of the components of the
 strongSwan project (see below for a xref:#gpl-only[list of GPL-only components]).
 
-Please contact us at mailto:{LIC_MAIL}[{LIC_MAIL}] for details if you are
-interested.
+Please refer to {LICENSE}[our website] for details if you are interested.
 
 == Copyright
 
@@ -182,8 +181,6 @@ The files in these components use regular GPLv2-headers, if any.
 ** `*md4*` ({GITHUB}/tree/master/src/libstrongswan/plugins/md4[`src/libstrongswan/md4`])
 
 ** `*md5*` ({GITHUB}/tree/master/src/libstrongswan/plugins/md5[`src/libstrongswan/md5`])
-
-** `*sha1*` ({GITHUB}/tree/master/src/libstrongswan/plugins/sha1[`src/libstrongswan/sha1`])
 
 ** `*sha2*` ({GITHUB}/tree/master/src/libstrongswan/plugins/sha2[`src/libstrongswan/sha2`])
 
