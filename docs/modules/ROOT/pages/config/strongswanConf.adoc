@@ -485,7 +485,7 @@ connection attempts are blocked
  strongSwan can handle such overlapping SAs since version 5.3.0
 
 |max_ikev1_exchanges                         |`3`
-|Maximum number of IKEv1 phase 2 exchanges per IKE_SA to keep state about and <
+|Maximum number of IKEv1 phase 2 exchanges per IKE_SA to keep state about and
  track concurrently
 
 |max_packet                                  |[->]
