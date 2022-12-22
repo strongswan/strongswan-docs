@@ -563,6 +563,10 @@ connection attempts are blocked
 |replay_window                               |`32`
 |Size of the AH/ESP replay window, in packets
 
+|reqid_base                                  |`1`
+|Value of the first reqid to be automatically assigned to a CHILD_SA (since
+ version 5.9.9)
+
 |retransmit_base                             |`1.8`
 |Base to use for calculating exponential back off, see
  xref:config/retransmission.adoc[Retransmission]
