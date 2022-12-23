@@ -42,7 +42,7 @@ unlikely it gets that a core is blocked until an other one has done the lookup.
 You may choose the number of locks depending on the number of cores you have but
 you could theoretically use a lock for each hash table entry. But keep in mind
 that additional locks will use additional resources. Using more than 512 segments
-has lead to src/libcharon/sa/ike_sa_manager.c on some systems!
+has led to instabilities on some systems!
 
 The number of segments is at least one and at most the size of the hash table and
 should also be a power of two. In
