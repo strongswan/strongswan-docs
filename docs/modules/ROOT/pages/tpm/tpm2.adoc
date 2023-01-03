@@ -3,8 +3,8 @@
 :TCG:         https://trustedcomputinggroup.org/resource
 :TCGBLOG:     https://develop.trustedcomputinggroup.org
 :TPM2:        https://github.com/tpm2-software
-:TSSV:        3.2.1
-:TOOLV:       5.3
+:TSSV:        4.0.0
+:TOOLV:       5.4
 :TOOLMAN:     {TPM2}/tpm2-tools/tree/{TOOLV}/man
 :IBM_TPM2]:   https://sourceforge.net/projects/ibmswtpm2
 :DOCKER_TPM2: https://github.com/strongX509/docker/tree/master/tpm
