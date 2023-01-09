@@ -14,7 +14,7 @@ pki --issue [--in file] [--type pub|pkcs10|priv|rsa|ecdsa|ed25519|ed448] --cakey
             [--policy-explicit len] [--policy-inhibit len] [--policy-any len]
             [--cert-policy oid [--cps-uri uri] [--user-notice text]]+
             [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
-            [--rsa-padding pkcs1|pss] [--outform der|pem]
+            [--rsa-padding pss|pkcs1] [--outform der|pem]
 
 pki --issue --help
 ----
@@ -56,7 +56,7 @@ private key.
 --crlissuer       (-I)  CRL Issuer for CRL at distribution point
 --ocsp            (-o)  OCSP AuthorityInfoAccess URI to include
 --digest          (-g)  digest for signature creation, default: key-specific
---rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
+--rsa-padding     (-R)  padding for RSA signatures, default: pss
 --outform         (-f)  encoding of generated cert, default: der
 --debug           (-v)  set debug level, default: 1
 --options         (-+)  read command line options from file----
