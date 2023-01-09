@@ -478,7 +478,7 @@ connection attempts are blocked
  settings for each plugin, see
  xref:plugins/pluginLoad.adoc#_modular_configuration[Modular Configuration]
 
-|make_before_break                           |`no`
+|make_before_break                           |`yes`
 |Initiate IKEv2 reauthentication with a *make-before-break* instead of a
  *break-before-make* scheme. Make-before-break uses overlapping `IKE` and `CHILD SA`
  during reauthentication by first recreating all new SAs before deleting the old
