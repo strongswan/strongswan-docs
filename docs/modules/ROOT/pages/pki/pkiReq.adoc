@@ -15,7 +15,7 @@ pki --req [--in file|--keyid hex] [--type rsa|ecdsa|priv] --oldreq file
           [--password challengePassword]
           [--flag serverAuth|clientAuth|ocspSigning|msSmartcardLogon]+
           [--digest sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
-          [--rsa-padding pkcs1|pss] [--outform der|pem]
+          [--rsa-padding pss|pkcs1] [--outform der|pem]
 
 pki --req --help
 ----
@@ -97,8 +97,7 @@ This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request
 
 |`-R`
 |`--rsa-padding`
-|Padding to use for RSA signatures. Either `*pkcs1*` or `*pss*`, defaults
- to `*pkcs1*`
+|Padding to use for RSA signatures. Either `*pss*` (the default) or `*pkcs1*`
 
 |`-f`
 |`--outform`

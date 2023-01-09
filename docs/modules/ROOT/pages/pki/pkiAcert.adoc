@@ -8,7 +8,7 @@ pki --acert [--in file] [--group membership] --issuerkey file|--issuerkeyid hex
              --issuercert file [--lifetime hours] [--not-before datetime]
             [--not-after datetime] [--dateform form] [--serial hex]
             [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
-            [--rsa-padding pkcs1|pss] [--outform der|pem]
+            [--rsa-padding pss|pkcs1] [--outform der|pem]
 
 pki --acert --help
 ----
@@ -32,7 +32,7 @@ a holder certificate.
 --dateform        (-D)  strptime(3) format for the --not-before and --not-after options, default: %d.%m.%y %T
 --serial          (-s)  serial number in hex, default: random
 --digest          (-g)  digest to use for signature creation, default: key-specific
---rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
+--rsa-padding     (-R)  padding for RSA signatures, default: pss
 --outform         (-f)  encoding of generated cert, default: der
 --debug           (-v)  set debug level, default: 1
 --options         (-+)  read command line options from file----

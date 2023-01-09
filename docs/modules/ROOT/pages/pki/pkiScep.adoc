@@ -12,7 +12,7 @@ pki --scep --url url [--in file] [--dn distinguished-name] [--san subjectAltName
           [--profile profile] [--password password]
            --cacert-enc file --cacert-sig file [--cacert file]+
           [--cert file --key file] [--cipher aes|des3]
-          [--digest sha256|sha384|sha512|sha224|sha1] [--rsa-padding pkcs1|pss]
+          [--digest sha256|sha384|sha512|sha224|sha1] [--rsa-padding pss|pkcs1]
           [--interval time] [--maxpolltime time] [--outform der|pem]
 
 pki --scepca --help
@@ -111,7 +111,7 @@ Can be used multiple times
 
 |`-R`
 |`--rsa-padding`
-|Padding to use for RSA signatures. Either `*pkcs1*` (the default) or `*pss*`
+|Padding to use for RSA signatures. Either `*pss*` (the default) or `*pkcs1*`
 
 |`-t`
 |`--interval`
