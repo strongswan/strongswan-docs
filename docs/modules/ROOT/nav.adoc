@@ -1,3 +1,6 @@
+.News
+** xref:news/whatsNew.adoc[]
+
 * xref:howtos/introduction.adoc[]
 * xref:howtos/ipsecProtocol.adoc[]
 
