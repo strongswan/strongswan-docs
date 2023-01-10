@@ -1,0 +1,152 @@
+= What's New in strongSwan 6.0
+
+:GMP:       https://gmplib.org/
+:OPENSSL:   https://openssl.org/
+:LIBOQS:    https://github.com/open-quantum-safe/liboqs
+
+== Plugins
+
+=== New Plugins
+
+The following new `*libstrongswan*` plugins have been *added*:
+
+[cols="5,22"]
+|===
+|Plugin Name |Description
+
+|frodo
+|FrodoKEM post quantum safe key exchange method
+
+|oqs
+|Open quantum safe plugin based on the {LIBOQS}[`*liboqs*`] library
+|===
+
+=== Removed Plugins
+
+The following deprecated `*libstrongswan*` plugins have been *removed*:
+
+[cols="5,22"]
+|===
+|Plugin Name |Description
+
+|bliss
+|Bimodal Lattice Signature Scheme (BLISS) post-quantum computer signature scheme
+
+|newhope
+|Key exchange based on post-quantum computer New Hope algorithm
+
+|ntru
+|Key exchange based on post-quantum computer NTRU encryption
+|===
+
+=== Default Plugins
+
+The powerful `*openssl*` crypto plugin is now *enabled* by default:
+
+[cols="5,22"]
+|===
+|Plugin Name |Description
+
+|openssl
+|Crypto backend based on the {OPENSSL}[OpenSSL] library
+|===
+
+Due to the nearly all-encompassing capabilities of the `*openssl*` default
+crypto plugin, the following `*libstrongswan*` plugins are *not enabled* by
+default anymore:
+
+[cols="5,22"]
+|===
+|Plugin Name |Description
+
+|aes
+|AES-128/192/256 cipher software implementation
+
+|curve25519
+|X25519 DH group and Ed25519 public key authentication
+
+|des
+|DES/3DES cipher software implementation
+
+|fips-prf
+|PRF specified by FIPS, used by EAP-SIM/AKA algorithms
+
+|gmp
+|RSA/DH crypto backend based on {GMP}[libgmp]
+
+|hmac
+|HMAC wrapper using various hashers
+
+|md5
+|MD5 hasher software implementation
+
+|pkcs12
+|PKCS#12 decoding routines
+
+|rc2
+|RC2 cipher software implementation
+
+|sha1
+|SHA1 hasher software implementation
+
+|sha2
+|SHA-2 hasher software implementation
+|===
+
+IMPORTANT: The legacy `*stroke*` management interface has been deprecated for many
+           years and has been replaced by the versatile xref:plugins/vici.adoc[`*vici*`]
+           management interface. Thus with strongSwan 6.0, the `*stroke*` plugin
+           is *not enabled* by default anymore and has to be built separately.
+
+[cols="5,22"]
+|===
+|Plugin Name |Description
+
+|stroke
+|Deprecated stroke configuration/control backend used with ipsec script and starter
+|===
+
+Thus the xref:/plugins/plugins.adoc#_default_plugins[following 25 plugins] are now
+enabled by xref:/plugins/plugins.adoc#_default_plugins[default].
+
+== Configuration Options
+
+The following two xref:config/strongswanConf.adoc#_charon[`*strongswan.conf*`]
+configuration options are now enabled by default:
+
+[cols="4,1,8"]
+|===
+|*Key*|*Default*|*Description [Default]*
+
+|make_before_break                           |`yes`
+|Initiate IKEv2 reauthentication with a *make-before-break* instead of a
+ *break-before-make* scheme. Make-before-break uses overlapping `IKE` and `CHILD SA`
+ during reauthentication by first recreating all new SAs before deleting the old
+ ones. This behavior can be beneficial to avoid connectivity gaps during
+ reauthentication, but requires support for overlapping SAs by the peer.
+ strongSwan can handle such overlapping SAs since version 5.3.0
+
+|rsa_pss                                     |`yes`
+|Use RSA with PSS padding by default. Revert to legacy PKCS#1 padding by setting
+ the option to no
+|===
+
+Thus the following xref:pki/pki.adoc[`*pki*`] subcommands now use RSA-PSS signatures
+per default:
+
+[cols="1,1,1"]
+|===
+|xref:pki/pkiAcert.adoc[`pki --acert`]
+|xref:pki/pkiIssue.adoc[`pki --issue`]
+|xref:pki/pkiSelf.adoc[`pki --self`]
+
+|xref:pki/pkiReq.adoc[`pki --req`]
+|xref:pki/pkiScep.adoc[`pki --scep`]
+|xref:pki/pkiSignCrl.adoc[`pki --signcrl`]
+
+|xref:pki/pkiOcsp.adoc[`pki --ocsp`]
+|xref:pki/pkiPkcs7.adoc[`pki --pkcs7`]
+|
+|===
+
+Use the command line option `*--rsa-padding pkcs1*` for legacy PKCS#1 padding.

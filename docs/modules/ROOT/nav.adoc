@@ -1,3 +1,6 @@
+.News
+** xref:news/whatsNew.adoc[]
+
 .Installation
 ** xref:install/install.adoc[]
 ** xref:install/autoconf.adoc[]
