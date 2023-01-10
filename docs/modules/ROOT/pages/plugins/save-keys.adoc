@@ -83,7 +83,12 @@ The following `*wireshark*` trace results
 
 image::wiresharkRaw.png[Encrypted wireshark trace, link=self]
 
-We store the captured `*wireshark*` trace under the file name `*moon.pcapng*`.
+We enable the decoding of encrypted ESP payloads in the Wireshark
+`*Edit/Preferences/Protocols/ESP*` menu
+
+image::wiresharkDecrypt.png[Enable ESP decryption, 550, 427, link=self]
+
+Finally we store the captured `*wireshark*` trace under the file name `*moon.pcapng*`.
 
 === Wireshark Decryption Keys
 
@@ -121,11 +126,11 @@ Exit `*wireshark*` and restart the program loading the stored `*moon.pcapng*`
 trace.  The ESP packets are automatically decrypted using the `*esp_sa*` decryption
 table, so that the `*deadbeef*` ICMP request is displayed as plaintext.
 
-image::wiresharkESP.png[Encrypted wireshark trace, link=self]
+image::wiresharkESP.png[Decrypted wireshark ESP packets, link=self]
 
 Also the `IKE_AUTH` request and response packets are decrypted usig the
 `*ikev2_decryption_table*`, so that the various IKEv2 payloads contained in
 the `*Encrypted Data*` IKEv2 payload can be browsed in plaintext
 
-image::wiresharkIKE.png[Encrypted wireshark trace, link=self]
+image::wiresharkIKE.png[Decrypted wireshark IKEv2 packets, link=self]
 
