@@ -421,7 +421,7 @@ plugins.
 |--enable-ruby-gems-install                                  |5.3.1
 |enable local installation of provided ruby gems
 
-|--enable-save-keys                                          |5.6.2
+|xref:plugins/save-keys.adoc[--enable-save-keys]             |5.6.2
 |enable development/debugging plugin that saves IKE and ESP keys in
  {WIRESHARK}[Wireshark] format
 

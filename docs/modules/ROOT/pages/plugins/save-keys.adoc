@@ -1,0 +1,131 @@
+= save-keys Plugin
+
+:WIRESHARK: https://www.wireshark.org/
+
+== Purpose
+
+The `*save-keys*` plugin for `*libcharon*` automatically stores secret ESP and
+IKEv2 or IKEv1 session keys in {WIRESHARK}[Wireshark] format to the default files
+`*esp_sa*`, `*ike2_decryption_table*` or `*ikev1_decryption_table*`, respectively.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-save-keys
+
+
+WARNING: *Never* load the `*save-keys*` plugin and enable IKE and/or ESP secret
+         session key storage on *production systems*, since this severely
+         compromises the security of your IPSec-based communication channels.
+
+== Configuration
+
+The `*save-keys*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_save_keys[`*charon.plugins.save-keys*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,10"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/save-keys.adoc[]
+|===
+
+== Example
+
+=== strongSwan Setup
+
+In the xref:config/strongswanConf.adoc[`*strongswan.conf*`] configuration file on
+the VPN gateway `*moon*` we activate  the automatic storage of all IKE and ESP keys
+to the `*/root/.config/wireshark*` directory where `*wireshark*` run as `*root*`
+on Linux expects its decryption keys
+----
+charon-systemd {
+  plugins {
+    save-keys {
+      esp = yes
+      ike = yes
+      wireshark_keys = /root/.config/wireshark
+    }
+  }
+}
+----
+
+NOTE: When the xref:daemons/charon-systemd.adoc[`*charon-systemd*`] daemon is
+      started with `*systemctl start strongswan*`, the log contains a warning that
+      secret IKE and ESP keys are being permanently stored in the
+      `*root/.config/wireshark*` directory.
+
+----
+moon charon-systemd: 00[DMN] !!
+moon charon-systemd: 00[DMN] !! WARNING: SAVING IKE AND ESP KEYS TO '/root/.config/wireshark'
+moon charon-systemd: 00[DMN] !!
+moon charon-systemd: 00[LIB] loaded plugins: charon-systemd random nonce openssl pem pkcs1 revocation curl kernel-netlink socket-default updown vici save-keys
+----
+
+=== Wireshark Setup
+
+We start `*wireshark*` as `*root*` on the `*moon-eth0*` interface with the
+capture filter
+
+  proto 50 or port 500 or port 4500
+
+and then we initiate an IPsec tunnel to VPN gateway `*sun*` and ping the host
+`*bob*` behind the gateway `*sun*` twice
+----
+# ping -c 2 -p deadbeef 10.2.0.10
+PATTERN: 0xdeadbeef
+PING bob.strongswan.org (10.2.0.10) 56(84) bytes of data.
+64 bytes from bob.strongswan.org (10.2.0.10): icmp_seq=1 ttl=63 time=2.25 ms
+64 bytes from bob.strongswan.org (10.2.0.10): icmp_seq=2 ttl=63 time=1.83 ms
+----
+The following `*wireshark*` trace results
+
+image::wiresharkRaw.png[Encrypted wireshark trace, link=self]
+
+We store the captured `*wireshark*` trace under the file name `*moon.pcapng*`.
+
+=== Wireshark Decryption Keys
+
+The same information, namely that an IKEv2 negotiation took place and two
+ESP-encrypted pings went through the IPsec tunnel is shown by the
+xref:swanctl/swanctlListSas.adoc[`*swanctl --list-sas*`] command
+----
+# swanctl --list-sas
+gw-gw: #1, ESTABLISHED, IKEv2, 3a902cfcdd0b42e2_i* ee60f4ad85f2b723_r
+  local  'moon.strongswan.org' @ 192.168.0.1[500]
+  remote 'sun.strongswan.org' @ 192.168.0.2[500]
+  AES_CBC-128/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/CURVE_25519
+  established 2740s ago, reauth in 8038s
+  net-net: #1, reqid 1, INSTALLED, TUNNEL, ESP:AES_CBC-128/HMAC_SHA2_256_128
+    installed 2740s ago, rekeying in 2247s, expires in 3200s
+    in  c8fb5536,    168 bytes,     2 packets,  2726s ago
+    out ce825208,    168 bytes,     2 packets,  2726s ago
+    local  10.1.0.0/16
+    remote 10.2.0.0/16
+----
+We can now verify that in fact the IKEv2 and ESP session keys have been written
+to the corresponding files in the `*/root/.config/wireshark*` directory
+----
+# cat /root/.config/wireshark/ikev2_decryption_table
+3a902cfcdd0b42e2,ee60f4ad85f2b723,32e05679726fdc7aea9dd8c58436c727,91b0b06b2417e7c3d1bfd209aa55e80a,"AES-CBC-128 [RFC3602]",f26d59286d00cfd91410c8ff765ac082853292db8caa1ff734c0bcb6b00cea91,0e3f09289b4f2ad7b91f9a5ec0c4df1d4c9479e8fdb380ca7205628ec7f48527,"HMAC_SHA2_256_128 [RFC4868]"
+
+# cat /root/.config/wireshark/esp_sa
+"IPv4","192.168.0.1","192.168.0.2","0xce825208","AES-CBC [RFC3602]","0x1b27462f1efbb1bea75d9f13f233d8ab","HMAC-SHA-256-128 [RFC4868]","0x5eb75e2939ffa7957ad438d2cf529d17b1d97554ac8586afe61c2197386b45ef"
+"IPv4","192.168.0.2","192.168.0.1","0xc8fb5536","AES-CBC [RFC3602]","0xf3f867f5d692d7a88333a638880ab8c6","HMAC-SHA-256-128 [RFC4868]","0x1a65c1b3a7f0c031f36eadca3036bc67075acd2b7b9ae6ed66e90888b6245e42"
+----
+
+=== Decrypted Wireshark Trace
+
+Exit `*wireshark*` and restart the program loading the stored `*moon.pcapng*`
+trace.  The ESP packets are automatically decrypted using the `*esp_sa*` decryption
+table, so that the `*deadbeef*` ICMP request is displayed as plaintext.
+
+image::wiresharkESP.png[Encrypted wireshark trace, link=self]
+
+Also the `IKE_AUTH` request and response packets are decrypted usig the
+`*ikev2_decryption_table*`, so that the various IKEv2 payloads contained in
+the `*Encrypted Data*` IKEv2 payload can be browsed in plaintext
+
+image::wiresharkIKE.png[Encrypted wireshark trace, link=self]
+

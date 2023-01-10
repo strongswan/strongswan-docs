@@ -1019,7 +1019,7 @@ include::partial$config/plugins/resolve.adoc[]
 include::partial$config/plugins/revocation.adoc[]
 |===
 
-==== charon.plugins.save-keys
+==== xref:plugins/save-keys.adoc[charon.plugins.save-keys]
 [{COLS}]
 |===
 

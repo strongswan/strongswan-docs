@@ -382,7 +382,7 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./resolve.adoc[resolve]             |x|s
 |Writes name servers received via IKE to a resolv.conf file or installs them via resolvconf(8)
 
-|save-keys                                | |s
+|xref:./save-keys.adoc[save-keys]         | |s
 |Development/Debugging plugin that saves IKE and/or ESP keys to files compatible with {WIRESHARK}[Wireshark]
 
 |xref:./selinux.adoc[selinux]             | |s
