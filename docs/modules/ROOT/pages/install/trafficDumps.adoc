@@ -244,10 +244,10 @@ When using IKEv1 look for `*SKEYID*` or `*Ka*` to get the final encryption key
 whereas with IKEv2 look for `*Sk*`. The ESP keys are logged on level `*4*` in the
 `*chd*` subsystem but can also be extracted via `*ip xfrm state*`.
 
-Starting with strongSwan version 5.6.2, the `*save-keys*` plugin for `*libcharon*`
-can be used to automatically store IKE and ESP keys in a file in Wireshark format.
-This key file can then be loaded by Wireshark to decrypt the captured IKE and ESP
-packets.
+Starting with strongSwan version 5.6.2, the xref:plugins/save-keys.adoc[`*save-keys*`]
+plugin for `*libcharon*` can be used to automatically store IKE and ESP keys under
+corresponding default file names in Wireshark format. This key files can then be
+loaded by Wireshark to decrypt the captured IKE and ESP packets.
 
 To debug IKEv2 it is also possible to use `*NULL*` encryption via the `*openssl*`
 plugin.
