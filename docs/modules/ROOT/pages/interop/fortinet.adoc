@@ -277,7 +277,18 @@ payload besides the server certificate and the Issuing CA certificate.
 ----
 This doesn't break the negotiation in any way but just takes up network bandwidth
 because additional IKEv2 fragments are needed to transmit the unnecessary Root CA
-certificate.
+certificate. The sending of the Root CA and any intermediate CA certificates by
+the FortiGate gateway can be suppressed by setting
+----
+config vpn ipsec phase1-interface
+    edit "strongswan"
+        ...
+        set send-cert-chain disable
+    next
+end
+----
+Of course this requires the strongSwan client to load the needed intermediate CA
+certificates locally.
 ====
 
 === Connection Status
