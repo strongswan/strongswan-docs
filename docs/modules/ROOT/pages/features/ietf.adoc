@@ -268,10 +268,6 @@ kernel.
  Using the Edwards-Curve Digital Signature Algorithm (EdDSA) in IKEv2
 
 |*x*
-|{IETF}/rfc8229[RFC 8229]:
- TCP Encapsulation of IKE and IPsec Packets
-
-|*x*
 |{IETF}/rfc8598[RFC 8598]:
  Split DNS Configuration for IKEv2
 
@@ -286,6 +282,10 @@ kernel.
 |6.0
 |{IETF}/rfc9242[RFC 9242]:
  Intermediate Exchange in the IKEv2 Protocol
+
+|*x*
+|{IETF}/rfc9329[RFC 9329]:
+ TCP Encapsulation of IKE and IPsec Packets
 
 |
 |{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
@@ -419,12 +419,16 @@ Using Advanced Encryption Standard (AES) CCM Mode with IPsec ESP
 Auto-Discovery VPN Problem Statement and Requirements
 
 |*x*
-|{IETF}/rfc8229[RFC 8229]:
- TCP Encapsulation of IKE and IPsec Packets
-
-|*x*
 |{IETF}/rfc8750[RFC 8750]:
  Implicit Initialization Vector (IV) for Counter-Based Ciphers in ESP
+
+|*x*
+|{IETF}/rfc9329[RFC 9329]:
+ TCP Encapsulation of IKE and IPsec Packets
+
+|
+|{IETF}/rfc9333[RFC 9333]:
+ Minimal IP Encapsulating Security Payload (ESP)
 |===
 
 == Multicast IPsec
