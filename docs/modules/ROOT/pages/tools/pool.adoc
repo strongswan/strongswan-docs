@@ -198,7 +198,7 @@ Replace an existing pool in the database.
 |`*file*`
 |File where newline-separated pool addresses for are read from +
  Optionally each address can be pre-assigned to a roadwarrior identity, e.g.
- `*10.231.14.2=alice\@strongswan.org*`. If a `*-*` (hyphen) is given instead of a
+ `*10.231.14.2=\alice@strongswan.org*`. If a `*-*` (hyphen) is given instead of a
  file name, the addresses are read from `*STDIN*`. Reading addresses stops at the
  end of file or an empty line. Pools created with this command can not be resized.
 
