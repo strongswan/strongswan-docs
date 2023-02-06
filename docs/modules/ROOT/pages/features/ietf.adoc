@@ -287,6 +287,11 @@ kernel.
 |{IETF}/rfc9329[RFC 9329]:
  TCP Encapsulation of IKE and IPsec Packets
 
+|*x*
+|{IETF}/rfc9347[RFC 9347]:
+ Aggregation and Fragmentation Mode for ESP and Its Use for IP Traffic Flow
+ Security (IP-TFS)
+
 |
 |{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
  Labeled IPsec Traffic Selector support for IKEv2
@@ -429,6 +434,11 @@ Auto-Discovery VPN Problem Statement and Requirements
 |
 |{IETF}/rfc9333[RFC 9333]:
  Minimal IP Encapsulating Security Payload (ESP)
+
+|*x*
+|{IETF}/rfc9347[RFC 9347]:
+ Aggregation and Fragmentation Mode for ESP and Its Use for IP Traffic Flow
+ Security (IP-TFS)
 |===
 
 == Multicast IPsec
