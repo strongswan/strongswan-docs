@@ -193,6 +193,19 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.4.0 (2023-02-13)
+
+* Switched from BoringSSL to OpenSSL, which adds the following algorithms:
+  Curve448 ECDH, AES-CCM, Camellia (CBC/CTR/XCBC), SHA-3 (HMAC/PKCS#1)
+
+* Fixed an issue that caused file descriptor leaks when fetching OCSP/CRLs
+
+* Improved translation for simplified Chinese
+
+* Correctly included Ukrainian translation
+
+* Increased minimum SDK version to 21 (Android 5.0)
+
 === 2.3.3 (2021-07-13)
 
 * Adds a button to install user certificates (newer Android releases don't provide
