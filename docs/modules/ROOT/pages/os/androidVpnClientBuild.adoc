@@ -17,20 +17,17 @@ Interface (JNI). Since the App has no access to the IPsec stack provided by the
 Linux kernel, a userland IPsec implementation is provided by the `*libipsec*`
 library.
 
-== Building with Android Studio/Gradle
-
 The code for the App can be found in the
 {GITHUB}/tree/master/{FRONTEND}[`{FRONTEND}`] directory of the strongSwan
-repository. To build it the {ANDROID}[Android SDK and NDK] are required. The steps
+repository.
+
+== Requirements
+
+To build the app the {ANDROID}[Android SDK and NDK] are required. The steps
 needed to set up a build environment for Android Apps can be found in the
 documentation provided by Google, so these won't be replicated here.
 
-Building with Android Studio/Gradle is the default since around version 5.3.4.
-Instructions to build via Eclipse/ADT are not provided anymore.
-
-=== Requirements
-
-==== The strongSwan Sources
+=== The strongSwan Sources
 
 Since {GITHUB}/commit/1bd213db79f6ed1666f22c82ca99added38eeb89[commit 1bd213db79]
 of the strongSwan repository and version
@@ -48,20 +45,38 @@ This creates several pre-built source files, the tarball that is also created ca
 be deleted afterwards.
 
 It is also possible to use the sources from a different directory (e.g. an extracted
-tarball) by setting `*strongswan_DIR*` in
+tarball, which already contains the required files) by setting `*strongswan_DIR*` in
 {GITHUB}/tree/master/{JNI}/Android.mk[`Android.mk`].
 
-==== The openssl Directory
+=== The openssl Directory
 
-The BoringSSL or OpenSSL sources are expected in the `{JNI}/openssl` directory.
-To build the sources within the Android NDK they have to be specially prepared.
-The easiest way to get these sources is to check them out directly from our Git
-server (similar for OpenSSL, but the code in our repository is currently too old
-and Google will reject apps built with it in the Play store):
+The `*libstrongswan*` library depends on an Android module called
+`*libcrypto_static*` that provides OpenSSL's `*libcrypto*` and header files.
 
- git clone https://github.com/strongswan/boringssl.git -b ndk-static openssl
+To simplify this, we ship a script since {GITHUB}/commit/7e5c4bbb32935f5a662e5c27b9bd4b442b4009cd[commit 7e5c4bbb32]
+that statically builds `*libcrypto*` for all ABIs supported by the NDK and puts
+them, the headers and an appropriate `*Android.mk*` file in the `{JNI}/openssl`
+directory (if this directory already exists, e.g. if it contains the BoringSSL
+sources we used previously, make sure to delete it first).
 
-=== Building the App
+The script expects the path to the Android NDK in the `*ANDROID_NDK_ROOT*`
+environment variable. For standalone NDKs that will be something like
+`/path/to/android-ndk-<ver>`, and for side-by-side NDKs something like
+`/path/to/android-sdk/ndk/<ver>`. The path to the OpenSSL source tree is
+expected in the `*OPENSSL_SRC*` environment variable (works with OpenSSL 1.1.1
+and OpenSSL 3). For instance, it may be invoked like this:
+
+  ANDROID_NDK_ROOT=~/android-ndk-<ver> \
+  OPENSSL_SRC=~/openssl-<ver> \
+  src/frontends/android/openssl/build.sh
+
+By default, the script uses *Docker* to compile the library. However, if the
+necessary build dependencies (`*jq*`, `*make*`, `*perl*`) are installed on the
+host, this can be disabled by defining the `*NO_DOCKER*` environment variable.
+The dependency on `*jq*` may furthermore be avoided by manually defining a
+space-separated list of target ABIs via `*ABIS*` environment variable.
+
+== Building the App
 
 The {GITHUB}/tree/master/{FRONTEND}[`{FRONTEND}`] directory can directly be opened
 as an existing project in Android Studio. The initial build will fail if the NDK
