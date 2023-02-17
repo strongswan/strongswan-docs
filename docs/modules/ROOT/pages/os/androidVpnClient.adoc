@@ -193,6 +193,14 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.4.1 (2023-02-17)
+
+* Changed the order of KE methods so that `ecp256` is again proposed first and
+  in the KE payload instead of `curve25519`. This avoids issues with Zyxel
+  Firewalls that can't handle KE payloads with an identifier larger than
+  21 (`ecp521`) -- the identifier for `curve25519` is 31 -- and just silently
+  drop such IKE_SA_INIT requests.
+
 === 2.4.0 (2023-02-13)
 
 * Switched from BoringSSL to OpenSSL, which adds the following algorithms:
