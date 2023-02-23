@@ -1,3 +1,6 @@
 |ca_dir                                   |[->]
 |Directory from which to load CA certificates if no certificate is configured.
  `*[$\{nm_ca_dir}]*`
+
+|mtu                                      |`1400`
+|MTU for XFRM interfaces created by the NM plugin
