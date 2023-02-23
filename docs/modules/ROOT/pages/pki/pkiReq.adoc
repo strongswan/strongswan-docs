@@ -7,11 +7,13 @@
 ----
 pki --req [--in file|--keyid hex] [--type rsa|ecdsa|priv] --dn distinguished-name
           [--san subjectAltName]+ [--profile profile] [--password challengePassword]
+          [--flag serverAuth|clientAuth|ocspSigning|msSmartcardLogon]+
           [--digest sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
           [--rsa-padding pkcs1|pss] [--outform der|pem]
 
 pki --req [--in file|--keyid hex] [--type rsa|ecdsa|priv] --oldreq file
           [--password challengePassword]
+          [--flag serverAuth|clientAuth|ocspSigning|msSmartcardLogon]+
           [--digest sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
           [--rsa-padding pkcs1|pss] [--outform der|pem]
 
@@ -46,7 +48,7 @@ This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request
 |`-x`
 |`--keyid`
 |Smartcard or TPM private key object handle in hex format with an optional
-`*0x*` prefix
+ `*0x*` prefix
 
 |`-t`
 |`--type`
@@ -64,10 +66,17 @@ This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request
 |`-P`
 |`--profile`
 |Certificate profile name to be included in the certificate request. Can be any
-UTF8 string. Supported e.g. by {OPENXPKI}[`*openxpki*`] (with profiles `*pc-client*`,
-`*tls-server*`, etc.) or  xref:./pkiIssue.adoc[`*pki --issue*`] (with profiles
-`*server*`, `*client*`, `*dual*`, or `*ocsp*`) that are translated into
-corresponding *Extended Key Usage* (EKU) flags in the generated X.509 certificate
+ UTF8 string. Supported e.g. by {OPENXPKI}[`*openxpki*`] (with profiles `*pc-client*`,
+ `*tls-server*`, etc.) or  xref:./pkiIssue.adoc[`*pki --issue*`] (with profiles
+ `*server*`, `*client*`, `*dual*`, or `*ocsp*`) that are translated into
+ corresponding *Extended Key Usage* (EKU) flags in the generated X.509 certificate
+
+|`-e`
+|`--flag`
+|Add *Extended Key Usage* (EKU) flag. One of `*serverAuth*`, `*clientAuth*`,
+ `*ocspSigning*` or `*msSmartcardLogon*`. Can be used multiple times. Adds a
+ X.509v3 extendedKeyUsage extension containing these flags to the certificate
+ request
 
 |`-p`
 |`--password`
@@ -78,23 +87,23 @@ corresponding *Extended Key Usage* (EKU) flags in the generated X.509 certificat
 |Old certificate request to be used as a template. Required if the `*--dn*` option
  is not set. The public key in the old certificate request is replaced and a fresh
  signature is generated using the new private key. Optionally a new
- `*challengePassword*` may be set using the `*--password*` option.
+ `*challengePassword*` may be set using the `*--password*` option
 
 |`-g`
 |`--digest`
 |Digest to use for signature creation. One of `*sha1*`, `*sha224*`, `*sha256*`,
-`*sha384*`, `*sha512*`, `*sha3_224*`, `*sha3_256*`, `*sha3_384*`, or `*sha3_512*`.
+ `*sha384*`, `*sha512*`, `*sha3_224*`, `*sha3_256*`, `*sha3_384*`, or `*sha3_512*`.
  The default is determined based on the type and size of the signature key
 
 |`-R`
 |`--rsa-padding`
 |Padding to use for RSA signatures. Either `*pkcs1*` or `*pss*`, defaults
-to `*pkcs1*`
+ to `*pkcs1*`
 
 |`-f`
 |`--outform`
 |Encoding of the created certificate file. Either `*der*` (`ASN.1 DER`) or
-`*pem*` (`Base64 PEM`), defaults to `*der*`
+ `*pem*` (`Base64 PEM`), defaults to `*der*`
 |===
 
 == Examples
