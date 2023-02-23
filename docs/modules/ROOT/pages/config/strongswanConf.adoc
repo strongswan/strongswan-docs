@@ -34,7 +34,8 @@ The default `*strongswan.conf*` file is installed under `*$\{sysconfdir}*`, i.e.
 the path usually  is `*/etc/strongswan.conf*`.
 
 Since version 5.1.2 the default config file may be split up and separate files
-are placed in the xref:config/strongswanDir.adoc[`*/etc/strongswan.d*`] directory.
+are placed in the xref:config/strongswanDir.adoc[`*$\{sysconfdir}/strongswan.d*`]
+directory.
 
 The location in which `*strongswan.conf*` is looked for can be overwritten at
 start time of the process using libstrongswan by setting the `*STRONGSWAN_CONF*`
@@ -278,7 +279,7 @@ peer doesn't send a vendor ID via `*send_vendor_id*`)
 |cache_crls                                  |`no`
 |Whether Certicate Revocation Lists (CRLs) fetched via HTTP or LDAP should be
  saved under a unique file name derived from the public key of the Certification
- Authority (CA) to xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509crl*`]
+ Authority (CA) to xref:swanctl/swanctlDir.adoc[`*$\{sysconfdir}/x509crl*`]
 
 |check_current_path                          |`no`
 |By default, after detecting any changes to interfaces and/or addresses no action
