@@ -314,9 +314,10 @@ interfaces yet with `*ip -d link*`.
 
 === Configuration
 
-IMPORTANT: The daemon will not install any routes for CHILD_SAs with outbound
-           interface ID, so it's not necessary to disable the route installation
-           globally.
+IMPORTANT: By default, the daemon will not install any routes for CHILD_SAs with
+           outbound interface ID, so it's not necessary to disable the route
+           installation globally. Since version 5.9.10 strongSwan optionally
+           installs routes automatically (see below)
 
 Keep in mind that traffic routed to XFRM interfaces has to match the negotiated
 IPsec policies. Therefore, connections are configured as they would if no interfaces
@@ -339,6 +340,21 @@ or `*%unique-dir*` to allocate unique IDs for each IKE_SA/direction that are
 inherited by all CHILD_SAs created under the IKE_SA).
 
 It's possible to use transport mode for host-to-host connections between two peers.
+
+Since version 5.9.10, strongSwan optionally installs routes via XFRM
+interfaces if the `*charon.plugins.kernel-netlink.install_routes_xfrmi*` option
+is enabled. A route is only installed if an interface with the ID configured
+in `*if_id_out*` exists when the corresponding CHILD_SA is installed.
+
+CAUTION: If the traffic selectors include the IKE traffic to the peer, enabling
+         `*install_routes_xfrmi*` requires special care (similarly, if manually
+         installed routes conflict with the IKE traffic to the peer). Besides
+         excluding all traffic to the peer via bypass policies and throw routes,
+         the easiest way to only exclude IKE traffic is setting a mark on the
+         IKE socket (via `*charon.plugins.socket-default.fwmark*=<mark>`) and
+         excluding such packets from the configured routing table where routes
+         via XFRM interface are installed (via
+         `*charon.plugins.kernel-netlink.fwmark*=!<mark>`).
 
 === Example
 
