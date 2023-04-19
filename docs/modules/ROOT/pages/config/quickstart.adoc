@@ -569,3 +569,47 @@ from any remote address/port.
     }
   }
 ----
+
+=== For specific port ranges
+
+The following is a passthrough policy that allows traffic to the local TCP port
+range `*65000-65255*` from any remote address/port. Using the little-known
+capability of the `*kernel-netlink*` plugin to implement port ranges defined by
+a bit mask (similar to an IP subnet mask), the arbitrary port range defined above
+can be split into the following six contiguous subranges described by a bit mask
+each:
+
+[cols="2,2,2"]
+|===
+|*port subrange* |*number of ports in range* |*bit mask*
+
+|`65000-65007` |  `8` |`/29 (0xfffffff8)`
+
+|`65008-65023` | `16` |`/28 (0xfffffff0)`
+
+|`65024-65151` |`128` |`/25 (0xffffff80)`
+
+|`65152-65215` | `64` |`/26 (0xffffffc0)`
+
+|`65216-65247` | `32` |`/27 (0xffffffe0)`
+
+|`65248-65255` |  `8` |`/29 (0xfffffff8)`
+|===
+
+----
+/etc/swanctl/swanctl.conf:
+
+  connections {
+    passthrough-port-range {
+      remote_addrs = 127.0.0.1
+      children {
+        passthrough-port-range {
+          local_ts  = dynamic[tcp/65000-65007],dynamic[tcp/65008-65023],dynamic[tcp/65024-65151],dynamic[tcp/65152-65215],dynamic[tcp/65216-65247],dynamic[tcp/65248-65255]
+          remote_ts = 0.0.0.0/0
+          mode = pass
+          start_action = trap
+        }
+      }
+    }
+  }
+----

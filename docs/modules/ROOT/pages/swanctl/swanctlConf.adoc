@@ -614,8 +614,12 @@ of the CHILD_SA configuration, which must be unique within the connection
  specified. After the optional protocol restriction, an optional port restriction
  may be specified, separated by a slash. The port restriction may be numeric, a
  `*getservent(3)*` service name, or the special value `*opaque*` for
- {RFC4301}[RFC 4301] OPAQUE selectors. Port ranges may be specified as well, none
- of the kernel backends currently support port ranges, though.
+ {RFC4301}[RFC 4301] OPAQUE selectors. Port ranges may be specified as well,
+ although none of the kernel backends currently supports them except the
+ `*kernel-netlink*` plugin  that is able to handle port ranges if they are defined
+ by a bit mask (similar to a IP subnet mask) rather than an arbitrary range, see
+ the xref:config/quickstart.adoc#_for_specific_port_ranges[following example] for
+ details.
  +
  When IKEv1 is used, only the first selector is interpreted, except if the Cisco
  Unity extension plugin xref:plugins/unity.adoc[`*unity*`] is used. This is due
