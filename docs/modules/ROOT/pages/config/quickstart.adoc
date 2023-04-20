@@ -579,21 +579,21 @@ a bit mask (similar to an IP subnet mask), the arbitrary port range defined abov
 can be split into the following six contiguous subranges described by a bit mask
 each:
 
-[cols="2,2,2"]
+[cols="3,3,2,2,2"]
 |===
-|*port subrange* |*number of ports in range* |*bit mask*
+|*port subrange* |*number of ports in range* |*start port* |*end port* |*bit mask*
 
-|`65000-65007` |  `8` |`/29 (0xfffffff8)`
+|`65000-65007` |  `8` |`0xfde8` |`0xfdef` |`0xfff8`
 
-|`65008-65023` | `16` |`/28 (0xfffffff0)`
+|`65008-65023` | `16` |`0xfdf0` |`0xfdff` |`0xfff0`
 
-|`65024-65151` |`128` |`/25 (0xffffff80)`
+|`65024-65151` |`128` |`0xfe00` |`0xfe7f` |`0xff80`
 
-|`65152-65215` | `64` |`/26 (0xffffffc0)`
+|`65152-65215` | `64` |`0xfe80` |`0xfebf` |`0xffc0`
 
-|`65216-65247` | `32` |`/27 (0xffffffe0)`
+|`65216-65247` | `32` |`0xfec0` |`0xfedf` |`0xffe0`
 
-|`65248-65255` |  `8` |`/29 (0xfffffff8)`
+|`65248-65255` |  `8` |`0xfee0` |`0xfee7` |`0xfff8`
 |===
 
 ----
