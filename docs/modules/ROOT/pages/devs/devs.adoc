@@ -6,8 +6,10 @@
 :APIDOC:     https://www.strongswan.org/apidoc
 :TESTS:      https://strongswan.org/testresults.html
 :TKM:        https://www.codelabs.ch/tkm/
-:APPVEYOR:   https://ci.appveyor.com/api/projects
-:CIRRUS:     https://api.cirrus-ci.com/github/strongswan
+:APPVEYOR:   https://ci.appveyor.com/project
+:APPVEYOR_A: https://ci.appveyor.com/api/projects
+:CIRRUS:     https://cirrus-ci.com/github/strongswan
+:CIRRUS_A:   https://api.cirrus-ci.com/github/strongswan
 :CODECOV:    https://codecov.io/gh/strongswan/strongswan
 :SONARCLOUD: https://sonarcloud.io
 :OSSFUZZ:    https://oss-fuzz-build-logs.storage.googleapis.com/badges/strongswan.svg
@@ -146,9 +148,9 @@ The unit tests also run automatically for every commit:
 
 |image:{GITHUB}/workflows/Windows/badge.svg[Windows, title="Cross-compiled Windows", link={GITHUB}/actions/workflows/windows.yml]
 
-|image:{APPVEYOR}/status/186bfuup38t9pu4k?svg=true[Windows, title="Native Windows on AppVeyor", link={APPVEYOR}/tobiasbrunner/strongswan-52lo9]
+|image:{APPVEYOR_A}/status/186bfuup38t9pu4k?svg=true[Windows, title="Native Windows on AppVeyor", link={APPVEYOR}/tobiasbrunner/strongswan-52lo9]
 
-|image:{CIRRUS}/strongswan.svg?branch=master[FreeBSD, title="FreeBSD on Cirrus CI", link={CIRRUS}/strongswan]
+|image:{CIRRUS_A}/strongswan.svg?branch=master[FreeBSD, title="FreeBSD on Cirrus CI", link={CIRRUS}/strongswan]
 |===
 
 Information on the code coverage:
