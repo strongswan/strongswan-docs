@@ -65,6 +65,10 @@ private key.
 
 The generic type `priv` can be used to load any supported private key type.
 
+Without modifiers, the `--flag` argument overrides flags from PKCS#10
+certificate requests. Prefixing a flag with `+` adds it to the set of flags
+read from the request, prefixing it with `-` removes it from that set.
+
 == Examples
 
 * Create an `options` file to save repetitive typing work
