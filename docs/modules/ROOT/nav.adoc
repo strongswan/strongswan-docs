@@ -190,7 +190,7 @@
 ** xref:plugins/xauth-pam.adoc[]
 * xref:plugins/pluginLoad.adoc[]
 
-.Devs
+.Development
 * xref:devs/devs.adoc[]
 * xref:devs/contributions.adoc[]
 * xref:devs/programmingStyle.adoc[]
