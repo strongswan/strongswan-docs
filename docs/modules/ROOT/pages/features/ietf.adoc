@@ -46,6 +46,10 @@ kernel.
  Internet Key Exchange (IKE)
 
 |
+|{IETF}/rfc9395[RFC 9395]:
+ Deprecation of the Internet Key Exchange Version 1 (IKEv1) Protocol and Obsoleted Algorithms
+
+|
 |{IANA}/isakmp-registry[IANA-ISAKMP]:
  ISAKMP Registry
 
