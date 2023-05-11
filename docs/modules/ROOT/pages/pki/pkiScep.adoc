@@ -14,7 +14,7 @@ pki --scep --url url [--in file] --dn distinguished-name [--san subjectAltName]+
           [--cert file --key file] [--cipher aes|des3]
           [--digest sha256|sha384|sha512|sha224|sha1] [--rsa-padding pkcs1|pss]
           [--interval time] [--maxpolltime time] [--outform der|pem]
-            
+
 pki --scepca --help
 ----
 
@@ -58,8 +58,7 @@ Supported since version 5.9.8.
 
 |`-i`
 |`--in`
-|Public key or PKCS#10 certificate request file to issue. If not given, the key is
-read from `*STDIN*`
+|RSA private key. If not given, the key is read from `*STDIN*`
 
 |`-d`
 |`--dn`
