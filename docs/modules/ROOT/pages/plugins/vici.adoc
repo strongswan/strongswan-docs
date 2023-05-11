@@ -3,6 +3,7 @@
 :VICI:   https://github.com/strongswan/strongswan/blob/master/src/libcharon/plugins/vici/README.md
 :DAVICI: https://github.com/strongswan/davici/
 :GOVICI: https://github.com/strongswan/govici/
+:GEMS:   https://rubygems.org/gems/vici
 :PYPY:   https://pypi.python.org/pypi/vici/
 
 == Purpose
@@ -98,6 +99,7 @@ A Go implementation of the {VICI}[VICI] protocol is available on {GOVICI}[GitHub
 === Ruby gem
 
 A Ruby gem allowing Ruby applications to control and monitor the IKE daemon.
+It may also be installed via {GEMS}[RubyGems].
 
 === Python egg
 
