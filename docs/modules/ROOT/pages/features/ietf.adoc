@@ -296,13 +296,18 @@ kernel.
  Aggregation and Fragmentation Mode for ESP and Its Use for IP Traffic Flow
  Security (IP-TFS)
 
+|6.0
+|{IETF}/rfc9370[RFC 9370]:
+ Multiple Key Exchanges in the Internet Key Exchange Protocol Version 2 (IKEv2)
+
+|*x*
+|{IETF}/rfc9385[RFC 9385]:
+ Using GOST Cryptographic Algorithms in the Internet Key Exchange Protocol
+ Version 2 (IKEv2)
+
 |
 |{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
  Labeled IPsec Traffic Selector support for IKEv2
-
-|6.0
-|{IETF}/draft-ietf-ipsecme-ikev2-multiple-ke[draft-ietf-ipsecme-ikev2-multiple-ke]:
- Multiple Key Exchanges in IKEv2
 
 |
 |{IETF}/draft-brunner-ikev2-mediation[draft-brunner-ikev2-mediation]:
