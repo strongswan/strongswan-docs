@@ -26,9 +26,9 @@ cryptographically *weak* and thus prone to attacks.
 |===
 |    |Option                           |Plugin      |Since
 
-|*s* |Deprecated due to security issues|            |
+|*s* 3+|Deprecated due to security issues
 
-|*x* |Default crypto plugin[s]         |            |
+|*x* |Default crypto plugin[s]         2+|see `*Plugins*` columns below
 
 |*b* |Botan crypto library             |`*botan*`   | strongSwan 5.7.0
 
