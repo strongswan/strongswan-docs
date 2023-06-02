@@ -7,8 +7,9 @@
 
 ----
 
-pki --estca --url url [--caout file] [--outform der|pem] [--force] [--debug level]
-            
+pki --estca --url url [--label label] [--cacert file]+ [--caout file]
+           [--outform der|pem] [--force] [--debug level]
+
 pki --estca --help
 ----
 
@@ -40,6 +41,10 @@ Supported since version 5.9.8.
 |`-u`
 |`--url`
 |URL of the SCEP server
+
+|`-l`
+|`--label`
+|Label in the EST server path
 
 |`-C`
 |`-cacert`

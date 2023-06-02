@@ -9,11 +9,11 @@
 
 ----
 
-pki --est --url url [--in file] [--cacert file]+
+pki --est --url url [--label label] [--in file] [--cacert file]+
          [--cert file|--certid hex --key file|--keyid hex]
          [--userpass username:password] [--interval time]
          [--maxpolltime time] [--outform der|pem]
-            
+
 pki --est --help
 ----
 
@@ -52,6 +52,10 @@ Supported since version 5.9.8.
 |`-u`
 |`--url`
 |URL of the EST server
+
+|`-l`
+|`--label`
+|Label in the EST server path
 
 |`-i`
 |`--in`
