@@ -8,7 +8,7 @@
 
 ----
 
-pki --scep --url url [--in file] --dn distinguished-name [--san subjectAltName]+
+pki --scep --url url [--in file] [--dn distinguished-name] [--san subjectAltName]+
           [--profile profile] [--password password]
            --cacert-enc file --cacert-sig file [--cacert file]+
           [--cert file --key file] [--cipher aes|des3]
@@ -62,7 +62,7 @@ Supported since version 5.9.8.
 
 |`-d`
 |`--dn`
-|Subject distinguished name (DN). Required
+|Subject distinguished name (DN). Required unless `--cert` is given
 
 |`-a`
 |`--san`

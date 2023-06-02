@@ -9,7 +9,7 @@
 
 ----
 
-pki --est --url url [--label label] [--in file] [--cacert file]+
+pki --est --url url [--label label] [--in file] --cacert file
          [--cert file|--certid hex --key file|--keyid hex]
          [--userpass username:password] [--interval time]
          [--maxpolltime time] [--outform der|pem]
