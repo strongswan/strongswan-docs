@@ -6,7 +6,9 @@
 ----
 pki --pkcs7 --sign|--verify|--encrypt|--decrypt|--show
             [--in file] [--cert file]+ [--key file]
-            
+            [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
+            [--rsa-padding pkcs1|pss]
+
 pki --pkcs7 --help
 ----
 
@@ -25,6 +27,8 @@ This xref:./pki.adoc[`*pki*`] subcommand offers PKCS#7 wrap/unwrap functions.
 --in              (-i)  input file, default: stdin
 --key             (-k)  path to private key for sign/decrypt
 --cert            (-c)  path to certificate for sign/verify/encrypt
+--digest          (-g)  digest for signature creation, default: key-specific
+--rsa-padding     (-R)  padding for RSA signatures, default: pkcs1
 --debug           (-v)  set debug level, default: 1
 --options         (-+)  read command line options from file----
 --help            (-h)  show usage information
