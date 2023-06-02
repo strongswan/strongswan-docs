@@ -1,2 +1,10 @@
 |allow_peer_ts |`no`
 |Allow that the remote traffic selector equals the IKE peer
+
+|fwmark |[->]
+|Firewall mark to set on outbound raw ESP packets. Since version 5.9.11
+ `*[charon.plugins.socket-default.fwmark]*`
+
+|raw_esp |`no`
+|Whether to send and receive ESP packets without UDP encapsulation if supported
+ on this platform and no NAT is detected. Since version 5.9.11

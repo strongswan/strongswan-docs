@@ -29,15 +29,22 @@ the `*kernel-pfroute*` plugin has to be enabled, too.
 
 == Behavior
 
-With the plugin enabled a TUN device is created on startup that will be used to
+With the plugin enabled, a TUN device is created on startup that will be used to
 handle cleartext traffic from and to the host. For each IPsec SA routes get
 installed that direct traffic to the TUN device, from there the plugin reads the
-cleartext packets and encrypts them via `*libipsec*`. The resulting ESP packets
-will be sent over the UDP sockets the daemon uses for IKE traffic, which is why
-*the plugin currently only works with UDP encapsulation (NAT-T) enabled*.
-Encapsulated ESP packets that are received on the daemon's UDP socket are
-decrypted by `*libipsec*` and then injected via TUN device. `*libipsec*` can use
-all ciphers supported for IKE to encrypt and authenticate traffic.
+cleartext packets and encrypts them via `*libipsec*`.
+
+The resulting ESP packets are usually sent over the UDP sockets the daemon
+uses for IKE traffic, that is, *the plugin enforces UDP encapsulation (NAT-T)*.
+On Linux, handling of raw ESP packets can be enabled since version 5.9.11 to
+also send/receive ESP packets without UDP-encapsulation (this uses RAW sockets).
+
+ESP packets that are received are decrypted by `*libipsec*` and then injected
+via TUN device. `*libipsec*` can use all ciphers supported for IKE to encrypt
+and authenticate traffic.
+
+Since version 5.9.11, trap policies are supported to trigger the negotiation
+of SAs once matching traffic hits the TUN device.
 
 NOTE: `*libipsec*` is not intended for scenarios with high amounts of traffic or
       high burst traffic. It is not optimized for performance and buffers each
