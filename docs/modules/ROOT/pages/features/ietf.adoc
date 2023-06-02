@@ -260,6 +260,11 @@ kernel.
  Generic Raw Public-Key Support for IKEv2
 
 |*x*
+|{IETF}/rfc7791[RFC 7791]:
+ Cloning the IKE Security Association in the Internet Key Exchange
+ Protocol Version 2 (IKEv2)
+
+|*x*
 |{IETF}/rfc8019[RFC 8019]:
  Protecting IKEv2 Implementations from Distributed Denial-of-Service Attacks
 
