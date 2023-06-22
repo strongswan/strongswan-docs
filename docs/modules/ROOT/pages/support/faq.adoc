@@ -313,8 +313,11 @@ people re-generate keys and certificates and try to use the wrong private key.
 *Q:* _I get the error `no trusted RSA public key found for [...]` when trying to establish my VPN connection. Why is that happening?_
 
 *A:* The daemon is unable to authenticate the remote peer's transmitted identity
-using its available authentication credentials (e.g. transmitted client certificate,
-all transmitted and installed/trusted CA certificates).
+(the value in `[]`) using its available authentication credentials (e.g.
+transmitted client certificate, all transmitted and installed/trusted CA
+certificates). This could be because no matching certificate/key is found or if
+certificate validation failed. Make sure to check the log messages before this
+error for details (see below for hints what to look for).
 
 Make sure your configuration fulfills the following requirements:
 
@@ -325,7 +328,17 @@ the peer's private key)
 This is affected by the `*send_certreq*` and `*send_cert*` settings in
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
 
- * Any required intermediate CA certificates are also sent or locally installed
+ * Any required intermediate CA certificates are also sent (check the log for
+`sending issuer cert` and/or `received issuer cert`) or locally installed
+
+ * The end-entity certificate matches the peer's transmitted identity, and
+certificate validation is attempted (check the log for `using certificate`
+and/or `using trusted ca certificate`). If the error is logged without any such
+attempt, make sure the transmitted identity is either in one of the
+certificate's subjectAltName (SAN) extensions with the correct type (type IP if
+it's an IP address, type FQDN if it's a FQDN) or it equals the certificate's
+full subject DN (distinguished name). To fix this, either update the
+certificate (e.g. add the missing SAN), or change the identity the peer sends
 
  * The root/intermediate CA that issued the end-entity certificate is trusted or
    the end-entity certificate is locally installed (check
@@ -333,10 +346,6 @@ xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
 
  * The end-entity and CA certificates are valid (make sure to also check the system
    time). Note that this check is skipped for locally installed end-entity certificates
-
- * The transmitted identity is either in one of it's certificate's SAN fields
-   with the correct type (type IP if it's an IP, type FQDN if it's a FQDN) or it
-   equals the certificate's full subject DN (distinguished name)
 
 == IKEv2
 
