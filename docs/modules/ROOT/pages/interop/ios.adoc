@@ -3,6 +3,7 @@
 :SUPPORT:     https://support.apple.com/en-us/HT210176
 :LISTS:       https://lists.strongswan.org/pipermail/users/2015-October/008844.html
 :LETSENCRYPT: https://letsencrypt.org/
+:CONSOLE:     https://support.apple.com/guide/console/welcome/mac
 
 == IKEv2 on iOS 9 and macOS 10.11
 
@@ -212,6 +213,11 @@ In order to work around the issue, reauthentication has to be turned off on the
 responder (it is disabled by default):
 
  connections.<conn>.reauth_time = 0
+
+== Troubleshooting IKEv2 on macOS
+
+To collect IKEv2 logs on macOS, use the `process:NEIKEv2Provider` search filter
+in {CONSOLE}[Console].
 
 == Troubleshooting IKEv1 on macOS
 
