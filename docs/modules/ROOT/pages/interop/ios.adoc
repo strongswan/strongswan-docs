@@ -18,23 +18,70 @@ by three different methods:
 The xref:./windowsClients.adoc[Windows IKEv2] configurations can be used
 with some small changes.
 
-* For manual configurations, specify only DH group 2 (`*modp1024*`) in the `*ike*`
-  configuration. Although the iOS client claims to support `*modp1536*`, an
-  unfixed bug prevents these connections from succeeding. An appropriate
-  configuration consisting of 3 proposals for iOS, Windows and macOS, respectively
-  might look like
-+
-----
-ike=aes256-sha256-modp1024,aes256-sha1-modp1024,3des-sha1-modp1024
-esp=aes256-sha256,aes256-sha1,3des-sha1
-----
-+
-As of iOS 14 (maybe earlier) `*modp2048*` and `*sha2*` are supported. Thus use
+* When configuring clients manually without profile, strongSwan's default
+  proposals should work fine with recent iOS/macOS versions.  If you like to
+  manually specify proposals (e.g. to use PFS, see below), note that `*modp2048*`
+  and `*sha2*` are supported at least since iOS 14. So the following proposals
+  may be configured (if necessary, combined with further algorithms/proposals
+  for other clients):
 +
 ----
 ike=aes256-sha256-modp2048
 esp=aes256-sha256
 ----
++
+If you want to use xref:config/rekeying.adoc#_ipsec_sas[PFS for CHILD_SAs],
+  be aware that only iOS sends a proposal with DH group (and a second one
+  without), by default, macOS only sends one without. So to support PFS with iOS
+  clients without failing to rekey with macOS clients, configure something like
+  this to make the DH group optional:
++
+----
+ike=aes256-sha256-modp2048
+esp=aes256-sha256-modp2048-modpnone
+----
++
+Also note that only iOS sends a proposal with `*ecp256*`, by default.  And while
+it also sends one with `*modp1536*`, that might not work due to an unfixed bug,
+so using `*modp2048*` or `*ecp256*` should be preferred. Refer to the following
+proposal lists for details.
++
+.Default IKE/ESP proposals sent by iOS/macOS
+[%collapsible]
++
+====
+iOS (as of 16.5)
+----
+IKE:AES_CBC_256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/MODP_2048
+IKE:AES_CBC_256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/ECP_256
+IKE:AES_CBC_256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/MODP_1536
+IKE:AES_CBC_128/HMAC_SHA1_96/PRF_HMAC_SHA1/MODP_1024
+IKE:3DES_CBC/HMAC_SHA1_96/PRF_HMAC_SHA1/MODP_1024
+
+ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+ESP:AES_CBC_128/HMAC_SHA1_96/NO_EXT_SEQ
+ESP:3DES_CBC/HMAC_SHA1_96/NO_EXT_SEQ
+----
+When rekeying IPsec SAs (the DH group in the first proposal is presumably the
+one selected for IKE):
+----
+ESP:AES_CBC_256/HMAC_SHA2_256_128/MODP_2048/NO_EXT_SEQ
+ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+----
+
+macOS (as of 13.4)
+----
+IKE:AES_CBC_256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/MODP_2048
+
+ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+----
+When rekeying IPsec SAs:
+----
+ESP:AES_CBC_256/HMAC_SHA2_256_128/NO_EXT_SEQ
+----
+====
 
 * The client does not send a certificate request (`*CERTREQ*`) unless
   `*ServerCertificateIssuerCommonName*` is configured in a
