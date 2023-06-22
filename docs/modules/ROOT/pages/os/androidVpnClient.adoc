@@ -49,7 +49,7 @@ shows the current connection status and allows connecting/terminating the curren
 VPN connection easily. The same version brought support for the Always-on VPN
 feature that may be enabled in the system's VPN settings on Android 7+ and will
 start the VPN profile after a reboot (refer to the
-xref:#_2_0_0_2018_07_03[[changelog] for potential caveats). The default VPN profile
+xref:#_2_0_0_2018_07_03[changelog] for potential caveats). The default VPN profile
 used for these two features may be configured in the app's global settings (the
 default is to initiate the most recently used profile).
 
@@ -140,6 +140,13 @@ NOTE: The hostname/IP of the VPN server as configured in the VPN profile has to
    sockets used for IKE. So UDP-encapsulation is
    xref:features/natTraversal.adoc#_udp_encapsulation_of_esp[always enforced] even
    if there is no NAT between client and server, by sending a random NAT-D payload.
+
+ * The above has implications regarding IPv6. Because the Linux kernel only
+   supports UDP-encapsulation for ESP for IPv6 since 5.8, many servers might not
+   support this yet.  Therefore, while IPv6 is always supported inside the
+   tunnel (if appropriate virtual IPs and traffic selectors are negotiated),
+   support for IPv6 transport addresses for IKE and ESP has to be enabled
+   explicitly (per connection, available since xref:#_2_3_1_2020_10_29[2.3.1]).
 
  * The app is not compatible with Google's {PROJECTFI}[Project Fi] which provides
    its own always-on VPN connection. To use the app, the {PROJECTFI}[Project Fi]'s
