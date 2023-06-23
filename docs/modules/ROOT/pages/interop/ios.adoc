@@ -219,6 +219,13 @@ responder (it is disabled by default):
 To collect IKEv2 logs on macOS, use the `process:NEIKEv2Provider` search filter
 in {CONSOLE}[Console].
 
+Logs can also be viewed or followed in Terminal with the following
+commands:
+----
+log show --predicate 'process == "NEIKEv2Provider"'
+log stream --predicate 'process == "NEIKEv2Provider"'
+----
+
 == Troubleshooting IKEv1 on macOS
 
  sudo vi /etc/racoon/racoon.conf
