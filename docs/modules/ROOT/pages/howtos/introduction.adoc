@@ -151,7 +151,7 @@ Public Key Authentication ::
   the peer has to be confirmed by the certificate, either by the `*subjectDn*` or
   a `*subjectAltName*` extension.
 
-Pre-Shared-Key Authenticiation (PSK) ::
+Pre-Shared-Key Authentication (PSK) ::
   A pre-shared-key is an easy-to-deploy option but it *requires strong secrets*
   to be secure.
 
