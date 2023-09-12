@@ -1,3 +1,6 @@
+* IPsec Workshop Dresden, September 2023:
+  xref:attachment$IPsecWorkshop_Dresden_2023.pdf[X.509 Certificate Enrollment].
+
 * IPsec Workshop Prague, March 2019:
   xref:attachment$IPsecWorkshop_Prague_2019.pdf[The strongSwan Project].
 
