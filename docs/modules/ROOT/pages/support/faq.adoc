@@ -291,7 +291,9 @@ a subjectAltName (SAN) extension of the correct type.  In the above example
 
 === X.509 Certificate Chain Files
 
-*Q:* _Can strongSwan read chain files (an end-entity certificate and the CAs that are required to authenticate it)?_
+*Q:* _Can strongSwan read chain files (an end-entity certificate and the CAs that
+are required to authenticate it) or CA bundle files (multiple CA certificates in
+a single file)?_
 
 *A:* Not completely, it only reads the first certificate from such files.
 
