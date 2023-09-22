@@ -346,15 +346,35 @@ interfaces if the `*charon.plugins.kernel-netlink.install_routes_xfrmi*` option
 is enabled. A route is only installed if an interface with the ID configured
 in `*if_id_out*` exists when the corresponding CHILD_SA is installed.
 
-CAUTION: If the traffic selectors include the IKE traffic to the peer, enabling
-         `*install_routes_xfrmi*` requires special care (similarly, if manually
-         installed routes conflict with the IKE traffic to the peer). Besides
-         excluding all traffic to the peer via bypass policies and throw routes,
-         the easiest way to only exclude IKE traffic is setting a mark on the
-         IKE socket (via `*charon.plugins.socket-default.fwmark*=<mark>`) and
-         excluding such packets from the configured routing table where routes
-         via XFRM interface are installed (via
-         `*charon.plugins.kernel-netlink.fwmark*=!<mark>`).
+=== Avoid Routing Loops with IKE/ESP Traffic
+
+If the negotiated traffic selectors include the IKE/ESP traffic to the
+peer, enabling `*install_routes_xfrmi*` (see above) requires special care to
+avoid routing loops (i.e. routing IKE and ESP packets into the XFRM interface).
+The same applies if routes that conflict with the IKE/ESP traffic (e.g. a default
+route) are installed manually via an XFRM interface.
+
+Assuming the routes via XFRM interface are installed in routing table 220, which
+is what the mentioned option does, by default, there are basically two options:
+
+* Set marks on the IKE packets (globally via `*charon.plugins.socket-default.fwmark*=<mark>`)
+  and the ESP packets (via `*<child>.set_mark_out*=<mark>`), and then exclude
+  such packets from routing table 220 by adding a negative mark on the routing
+  rule (via `*charon.plugins.kernel-netlink.fwmark*=!<mark>`).
+  `<mark>` is an arbitrary value, but preferably one that's not already used for
+  something else on the system.
+
+* Alternatively, e.g. if the kernel doesn't support `*set_mark_out*`, install an
+  explicit route to the peer's IP address, either via a physical interface
+  instead of the XFRM interface, or, for instance, a `*throw*` route in table
+  220, so the other routes in that table are ignored for packets addressed to
+  the peer and the next and eventually the main routing table will be used (e.g.
+  `*ip route add throw <peer ip> table 220*`).
+
+The first option should be preferred as it only affects IKE and ESP traffic and
+protects all other traffic addressed to the peer's IP address, and it has the
+advantage of not requiring a route for each peer and continues to work if a
+peer's IP address changes.
 
 === Example
 
