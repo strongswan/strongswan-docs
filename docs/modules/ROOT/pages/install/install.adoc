@@ -38,6 +38,9 @@ There are currently packages for:
 
 == Compile strongSwan Yourself
 
+CAUTION: Make sure no strongSwan-related distribution packages are installed
+         before building and installing strongSwan from sources
+
 === Linux Kernel Requirements
 
 strongSwan should run on most distros' kernels. If you build your own kernel,
@@ -46,7 +49,7 @@ include the required xref:install/kernelModules.adoc[kernel modules].
 === Building strongSwan
 
 The GNU build system (Autotools) is used to build strongSwan. There is an ever
-growing list of xref:install/autoconf.adoc[`*./configure*`] options available.
+growing list of xref:install/autoconf.adoc[`*./configure*` options] available.
 
 NOTE: Many of these configuration options are enabled by default. Thus please
       use *./configure --help* to check which options are actually available for
@@ -56,9 +59,9 @@ Refer to the xref:plugins/plugins.adoc[list of plugins] to learn more about the
 plugins enabled with the above options.
 
 NOTE: Some plugins have *dependencies on third-party libraries*. To compile these
-      plugins the header files of those libraries are required. Make sure these
+      plugins, the header files of those libraries are required. Make sure these
       are installed on your system, e.g. by installing the appropriate *-dev*
-      package on Debian-based systems. Otherwise the configure script will
+      package on Debian-based systems. Otherwise, the configure script will
       complain that it can't find the library or header files.
 
 The build procedure is as with any autotools project:
@@ -72,7 +75,8 @@ wget https://download.strongswan.org/strongswan-x.x.x.tar.bz2
 . Unpack the tarball and navigate into the directory:
 +
 ----
-tar xjf strongswan-x.x.x.tar.bz2; cd strongswan-x.x.x
+tar xjf strongswan-x.x.x.tar.bz2
+cd strongswan-x.x.x
 ----
 
 . Configure strongSwan using the xref:install/autoconf.adoc[available options]:
