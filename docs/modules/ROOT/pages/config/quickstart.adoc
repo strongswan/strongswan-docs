@@ -214,7 +214,7 @@ Configuration on roadwarrior `*carol*`:
       }
       children {
         home {
-          local_ts  = 10.1.0.0/16
+          remote_ts  = 10.1.0.0/16
           start_action = start
         }
       }
@@ -315,7 +315,7 @@ Configuration on roadwarrior `*carol*`:
         }
       children {
         home {
-          local_ts  = 10.1.0.0/16
+          remote_ts  = 10.1.0.0/16
           start_action = start
         }
       }
@@ -393,7 +393,7 @@ Configuration on roadwarrior `*carol*`:
       }
       children {
         home {
-          local_ts  = 10.1.0.0/16
+          remote_ts  = 10.1.0.0/16
           start_action = start
         }
       }
@@ -476,7 +476,7 @@ Configuration on roadwarrior `*carol*`:
       }
       children {
         home {
-          local_ts  = 10.1.0.0/16
+          remote_ts  = 10.1.0.0/16
           start_action = start
         }
       }
