@@ -39,6 +39,12 @@
 |mtu                         |`0`
 |MTU to set on installed routes, `*0*` to disable
 
+|port_bypass                 |`no`
+|Whether to use port or socket based IKE XFRM bypass policies. IKE bypass
+ policies are used to exempt IKE traffic from XFRM processing. The default
+ socket based policies are directly tied to the IKE UDP sockets, port
+ based policies use global XFRM bypass policies for the used IKE UDP ports.
+
 |process_rules               |`no`
 |Whether to process changes in routing rules to trigger roam events. This is
  currently only useful if the kernel based route lookup is used (i.e. if route
