@@ -343,16 +343,12 @@ the active node initiates rekeying on all CHILD_SAs. The new CHILD_SA will be
 synchronized, starting with fresh sequence numbers in the kernel. CHILD_SA rekeying
 is inexpensive, as it usually does not include a DH exchange.
 
-== Building HA Plugin
+== Building the HA Plugin
 
 The xref:plugins/ha.adoc[`*ha*`] plugin must be enabled via
-xref:install/autoconf.adoc[`*./configure*`]. The plugin must use the same hashing
-algorithm for segment calculation as the kernel (`*jhash*`). This algorithm has
-changed for Linux 2.6.37 and may again change in the future. To use the correct
-version of `*jhash*`, build strongSwan against the kernel headers of the kernel
-you're actually running strongSwan on:
+xref:install/autoconf.adoc[`*./configure*`]:
 
- ./configure --enable-ha --with-linux-headers=/path/to/target/kernel/include/linux
+ ./configure --enable-ha
 
 == Configuration
 
