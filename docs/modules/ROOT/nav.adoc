@@ -132,6 +132,7 @@
 *** xref:pki/pkiSelf.adoc[]
 *** xref:pki/pkiSignCrl.adoc[]
 *** xref:pki/pkiVerify.adoc[]
+**  xref:tools/cert-enroll.adoc[]
 ** xref:tnc/pt-tls-client.adoc[]
 ** xref:tnc/sw-collector.adoc[]
 ** xref:tnc/sec-updater.adoc[]

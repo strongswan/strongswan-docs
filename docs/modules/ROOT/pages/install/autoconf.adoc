@@ -117,6 +117,12 @@ plugins.
 |--enable-chapoly                                            |5.3.3
 |enables the ChaCha20/Poly1305 AEAD plugin
 
+|xref:tools/cert-enroll.adoc[--enable-cert-enroll]           |5.9.12
+|enable automatic certificate enrollment via EST or SCEP
+
+|xref:tools/cert-enroll.adoc[--enable-cert-enroll-timer]     |5.9.12
+|enable installation of cert-enroll as a systemd timer
+
 |xref:plugins/certexpire.adoc[--enable-certexpire]           |
 |enable CSV export of expiration dates of used certificates
 

@@ -1,0 +1,209 @@
+= cert-enroll Tool 
+
+:IETF:     https://datatracker.ietf.org/doc/html
+:RFC7030:  {IETF}/rfc7030
+:RFC8894:  {IETF}/rfc8894
+:GITHUB:   https://github.com/strongswan/strongswan/blob/master/src/cert-enroll
+:DIRSRV:   https://www.port389.org/docs/389ds/howto/quickstart.html
+:GITEA:    https://docs.gitea.com/
+:IPSEC:    https://wiki.strongswan.org/projects/strongswan/wiki/IpsecCommand
+:LIGHTTPD: https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_SSL
+:OPENXPKI: https://openxpki.readthedocs.io/en/develop/quickstart.html
+:SSSD:     https://sssd.io/
+
+== Synopsis
+
+----
+cert-enroll [-c filename] [-i directory]
+
+cert-enroll -h
+----
+
+== Description
+
+The `*cert-enroll*` bash shell script uses the strongSwan
+xref:/pki/pki.adoc[`*pki*`] command to request an initial X.509 certificate from a
+PKI server using either the *Enrollment over Secure Transport* protocol
+({RFC7030}[RFC 7030] EST) or the older *Simple Certificate Enrollment Protocol*
+({RFC8894}[RFC 8894] SCEP). After having received the host certificate, its
+expiration date can be monitored periodically and a new certificate will be
+automatically requested when a predefined deadline of remaining validity days is
+reached. The availability of new CA certificates is also monitored periodically.
+The locally generated RSA, EDCSA or EdDSA private key, the downloaded X.509
+certificate and the current set of CA certificates can then be installed in
+specific places on the host via a selection of installation scripts.
+
+The `*cert-enroll*` script has been extensively tested with an
+{OPENXPKI}[*OpenXPKI*] server and various TLS or IPsec based applications
+needing X.509 host certificates.
+ 
+== Options
+
+[cols="1,11"]
+|===
+
+|`-h`
+|Prints usage information and a short summary of the available commands
+
+|`-c`
+|Path to the optional local configuration file that can be used to overwrite
+ parameters in the default configuration file
+ {GITHUB}/cert-enroll.conf[`*$\{sysconfdir}/cert-enroll.d/cert-enroll.conf*`]
+ which usually should not be edited directly. Defaults to
+ `*$\{sysconfdir}/cert-enroll.d/cert-enroll.conf.local*`.
+
+|`-i`
+|Path to the installation script directory. Defaults to
+ `*$\{sysconfdir}/cert-enroll.d/cert-install.d*`. This directory will contain
+ dynamic links  to selected installation scripts available in the
+ `*$\{sysconfdir}/etc/cert-enroll.d/cert-install-available*` directory.
+|===
+
+The `*$\{sysconfdir}*` directory is usually set to `*/etc*` but might differ in
+some strongSwan installations.
+
+== Build Options
+
+To build the `*cert-enroll*` script, add
+
+ --enable-cert-enroll
+
+to the xref:install/autoconf.adoc[`*./configure*`] options. If you want to run
+`*cert-enroll*` as a `*systemd*` timer, additionally add
+
+ --enable-cert-enroll-timer
+
+== Configuration
+
+=== Activation as systemd Timer
+
+* {GITHUB}/cert-enroll.service.in[`*cert-enroll.service*`]:
+  The {GITHUB}/cert-enroll.in[`*cert-enroll*`] script is executed by this
+  `*systemd*` Service as a *single shot*.
+
+* {GITHUB}/cert-enroll.timer[`*cert-enroll.timer*`]:
+  The {GITHUB}/cert-enroll.in[`*cert-enroll*`] script is executed daily by this
+  `*systemd*` timer at a random point in time between 2 and 4 AM.
+ 
+The timer is enabled and started with the following commands
+----
+# systemctl enable cert-enroll.timer
+# systemctl start  cert-enroll.timer
+----
+The initial generation of the X.509 host certificate can be done via the
+*single shot* command
+----
+# systemctl start cert-enroll.service
+----
+
+=== Activation as a cron Job
+
+The daily execution of the {GITHUB}/cert-enroll.in[`*cert-enroll*`] script
+is enabled via the following `*crontab*` entry
+----
+# crontab -l 
+#  m h  dom mon dow   command
+   0 2  *   *   *     /usr/sbin/cert-enroll 2>&1 | /usr/sbin/logger -p user.info
+----
+The initial generation of the X.509 host certificate can be done via the command
+----
+# /usr/sbin/cert-enroll
+----
+
+=== Key and Certificate Storage Location
+
+The generated private key and the host and CA certificates are stored under 
+standardized names in the default directory `*/root/certificates/*`
+----
+/root/certificates/
+ |
+ |-- key.pem             # host key
+ |
+ |-- cert.pem            # host certificate 
+ |
+ |-- cacert.pem          # root CA certificate
+ |
+ |-- cacert-1.pem        # issuing intermediate CA certificate 
+ |
+ |--new/                 # temporary directory for re-enrollment
+ |
+ +--old/                 # repository for deprecated credentials 
+     |
+     |-- key.pem         # old host key after re-enrollment
+     |
+     |-- cert.pem        # old host certificate after re-enrollment
+     |
+     +-- cacert-1.pem    # old issuing CA certificate after rollover 
+----
+
+=== Installation Scripts for Private Keys and Certificates 
+
+The following installation scripts are currently available in the
+`*cert-install-available*` directory. On the basis of these examples arbitrary
+key and certificate installations can be implemented.
+
+* {GITHUB}/cert-install-dirsrv[`*cert-install-dirsrv*`]:
+  Installs the private key, the host and CA certificates in the NSS databases
+  `*key4.db*` und `*cert9.db*` that are needed by a
+  {DIRSRV}[*389 Directory Server*] for TLS authentication as an LDAP server.
+
+* {GITHUB}/cert-install-gitea[`*cert-install-gitea*`]:
+  Installs the private key and the host certifcate needed as TLS credentials by
+  a {GITEA}[*Gitea*]-based GIT server.  
+
+* {GITHUB}/cert-install-ipsec.in[`*cert-install-ipsec*`]:
+  Installs the private key, the host and CA certificates on VPN endpoints that
+  still manage their strongSwan-based IPsec tunnels via the legacy
+  {IPSEC}[`*ipsec*`] command line tool.
+
+* {GITHUB}/cert-install-lighttpd[`*cert-install-lighttpd*`]:
+  Installs the private key and the host certificate needed as TLS credentials by
+  a {LIGHTTPD}[`*lighttpd*`]-based web server.
+
+* {GITHUB}/cert-install-openxpki[`*cert-install-openxpki*`]:
+  Installs the private key, the host and CA certificates needed as TLS credentials
+  by an `*apache2*`-based {OPENXPKI}[*OpenXPKI*] server.
+
+* {GITHUB}/cert-install-sssd[`*cert-install-sssd*`]:
+  Copies the current and the previous but still valid *Root CA* and
+  *Intermediate CA* certificates into the `*ldap_tls_cacertdir*` directory defined
+  in `*sssd.conf*` on hosts running the {SSSD}[*System Security Services Daemon*]
+  (SSSD). After updating the CA certificates, `*openssl rehash*` is executed in
+  the `*ldap_tls_cacertdir*` directory.
+
+* {GITHUB}/cert-install-swanctl.in[`*cert-install-swanctl*`]:
+  Installs the private key, the host and CA certificates on VPN endpoints that run
+  their strongSwan IKE xref:/daemons/charon-systemd.adoc[`*charon*`] daemon as a
+  `*systemd*` service and manage their IPsec tunnels via the
+  xref:/swanctl/swanctl.adoc[`*swanctl*`] command line tool.
+
+=== Activation of Installation Scripts
+
+Installation scripts are activated via symbolic links im the `*cert-install.d*`
+directory. For the example of a {DIRSRV}[*389 Directory Server*] the following
+two installation scripts are referenced:
+----
+# cd /etc/cert-enroll.d
+# ln -s cert-install-available/cert-install-dirsrv cert-install.d
+# ln -s cert-install-available/cert-install-sssd   cert-install.d
+----
+
+== Logging
+
+The {GITHUB}/cert-enroll.in[`*cert-enroll*`] script is logging as a `*systemd*`
+service to the  `*systemd journal*` and as a  `*cron*` job via the `*logger*` to
+the `*syslog*`. Here are some sample entries 
+----
+Sep 29 12:10:47 ns.strongswan.org cert-enroll[63840]: Error: generation of 256 bit ECDSA private key failed
+Sep 29 12:23:38 ns.strongswan.org cert-enroll[63872]: Ok: successfully enrolled 'cert.pem' via EST
+Sep 30 02:18:51 ns.strongswan.org cert-enroll[64634]: Warning: validity of 'cert.pem' is only 29 days, less than the minimum of 42 days
+Sep 30 02:18:51 ns.strongswan.org cert-enroll[64634]: Ok: 'cacert.pem' and 'cacert-1.pem' are unchanged
+Sep 30 02:18:52 ns.strongswan.org cert-enroll[64634]: Ok: successfully re-enrolled 'cert.pem' via EST
+Oct 01 02:45:40 ns.strongswan.org cert-enroll[65850]: Ok: validity of 'cert.pem' is 1459 days, more than the minimum of 42 days
+Oct 02 03:45:40 ns.strongswan.org cert-enroll[67028]: Ok: validity of 'cert.pem' is 1458 days, more than the minimum of 42 days
+...
+----
+The most important messages have an `*Ok:*`, `*Warning:*` or `*Error:*` prefix.
+
+
+
