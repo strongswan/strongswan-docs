@@ -311,7 +311,7 @@ kernel.
  Version 2 (IKEv2)
 
 |
-|{IETF}/draft-ietf-ipsecme-labeled-ipsec[draft-ietf-ipsecme-labeled-ipsec]:
+|{IETF}/rfc9478[RFC 9478]:
  Labeled IPsec Traffic Selector support for IKEv2
 
 |
