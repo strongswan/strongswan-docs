@@ -1,0 +1,3 @@
+|database                        |
+|{OPENXPKI}[OpenXPKI] MySQL/MariaDB URI. If it contains a password, make sure to
+ adjust the permissions of the config file accordingly

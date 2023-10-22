@@ -1,0 +1,76 @@
+= openxpki Plugin
+
+:OPENXPKI: https://github.com/openxpki/openxpki 
+
+== Purpose
+
+The `*openxpki*` plugin for `*libstrongswan*` allows direct access to
+the {OPENXPKI}[OpenXPKI] MySQL/MariaDB database which is used by the
+xref:pki/pkiOcsp.adoc[`*pki --ocsp*`] command to retrieve the online
+certificate status and return it in an OCSP response.
+
+The plugin is disabled by default and can be enabled with the
+xref:install/autoconf.adoc[`*./configure*`] option
+
+ --enable-openxpki
+
+Also required is support for *MySQL*/*MariaDB*
+
+ --enable-mysql
+
+which builds and loads the `*mysql*` plugin.
+
+== Implementation
+
+The `*openxpki*` plugin directly accesses the `*certificate*` database table:
+
+----
++--------------------------+------------------------------+------+-----+---------+
+| Field                    | Type                         | Null | Key | Default |
++--------------------------+------------------------------+------+-----+---------+
+| pki_realm                | varchar(255)                 | YES  | MUL | NULL    |
+| issuer_dn                | varchar(1000)                | YES  |     | NULL    |
+| cert_key                 | decimal(49,0)                | NO   | PRI | NULL    |
+| issuer_identifier        | varchar(64)                  | NO   | PRI | NULL    |
+| identifier               | varchar(64)                  | YES  | UNI | NULL    |
+| subject                  | varchar(1000)                | YES  | MUL | NULL    |
+| status                   | enum('ISSUED','HOLD'         | YES  | MUL | UNKNOWN |
+|                          |      'CRL_ISSUANCE_PENDING', |      |     |         |
+|                          |      'REVOKED','UNKNOWN')    |      |     |         |
+| subject_key_identifier   | varchar(255)                 | YES  |     | NULL    |
+| authority_key_identifier | varchar(255)                 | YES  |     | NULL    |
+| notbefore                | int(10) unsigned             | YES  | MUL | NULL    |
+| notafter                 | int(10) unsigned             | YES  | MUL | NULL    |
+| revocation_time          | int(10) unsigned             | YES  | MUL | NULL    | 
+| invalidity_time          | int(10) unsigned             | YES  | MUL | NULL    |
+| reason_code              | varchar(50)                  | YES  | MUL | NULL    |
+| hold_instruction_code    | varchar(50)                  | YES  | MUL | NULL    |
+| revocation_id            | int(11)                      | YES  | UNI | NULL    |
+| req_key                  | bigint(20) unsigned          | YES  | MUL | NULL    |
+| data                     | longtext                     | YES  |     | NULL    |
++--------------------------+------------------------------+------+-----+---------+
+----
+
+== Configuration
+
+The `*sql*` plugin is configured using the following options in the
+xref:config/strongswanConf.adoc#_charon_plugins_openxpki[`*charon.plugins.openxpki*`]
+section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
+
+[cols="2,1,8"]
+|===
+|Key|Default|Description
+
+include::partial$config/plugins/openxpki.adoc[]
+|===
+
+=== Example
+
+----
+libstrongswan {
+  plugins {
+    openxpki {
+      database = "mysql://openxpki:openxpki@localhost/openxpki"
+    }
+}
+----

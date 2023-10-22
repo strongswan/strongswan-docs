@@ -8,7 +8,7 @@
 ----
 
 pki --estca --url url [--label label] --cacert file [--caout file]
-           [--outform der|pem] [--force] [--debug level]
+           [--outform der|pem] [--force]
 
 pki --estca --help
 ----

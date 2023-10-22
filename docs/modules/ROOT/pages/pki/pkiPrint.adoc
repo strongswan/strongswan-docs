@@ -4,7 +4,7 @@
 == Synopsis
 
 ----
-pki --print [--in file|--keyid hex] [--type x509|crl|ac|pub|priv|rsa|ecdsa|ed25519|ed448]
+pki --print [--in file|--keyid hex] [--type x509|crl|ac|pub|priv|rsa|ecdsa|ed25519|ed448|ocsp-req|ocsp-rsp]
 
 pki --print --help
 ----
@@ -101,4 +101,37 @@ signature algorithm is ECDSA with SHA256 hash
   privkey:   ECDSA 256 bits
   keyid:     73:2c:76:9e:8d:1b:2e:fe:f8:b6:4d:5a:e8:3f:84:d1:29:73:3f:dd
   subjkey:   b4:05:b9:62:32:f6:87:7e:a7:1c:38:b3:20:57:37:b4:37:83:ca:ff
+----
+
+* Print an OCSP request
+
+----
+pki --print --type ocsp-req --in req.der
+  subject:  "(null)"
+  nonce:     a1:33:aa:bc:96:60:69:76:f3:bc:9c:88:3b:07:50:47
+  serial:    29:ff:36:d9:9a:21:49:61:91:1d
+  issuer:    keyHash:  72:41:ca:f9:35:87:89:a0:fb:8c:d6:bb:7e:bb:d3:83:ab:d5:89:7b
+             nameHash: 5e:b2:b4:42:e1:a5:fb:1c:bc:d8:4e:35:10:72:b2:c3:9a:38:4f:cd
+  serial:    2c:ff:3d:dc:08:96:36:dd:c5:7a
+  issuer:    keyHash:  72:41:ca:f9:35:87:89:a0:fb:8c:d6:bb:7e:bb:d3:83:ab:d5:89:7b
+             nameHash: 5e:b2:b4:42:e1:a5:fb:1c:bc:d8:4e:35:10:72:b2:c3:9a:38:4f:cd
+  serial:    0e:ff:eb:41:a2:45:fe:ca:01:d4
+  issuer:    keyHash:  5a:1b:ec:17:f0:6d:18:45:66:5b:62:40:64:67:a2:c8:e7:6a:84:20
+             nameHash: df:1e:24:71:96:e6:bc:8c:06:46:90:18:a2:7d:b9:82:18:45:e7:09
+  serial:    10:ff:45:9a:6d:ee:4c:ec:7c:97
+  issuer:    keyHash:  5a:1b:ec:17:f0:6d:18:45:66:5b:62:40:64:67:a2:c8:e7:6a:84:20
+             nameHash: df:1e:24:71:96:e6:bc:8c:06:46:90:18:a2:7d:b9:82:18:45:e7:09
+----
+
+* Print an OCSP response
+
+----
+$ pki --print --type ocsp-rsp --in rsp.der
+  issuer:   "C=CH, O=strongSwan Project, CN=OCSP signer of strongSwan Issuing CA 2"
+  update:    this on Oct 22 14:04:26 2023, ok
+             next on Oct 22 14:14:26 2023, ok (expires in 9 minutes)
+  responses: 29:ff:36:d9:9a:21:49:61:91:1d: revoked on Sep 22 15:13:04 2023, superseded
+             2c:ff:3d:dc:08:96:36:dd:c5:7a: good
+             0e:ff:eb:41:a2:45:fe:ca:01:d4: unknown
+             10:ff:45:9a:6d:ee:4c:ec:7c:97: unknown
 ----

@@ -5,7 +5,7 @@
 :GITHUB:   https://github.com/strongswan/strongswan/blob/master
 :SETTINGS: src/libstrongswan/settings/settings.h
 :STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
-:OPENXPKI: https://github.com/openxpki/openxpki
+:OPENXPKI: https://github.com/openxpki/openxpki 
 :IETF:     https://datatracker.ietf.org/doc/html
 :RFC3779:  {IETF}/rfc3779
 :RFC4739:  {IETF}/rfc4739
@@ -976,6 +976,13 @@ include::partial$config/plugins/ntru.adoc[]
 |===
 
 include::partial$config/plugins/openssl.adoc[]
+|===
+
+==== xref:plugins/openxpki.adoc[charon.plugins.openxpki]
+[{COLS}]
+|===
+
+include::partial$config/plugins/openxpki.adoc[]
 |===
 
 ==== charon.plugins.osx-attr

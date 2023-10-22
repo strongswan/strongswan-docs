@@ -1,7 +1,8 @@
 = pki Tool
 
-:OPENXPKI: https://github.com/openxpki/openxpki
+:OPENXPKI: https://github.com/openxpki/openxpki 
 :IETF:     https://datatracker.ietf.org/doc/html
+:RFC6960:  {IETF}/rfc6960
 :RFC7030:  {IETF}/rfc7030
 :RFC8894:  {IETF}/rfc8894
 
@@ -25,6 +26,7 @@ pki --scep    (-S)  Enroll an X.509 certificate with a SCEP server
 pki --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server
 pki --est     (-E)  Enroll an X.509 certificate with an EST server
 pki --estca   (-e)  Get CA certificate[s] from an EST server
+pki --ocsp    (-o)  OCSP request parser and OCSP responder
 pki --help    (-h)  show usage information
 ----
 
@@ -47,6 +49,10 @@ xref:tools/scepclient.adoc[`*ipsec scepclient*`] tool.
 
 Additionally, with version 5.9.8 the newer `*https*` based *Enrollment over Secure
 Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
+
+Version 5.9.12 introduces an *Online Certificate Status Protocol* (OCSP) responder
+as defined by {RFC6960}[RFC 6960], interoperating with an {OPENXPKI}[OpenXPKI]
+server by directly accessing its internal `*certificate*` datebase.
 ====
 
 == Subcommands
@@ -71,7 +77,7 @@ Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
 |xref:./pkiReq.adoc[`pki --req`]
 |xref:./pkiScepCa.adoc[`pki --scepca`]
 |xref:./pkiScep.adoc[`pki --scep`]
-|
+|xref:./pkiOcsp.adoc[`pki --ocsp`]
 
 |
 |xref:./pkiEstCa.adoc[`pki --estca`]

@@ -8,7 +8,6 @@
 ----
 
 pki --scepca --url url [--caout file] [--raout file] [--outform der|pem] [--force]
-            [--debug level]
             
 pki --scepca --help
 ----

@@ -5,6 +5,7 @@
 :GMP:       https://gmplib.org/
 :NISTPQC:   https://csrc.nist.gov/projects/post-quantum-cryptography
 :OPENSSL:   https://openssl.org/
+:OPENXPKI:  https://github.com/openxpki/openxpki 
 :PQ:        https://github.com/strongX509/docker/tree/master/pq-strongswan
 :TKM:       https://www.codelabs.ch/tkm/
 :UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
@@ -386,6 +387,10 @@ plugins.
 
 |--enable-openssl                                            |
 |enable [OpenSSL] crypto plugin. Requires `libcrypto` library
+
+|xref:plugins/openxpki.adoc[--enable-openxpki]               |5.9.12
+|enable OCSP responder accessing {OPENXPKI}[OpenXPKI] MySQL/MariaDB
+ certificate database
 
 |--enable-osx-attr                                           |5.1.0
 |enable macOS SystemConfiguration attribute handler
