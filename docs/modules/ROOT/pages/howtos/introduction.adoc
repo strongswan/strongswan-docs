@@ -97,7 +97,7 @@ This is a security feature.
 
 The actual {IPSEC}[IPsec traffic] is not handled by *strongSwan* but will be relegated
 to the network and IPsec stack of the operating system kernel. *strongSwan* installs
-the negotiated IPsec SAs and SPs into the kernel by using a platform-dependent
+the negotiated IPsec SAs and security policies (SPs) into the kernel by using a platform-dependent
 *kernel interface*.
 
 The mentioned distinction between policies and SAs often leads to *misconceptions*.
