@@ -2,12 +2,6 @@
 |Buffer size for received Netlink messages.
  `*[min(PAGE_SIZE, 8192)]*`
 
-|force_receive_buffer_size    |`no`
-|If the maximum Netlink socket receive buffer in bytes set by
- `*receive_buffer_size*` exceeds the system-wide maximum from
- `*/proc/sys/net/core/rmem_max*`, this option can be used to override the limit.
- Enabling this option requires special privileges (`CAP_NET_ADMIN`)
-
 |fwmark                       |
 |Firewall mark to set on the routing rule that directs traffic to our own routing
  table. The format is `*[!]mark[/mask]*`, where the optional exclamation mark
@@ -50,12 +44,13 @@
  currently only useful if the kernel based route lookup is used (i.e. if route
  installation is disabled or an inverted fwmark match is configured)
 
-|receive_buffer_size         |`0`
+|receive_buffer_size         |`8388608`
 |Maximum Netlink socket receive buffer in bytes. This value controls how many
- bytes of Netlink messages can be received on a Netlink socket. The default value
- is set by `*/proc/sys/net/core/rmem_default*`. The specified value cannot exceed
- the system-wide maximum from `*/proc/sys/net/core/rmem_max*` unless
- `*force_receive_buffer_size*` is enabled
+ bytes of Netlink messages can be queued to a Netlink socket. If set to 0,
+ the default from `*/proc/sys/net/core/rmem_default*` will apply. Note that the
+ kernel doubles the configured value to account for overhead. To exceed the
+ system-wide maximum from `*/proc/sys/net/core/rmem_max*`, special privileges
+ (`CAP_NET_ADMIN`) are necessary, otherwise, the kernel silently caps the value.
 
 |roam_events                 |`yes`
 |Whether to trigger roam events when interfaces, addresses or routes change

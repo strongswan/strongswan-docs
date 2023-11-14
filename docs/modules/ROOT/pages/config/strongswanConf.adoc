@@ -535,6 +535,10 @@ connection attempts are blocked
 |Subsection to configure the number of reserved threads per priority class,
  see xref:config/jobPriority.adoc[Job Priority]
 
+|reject_trusted_end_entity                   |`no`
+|Reject peers that use trusted end-entity certificates (i.e. local certificates).
+ Since version 5.9.12
+
 |rdn_matching                                |[->]
 |How the Relative Distinguished Names (RDNs) a certificate's Subject Distinguished
  Name (DN) is composed of, are matched against configured identities. Possible
