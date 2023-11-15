@@ -164,6 +164,10 @@ key and certificate installations can be implemented.
   Installs the private key, the host and CA certificates needed as TLS credentials
   by an `*apache2*`-based {OPENXPKI}[*OpenXPKI*] server.
 
+* {GITHUB}/cert-install-ssl[`*cert-install-ssl*`]:
+  Installs the generated key, host certificate and associated CA certificates
+  as credentials for a TLS-protected client-server connection.
+
 * {GITHUB}/cert-install-sssd[`*cert-install-sssd*`]:
   Copies the current and the previous but still valid *Root CA* and
   *Intermediate CA* certificates into the `*ldap_tls_cacertdir*` directory defined
