@@ -314,6 +314,10 @@ kernel.
 |{IETF}/rfc9478[RFC 9478]:
  Labeled IPsec Traffic Selector support for IKEv2
 
+|*x*
+|{IETF}/rfc9464[RFC 9464]:
+ Internet Key Exchange Protocol Version 2 (IKEv2) Configuration for Encrypted DNS
+
 |
 |{IETF}/draft-brunner-ikev2-mediation[draft-brunner-ikev2-mediation]:
  IKEv2 Mediation Extension
