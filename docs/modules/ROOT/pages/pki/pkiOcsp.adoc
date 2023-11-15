@@ -7,11 +7,12 @@
 == Synopsis
 
 ----
-pki --ocsp [--in file] [--cacert file]+ 
+pki --ocsp [--in file] [--cacert file]+
 
-pki --ocsp  --respond [--in file] --cacert file --key file [--cert file]+  
+pki --ocsp  --respond [--in file] --cacert file --key file [--cert file]+
+           [--index file]+ [--lifetime minutes]
            [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
-           [--rsa-padding pkcs1|pss] [--lifetime minutes]
+           [--rsa-padding pkcs1|pss]
 
 pki --ocsp --help
 ----
@@ -20,11 +21,10 @@ pki --ocsp --help
 
 This xref:./pki.adoc[`*pki*`] subcommand parses an _Online Certificate Status Protocol_
 (OCSP) request as defined by {RFC6960}[RFC 6960] and with the `*--respond*` option
-generates an OCSP response based on the OCSP request. The certificate status is
-directly retrieved from the internal certificate database of an {OPENXPKI}[OpenXPKI]
-server. The `*--respond*` option requires  the xref:/plugins/openxpki.adoc[`*openxpki*`]
-and `*mysql*` libstrongswan plugins in order to access the certificate database of the
-{OPENXPKI}[OpenXPKI] server running on the same host.
+generates an OCSP response based on the OCSP request. The certificate status for
+this may be provided by plugins, so if not using the `*--index*` option, this requires
+the xref:/plugins/openxpki.adoc[`*openxpki*`] and `*mysql*` plugins in order to
+directly access the certificate database of an {OPENXPKI}[OpenXPKI] server.
 
 Supported since version 5.9.12.
 
@@ -64,6 +64,15 @@ Supported since version 5.9.12.
 |`--cert`
 |OCSP signer certificate (if it is not a CA certificate). Can be used multiple times
 
+|`-x`
+|`--index`
+|OpenSSL-style `*index.txt*` providing information about  the  status of
+ certificates issued by the CA certificate loaded immediately before. Can be
+ used multiple times if the status for multiple CAs should be provided, just
+ make sure to pass each `*index.txt*` file right after the corresponding CA
+ certificate.
+ See below for a description of the structure of these files.
+
 |`-g`
 |`--digest`
 |Digest to use for signature creation. The default is determined based on the
@@ -78,9 +87,49 @@ Supported since version 5.9.12.
 |Validity in minutes of the OCSP response (if missing,`*nextUpdate*` is omitted)
 |===
 
+== index.txt Description
+
+Each line in an `*index.txt*` file consists of six columns that are *separated by
+tab* characters:
+
+1. The first column denotes the certificate status, which can be either `*V*`
+(for valid), `*E*` (for expired, treated like valid), or `*R*` (for revoked).
+
+2. The second column contains the certificate's expiration date and time in UTC in
+the format `*YYMMDDHHMMSSZ*`. This field is *ignored* by the command but *must not
+be empty*.
+
+3. The third column is the revocation date and time in UTC in the format
+`*YYMMDDHHMMSSZ*` and an optional revocation reason that immediately follows it,
+separated by a comma. Valid reasons are `*keyCompromise*`, `*CACompromise*`,
+`*affiliationChanged*`, `*superseded*`, `*cessationOfOperation*`,
+`*certificateHold*`, and `*removeFromCRL*`, any other value or omitting a reason
+results in `*unspecified*`.
+
+4. The fourth column contains the certificate's serial number in
+hexadecimal encoding.
+
+The 5. and 6. columns are *both ignored* by the command, so they may be
+*omitted completely*. They can contain a path to the certificate (usually set to
+`*unknown*`) and the certificate's subject DN with slashes separating the RDNs.
+However, note that omitting these fields makes the file incompatible to OpenSSL.
+
+.Example index.txt
+----
+V    310930122422Z       03  unknown /C=CH/O=strongSwan/CN=moon.strongswan.org <1>
+V    310930122422Z       04  unknown /C=CH/O=strongSwan/CN=sun.strongswan.org
+R    310930122422Z   231002122422Z,keyCompromise 88 <2>
+V    Z       05 <3>
+----
+<1> Note that the fields are separated by tabs. So if a certificate is valid, two
+tabs follow after the expiration date.
+<2> This line only specifies the relevant first four columns
+<3> This line even uses a dummy expiration date as the command doesn't care for
+the expiration date
+
 == Examples
 
-* Show the raw content of an OCSP request:
+.Show the raw content of an OCSP request
 ----
 pki --ocsp --in req_ca.der
 
@@ -93,7 +142,7 @@ nonce:               5b:14:e3:cc:d5:b2:65:ec:c4:0d:c3:11:37:6a:9d:71
   serialNumber:      68:f2:93:10:65:d0:5e:d1
 ----
 
-* Show the content of the same OCSP request if the issuer certificate is given:
+.Show the content of the same OCSP request if the issuer certificate is given
 ----
 pki --ocsp --in req_ca.der --cacert cacert.pem
 
@@ -108,7 +157,7 @@ issuer:             "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
   serialNumber:      68:f2:93:10:65:d0:5e:d1
 ----
 
-* Respond to the OCSP request above, with the OCSP response signed by the CA itself:
+.Respond to the OCSP request above, with the OCSP response signed by the CA itself
 ----
 pki --ocsp --respond --in req_ca.der --cacert cacert.pem --key cakey.pem \
            --lifetime 10 > rsp_ca.der
@@ -132,7 +181,7 @@ trusted signer:     "C=CH, O=strongSwan Project, CN=strongSwan Root CA"
 ocspResponseStatus:  successful
 ----
 
-* Respond to a signed OCSP request providing the complete trust chain:
+.Respond to a signed OCSP request providing the complete trust chain
 ----
 pki --ocsp --respond --in req_signed.der --cacert cacert.pem --cacert issuer1.pem \
            --key signerKey1.pem --cert signerCert1.pem --lifetime 10 > rsp_signed.der
@@ -157,9 +206,7 @@ trusted signer:     "C=CH, O=strongSwan Project, CN=OCSP signer of strongSwan Is
 ocspResponseStatus:  successful
 ----
 
-* Respond to an OCSP request containing two items from different known issuers
-  having an OCSP signer each. The issuer of the first request item determines the
-  OCSP signer used to sign the OCSP response:
+.Respond to an OCSP request containing two items from different known issuers having an OCSP signer each
 ----
 pki --ocsp --respond --in req.der --cacert issuer1.pem --cacert issuer2.pem \
            --key signerKey1.pem --cert signerCert1.pem \
@@ -187,8 +234,10 @@ there are multiple known issuers
 trusted signer:     "C=CH, O=strongSwan Project, CN=OCSP signer of strongSwan Issuing CA 2"
 ocspResponseStatus:  successful
 ----
+In the above example, the issuer of the first request item determines the
+OCSP signer used to sign the OCSP response.
 
-* Repeat the OCSP response above but with a self-signed OCSP signing certificate
+.Repeat the OCSP response above but with a self-signed OCSP signing certificate
 ----
 pki --ocsp --respond --in req.der --cacert issuer1.pem --cacert issuer2.pem \
            --key signerKey.pem --cert signerCert.pem --lifetime 10 > rsp_self_signed.der
@@ -215,3 +264,43 @@ self-signed signer: "C=CH, O=strongSwan Project, CN=strongSwan OCSP signer"
 ocspResponseStatus:  successful
 ----
 
+.Respond to OCSP requests with data from index.txt files for multiple CAs with an OCSP signer each
+----
+pki --ocsp --respond --in req1.der --cacert issuer1.pem --index index1.txt \
+           --cert signerCert1.pem --key signerKey1.pem \
+           --cacert issuer2.pem --index index2.txt \
+           --cert signerCert2.pem --key signerKey2.pem --lifetime 10 > rsp1.der
+
+loaded status of 4 certificates issued by 'C=CH, O=strongSwan Project, CN=strongSwan Issuing CA 1' from index1.txt
+loaded status of 3 certificates issued by 'C=CH, O=strongSwan Project, CN=strongSwan Issuing CA 2' from index2.txt
+nonce:               af:f5:70:75:5d:b7:ff:c8:16:e3:87:94:59:8a:34:6e
+issuer:             "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA 1"
+  issuerKeyHash:     5a:1b:ec:17:f0:6d:18:45:66:5b:62:40:64:67:a2:c8:e7:6a:84:20 (ok)
+  issuerNameHash:    df:1e:24:71:96:e6:bc:8c:06:46:90:18:a2:7d:b9:82:18:45:e7:09 (ok)
+  serialNumber:      10:ff:45:9a:6d:ee:4c:ec:7c:97
+  thisUpdate:        Oct 19 16:40:21 UTC 2023
+  nextUpdate:        Oct 19 16:50:21 UTC 2023
+  certValidation:    GOOD
+trusted signer:     "C=CH, O=strongSwan Project, CN=OCSP signer of strongSwan Issuing CA 1"
+ocspResponseStatus:  successful
+
+pki --ocsp --respond --in req2.der --cacert issuer1.pem --index index1.txt \
+           --cert signerCert1.pem --key signerKey1.pem \
+           --cacert issuer2.pem --index index2.txt \
+           --cert signerCert2.pem --key signerKey2.pem --lifetime 10 > rsp2.der
+
+loaded status of 4 certificates issued by 'C=CH, O=strongSwan Project, CN=strongSwan Issuing CA 1' from index1.txt
+loaded status of 3 certificates issued by 'C=CH, O=strongSwan Project, CN=strongSwan Issuing CA 2' from index2.txt
+nonce:               bd:c6:ad:36:b9:88:ed:71:c5:01:67:86:e9:ae:fd:1f
+issuer:             "C=CH, O=strongSwan Project, CN=strongSwan Issuing CA 2"
+  issuerKeyHash:     72:41:ca:f9:35:87:89:a0:fb:8c:d6:bb:7e:bb:d3:83:ab:d5:89:7b (ok)
+  issuerNameHash:    5e:b2:b4:42:e1:a5:fb:1c:bc:d8:4e:35:10:72:b2:c3:9a:38:4f:cd (ok)
+  serialNumber:      29:ff:36:d9:9a:21:49:61:91:1d
+  thisUpdate:        Oct 19 16:40:34 UTC 2023
+  nextUpdate:        Oct 19 16:50:34 UTC 2023
+  certValidation:    REVOKED
+  revocationTime:    Sep 22 13:13:04 UTC 2023
+  revocationReason:  superseded
+trusted signer:     "C=CH, O=strongSwan Project, CN=OCSP signer of strongSwan Issuing CA 2"
+ocspResponseStatus:  successful
+----
