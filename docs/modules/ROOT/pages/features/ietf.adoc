@@ -566,6 +566,10 @@ Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.5
 |
 |{IETF}/rfc8894[RFC 8894]:
  Simple Certificate Enrollment Protocol (SCEP)
+
+|
+|{IETF}/rfc8954[RFC 8954]:
+ Online Certificate Status Protocol (OCSP) Nonce Extension
 |===
 
 == EAP
