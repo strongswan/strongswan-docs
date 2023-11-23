@@ -318,7 +318,7 @@ kernel.
 |{IETF}/rfc9464[RFC 9464]:
  Internet Key Exchange Protocol Version 2 (IKEv2) Configuration for Encrypted DNS
 
-|6.0
+|
 |{IETF}/draft-kampanakis-ml-kem-ikev2[draft-kampanakis-ml-kem-ikev2]:
 Post-quantum Hybrid Key Exchange with ML-KEM in IKEv2
 
@@ -571,23 +571,9 @@ Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.5
 |{IETF}/rfc8894[RFC 8894]:
  Simple Certificate Enrollment Protocol (SCEP)
 
-<<<<<<< HEAD
 |
 |{IETF}/rfc8954[RFC 8954]:
  Online Certificate Status Protocol (OCSP) Nonce Extension
-=======
-|*d*
-|{IETF}/draft-uni-qsckeys-dilithium[draft-uni-qsckeys-dilithium]:
- Quantum Safe Cryptography Key Information for CRYSTALS-Dilithium
-
-|*d*
-|{IETF}/draft-uni-qsckeys-falcon[draft-uni-qsckeys-falcon]:
- Quantum Safe Cryptography Key Information for FALCON
-
-|*x*
-|{IETF}/draft-uni-qsckeys-sphincsplus[draft-uni-qsckeys-sphincsplus]:
- Quantum Safe Cryptography Key Information for SPHINCS-PLUS
->>>>>>> ietf: Added IETF drafts on NIST PQC signature standards
 |===
 
 == EAP
