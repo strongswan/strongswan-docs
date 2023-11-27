@@ -5,7 +5,7 @@
 :GITHUB:   https://github.com/strongswan/strongswan/blob/master
 :SETTINGS: src/libstrongswan/settings/settings.h
 :STRFTIME: https://man7.org/linux/man-pages/man3/strftime.3.html
-:OPENXPKI: https://github.com/openxpki/openxpki 
+:OPENXPKI: https://github.com/openxpki/openxpki
 :IETF:     https://datatracker.ietf.org/doc/html
 :RFC3779:  {IETF}/rfc3779
 :RFC4739:  {IETF}/rfc4739
@@ -15,6 +15,7 @@
 :RFC7383:  {IETF}/rfc7383
 :RFC7427:  {IETF}/rfc7427
 :RFC8894:  {IETF}/rfc8894
+:RFC8954:  {IETF}/rfc8954
 
 NOTE: This page documents the configuration options of the most current release.
        Therefore, you should always consult the *strongswan.conf(5)* man page
@@ -502,6 +503,12 @@ connection attempts are blocked
 
 |nbns2                                       |
 |WINS server assigned to peer via configuration payload (CP)
+
+|ocsp_nonce_len                              |`32`
+|Length of nonces in OCSP requests. According to {RFC8954}[RFC 8954], valid
+ values are between 1 and 32, with new clients required to use 32. Some servers
+ might not support that so lowering the value to e.g. 16 might be necessary.
+ Since version 5.9.13
 
 |port                                        |`500`
 |UDP port used locally. If set to 0 a random port will be allocated
