@@ -13,7 +13,7 @@ for specific needs.
 :GCRYPT:    https://gnupg.org/software/libgcrypt/
 :GMP:       https://gmplib.org/
 :OPENSSL:   https://openssl.org/
-:OPENXPKI:  https://github.com/openxpki/openxpki 
+:OPENXPKI:  https://github.com/openxpki/openxpki
 :UNBOUND:   https://www.nlnetlabs.nl/documentation/unbound/libunbound/
 :WIRESHARK: https://www.wireshark.org/
 :WOLFSSL:   https://github.com/wolfSSL/wolfssl
@@ -140,7 +140,7 @@ for specific needs.
 |Crypto backend based on the {OPENSSL}[OpenSSL] library
 
 |xref:./openxpki.adoc[openxpki]           | |s
-|Enable OCSP responder accessing {OPENXPKI}[OpenXPKI] MySQL/MariaDB `*certificate*` database
+|OCSP responder accessing {OPENXPKI}[OpenXPKI] MySQL/MariaDB certificate database
 
 |padlock                                  | |e
 |VIA padlock crypto backend, provides AES128/SHA1
