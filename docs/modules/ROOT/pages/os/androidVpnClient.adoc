@@ -23,6 +23,13 @@ directly from {PLAYSTORE}[Google Play]. The app is also available via
 Since version xref:#_1_8_0_2017_01_20[1.8.0] of the app it is possible to import
 xref:./androidVpnClientProfiles.adoc[VPN profiles] from files.
 
+Since version xref:#_2_5_0_2024_02_22[2.5.0] managed configurations are
+supported via enterprise mobility management (EMM). This allows pushing VPN
+profiles to managed devices using basically the same settings as those in the
+xref:./androidVpnClientProfiles.adoc[profile files]. But also provides additional
+options to configure global app settings and disable certain features of the app
+(e.g. the ability for users to add or import their own VPN profiles).
+
 Client certificates and keys, and CA certificates may be added by bundling them
 into a xref:pki/pkiQuickstart.adoc#_pkcs12_container[PKCS#12 file] and then
 importing that file into the Android system keystore. CA certificates and server
@@ -199,6 +206,10 @@ new features and provide us with valuable feedback, please {PLAYTEST}[opt-in her
 or directly from the app's page in the Play store.
 
 == Changelog
+
+=== 2.5.0 (2024-02-22)
+
+* Support for managed configurations via enterprise mobility management (EMM)
 
 === 2.4.2 (2023-08-29)
 
