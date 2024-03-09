@@ -9,8 +9,8 @@
 ----
 pki --ocsp [--in file] [--cacert file]+
 
-pki --ocsp  --respond [--in file] --cacert file --key file [--cert file]+
-           [--index file]+ [--lifetime minutes]
+pki --ocsp  --respond [--in file] [--lifetime minutes] [--cacert file [--index file]]+
+           [--key file|--keyid hex]+ [--cert file|--certid hex]+
            [--digest md5|sha1|sha224|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512]
            [--rsa-padding pkcs1|pss]
 
@@ -26,7 +26,7 @@ this may be provided by plugins, so if not using the `*--index*` option, this re
 the xref:/plugins/openxpki.adoc[`*openxpki*`] and `*mysql*` plugins in order to
 directly access the certificate database of an {OPENXPKI}[OpenXPKI] server.
 
-Supported since version 5.9.12.
+Supported since version 5.9.12, `--keyid` and `--certid` options since version 5.9.14.
 
 == Options
 
@@ -60,9 +60,19 @@ Supported since version 5.9.12.
 |`--key`
 |OCSP signer key. Can be used multiple times
 
+|`-K`
+|`--keyid`
+|Smartcard or TPM 2.0 OCSP signer key object handle. Can be used multiple times
+
 |`-c`
 |`--cert`
-|OCSP signer certificate (if it is not a CA certificate). Can be used multiple times
+|OCSP signer certificate (if it is not a CA certificate). Can be used multiple$
+ times
+
+|`-X`
+|`--certid`
+|Smartcard or TPM 2.0 OCSP signer certificate object handle. Can be used
+ multiple times
 
 |`-x`
 |`--index`
