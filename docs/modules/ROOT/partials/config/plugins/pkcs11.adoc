@@ -30,3 +30,8 @@
 
 |use_rng                             |`no`
 |Whether the `PKCS#11` modules should be used as `RNG`
+
+|use_rsa_pss_hashers                 |`no`
+|Whether the `PKCS#11` modules should try to use internal hashing for `RSA-PSS`
+ signatures (some `PKCS#11` libraries don't implement internal hashing in
+ conjunction with `RSA-PSS` correctly). `RSA-PSS` support since version 5.9.14
