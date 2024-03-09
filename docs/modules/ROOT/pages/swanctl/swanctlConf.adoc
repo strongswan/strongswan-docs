@@ -283,6 +283,16 @@ include::partial$config/swanctl-rekey-ike.adoc[]
  that the value `*%unique-dir*` assigns a different unique interface ID for
  each direction (`*in/out*`)
 
+|<conn>.ocsp               |`reply`
+|Since version 5.9.14.	Send OCSP status requests in certificate request payloads
+ and/or send OCSP status response in certificate payloads when using certificate-
+ based authentication. With the default of `*reply*` the daemon sends OCSP status
+ responses in certificate payloads if an OCSP status request has been received in
+ a certificate request, `*never*` disables sending of OCSP status requests and
+ responses altogether, `*request*` causes OCSP status requests in certificate
+ request payloads to be sent whenever certificate-based authentication is used,
+ `*both*` combines `*reply*` and `*request*`
+
 |<conn>.mediation          |`no`
 |Since version 5.5.2. Whether this connection is a mediation connection, i.e.
  whether this connection is used to mediate other connections using the IKEv2
