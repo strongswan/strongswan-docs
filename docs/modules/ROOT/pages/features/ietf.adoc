@@ -148,7 +148,7 @@ kernel.
 |{IETF}/rfc4754[RFC 4754]:
  IKE and IKEv2 Authentication Using the Elliptic Curve Digital Signature Algorithm (ECDSA)
 
-|*x*
+|
 |{IETF}/rfc4806[RFC 4806]:
  Online Certificate Status Protocol (OCSP) Extensions to IKEv2
 
