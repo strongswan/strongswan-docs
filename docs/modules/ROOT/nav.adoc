@@ -34,7 +34,7 @@
 ** xref:features/integrityTests.adoc[]
 ** xref:features/ietf.adoc[]
 
-.Howtos
+.How-tos
 ** xref:config/quickstart.adoc[]
 ** xref:pki/pkiQuickstart.adoc[]
 ** xref:pki/caManagement.adoc[]
@@ -52,7 +52,7 @@
 ** xref:daemons/charon-svc.adoc[]
 ** xref:daemons/charon-cmd.adoc[]
 
-.OS
+.Portability / OS
 ** xref:os/android.adoc[Android]
 *** xref:os/androidVpnClient.adoc[Android VPN Client]
 *** xref:os/androidVpnClientProfiles.adoc[Android VPN Client Profiles]
