@@ -28,6 +28,37 @@ TIP: Examples are provided in the xref:config/quickstart.adoc[*Quickstart guide*
 Many more can be found in our {TESTS}[testing environment] (but make sure to
 read xref:config/configExamplesNotes.adoc[the notes on these] before using them).
 
+=== dot-Notation / Placeholders
+
+In this manual, the options are documented in dot-notation and with generic
+placeholders, for instance:
+
+----
+connections.<conn>.remote<suffix>.auth=... <1> <2>
+connections.<conn>.children.<child>.local_ts=... <3>
+----
+<1> `*<conn>*` designates an arbitrary connection name
+<2> `*<suffix>*` is an optional extension to the given section name, it can be
+    omitted in many cases, except when e.g. defining secondary authentication
+    rounds or multiple secrets of the same type
+<3> `*<child>*` is an arbitrary child name
+
+The two options above as they might appear in an actual config file:
+----
+connections {
+    connection_a {
+        remote {
+            auth=...
+        }
+        children {
+            child_1 {
+                local_ts=...
+            }
+        }
+    }
+}
+----
+
 include::partial$config/number_formats.adoc[leveloffset=+1]
 
 == Keys
