@@ -311,6 +311,65 @@ negotiated identity. This is useful, as some RADIUS servers interpret such a
 prefix as a request for a specific EAP method (e.g. `*0*` as `*EAP-SIM*`, `*1*`
 as `*EAP-AKA*`).
 
+=== Identity Matching
+
+[WARNING]
+====
+The *client's IKE or EAP identity* might be *completely unauthenticated* when
+the authentication is delegated to a RADIUS server. So *switching connections*
+or basing other policy decisions on that identity is potentially unsafe.
+Consider using xref:#_group_selection[*group selection*] instead.
+====
+
+The plugin sends the IKE identity (or EAP identity if the IKE daemon is
+instructed to do an EAP-Identity exchange) as `*User-Name*` attribute to the
+RADIUS server. As described in the previous section, that *same identity* is
+also sent as `*EAP-Identity*` response in the first `*Access-Request*` message
+if `*eap_start=no*` is configured (the default).
+
+However, whether that identity is validated in any way depends on the RADIUS
+server's behavior and configuration. For instance, whether it enforces a match
+against the client certificate if EAP-TLS is used, or whether it uses it as a
+lookup key to find a password in case of EAP-MD5/MSCHAPv2. *If it doesn't, the
+IKE daemon can't trust that identity*.
+
+Moreover, with `*eap_start=yes*`, the RADIUS server may perform its own
+`*EAP-Identity*` exchange. This identity can be *completely unrelated* to the
+IKE identity that's passed in the `*User-Name*` attribute (e.g. with Windows
+clients that send their IP as IKE identity). And the IKE daemon won't know about
+this even if the RADIUS server changes the `*User-Name*` attribute in the
+`*Access-Accept*` reply as the plugin currently doesn't process this attribute.
+
+Therefore, *switching connections* or basing other policy decisions on the
+IKE/EAP identity (e.g. in a script or plugin like
+xref:plugins/ext-auth.adoc[`*ext-auth*`] or
+xref:plugins/whitelist.adoc[`*whitelist*`])
+is potentially unsafe when RADIUS servers are involved. Instead, consider using
+xref:#_group_selection[*group selection*] based on attributes provided by the
+RADIUS server in the `*Access-Accept*` message. However, unless validated, the
+RADIUS server shouldn't base this attribute assignment on the `*User-Name*`
+attribute either, but instead use e.g. information extracted from the verified
+client certificate.
+
+****
+When using EAP-TLS with *FreeRADIUS*, it's easily possible to match the IKE/EAP
+identity passed in the `User-Name` attribute against the Common Name (CN) RDN
+in the client certificate's subject distinguished name (DN) by setting:
+
+    check_cert_cn = %{User-Name}
+
+Even more flexibility is offered by the `virtual_server` offered by the
+`rlm_eap_tls` module, which can also match against other and even multiple
+attributes extracted from the client certificate such as CN (`TLS-Client-Cert-Common-Name`
+attribute) and SANs (e.g. `TLS-Client-Cert-Subject-Alt-Name-Email` or
+`TLS-Client-Cert-Subject-Alt-Name-Dns`).
+
+However, if the IKE/EAP identity is the certificate's subject DN, matching
+`TLS-Client-Cert-Subject` generally won't work because the string value it
+contains does not match the binary ASN.1-encoded value that's sent in the
+`User-Name` attribute.
+****
+
 === Group Selection
 
 The plugin optionally interprets the `*class*` attribute sent in the
