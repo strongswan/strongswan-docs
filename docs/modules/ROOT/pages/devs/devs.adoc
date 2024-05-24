@@ -191,6 +191,9 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 |`*aikgen*`
 |Utility to generate an Attestation Identity Key bound to a TPM 1.2
 
+|xref:tools/cert-enroll.adoc[`*cert-enroll*`]
+|Automated certificate enrollment tool
+
 |xref:daemons/charon.adoc[`*charon*`]
 |The IKE keying daemon
 
@@ -272,7 +275,10 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 |Implements the xref:tnc/tnc.adoc[`IF-TNCCS`] interface
 
 |`*libtncif*`
-|Implmements the xref:tnc/tnc.adoc[`IF-IMC/IF-IMV`] interfaces
+|Implements the xref:tnc/tnc.adoc[`IF-IMC/IF-IMV`] interfaces
+
+|`*libtpmtss*`
+|Provides access to TPM 1.2 and xref:tpm/tpm2.adoc[TPM 2.0]
 
 |`*manager*`
 |A deprecated graphical management application for
@@ -290,9 +296,6 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 
 |xref:tnc/pt-tls-client.adoc[`*pt-tls-client*`]
 |Integrity measurement client using the `*PT-TLS*` protocol
-
-|xref:tools/scepclient.adoc[`*scepclient*`]
-|Utility to enroll certificates using the SCEP protocol
 
 |xref:tnc/sec-updater.adoc[`*sec-updater*`]
 |Utility extracting information about security updates and backports of Linux
@@ -321,5 +324,5 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
  tunnel up/down events
 
 |`*xfrmi*`
-|Create an `XFRM` interface
+|Utility to create `XFRM` interfaces
 |===
