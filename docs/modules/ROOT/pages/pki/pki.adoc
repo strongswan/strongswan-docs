@@ -40,20 +40,17 @@ private key of a CA and containing `subjectAltNames`, CRL distribution points an
 URIs of OCSP servers. You can also extract raw public keys from private keys,
 certificate requests and certificates and compute two kinds of SHA1-based key IDs.
 
-[NOTE]
-====
 Starting with version 5.9.8, the `*pki*` command supports certificate enrollment
 via the *Simple Certificate Enrollment Protocol* (SCEP) as defined by
 {RFC8894}[RFC 8894], replacing the obsoleted
 xref:tools/scepclient.adoc[`*ipsec scepclient*`] tool.
 
-Additionally, with version 5.9.8 the newer `*https*` based *Enrollment over Secure
-Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
-====
+Additionally, since version 5.9.8, the newer `*HTTPS/TLS*` based *Enrollment over
+Secure Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
 
-Version 5.9.12 introduces an *Online Certificate Status Protocol* (OCSP) responder
+Version 5.9.12 introduced an *Online Certificate Status Protocol* (OCSP) responder
 as defined by {RFC6960}[RFC 6960], interoperating with an {OPENXPKI}[OpenXPKI]
-server by directly accessing its internal `*certificate*` datebase.
+server by directly accessing its internal `*certificate*` database.
 
 == Subcommands
 
