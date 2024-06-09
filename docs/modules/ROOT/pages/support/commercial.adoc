@@ -1,7 +1,6 @@
 = Commercial Support
 
 :TOBIAS_MAIL:   mailto:tobias@strongswan.org
-:NOEL_MAIL:     mailto:noel.kuntze@thermi.consulting
 :CONTAURO_MAIL: mailto:vpn.support@contauro.com
 :CONTAURO_WEB:  https://www.contauro.com/
 :SYS4_MAIL:     mailto:ms@sys4.de
@@ -14,10 +13,6 @@ can contact them directly. They agreed to be listed here.
 . {TOBIAS_MAIL}[Tobias Brunner], St. Gallen, Switzerland, a core developer
   ({TOBIAS_MAIL}[tobias@strongswan.org])
   - **Only development work and licensing, no commercial configuration support**
-
-. {NOEL_MAIL}[Noel Kuntze], Volketswil, Switzerland, a long time supporter and
-  IRC operator ({NOEL_MAIL}[noel.kuntze@thermi.consulting])
-  - **Businesses only, no private persons**
 
 . {CONTAURO_WEB}[Contauro AG], Zug, Switzerland,
   contact {CONTAURO_MAIL}[vpn.support@contauro.com]

@@ -24,10 +24,42 @@ syntax (referencing sections, since version 5.7.0, and including other files is
 supported as well) and is located in the xref:swanctl/swanctlDir.adoc[`*swanctl*`]
 configuration directory, usually `*/etc/swanctl*`.
 
-Many examples can be found in our testing environment, eg. as used by the
-{TESTS}/ikev2[IKEv2 scenarios].
+TIP: Examples are provided in the xref:config/quickstart.adoc[*Quickstart guide*].
+Many more can be found in our {TESTS}[testing environment] (but make sure to
+read xref:config/configExamplesNotes.adoc[the notes on these] before using them).
 
-include::partial$config/number_formats.adoc[]
+=== dot-Notation / Placeholders
+
+In this manual, the options are documented in dot-notation and with generic
+placeholders, for instance:
+
+----
+connections.<conn>.remote<suffix>.auth=... <1> <2>
+connections.<conn>.children.<child>.local_ts=... <3>
+----
+<1> `*<conn>*` designates an arbitrary connection name
+<2> `*<suffix>*` is an optional extension to the given section name, it can be
+    omitted in many cases, except when e.g. defining secondary authentication
+    rounds or multiple secrets of the same type
+<3> `*<child>*` is an arbitrary child name
+
+The two options above as they might appear in an actual config file:
+----
+connections {
+    connection_a {
+        remote {
+            auth=...
+        }
+        children {
+            child_1 {
+                local_ts=...
+            }
+        }
+    }
+}
+----
+
+include::partial$config/number_formats.adoc[leveloffset=+1]
 
 == Keys
 
