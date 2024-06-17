@@ -14,7 +14,7 @@ strongSwan currently implements one scenario with IKEv2 configuration payloads,
 where a virtual IP address is requested by the *initiator* and one or several
 IPv4 and/or IPv6 addresses are assigned from multiple pools by the *responder*.
 
-An alterantive approach is possible by the IKEv2 protocol where the *responder*
+An alternative approach is possible by the IKEv2 protocol where the *responder*
 would propose virtual IP addresses to the *initiator* but this is an uncommon
 setup and therefore not supported. It is supported for IKEv1, though, with
 `ModeConfig` in `*push*` mode.
