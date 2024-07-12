@@ -1,4 +1,5 @@
-= IPsec Protocol
+= Introduction to the IPsec Protocol
+:navtitle: Introduction to IPsec
 :page-toclevels: 4
 
 :IETF:    https://datatracker.ietf.org/doc/html
