@@ -20,9 +20,19 @@ There are currently packages for:
 
 * {ARCH}[Arch Linux]
 
-* {DEBIAN}[Debian]
-
-* {UBUNTU}[Ubuntu]
+* {DEBIAN}[Debian] / {UBUNTU}[Ubuntu]
++
+.*Note on Debian/Ubuntu packages*
+[%collapsible]
+====
+When installing the `*strongswan*` metapackage, the legacy daemon and
+configuration backend are installed. To use swanctl/vici instead, install the
+`*charon-systemd*` and `*strongswan-swanctl*` packages and remove both the
+`*strongswan-starter*` and `*strongswan-charon*` packages. Make sure you only
+have either the `*charon-systemd*` or the `*strongswan-starter*` package
+installed (or at least disable one of the systemd units they install, which are
+`strongswan.service` and `strongswan-starter.service`, respectively).
+====
 
 * {SUSE}[openSUSE]
 
