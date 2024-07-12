@@ -156,7 +156,7 @@ negotiated TLS 1.2 using suite TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
 In the third `IKE_AUTH` response the strongSwan gateway sends its TLS server
 certificate and requests a TLS client certificate
 ----
-sending TLS server certificate 'C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com'
+sending TLS server certificate 'C=CH, O=strongSec GmbH, CN=vpn.strongswan.org'
 sending TLS cert request for 'C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA'
 generating IKE_AUTH response 3 [ EAP/REQ/TLS ]
 sending packet: from 10.10.0.150[4500] to 212.51.148.80[63720] (1104 bytes)
