@@ -1,4 +1,6 @@
 = Taking Traffic Dumps on Linux
+:navtitle: Taking Traffic Dumps
+:page-aliases: install/trafficDumps.adoc
 
 :NETFILTER:    https://commons.wikimedia.org/wiki/File:Netfilter-packet-flow.svg
 :NETFILTERIMG: https://upload.wikimedia.org/wikipedia/commons/3/37/Netfilter-packet-flow.svg

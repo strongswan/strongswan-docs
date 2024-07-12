@@ -3,7 +3,6 @@
 ** xref:install/autoconf.adoc[]
 ** xref:install/kernelModules.adoc[]
 ** xref:install/reducedPrivileges.adoc[Reduced Privileges]
-** xref:install/trafficDumps.adoc[Taking Traffic Dumps]
 
 .Configuration
 * xref:config/config.adoc[]
@@ -45,6 +44,7 @@
 ** xref:howtos/smartcards.adoc[]
 ** xref:howtos/cloudPlatforms.adoc[]
 ** xref:howtos/nameSpaces.adoc[]
+** xref:howtos/trafficDumps.adoc[]
 
 .Daemons
 ** xref:daemons/charon.adoc[]
