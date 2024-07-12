@@ -5,6 +5,9 @@
 ** xref:install/reducedPrivileges.adoc[Reduced Privileges]
 
 .Configuration
+* xref:config/quickstart.adoc[]
+* xref:pki/pkiQuickstart.adoc[]
+** xref:pki/caManagement.adoc[]
 * xref:config/config.adoc[]
 ** xref:config/strongswanConf.adoc[]
 ** xref:config/strongswanDir.adoc[]
@@ -34,9 +37,6 @@
 ** xref:features/ietf.adoc[]
 
 .How-tos
-** xref:config/quickstart.adoc[]
-** xref:pki/pkiQuickstart.adoc[]
-** xref:pki/caManagement.adoc[]
 ** xref:howtos/introduction.adoc[]
 ** xref:howtos/ipsecProtocol.adoc[]
 ** xref:howtos/forwarding.adoc[]
