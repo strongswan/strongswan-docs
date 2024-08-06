@@ -8,6 +8,7 @@
 :GITHUB:    https://github.com/strongswan/strongswan
 :GOOGLE:    https://code.google.com/p/android/issues/detail?id=62644
 :TRACKER:   https://issuetracker.google.com/issues
+:A14ISSUE:  https://issuetracker.google.com/issues/305035828
 :PROJECTFI: https://fi.google.com
 :SAF:       https://developer.android.com/guide/topics/providers/document-provider.html
 :BLOG:      https://strongswan.org/blog
@@ -206,6 +207,16 @@ new features and provide us with valuable feedback, please {PLAYTEST}[opt-in her
 or directly from the app's page in the Play store.
 
 == Changelog
+
+=== 2.5.2 (2024-08-06)
+
+* Increased target SDK to Android 14 and fixed compatibility issues
+* Due to {A14ISSUE}[a bug in Android 14+], a new permission (`SYSTEM_ALERT_WINDOW`)
+  is necessary to start a VPN profile in the background from the status tile. If
+  necessary, the app opens the settings dialog where users have to search the
+  app and then grant the permission manually (Google disabled the possibility
+  to directly ask for this permission some versions ago)
+* Fix a crash when listing installed apps for new profiles
 
 === 2.5.1 (2024-02-26)
 
