@@ -318,6 +318,14 @@ kernel.
 |{IETF}/rfc9464[RFC 9464]:
  Internet Key Exchange Protocol Version 2 (IKEv2) Configuration for Encrypted DNS
 
+|*x*
+|{IETF}/rfc9593[RFC 9593]:
+ Announcing Supported Authentication Methods in the Internet Key Exchange Protocol Version 2 (IKEv2)
+
+|*d*
+|{IETF}/rfc9611[RFC 9611]:
+ Internet Key Exchange Protocol Version 2 (IKEv2) Support for Per-Resource Child  Security Associations (SAs)
+
 |6.0
 |{IETF}/draft-kampanakis-ml-kem-ikev2[draft-kampanakis-ml-kem-ikev2]:
 Post-quantum Hybrid Key Exchange with ML-KEM in IKEv2
