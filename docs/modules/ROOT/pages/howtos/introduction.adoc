@@ -278,7 +278,7 @@ down the IKE_SA or individual CHILD_SAs.
 Whenever the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file or credentials
 in the xref:swanctl/swanctlDir.adoc[`*swanctl*`] directory are changed they may be
 reloaded with the different
-xref:swanctl/swanctl.adoc#_subcommands[`*swanct --load-..*`] commands. Already
+xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --load-..*`] commands. Already
 established connections are not affected by these commands (unless
 `*start_action = start*` is used). If a configuration update is required, the SAs
 or even the daemon must be restarted.
