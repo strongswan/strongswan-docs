@@ -69,11 +69,9 @@ xfrm6_mode_tunnel
 == Optional Modules
 
 ----
-pcrypt
 xfrm_ipcomp
 deflate
 ----
-For information about `*pcrypt*` see [[Pcrypt|the page about pcrypt]].
 If you want to use compression (`*compress=yes*`), you need the `*xfrm_ipcomp*`
 module and the `*deflate*` module for the compression algorithm.
 
