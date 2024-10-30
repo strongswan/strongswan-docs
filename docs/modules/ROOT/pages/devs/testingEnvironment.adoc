@@ -75,12 +75,13 @@ are [re-]built automatically).
 
 === Platform-Specific Notes
 
-On *Ubuntu with AppArmor* installed (the default) `*libvirt*` uses the latter to
-secure virtual machines. When creating a guest `*libvirt*` automatically creates
-AppArmor profiles. The problem is that these profiles don't reflect the
-multi-layered disk images we use (each guest's image is linked to a common root
-image which in turn is linked to a common base image).  One option to fix this is
-to set `*security_driver = "none"*` in `*/etc/libvirt/qemu.conf*` and execute
+On systems with *AppArmor* installed, `*libvirt*` uses the latter to secure
+virtual machines. When creating a guest, `*libvirt*` automatically creates
+AppArmor profiles. The problem is that **older versions** (< 7.1.0) didn't create
+profiles that reflect the multi-layered disk images we use (each guest's image
+is linked to a common root image which in turn is linked to a common base image).
+One option to fix this is for affected versions of `*libvirt*` is to set
+`*security_driver = "none"*` in `*/etc/libvirt/qemu.conf*` and execute
 
  sudo service libvirt-bin restart
 
