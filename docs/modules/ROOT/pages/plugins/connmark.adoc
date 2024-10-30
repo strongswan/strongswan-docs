@@ -34,7 +34,8 @@ connections {
     children {
       transport-connmark {
         mode = transport
-        mark = %unique
+        mark_in = %unique
+        mark_out = %unique
         #...
       }
     }
