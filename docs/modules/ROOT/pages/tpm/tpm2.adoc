@@ -572,7 +572,7 @@ $ pki --print --type x509 --in cacert.pem
 The PKCS#10 certificate request exported from the TPM is used to generate an
 RSA Attestation Key certificate signed by the Root CA:
 
- $ pki --issue --cacert cacert.pem --cakey cakey.pem -type pkcs10 --in ak_rsa_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_rsa_cert.der
+ $ pki --issue --cacert cacert.pem --cakey cakey.pem --type pkcs10 --in ak_rsa_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK RSA, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_rsa_cert.der
 
 having the following content
 ----
@@ -598,7 +598,7 @@ $ pki --print --type x509 --in ak_rsa_cert.der
 The second PKCS#10 certificate request exported from the TPM is used to generate
 an ECC Attestation Key certificate signed by the Root CA:
 
- $ pki --issue --cacert cacert.pem --cakey cakey.pem -type pkcs10 --in ak_ecc_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_ecc_cert.der
+ $ pki --issue --cacert cacert.pem --cakey cakey.pem --type pkcs10 --in ak_ecc_req.pem --dn "C=CH, O=strongSec GmbH, OU=AK ECC, CN=edu.strongsec.com" --san "edu.strongsec.com" --crl http://www.strongsec.com/ca/strongsec.crl --flag serverAuth --lifetime 1827 > ak_ecc_cert.der
 
 having the following content
 ----
