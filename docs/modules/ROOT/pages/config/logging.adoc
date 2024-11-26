@@ -148,8 +148,8 @@ NOTE: Since version 5.7.0, section names can't contain dots or colons. To specif
  a flush to disk is enforced for each logged line
 
 |<name>.ike_name      |`no`
-|Prefix each log entry with the connection name and a unique numerical identifier
- for each IKE_SA
+|Add the connection name and a unique numerical identifier for the current
+ IKE_SA to each log entry if available
 
 |<name>.json          |`no`
 |Enables writing each log entry as a JSON object to the file (since version 6.0.0).
@@ -166,7 +166,7 @@ NOTE: Since version 5.7.0, section names can't contain dots or colons. To specif
 |Prefix each log entry with a timestamp. The option accepts a format string as
  passed to {STRFTIME}[`*strftime(3)*`]
 
-|<name>.time_format_precision|
+|<name>.time_precision|
 |Add the milliseconds (`*ms*`) or microseconds (`*us*`) within the current second
  after the timestamp (separated by a dot, so `*time_format*` should end with
  `*%S*` or `*%T*`). By default, nothing is added. This replaces `*time_add_ms*`
@@ -175,7 +175,7 @@ NOTE: Since version 5.7.0, section names can't contain dots or colons. To specif
 |<name>.time_add_ms   |`no`
 |Adds the milliseconds within the current second after the timestamp (separated
  by a dot so `*time_format*` should end with `*%S*` or `*%T*`). Deprecated since
- version 6.0.0, use `*time_format_precision*` instead
+ version 6.0.0, use `*time_precision*` instead
 |===
 
 _The placeholder `*<name>*` is an arbitrary name if `*path*` is specified and
@@ -203,8 +203,8 @@ or `*stderr*`._
 |Log level for a specific subsystem
 
 |<facility>.ike_name       |`no`
-|Prefix each log entry with the connection name and a unique numerical identifier
- for each IKE_SA
+|Add the connection name and a unique numerical identifier for the current
+ IKE_SA to each log entry if available
 
 |<facility>.log_level      |`no`
 |Add the log level of each message after the subsystem (since version 5.9.1)
