@@ -754,13 +754,6 @@ include::partial$config/plugins/attr.adoc[]
 include::partial$config/plugins/attr-sql.adoc[]
 |===
 
-==== charon.plugins.bliss
-[{COLS}]
-|===
-
-include::partial$config/plugins/bliss.adoc[]
-|===
-
 ==== charon.plugins.botan
 [{COLS}]
 |===
@@ -983,13 +976,6 @@ include::partial$config/plugins/load-tester.adoc[]
 |===
 
 include::partial$config/plugins/lookip.adoc[]
-|===
-
-==== charon.plugins.ntru
-[{COLS}]
-|===
-
-include::partial$config/plugins/ntru.adoc[]
 |===
 
 ==== charon.plugins.openssl

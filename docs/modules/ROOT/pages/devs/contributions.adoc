@@ -176,8 +176,6 @@ The files in these components use regular GPLv2-headers, if any.
 
 ** `*gmp*` ({GITHUB}/tree/master/src/libstrongswan/plugins/gmp[`src/libstrongswan/gmp`])
 
-** `*ntru*` ({GITHUB}/tree/master/src/libstrongswan/plugins/ntru[`src/libstrongswan/ntru`])
-
 ** `*md4*` ({GITHUB}/tree/master/src/libstrongswan/plugins/md4[`src/libstrongswan/md4`])
 
 ** `*md5*` ({GITHUB}/tree/master/src/libstrongswan/plugins/md5[`src/libstrongswan/md5`])

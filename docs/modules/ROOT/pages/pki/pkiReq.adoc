@@ -52,7 +52,7 @@ This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request
 
 |`-t`
 |`--type`
-|Type of the input key. Either `*priv*`, `*rsa*`, `*ecdsa*` or `*bliss*`.
+|Type of the input key. Either `*priv*`, `*rsa*`, or `*ecdsa*`.
  Defaults to `*priv*`
 
 |`-d`

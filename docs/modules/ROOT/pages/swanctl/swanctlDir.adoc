@@ -47,9 +47,6 @@ Each sub-directory is used for a specific kind of credential:
 |`ecdsa`
 |Plain ECDSA private keys
 
-|`bliss`
-|BLISS private keys
-
 |`pkcs8`
 |PKCS#8 encoded private keys of any type
 
