@@ -371,11 +371,21 @@ xref:config/logging.adoc[logger configuration]
 
 |fragment_size                               |`1280`
 |Maximum size (complete IP datagram size in bytes) of a sent IKE fragment when
- using proprietary IKEv1 or standardized IKEv2 fragmentation. If specified, this
- limit is used for both IPv4 and IPv6 with a default of `*1280*` bytes. Use `*0*`
- for the address-family-specific default values defined by
- {RFC7383}#section-2.5.1[RFC 7383] which specifies a very conservative limit of
- `*576*` bytes for IPv4 but sets the limit to `*1280*` bytes for IPv6.
+ using proprietary IKEv1 or standardized IKEv2 fragmentation. If specified and
+ not overridden, this limit is used for both IPv4 and IPv6 with a default of
+ `*1280*` bytes. Use `*0*` for the address-family-specific default values
+ defined by {RFC7383}#section-2.5.1[RFC 7383] which specifies a very conservative
+ limit of `*576*` bytes for IPv4 but sets the limit to `*1280*` bytes for IPv6.
+
+|fragment_size_v4                            |[->]
+|Maximum size (complete IPv4 datagram size in bytes) of a sent IKE fragment
+ when using proprietary IKEv1 or standardized IKEv2 fragmentation.
+ Since version 6.0.0 `*[fragment_size]*`
+
+|fragment_size_v6                            |[->]
+|Maximum size (complete IPv6 datagram size in bytes) of a sent IKE fragment
+ when using proprietary IKEv1 or standardized IKEv2 fragmentation.
+ Since version 6.0.0 `*[fragment_size]*`
 
 |group                                       |
 |Name of the xref:install/reducedPrivileges.adoc[group] the daemon changes

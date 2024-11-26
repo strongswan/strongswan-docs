@@ -121,7 +121,7 @@ The following options are supported for each logger:
 
 === File Loggers
 
-NOTE: Since version 5.7.0 section names can't contain dots or colons. To specify
+NOTE: Since version 5.7.0, section names can't contain dots or colons. To specify
       such paths use the *path* setting in an arbitrarily named section.
 
 *charon.filelog*
@@ -151,6 +151,14 @@ NOTE: Since version 5.7.0 section names can't contain dots or colons. To specify
 |Prefix each log entry with the connection name and a unique numerical identifier
  for each IKE_SA
 
+|<name>.json          |`no`
+|Enables writing each log entry as a JSON object to the file (since version 6.0.0).
+ The properties are "time" (if `*time_format*` is set), "thread", "group",
+ "level" and "msg". Newlines, double quotes and backslashes are escaped in the
+ latter. If `*ike_name*` is enabled, "ikesa-uniqueid" and "ikesa-name" are added
+ to the object if available. The `*log_level*` option does not apply if this is
+ enabled. Since version 6.0.0
+
 |<name>.log_level     |`no`
 |Add the log level of each message after the subsystem (since version 5.9.1)
 
@@ -158,9 +166,16 @@ NOTE: Since version 5.7.0 section names can't contain dots or colons. To specify
 |Prefix each log entry with a timestamp. The option accepts a format string as
  passed to {STRFTIME}[`*strftime(3)*`]
 
+|<name>.time_format_precision|
+|Add the milliseconds (`*ms*`) or microseconds (`*us*`) within the current second
+ after the timestamp (separated by a dot, so `*time_format*` should end with
+ `*%S*` or `*%T*`). By default, nothing is added. This replaces `*time_add_ms*`
+ with version 6.0.0
+
 |<name>.time_add_ms   |`no`
 |Adds the milliseconds within the current second after the timestamp (separated
- by a dot so `*time_format*` should end with `*%S*` or `*%T*`)
+ by a dot so `*time_format*` should end with `*%S*` or `*%T*`). Deprecated since
+ version 6.0.0, use `*time_format_precision*` instead
 |===
 
 _The placeholder `*<name>*` is an arbitrary name if `*path*` is specified and
@@ -195,7 +210,7 @@ or `*stderr*`._
 |Add the log level of each message after the subsystem (since version 5.9.1)
 
 |<facility>.map_level      |`-1`
-|Map strongSwan specific loglevels to syslog loglevels (since version 5.9.6).
+|Map strongSwan specific loglevels to syslog loglevels (since version 5.9.6)
 
  The default setting of `-1` passes all messages to syslog using a log level of
  `LOG_INFO`. A non-negative value maps the strongSwan specific loglevels (`0..4`)
