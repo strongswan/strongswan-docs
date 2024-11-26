@@ -581,10 +581,26 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 == Post-Quantum Key Exchange Methods
 
-The forthcoming {PQ}[strongSwan 6.0 release] supports the NIST PQC (Post-Quantum
-Cryptography) {NISTPQC}/selected-algorithms-2022[Selected Algorithms] and
-{NISTPQC}/round-4-submissions[Round 4 Submissions] Key Exchange Method (KEM)
-candidates.
+=== Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM, FIPS 203)
+
+[cols="5,6,1,4,3"]
+|===
+|Keyword |Strength |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
+
+|*mlkem512*
+|128 bits
+|35 |x b w o       |ml
+
+|*mlkem768*
+|192 bits
+|36 |x b w o       |ml
+
+|*mlkem1024*
+|256 bits
+|37 |x b w o       |ml
+|===
+
+The `*openssl*` plugin currently only supports ML-KEM via AWS-LC, not via OpenSSL.
 
 == Signature Algorithms
 
