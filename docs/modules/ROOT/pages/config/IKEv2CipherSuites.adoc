@@ -581,22 +581,26 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 == Post-Quantum Key Exchange Methods
 
+The parameter set of a certain *security strength category* is claimed to be
+at least as secure as a generic block cipher with the prescribed key size or a
+generic hash with the prescribed output length.
+
 === Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM, FIPS 203)
 
 [cols="5,6,1,4,3"]
 |===
-|Keyword |Strength |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
+|Keyword |Security |{IANA}#ikev2-parameters-8[IANA] |xref:#ike-support[IKE] | Plugins
 
 |*mlkem512*
-|128 bits
+|1 (128 bits)
 |35 |x b w o       |ml
 
 |*mlkem768*
-|192 bits
+|3 (192 bits)
 |36 |x b w o       |ml
 
 |*mlkem1024*
-|256 bits
+|5 (256 bits)
 |37 |x b w o       |ml
 |===
 
