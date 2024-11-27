@@ -49,35 +49,33 @@ the `PIN`.
 
 Reauthenticating an `IKE SA` may be done in two ways:
 
+*Make-before-break* ::
+  This is the *default* behavior since version 6.0.0 when reauthenticating an
+  `IKEv2 SA`. This method first creates duplicates of the `IKE SAs` and all
+  `CHILD SAs` overlapping with the existing ones and then deletes the old ones.
+  This avoids interruptions (not completely, as rekeying does, because the responder
+  will usually use the new `CHILD SAs` before the initiator can install them), but
+  requires that both peers can handle overlapping `SAs` (e.g. in regards to
+  virtual IPs, duplicate policies or updown scripts). It is supported for `IKEv2`
+  since version 5.3.0.
+
 *Break-before-make* ::
-  This is the *default* behavior of the `IKE` daemon when
-  reauthenticating an `IKEv2 SA`. It means that all `IKE_SAs` and `CHILD SAs` are
-  torn down before recreating them. This will cause some interruptions during
-  which no `IPsec SAs` are installed. If trap policies are used it could also
-  trigger unnecessary acquires and hence duplicate `IPsec SAs` during that downtime.
-  To prevent plaintext traffic from leaving the host appropriate firewall rules
+  With this method, all `IKE_SAs` and `CHILD SAs` are torn down before recreating
+  them. This will cause some interruptions during which no `IPsec SAs` are
+  installed. If trap policies are used, it could also trigger unnecessary acquires
+  during the downtime that possibly result in duplicate `IPsec SAs`.
+  To prevent plaintext traffic from leaving the host, appropriate firewall rules
   or drop policies may be used.
 
-*Make-before-break* ::
-  This method first creates duplicates of the `IKE SAs` and all `CHILD SAs`
-  overlapping with the existing ones and then deletes the old ones.
-  This avoids interruptions but requires that both peers can handle overlapping
-  `SAs` (e.g. in regards to virtual IPs, duplicate policies or updown scripts).
-  It is supported for `IKEv2` since version 5.3.0 but is disabled by default
-  and may be enabled by explicitly setting
-+
-----
-charon.make_before_break = yes
-----
-
 The `*make_before_break*` option was introduced in
-xref:config/strongswanConf.adoc[`*strongswan.conf*`] with strongSwan version 5.3.0
+xref:config/strongswanConf.adoc[`*strongswan.conf*`] with strongSwan version 5.3.0.
+It is is enabled by default since version 6.0.0.
 
 [cols = "4,1,8"]
 |===
 |Setting |Default |Description
 
-|make_before_break                           |`no`
+|make_before_break                           |`yes`
 |Initiate IKEv2 reauthentication with a *make-before-break* instead of a
  *break-before-make* scheme. Make-before-break uses overlapping `IKE` and `CHILD SA`
  during reauthentication by first recreating all new SAs before deleting the old
