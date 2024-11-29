@@ -294,7 +294,7 @@ All of this also works for IPv6.
 ==== Example: Creation of two VTI Devices (vti0 and ipsec0)
 ----
 ip tunnel add vti0   local 192.168.0.1 remote 192.168.0.2 mode vti key 42
-ip tunnel add ipsec0 local 192.168.0.1 remote 192.168.0.2 mode vti key 0x01000201
+ip tunnel add ipsec0 local 192.168.0.1 remote 192.168.0.3 mode vti key 0x01000201
 sysctl -w net.ipv4.conf.vti0.disable_policy=1
 ip link set vti0 up
 ip route add 10.1.0.0/16 dev vti0
