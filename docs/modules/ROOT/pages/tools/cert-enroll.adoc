@@ -1,15 +1,17 @@
 = cert-enroll Tool 
 
-:IETF:     https://datatracker.ietf.org/doc/html
-:RFC7030:  {IETF}/rfc7030
-:RFC8894:  {IETF}/rfc8894
-:GITHUB:   https://github.com/strongswan/strongswan/blob/master/src/cert-enroll
-:DIRSRV:   https://www.port389.org/docs/389ds/howto/quickstart.html
-:GITEA:    https://docs.gitea.com/
-:IPSEC:    https://wiki.strongswan.org/projects/strongswan/wiki/IpsecCommand
-:LIGHTTPD: https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_SSL
-:OPENXPKI: https://openxpki.readthedocs.io/en/develop/quickstart.html
-:SSSD:     https://sssd.io/
+:IETF:      https://datatracker.ietf.org/doc/html
+:RFC7030:   {IETF}/rfc7030
+:RFC8894:   {IETF}/rfc8894
+:GITHUB:    https://github.com/strongswan/strongswan/blob/master/src/cert-enroll
+:COCKPIT:   https://cockpit-project.org/
+:DIRSRV:    https://www.port389.org/docs/389ds/howto/quickstart.html
+:GITEA:     https://docs.gitea.com/
+:IPSEC:     https://wiki.strongswan.org/projects/strongswan/wiki/IpsecCommand
+:LDAPUTILS: https://wiki.debian.org/LDAP/LDAPUtils
+:LIGHTTPD:  https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_SSL
+:OPENXPKI:  https://openxpki.readthedocs.io/en/develop/quickstart.html
+:SSSD:      https://sssd.io/
 
 == Synopsis
 
@@ -127,13 +129,19 @@ standardized names in the default directory `*/root/certificates/*`
  |
  |--new/                 # temporary directory for re-enrollment
  |
- +--old/                 # repository for deprecated credentials 
+ |--old/                 # repository for deprecated credentials
+ |   |
+ |   |-- key.pem         # old host key after re-enrollment
+ |   |
+ |   |-- cert.pem        # old host certificate after re-enrollment
+ |   |
+ |   |-- cacert-1.pem    # old issuing CA certificate after rollover
+ |   |
+ |   +-- cacert.pem      # old root CA certificate, if a root CA change occurred
+ |
+ +--older/
      |
-     |-- key.pem         # old host key after re-enrollment
-     |
-     |-- cert.pem        # old host certificate after re-enrollment
-     |
-     +-- cacert-1.pem    # old issuing CA certificate after rollover 
+     +-- cacert-1.pem    # old issuing CA certificate, active two rollovers ago
 ----
 
 === Installation Scripts for Private Keys and Certificates 
@@ -141,6 +149,10 @@ standardized names in the default directory `*/root/certificates/*`
 The following installation scripts are currently available in the
 `*cert-install-available*` directory. On the basis of these examples arbitrary
 key and certificate installations can be implemented.
+
+* {GITHUB}/cert-install-cockpit[`*cert-install-cockpit*`]:
+  Installs the private key and host certificate as TLS credentials for the
+  {COCKPIT}[*Cockpit*] management interface.
 
 * {GITHUB}/cert-install-dirsrv[`*cert-install-dirsrv*`]:
   Installs the private key, the host and CA certificates in the NSS databases
@@ -155,6 +167,11 @@ key and certificate installations can be implemented.
   Installs the private key, the host and CA certificates on VPN endpoints that
   still manage their strongSwan-based IPsec tunnels via the legacy
   {IPSEC}[`*ipsec*`] command line tool.
+
+* {GITHUB}/cert-install-ldaputils[`*cert-install-ldaputils*`]:
+  Concatenates the present and past CA certificates into a single `*TLS_CACERT*`
+  file defined by `*ldap.conf*` so that the {LDAPUTILS}[*ldap-utils*] can verify
+  the LDAP server certificate.
 
 * {GITHUB}/cert-install-lighttpd[`*cert-install-lighttpd*`]:
   Installs the private key and the host certificate needed as TLS credentials by
