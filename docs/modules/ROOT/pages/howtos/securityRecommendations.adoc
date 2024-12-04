@@ -15,7 +15,7 @@ using strongSwan to set up IKE connections and policy-based IPsec tunnels.
 
 == Weak Cryptographic Algorithms
 
-The following cryptographic algorithms are *weak* and prone to attacks and 
+The following cryptographic algorithms are *weak* and prone to attacks and
 therefore *must not* be used.
 
 Encryption ::
@@ -36,7 +36,7 @@ Diffie-Hellman Groups ::
 modp512,modp768,modp1024,modp1024s160,modp1536,modp2048s224,modp2048s256,ecp192
 ----
 
-These algorithms do not directly relate to plugins. To *disable* them you must 
+These algorithms do not directly relate to plugins. To *disable* them you must
 specify a set of crypto proposals that exclude these algorithms in the connection
 definitions of xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
 ----
@@ -99,7 +99,7 @@ may also be used where supported
 
  aes256-sha384-ecp384,aes256gcm16-prfsha384-ecp384
 
-The supported xref:config/IKEv2CipherSuites.adoc[IKEv2 cipher suites] are limited
+The supported xref:config/proposals.adoc[algorithm proposal keywords] are limited
 to what the various `*libstrongswan*` plugins implement.
 
 The supported ESP/AH cipher suites are limited to what the Linux kernel supports.

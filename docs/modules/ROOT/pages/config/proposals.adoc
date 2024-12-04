@@ -1,4 +1,5 @@
-= IKEv2 Cipher Suites
+= Algorithm Proposals (Cipher Suites)
+:page-aliases: config/IKEv2CipherSuites.adoc
 
 :NISTPQC: https://csrc.nist.gov/projects/post-quantum-cryptography
 :PQ:      https://github.com/strongX509/docker/tree/master/pq-strongswan#readme
@@ -8,10 +9,90 @@
 :RFC6379: {IETF}/rfc6379
 :RFC9370: {IETF}/rfc9370
 
-The keywords listed below can be used with the `*proposals*` attributes in
-xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to define IKE or ESP/AH cipher
-suites. IANA provides a complete list of algorithm identifiers registered for
-{IANA}[IKEv2].
+The keywords listed below can be used with the `*proposals*` and `*ah|esp_proposals*`
+settings in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to define IKE and ESP/AH
+proposals/cipher suites. IANA provides a complete list of algorithm identifiers
+registered for {IANA}[IKEv2].
+
+== General Proposal Format
+
+The basic format of a proposal is simply a *list of algorithm keywords separated
+by dashes*. With IKEv2, multiple algorithms of the same kind can be specified in
+a single proposal, their order defines the *preference in descending order*.
+
+CAUTION: IKEv1 only supports one algorithm of each kind per proposal. Additional
+algorithms are implicitly stripped. Use multiple proposals to offer different
+algorithm combinations for IKEv1.
+
+For instance, the ESP proposal `*aes256gcm16-aes128gcm16*` specifies two
+authenticated encryption algorithms, of which the former is preferred over the
+latter.
+
+The following IKEv2 proposal additionally lists algorithms for the required PRF and
+key exchange methods:
+
+----
+aes256gcm16-aes192gcm16-prfsha384-prfsha256-ecp384-modp3072 <1>
+
+aes256gcm16-prfsha384-ecp384-aes192gcm16-prfsha256-modp3072 <2>
+----
+<1> `*aes256gcm16*` is preferred over `*aes192gcm16*`, `*prfsha384*` over
+`*prfsha256*`, and `*ecp384*` over `*modp3072*`.
+<2> The order of algorithms of different kinds doesn't matter, so this is the
+exact same proposal.
+
+*Multiple proposals* may be configured (separated with commas in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]). This is e.g. necessary in order
+to accept AEAD and classic encryption/integrity algorithms as they must not be
+used in the same proposal. The order of the proposals defines their preference.
+
+== Proposal Selection
+
+When *selecting a proposal* as responder, based on the ones configured and those
+received from the initiator, strongSwan *prefers its own configuration by default*.
+
+That is, the *first configured* proposal (and within it the first algorithm of
+each kind) that is *accepted by the received* proposals is selected and returned
+to the initiator.
+
+[subs="+quotes"]
+.Example of Default Proposal Selection
+----
+Configured: *aes256gcm16*-aes192gcm16-*prfsha384*-prfsha256-*ecp384*-modp3072
+Received  : aes128-aes192-aes256-sha256-sha384-modp2048-modp3072-ecp384 <1>
+            aes128gcm16-aes192gcm16-*aes256gcm16*-prfsha256-*prfsha384*-modp3072-*ecp384* <2>
+Selected  : *aes256gcm16-prfsha384-ecp384* <3>
+----
+<1> This proposal is rejected as it uses classic encryption/integrity algorithms
+instead of AEAD algorithms.
+<2> While `*aes192gcm16*` is proposed earlier, the configured proposal prefers
+`*aes256gcm16*`, which is also contained in the received proposal and thus
+selected. Similarly for the other algorithms.
+<3> Because the initiator proposed `*modp3072*` first, the received KE payload
+will also be for that algorithm. By selecting `*ecp384*` as key exchange method,
+this will cause an `*INVALID_KE_PAYLOAD*` error in order to request a KE payload
+of the selected algorithm (i.e. this requires an additional roundtrip).
+
+Depending on the use case, this behavior can be changed by *disabling*
+`*charon.prefer_configured_proposals*` in xref:config/strongswanConf.adoc#[`*strongswan.conf*`].
+If this option is disabled, the *first received* proposal (and within it the
+first algorithm of each kind) that is *accepted by the configured* proposals is
+selected and returned to the initiator.
+
+[subs="+quotes"]
+.Example of Alternative Proposal Selection
+----
+Configured: aes256gcm16-*aes192gcm16*-prfsha384-*prfsha256*-ecp384-*modp3072*
+Received  : aes128-aes192-aes256-sha256-sha384-modp2048-modp3072-ecp384 <1>
+            aes128gcm16-*aes192gcm16*-aes256gcm16-*prfsha256*-prfsha384-*modp3072*-ecp384 <2>
+Selected  : *aes192gcm16-prfsha256-modp3072* <3>
+----
+<1> Again, this proposal is rejected as it does not match the configured proposal at all.
+<2> `*aes192gcm16*` is selected as it is the first proposed encryption
+algorithm that's not rejected by the configured proposal (`*aes128gcm16*` is
+not contained in it and skipped).
+<3> The selected key exchange method is the first one proposed by the initiator
+and, thus, likely matches the received KE payload.
 
 [#ike-support]
 == IKE Support Options

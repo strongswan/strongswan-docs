@@ -151,7 +151,7 @@ an arbitrary yet unique name (denoted `<conn>` below).
  automatic IKE port floating to port `*4500*` is used to work around NAT issues
 
 |<conn>.proposals          |[->]
-|A proposal is a set of xref:config/IKEv2CipherSuites.adoc[algorithms]. For
+|A proposal is a set of xref:config/proposals.adoc[algorithms]. For
  non-AEAD IKE proposals, this includes an encryption algorithm, an integrity
  algorithm, a pseudo-random function (PRF) and a key exchange method. For AEAD
  proposals, instead of encryption and integrity algorithms a combined mode
@@ -166,7 +166,7 @@ an arbitrary yet unique name (denoted `<conn>` below).
  is allowed per proposal, more algorithms get implicitly stripped. Use multiple
  proposals to offer different algorithm combinations with IKEv1.
  +
- xref:config/IKEv2CipherSuites.adoc[Algorithm keywords] get separated using dashes.
+ xref:config/proposals.adoc[Algorithm keywords] get separated using dashes.
  Multiple proposals may be separated by commas. The special value `*default*`
  adds a default proposal of supported algorithms considered safe and is usually
  a good choice for interoperability. [`default`]
@@ -601,7 +601,7 @@ of the CHILD_SA configuration, which must be unique within the connection
 
 |<child>.ah_proposals      |
 |AH proposals to offer for the CHILD_SA. A proposal is a set of
- xref:config/IKEv2CipherSuites.adoc[algorithms]. For AH, this includes an
+ xref:config/proposals.adoc[algorithms]. For AH, this includes an
  integrity algorithm and an optional key exchange method. If a KE method is
  specified, CHILD_SA/Quick Mode rekeying and initial negotiation uses a separate
  key exchange using the negotiated method (refer to `*esp_proposals*` for details).
@@ -615,7 +615,7 @@ of the CHILD_SA configuration, which must be unique within the connection
  allowed per proposal. Additional algorithms are implicitly stripped. Use multiple
  proposals to offer different algorithm combinations with IKEv1.
  +
- xref:config/IKEv2CipherSuites.adoc[Algorithm keywords] get separated using dashes.
+ xref:config/proposals.adoc[Algorithm keywords] get separated using dashes.
  Multiple proposals may be separated by commas. The special value `*default*`
  forms a default proposal of supported algorithms considered safe and is usually
  a good choice for interoperability.
@@ -624,7 +624,7 @@ of the CHILD_SA configuration, which must be unique within the connection
 
 |<child>.esp_proposals     |[->]
 |ESP proposals to offer for the CHILD_SA. A proposal is a set of
- xref:config/IKEv2CipherSuites.adoc[algorithms]. For non-AEAD ESP proposals,
+ xref:config/proposals.adoc[algorithms]. For non-AEAD ESP proposals,
  this includes an integrity algorithm, an encryption algorithm, an optional
  key exchange method and an optional Extended Sequence Number Mode (ESN)
  indicator. For AEAD proposals, a combined mode algorithm is used instead of the
@@ -652,7 +652,7 @@ of the CHILD_SA configuration, which must be unique within the connection
  allowed per proposal. Additional algorithms are implicitly stripped. Use multiple
  proposals to offer different algorithm combinations for IKEv1.
  +
- xref:config/IKEv2CipherSuites.adoc[Algorithm keywords] get separated using dashes.
+ xref:config/proposals.adoc[Algorithm keywords] get separated using dashes.
  Multiple proposals may be separated by commas. The special value `*default*`
  forms a default proposal of supported algorithms considered safe and is usually
  a good choice for interoperability. If no algorithms are specified for AH nor

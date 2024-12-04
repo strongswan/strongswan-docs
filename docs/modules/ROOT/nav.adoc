@@ -18,7 +18,7 @@
 ** xref:config/strongswanDir.adoc[]
 ** xref:swanctl/swanctlConf.adoc[]
 ** xref:swanctl/swanctlDir.adoc[]
-* xref:config/IKEv2CipherSuites.adoc[]
+* xref:config/proposals.adoc[]
 * xref:config/logging.adoc[]
 * xref:config/identityParsing.adoc[]
 * xref:config/jobPriority.adoc[]
