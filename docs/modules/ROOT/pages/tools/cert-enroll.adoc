@@ -200,13 +200,15 @@ key and certificate installations can be implemented.
 
 === Activation of Installation Scripts
 
-Installation scripts are activated via symbolic links im the `*cert-install.d*`
-directory. For the example of a {DIRSRV}[*389 Directory Server*] the following
-two installation scripts are referenced:
+Installation scripts are activated via symbolic links in the `*cert-install.d*`
+directory. For the example of a {DIRSRV}[*389 Directory Server*] managed via the
+{COCKPIT}[*Cockpit*] interface, the following three installation scripts are
+referenced:
 ----
 # cd /etc/cert-enroll.d
-# ln -s cert-install-available/cert-install-dirsrv cert-install.d
-# ln -s cert-install-available/cert-install-sssd   cert-install.d
+# ln -s cert-install-available/cert-install-cockpit cert-install.d
+# ln -s cert-install-available/cert-install-dirsrv  cert-install.d
+# ln -s cert-install-available/cert-install-sssd    cert-install.d
 ----
 
 == Logging
