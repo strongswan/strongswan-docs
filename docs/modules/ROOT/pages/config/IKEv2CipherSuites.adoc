@@ -6,6 +6,7 @@
 :IANA:    https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml
 :IETF:    https://datatracker.ietf.org/doc/html
 :RFC6379: {IETF}/rfc6379
+:RFC9370: {IETF}/rfc9370
 
 The keywords listed below can be used with the `*proposals*` attributes in
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to define IKE or ESP/AH cipher
@@ -454,9 +455,29 @@ directly via their respective {IETF}/rfc5869[HKDF (RFC 5869)] implementation.
 
 The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
-== Diffie Hellman Groups
+== Key Exchange Methods
 
-=== Regular Modular Prime Groups
+[TIP]
+.Using Multiple Key Exchanges
+====
+With peers that support multiple IKEv2 key exchanges ({RFC9370}[RFC 9370]), up to seven
+*additional key exchanges* may be negotiated. They can be configured by prefixing
+the algorithm keyword with `*keX_*` (where `*X*` is a number between 1 and 7).
+So a total of eight key exchanges may be used for each SA.
+
+For example, `*x25519-ke1_mlkem786*` adds ML-KEM-786 as additional key
+exchange method after the initial key exchange with X25519. This works with any
+key exchange method, whether post-quantum or classic Diffie-Hellman.
+
+As with any algorithm in proposals, peers have to agree on a KE method for each
+round unless no algorithms are defined by both or `*keX_none*` is configured to
+make a particular round explicitly *optional* (there can be gaps, so it's
+technically fine to negotiate e.g. `*x25519-ke7_mlkem786*`).
+====
+
+=== Classic Diffie-Hellman Groups
+
+==== Regular Modular Prime Groups
 
 [cols="5,6,1,4,3"]
 |===
@@ -495,7 +516,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 |18 |x b o g       |gmp
 |===
 
-=== Modular Prime Groups with Prime Order Subgroup
+==== Modular Prime Groups with Prime Order Subgroup
 
 [cols="5,3,3,1,4,3"]
 |===
@@ -514,7 +535,9 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 |24 |*s* x b w o g |gmp
 |===
 
-=== NIST Elliptic Curve Groups
+=== Elliptic Curve Diffie-Hellman Groups
+
+==== NIST Elliptic Curve Groups
 
 [cols="5,6,1,4,3"]
 |===
@@ -541,7 +564,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 |21 |b w o         |
 |===
 
-=== Brainpool Elliptic Curve Groups
+==== Brainpool Elliptic Curve Groups
 
 [cols="5,6,1,4,3"]
 |===
@@ -564,7 +587,7 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 |30 |b w o         |
 |===
 
-=== Modern Elliptic Curve Groups
+==== Modern Elliptic Curve Groups
 
 [cols="5,6,1,4,3"]
 |===
@@ -579,13 +602,13 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 |32 | w o          |
 |===
 
-== Post-Quantum Key Exchange Methods
+=== Post-Quantum Key Exchange Methods
 
 The parameter set of a certain *security strength category* is claimed to be
 at least as secure as a generic block cipher with the prescribed key size or a
 generic hash with the prescribed output length.
 
-=== Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM, FIPS 203)
+==== Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM, FIPS 203)
 
 [cols="5,6,1,4,3"]
 |===

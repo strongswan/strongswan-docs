@@ -151,14 +151,22 @@ an arbitrary yet unique name (denoted `<conn>` below).
  automatic IKE port floating to port `*4500*` is used to work around NAT issues
 
 |<conn>.proposals          |[->]
-|A proposal is a set of algorithms. For non-AEAD algorithms this includes IKE an
- encryption algorithm, an integrity algorithm, a pseudo random function (PRF) and
- a Diffie-Hellman key exchange group. For AEAD algorithms, instead of encryption
- and integrity algorithms a combined algorithm is used. With IKEv2 multiple
- algorithms of the same kind can be specified in a single proposal, from which one
- gets selected. For IKEv1 only one algorithm per kind is allowed per proposal,
- more algorithms get implicitly stripped. Use multiple proposals to offer different
- algorithm combinations with IKEv1. Algorithm keywords get separated using dashes.
+|A proposal is a set of xref:config/IKEv2CipherSuites.adoc[algorithms]. For
+ non-AEAD IKE proposals, this includes an encryption algorithm, an integrity
+ algorithm, a pseudo-random function (PRF) and a key exchange method. For AEAD
+ proposals, instead of encryption and integrity algorithms a combined mode
+ algorithm is used.
+ +
+ With peers that support multiple IKEv2 key exchanges (RFC 9370), up to seven
+ additional key exchanges may be negotiated. They can be configured by prefixing
+ the algorithm keyword with `*keX_*` (where `*X*` is a number between 1 and 7).
+ +
+ For IKEv2, multiple algorithms of the same kind can be specified in a single
+ proposal, from which one gets selected. For IKEv1, only one algorithm per kind
+ is allowed per proposal, more algorithms get implicitly stripped. Use multiple
+ proposals to offer different algorithm combinations with IKEv1.
+ +
+ xref:config/IKEv2CipherSuites.adoc[Algorithm keywords] get separated using dashes.
  Multiple proposals may be separated by commas. The special value `*default*`
  adds a default proposal of supported algorithms considered safe and is usually
  a good choice for interoperability. [`default`]
@@ -178,7 +186,7 @@ an arbitrary yet unique name (denoted `<conn>` below).
 |<conn>.pull               |`yes`
 |If the default of `*yes*` is used, ModeConfig works in *pull* mode where the
  initiator actively requests a virtual IP. With `*no*` *push* mode is used where
- the responder pushes down a virtual IP to the initiating peer. `*Push* mode is
+ the responder pushes down a virtual IP to the initiating peer. *Push* mode is
  currently supported for IKEv1 but not for IKEv2. It is used by a few
  implementations only, so that *pull* mode is recommended
 
@@ -592,50 +600,63 @@ of the CHILD_SA configuration, which must be unique within the connection
 |Key |Default| Description [default]
 
 |<child>.ah_proposals      |
-|AH proposals to offer for the CHILD_SA. A proposal is a set of algorithms. For AH
- this includes an integrity algorithm and an optional Diffie-Hellman group. If a
- DH group is specified, CHILD_SA/Quick Mode rekeying and initial negotiation uses
- a separate Diffie-Hellman exchange using the specified group (refer to
- `*esp_proposals*` for details).
+|AH proposals to offer for the CHILD_SA. A proposal is a set of
+ xref:config/IKEv2CipherSuites.adoc[algorithms]. For AH, this includes an
+ integrity algorithm and an optional key exchange method. If a KE method is
+ specified, CHILD_SA/Quick Mode rekeying and initial negotiation uses a separate
+ key exchange using the negotiated method (refer to `*esp_proposals*` for details).
  +
- For IKEv2 multiple algorithms of the same kind can be specified in a single
- proposal, from which one gets selected. For IKEv1 only one algorithm per kind is
+ With peers that support multiple IKEv2 key exchanges (RFC 9370), up to seven
+ additional key exchanges may be negotiated. They can be configured by prefixing
+ the algorithm keyword with `*keX_*` (where `*X*` is a number between 1 and 7).
+ +
+ For IKEv2, multiple algorithms of the same kind can be specified in a single
+ proposal, from which one gets selected. For IKEv1, only one algorithm per kind is
  allowed per proposal. Additional algorithms are implicitly stripped. Use multiple
- proposals to offer different algorithms combinations for IKEv1.
+ proposals to offer different algorithm combinations with IKEv1.
  +
- Algorithm keywords get separated using dashes. Multiple proposals may be separated
- by commas. The special value `*default*` forms a default proposal of supported
- algorithms considered safe and is usually a good choice for interoperability.
+ xref:config/IKEv2CipherSuites.adoc[Algorithm keywords] get separated using dashes.
+ Multiple proposals may be separated by commas. The special value `*default*`
+ forms a default proposal of supported algorithms considered safe and is usually
+ a good choice for interoperability.
+ +
  By default no AH proposals are included, instead ESP is proposed
 
 |<child>.esp_proposals     |[->]
-|ESP proposals to offer for the CHILD_SA. A proposal is a set of algorithms. For
- ESP non-AEAD proposals this includes an integrity algorithm, an encryption
- algorithm, an optional Diffie-Hellman group and an optional Extended Sequence
- Number Mode (ESN) indicator. For AEAD proposals, a combined mode algorithm is
- used instead of the separate encryption/integrity algorithms.
+|ESP proposals to offer for the CHILD_SA. A proposal is a set of
+ xref:config/IKEv2CipherSuites.adoc[algorithms]. For non-AEAD ESP proposals,
+ this includes an integrity algorithm, an encryption algorithm, an optional
+ key exchange method and an optional Extended Sequence Number Mode (ESN)
+ indicator. For AEAD proposals, a combined mode algorithm is used instead of the
+ separate encryption/integrity algorithms.
  +
- If a DH group is specified, CHILD_SA/Quick Mode rekeying and initial negotiation
- use a separate Diffie-Hellman exchange using the specified group. However, for
+ If a key exchange method is specified, CHILD_SA/Quick Mode rekeying and initial
+ negotiation use a separate key exchange using the negotiated method. However, for
  IKEv2, the keys of the CHILD_SA created implicitly with the IKE_SA will always be
- derived from the IKE_SA's key material. So any DH group specified here will only
- apply when the CHILD_SA is later rekeyed or is created with a separate
- `CREATE_CHILD_SA` exchange. A proposal mismatch might therefore not immediately
- be noticed when the SA is established, but may later cause rekeying to fail.
+ derived from the IKE_SA's key material. So any key exchange method specified
+ here will only apply when the CHILD_SA is later rekeyed or is created with a
+ separate `CREATE_CHILD_SA` exchange. A proposal mismatch might therefore not
+ immediately be noticed when the SA is established, but may later cause rekeying
+ to fail.
+ +
+ With peers that support multiple IKEv2 key exchanges (RFC 9370), up to seven
+ additional key exchanges may be negotiated. They can be configured by prefixing
+ the algorithm keyword with `*keX_*` (where `*X*` is a number between 1 and 7).
  +
  Extended Sequence Number support may be indicated with the `*esn*` and `*noesn*`
  values. Both may be included to indicate support for both modes. If omitted,
  `*noesn*` is assumed.
  +
- For IKEv2 multiple algorithms of the same kind can be specified in a single
- proposal, from which one gets selected. For IKEv1 only one algorithm per kind is
+ For IKEv2, multiple algorithms of the same kind can be specified in a single
+ proposal, from which one gets selected. For IKEv1, only one algorithm per kind is
  allowed per proposal. Additional algorithms are implicitly stripped. Use multiple
- proposals to offer different algorithms combinations for IKEv1. Algorithm keywords
- get separated using dashes. Multiple proposals may be separated by commas. The
- special value `*default*` forms a default proposal of supported algorithms
- considered safe and is usually a good choice for interoperability. If no
- algorithms are specified for AH nor ESP, the `*default*` set of algorithms for ESP
- is included. [`default`]
+ proposals to offer different algorithm combinations for IKEv1.
+ +
+ xref:config/IKEv2CipherSuites.adoc[Algorithm keywords] get separated using dashes.
+ Multiple proposals may be separated by commas. The special value `*default*`
+ forms a default proposal of supported algorithms considered safe and is usually
+ a good choice for interoperability. If no algorithms are specified for AH nor
+ ESP, the `*default*` set of algorithms for ESP is included. [`default`]
 
 |<child>.sha256_96         |`no`
 |Since version 5.5.3. HMAC-SHA-256 is used with 128-bit truncation with IPsec.
