@@ -6,6 +6,7 @@
 :AWSLC:     https://aws.amazon.com/security/opensource/cryptography/
 :GMP:       https://gmplib.org/
 :OPENSSL:   https://openssl.org/
+:TESTS:     https://www.strongswan.org/testing/testresults
 
 TIP: Please refer to the {RELEASES}[*full release notes*] for a complete list of
 changes.
@@ -27,6 +28,15 @@ The following new `*libstrongswan*` plugin has been *added*:
 
 NOTE: ML-KEM is also supported via {BOTAN}[Botan] (`*botan*` plugin),
 {WOLFSSL}[wolfSSL] (`*wolfssl*` plugin), and {AWSLC}[AWS-LC] (`*openssl*` plugin).
+
+The following IKEv2 configuration examples show the use of the ML-KEM algorithm:
+
+[%noheader, cols="1,1,1"]
+|===
+|with the {TESTS}/botan/rw-mlkem[`*botan*`] plugin
+|with the {TESTS}/wolfssl/rw-mlkem[`*wolfssl*`] plugin
+|with the {TESTS}/ikev2/rw-mlkem[`*ml*`] plugin
+|===
 
 === Removed Plugins
 
