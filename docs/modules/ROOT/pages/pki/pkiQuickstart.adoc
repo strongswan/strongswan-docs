@@ -49,7 +49,7 @@ format then just omit the `*--outform pem*` option.
 The xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509ca*`] directory stores all
 required `CA` certificates either in binary `DER` or in Base64 `PEM` format.
 Irrespective of the file suffix the correct format will be determined by
-strongSwan automagically.
+strongSwan automatically.
 
 == Generating an End Entity Certificate
 
