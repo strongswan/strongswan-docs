@@ -71,7 +71,7 @@ datagrams with both source and destination ports set to the well-known UDP port 
 
 === IKE_SA_INIT Request/Response
 
-The *Initiator* starts the negotiation be sending an `IKE_SA_INIT` request which
+The *Initiator* starts the negotiation by sending an `IKE_SA_INIT` request which
 is answered by the *Responder* with an `IKE_SA_INIT` response.
 
 image::ikeSaInit.png[IKE_SA_INIT Request/Response Pair]
