@@ -582,6 +582,10 @@ Algorithm Identifiers for EdDSA, Ed25519, Ed448, Curve25519 and Curve448 for X.5
 |
 |{IETF}/rfc8954[RFC 8954]:
  Online Certificate Status Protocol (OCSP) Nonce Extension
+
+|
+|{IETF}/draft-ietf-lamps-dilithium-certificates[draft-ietf-lamps-dilithium-certificates]:
+ Internet X.509 PKI: Algorithm Identifiers for ML-DSA
 |===
 
 == EAP
