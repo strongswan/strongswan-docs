@@ -61,7 +61,7 @@ Remote Hosts / Host-to-Host ::
 Remote Sites / Site-to-Site ::
   Hosts in two or more subnets at different locations should be able to access
   each other. Again referring to the image above, the two subnets `*10.1.0.0/16*`
-  and `*10.2.0.0/24*` behind gateways `*moon*` and `*sun*`, respectively, might be
+  and `*10.2.0.0/16*` behind gateways `*moon*` and `*sun*`, respectively, might be
   connected, so that e.g. the hosts `*alice*` and `*bob*` may securely communicate
   with one another.
 
@@ -108,7 +108,7 @@ the negotiated IPsec SAs and SPs into the kernel by using a platform-dependent
 The mentioned distinction between policies and SAs often leads to *misconceptions*.
 For instance, referring to the image above, if host `*moon*` has a site-to-site
 tunnel to host `*sun*` (connecting the two networks `*10.1.0.0/16*` and
-`*10.2.0.0/24*`) and host `*carol*` has a roadwarrior connection to host `*sun*`
+`*10.2.0.0/16*`) and host `*carol*` has a roadwarrior connection to host `*sun*`
 (from which `*carol*` received a virtual IP address of `*10.3.0.10*`). Then `*carol*`
 won't be able to automatically communicate with `*alice*`, even if forwarding is
 enabled on `*sun*`.  This is because there is no IPsec policy allowing traffic
