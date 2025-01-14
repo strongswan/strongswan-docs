@@ -61,7 +61,7 @@ Remote Hosts / Host-to-Host ::
 Remote Sites / Site-to-Site ::
   Hosts in two or more subnets at different locations should be able to access
   each other. Again referring to the image above, the two subnets `*10.1.0.0/16*`
-  and `*10.2.0.0/24*` behind gateways `*moon*` and `*sun*`, respectively, might be
+  and `*10.2.0.0/16*` behind gateways `*moon*` and `*sun*`, respectively, might be
   connected, so that e.g. the hosts `*alice*` and `*bob*` may securely communicate
   with one another.
 
