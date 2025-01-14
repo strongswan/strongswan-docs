@@ -6,6 +6,7 @@
 :HSR:      https://en.wikipedia.org/wiki/Hochschule_f%C3%BCr_Technik_Rapperswil
 :FREESWAN: https://www.freeswan.org/
 :LICENSE:  https://www.strongswan.org/license.html
+:DEVCERT:  https://developercertificate.org/
 
 Contributions to the strongSwan project are very welcome. Before you start your
 development, please get in contact with our developers via one of our
@@ -13,7 +14,7 @@ xref:support/free.adoc[support channels]. We might already have some plans for
 such a feature or are even working on it. We can also give you some useful hints
 on how to integrate your work into the strongSwan architecture.
 
-For non-trivial submissions we'll require that you sign a Contributor License
+For most submissions we'll require that you sign a Contributor License
 Agreement (see below for details).
 
 Patches may be submitted as *pull requests* on {GITHUB}/pulls/[GitHub].
@@ -60,11 +61,12 @@ to several people.
 == Contributing
 
 Depending on the strongSwan components of your contribution, a signed
-Contributor License Agreement (CLA) will usually be required:
+Contributor License Agreement (CLA) or a Developer Certificate of Origin (DCO)
+will be required:
 
 === Core Libraries, Front Ends and Tools
 
-If your (non-trivial) contributions are targeting
+If your contributions are targeting
 
 * the core libraries:
 
@@ -143,6 +145,32 @@ If you submit non-trivial patches:
 
 If your contributions are targeting any of the following components we will
 *not require* contributors to have signed a Contributor License Agreement (CLA).
+
+However, we will require contributors to provide a Developer Certificate of
+Origin (DCO) in form of a per-commit sign-off stating that they agree to
+the terms given below and published at {DEVCERT}[developercertificate.org] for
+that particular contribution.
+
+.Full DCO text, reformatted for readability
+[%collapsible]
+====
+****
+By making a contribution to this project, I certify that:
+
+ 1. The contribution was created in whole or in part by me and I have the right to submit it under the open source license indicated in the file; or
+
+ 2. The contribution is based upon previous work that, to the best of my knowledge, is covered under an appropriate open source license and I have the right under that license to submit that work with modifications, whether created in whole or in part by me, under the same open source license (unless I am permitted to submit under a different license), as indicated in the file; or
+
+ 3. The contribution was provided directly to me by some other person who certified 1., 2. or 3. and I have not modified it.
+
+ 4. I understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information I submit with it, including my sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
+****
+====
+
+This sign-off is part of the commit message and can be added automatically with
+the `*-s*` option in Git's CLI. It has the following format:
+
+    Signed-off-by: Full Name <email>
 
 The files in these components use regular GPLv2-headers, if any.
 
