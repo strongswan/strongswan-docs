@@ -174,7 +174,7 @@ matter:
 === DNS servers
 
 DNS servers and other attributes can be assigned by plugins (e.g. by the
-xref:plugins/attr.adoc[`*attr*`] plugin. In
+xref:plugins/attr.adoc[`*attr*`] plugin). In
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] each pool in the `*pools*`
 section may define a list of attributes to assign to clients.
 
