@@ -180,10 +180,13 @@ Windows 10 ::
   to be added manually, e.g. via the
   {VPNCLIENT}/Add-VpnConnectionRoute?view=win10-ps[Add-VpnConnectionRoute] PowerShell
   command,
-  or using DHCP (see xref:interop/windowsClients.adoc#split_routing_since_windows_10[Windows clients documentation]).
-  To tunnel all traffic via VPN instead, split tunneling has to be disabled
-  explicitly, either by enabling the _Use default gateway on remote network_
-  setting described above or by using the following PowerShell command
+  or xref:interop/windowsClients.adoc#_split_routing_since_windows_10[using DHCP].
++
+To tunnel all traffic via VPN instead,
+xref:interop/windowsClients.adoc#_split_routing_since_windows_10[DHCP may be used]
+or split tunneling can simply be disabled explicitly, either by enabling
+the __Use default gateway on remote network__ setting described above or by using
+the following PowerShell command
 +
 ----
 Set-VpnConnection "<Connection Name>" -SplitTunneling 0
