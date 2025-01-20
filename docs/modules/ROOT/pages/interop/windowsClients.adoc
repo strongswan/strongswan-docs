@@ -192,22 +192,53 @@ Server. All versions of Windows also support the proprietary IKEv1 fragmentation
 === Split Routing since Windows 10
 
 Microsoft changed the Windows 10 VPN routing behavior for new VPN connections.
-Option "Use default gateway on remote network option" in the Advanced TCP/IP settings
-of the VPN connection is now disabled by default but can be enabled if desired.
-Fortunately Windows sends a DHCP request upon connection and add routes supplied
-in option `*249*` of the DHCP reply.
+xref:howtos/forwarding.adoc#_split_tunneling_with_ikev2[Split-tunneling] is now
+enabled by default (xref:howtos/forwarding.adoc#_split_tunneling_with_ikev2[with known limitations])
+but can be disabled if desired. Alternatively, DHCP may be used to configure
+which traffic is routed via gateway.
 
-Sample configuration file for dnsmasq:
+Windows sends a `*DHCPINFORM*` request upon connecting and adds routes supplied
+in option `*249*` of the DHCP reply. By distributing appropriate subnets
+in that option, this can be used to route everything or only specific
+subnets via gateway. Note that you can't ignore DHCP routes in Windows.
+
+.Example configuration for `*dnsmasq*` to forward *all traffic* via gateway
+[%collapsible]
+====
 ----
 dhcp-vendorclass=set:msipsec,MSFT 5.0
-dhcp-range=tag:msipsec,192.168.103.0,static
+dhcp-range=tag:msipsec,192.168.103.0,static <1>
 dhcp-option=tag:msipsec,6
-dhcp-option=tag:msipsec,249, 0.0.0.0/1,0.0.0.0, 128.0.0.0/1,0.0.0.0
+dhcp-option=tag:msipsec,249, 0.0.0.0/1,0.0.0.0, 128.0.0.0/1,0.0.0.0 <2>
 ----
-where `*192.168.103.0*` is your (internal) network. It pushes two separate routes
-which cover the entire IPv4 range. Gateway could be anything (set to `*0.0.0.0*`
-in an example) as it is ignored by Windows. Note that you can't ignore DHCP routes
-in Windows.
+<1> `*192.168.103.0*` is your (internal) network
+<2> Two routes are pushed that cover the entire IPv4 range. Gateway could be
+anything (set to `*0.0.0.0*` in an example) as it is ignored by Windows
+====
+
+.Example configuration for `*dnsmasq*` to route *only specific subnet(s)* via gateway
+[%collapsible]
+====
+----
+dhcp-vendorclass=set:msipsec,MSFT 5.0
+dhcp-range=tag:msipsec,192.168.103.0,static <1>
+dhcp-option=tag:msipsec,6
+dhcp-option=tag:msipsec,249, 192.168.101.0/24,0.0.0.0 <2>
+----
+<1> `*192.168.103.0*` is your (internal) network
+<2> Routed subnets are configured in a comma-separated list, each one is directly
+followed by a gateway address that Windows ignores (`*0.0.0.0*` in the example)
+====
+
+To allow DHCP in the second scenario, i.e. when using split-tunneling, include
+`*255.255.255.255/32*` in the server's traffic selectors to enable broadcasts (not
+necessary when everything is tunneled via gateway anyway and the traffic selector
+is `*0.0.0.0/0*`).
+
+.Example traffic selector configuration to allow DHCP in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+----
+local_ts = 192.168.101.0/24, 255.255.255.255/32
+----
 
 === IPv6
 
