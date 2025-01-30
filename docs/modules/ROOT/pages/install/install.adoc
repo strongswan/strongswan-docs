@@ -61,18 +61,25 @@ include the required xref:install/kernelModules.adoc[kernel modules].
 The GNU build system (Autotools) is used to build strongSwan. There is an ever
 growing list of xref:install/autoconf.adoc[`*./configure*` options] available.
 
-NOTE: Many of these configuration options are enabled by default. Thus please
-      use *./configure --help* to check which options are actually available for
-      your strongSwan release.
-
 Refer to the xref:plugins/plugins.adoc[list of plugins] to learn more about the
-plugins enabled with the above options.
+plugins enabled with these options.
 
-NOTE: Some plugins have *dependencies on third-party libraries*. To compile these
-      plugins, the header files of those libraries are required. Make sure these
-      are installed on your system, e.g. by installing the appropriate *-dev*
-      package on Debian-based systems. Otherwise, the configure script will
-      complain that it can't find the library or header files.
+[NOTE]
+====
+Many of the configuration options are enabled by default. Thus please
+use *./configure --help* to check which options are actually available for
+your strongSwan release.
+
+Some plugins have *dependencies on third-party libraries*. To compile them,
+the header files of those libraries are required. Make sure these
+are installed on your system, e.g. by installing the appropriate *-dev*
+package on Debian-based systems. Otherwise, the configure script will
+complain that it can't find the library or header files.
+====
+
+IMPORTANT: When changing configure options, especially enabling/disabling
+           plugins, make sure to run `*make clean*` before rebuilding to make
+           sure all changes are picked up.
 
 The build procedure is as with any autotools project:
 
