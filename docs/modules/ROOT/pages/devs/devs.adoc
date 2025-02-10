@@ -113,6 +113,10 @@ test runner:
  provide IPv4 networking)
 |5.9.6
 
+|`TESTS_TIMING`
+|Show timing information for each test case and iteration
+|5.9.0
+
 |`TESTS_VERBOSITY`
 |The log level used when running the tests (`*-1*` to `*4*` with a default of
  `*-1*`), see xref:config/logging.adoc[Logging]
