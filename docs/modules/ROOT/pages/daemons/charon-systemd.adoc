@@ -16,7 +16,7 @@ To build the daemon, add
 to the xref:install/autoconf.adoc[`*./configure*`] options. In order to disable
 the legacy `*ipsec*` backend, additionally add
 
- --disable-charon --disable-stroke --disable-scepclient
+ --disable-charon --disable-stroke
 
 to build a lightweight and clean IKE daemon using modern tools.
 
