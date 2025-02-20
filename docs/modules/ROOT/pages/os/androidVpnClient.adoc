@@ -29,7 +29,10 @@ supported via enterprise mobility management (EMM). This allows pushing VPN
 profiles to managed devices using basically the same settings as those in the
 xref:./androidVpnClientProfiles.adoc[profile files]. But also provides additional
 options to configure global app settings and disable certain features of the app
-(e.g. the ability for users to add or import their own VPN profiles).
+(e.g. the ability for users to add or import their own VPN profiles). Note that
+distributing certificates with managed profiles requires the MDM to assign the
+`CERT_INSTALL` delegated scope to the strongSwan app so it can install the
+certificate and private key.
 
 Client certificates and keys, and CA certificates may be added by bundling them
 into a xref:pki/pkiQuickstart.adoc#_pkcs12_container[PKCS#12 file] and then
@@ -207,6 +210,16 @@ new features and provide us with valuable feedback, please {PLAYTEST}[opt-in her
 or directly from the app's page in the Play store.
 
 == Changelog
+
+=== 2.5.3 (2025-02-20)
+
+* Add support for distributing passwords in managed profiles
+* Add support for importing xref:./androidVpnClientProfiles.adoc[profile files]
+  with passwords (a warning is displayed to remind users that the file contains
+  the password in cleartext)
+* Fix a crash when editing the password of a managed profile
+* Fix a crash when re-importing an already existing profile from a file
+* Fix some deprecation warnings
 
 === 2.5.2 (2024-08-06)
 

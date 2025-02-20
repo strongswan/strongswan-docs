@@ -1,6 +1,6 @@
 = VPN Profile Import for the Android VPN Client
 
-:COLS:    cols="1,3,9"
+:COLS:    cols="1,3,9a"
 :JSON:    https://json.org
 :IETF:    https://datatracker.ietf.org/doc/html
 :RFC4122: {IETF}/rfc4122
@@ -180,9 +180,10 @@ are defined:
 |      |`eap_id`
 |Optional identity/username for EAP authentication. If this is required (for
  username/password-based EAP authentication) but not configured here, the user is
- prompted for it when importing the profile. If it is set the user is not able to
- change it while importing (but may later do so). In both cases the user may
- optionally enter the password while importing the profile
+ prompted for it when importing the profile. If it is set, the user is not able
+ to change it while importing (but may do so later). In both cases the user may
+ optionally enter the password while importing the profile unless one is provided
+ with the profile (see below)
 
 |      |`id`
 |Optional IKE identity of the client for certificate authentication and since
@@ -190,6 +191,15 @@ are defined:
  types. Typically has to match a `*subjectAltName*` contained in the client
  certificate if one is used. Must not be configured if the certificate's subject
  DN shall be used as client identity
+
+|      |`shared_secret`
+|Optional password for EAP authentication. If it is set, the user is not able to
+ change it while importing (but may do so later). Since
+ xref:./androidVpnClient.adoc#_2_5_3_2025_02_20[2.5.3]
+
+WARNING: Profile files are *not encrypted*. So make sure to handle files
+         containing such *cleartext passwords* with care (e.g. send them via
+         encrypted channels and delete them after use).
 
 |      |`p12`
 |Optional Base64-encoded PKCS#12-container with the client certificate and private
