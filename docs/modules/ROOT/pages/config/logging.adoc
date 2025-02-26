@@ -17,8 +17,8 @@ on your system. Common places are `*/var/log/daemon*`, `*/var/log/syslog*` or
 `*/var/log/messages*`.
 
 Unlike xref:daemons/charon.adoc[`*charon*`],
-xref:daemons/charon-systemd.adoc[`*charon-systemd*`] by default logs to the
-`*systemd*` journal and not to `*syslog*` by default. The log levels are
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] logs to the `*systemd*`
+journal by default, not to `*syslog*`. The log levels are
 configurable in a xref:daemons/charon-systemd.adoc#_logging[separate section]
 in xref:config/strongswanConf.adoc[`*strongswan.conf*`] which is not described
 here.

@@ -225,21 +225,22 @@ include::partial$config/number_formats.adoc[]
 The following list shows all `*strongswan.conf*` keys that are currently defined
 (using dot notation).
 
-* `*$\{prefix}*` refers to the directory that can be configured with the
+[horizontal]
+`*$\{prefix}*` :: refers to the directory that can be configured with the
   `*--prefix*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
-  option (defaults to `*/usr/local*`).
+  option (defaults to `*/usr/local*`)
 
-* `*$\{sysconfdir}*` refers to the directory that can be configured with the
+`*$\{sysconfdir}*` :: refers to the directory that can be configured with the
   `*--sysconfdir*` xref:install/autoconf.adoc#_dir_options[`*./configure*`]
-  option (defaults to `*$\{prefix}/etc*`).
+  option (defaults to `*$\{prefix}/etc*`)
 
-* `*$\{piddir}*` refers to the directory that can be configured with the
+`*$\{piddir}*` :: refers to the directory that can be configured with the
   `*--with-piddir*` xref:install/autoconf.adoc#_with_options[`*./configure*`]
-  option (defaults to `*/var/run*`).
+  option (defaults to `*/var/run*`)
 
-* `*$\{nm_ca_dir}*` refers to the directory that can be configured with the
+`*$\{nm_ca_dir}*` :: refers to the directory that can be configured with the
   `*--with-nm-ca-dir*` xref:install/autoconf.adoc#_with_options[`*./configure*`]
-  option (defaults to `*/usr/share/ca-certificates*`).
+  option (defaults to `*/usr/share/ca-certificates*`)
 
 === aikgen
 [{COLS}]
@@ -258,11 +259,15 @@ include::partial$config/attest.adoc[]
 
 === charon
 
-Many of the options in this section also apply to
-xref:daemons/charon-cmd.adoc[`*charon-cmd*`],
-xref:daemons/charon-systemd.adoc[*`charon-systemd*`] and other derivatives of
-the xref:daemons/charon.adoc[`*charon*`] daemon. Just use their respective name
-(e.g. `*charon-systemd*` instead of `*charon*`).
+Many of the options in this section also apply to derivatives of the
+xref:daemons/charon.adoc[`*charon*`] daemon. Just use their respective name (e.g.
+`*charon-systemd*` instead of `*charon*`). Note that
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] and
+xref:daemons/charon-svc.adoc[`*charon-svc*`] both automatically inherit
+options from the `*charon*` section. However,
+xref:daemons/charon-cmd.adoc[`*charon-cmd*`] and
+xref:features/networkManager.adoc[`*charon-nm*`] don't.
+
 
 [{COLS}]
 |===
@@ -1167,7 +1172,7 @@ include::partial$config/plugins/xauth-eap.adoc[]
 include::partial$config/plugins/xauth-pam.adoc[]
 |===
 
-=== xref:daemons/charon-nm[charon-nm]
+=== xref:features/networkManager.adoc[charon-nm]
 [{COLS}]
 |===
 |*Key*|*Default*|*Description [Default]*
@@ -1175,7 +1180,7 @@ include::partial$config/plugins/xauth-pam.adoc[]
 include::partial$config/charon-nm.adoc[]
 |===
 
-=== xref:daemons/charon-systemd[charon-systemd]
+=== xref:daemons/charon-systemd.adoc[charon-systemd]
 [{COLS}]
 |===
 

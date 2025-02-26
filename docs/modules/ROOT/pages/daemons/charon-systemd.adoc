@@ -59,10 +59,26 @@ strongswan.service - strongSwan IPsec IKEv1/IKEv2 daemon using swanctl
              └─1308 /usr/sbin/charon-systemd
 ----
 
-== Logging
+== Configuration
 
-By default the `*charon-systemd*` backend logs to the `*systemd*` journal that
-can be inspected using  `*journalctl*`. Log levels can be configured very
+Many of the xref:daemons/charon.adoc[`*charon*`]-specific configuration options
+in xref:config/strongswanConf.adoc[`*strongswan.conf*`] also apply to
+`*charon-systemd*`. Actually, options set in the `*charon*` section are
+*automatically inherited* by `*charon-systemd*`.
+
+The following options are specific to `*charon-systemd*`:
+
+[cols="2,1,10"]
+|===
+|Key |Default|Description
+
+include::partial$config/charon-systemd.adoc[]
+|===
+
+=== Logging
+
+By default, the `*charon-systemd*` backend logs to the `*systemd*` journal,
+which can be viewed using  `*journalctl*`. Log levels can be configured very
 similar to the xref:daemons/charon.adoc[`*charon*`]
 xref:config/logging.adoc[logger configuration] but using a `*journal*` section:
 ----
@@ -75,8 +91,8 @@ charon-systemd {
   }
 }
 ----
-Of course one may define traditional `*syslog*` and `*filelog*` loggers in the
-`*charon-systemd*` section of `*strongswan.conf*`, refer to the
+Of course, one may define traditional `*syslog*` and `*filelog*` loggers in the
+`*charon-systemd*` section of `*strongswan.conf*`. Refer to the
 xref:config/logging.adoc[logger configuration] for details. To disable the
 `*journal*` logger and make it silent, set
 

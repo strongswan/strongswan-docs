@@ -28,7 +28,8 @@ based on the xref:plugins/vici.adoc[`*vici*`] protocol. The application itself
 currently does not have any xref:config/strongswanConf.adoc[`*strongswan.conf*`]
 options. However, all options for `*libcharon*`, `*libstrongswan*` and the
 related plugins apply. Instead of the `*charon*` section, configuration keys are
-located under the `*charon-svc*` root section.
+located under the `*charon-svc*` root section. Options set in the `*charon*`
+section are *automatically inherited* by `*charon-svc*`.
 
 To configure logging, the following xref:config/logging.adoc[instructions] apply.
 Unless explicitly built against a `*syslog*` client library, under Windows no

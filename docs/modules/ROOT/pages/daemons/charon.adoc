@@ -8,7 +8,8 @@ the strongSwan project. Most of its code is located in the `*libcharon*` library
 making the IKE daemon core available to other programs such as
 xref:daemons/charon-systemd.adoc[`*charon-systemd*`],
 xref:daemons/charon-svc.adoc[`*charon-svc*`],
-xref:daemons/charon-cmd.adoc[`*charon-cmd*`] or the
+xref:daemons/charon-cmd.adoc[`*charon-cmd*`], the
+xref:features/networkManager.adoc[NetworkManager plugin `*charon-nm*`], or the
 xref:os/androidVpnClient.adoc[Android app].
 
 == Architecture
