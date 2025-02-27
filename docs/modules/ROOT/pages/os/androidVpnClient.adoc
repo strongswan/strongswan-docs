@@ -211,6 +211,12 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.5.4 (2025-02-27)
+
+* Fix reauthentication and roaming between networks (when MOBIKE isn't available)
+  by explicitly disabling make-before-break reauthentication, which the app
+  currently can't handle
+
 === 2.5.3 (2025-02-20)
 
 * Add support for distributing passwords in managed profiles
