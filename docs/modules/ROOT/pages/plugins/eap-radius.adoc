@@ -71,6 +71,7 @@ add a new section to the `*servers*` subsection with a name of your choice
           address = 1.2.3.4
           secret = R4diu5-shared-$ecreŧ
           # nas_identifier = ipsec-gateway
+          # source = 4.3.2.1
         }
       }
     }
@@ -86,6 +87,9 @@ add a new section to the `*servers*` subsection with a name of your choice
   against the RADIUS server and allows it to enforce a policy, for example.
   If you need an UDP port different from the RADIUS default [`*1812*`] use the
   `*port*` option.
+
+* The optional `*source*` attribute, available since version 6.0.1, forces RADIUS
+  messages to be sent from a specific source IP
 
 === Parallel RADIUS Sessions
 

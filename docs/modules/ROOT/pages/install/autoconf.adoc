@@ -425,11 +425,11 @@ plugins.
 |enable PKCS#12 container support plugin
 
 |--enable-python-eggs                                        |5.3.0
-|enable build of provided python eggs e.g. for the
- xref:plugins/vici.adoc[`*vici*`] protocol
+|legacy alias for `--enable-python-wheels`
 
-|--enable-python-eggs-install                                |5.3.1
-|enable local installation of provided python eggs
+|--enable-python-wheels                                      |6.0.1
+|enable build of provided python wheels e.g. for the
+ xref:plugins/vici.adoc[`*vici*`] protocol
 
 |xref:plugins/radattr.adoc[--enable-radattr]                 |
 |enable plugin to inject and process custom RADIUS attributes as IKEv2 client
@@ -764,9 +764,6 @@ specific plugins.
 |--with-printf-hooks=IMPL
 |force the use of a specific printf()-hook implementation
  (auto, builtin, glibc, vstr). [`auto`]
-
-|--with-pythoneggdir=ARG
-|path to install python eggs to. [`main site-packages directory`]
 
 |--with-random-device=DEV
 |set the device for true random data. [`/dev/random`]

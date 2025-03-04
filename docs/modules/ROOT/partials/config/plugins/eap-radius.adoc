@@ -79,14 +79,18 @@
 
 |servers                    |
 |Section to specify multiple RADIUS servers. The `*nas_identifier*`, `*secret*`,
- `*sockets*` and `*port*` (or `*auth_port*`) options can be specified for each
- server. The `*retransmit*` settings can also be changed for each server.  A
- server's IP/Hostname can be configured using the `*address*` option. The
- `*acct_port*` [1813] option can be used to specify the port used for RADIUS
+ `*sockets*`, `*source*`, and `*port*` (or `*auth_port*`) options can be
+ specified for each server. The `*retransmit*` settings can also be changed for
+ each server.  A server's IP/Hostname can be configured using the `*address*` option.
+ The `*acct_port*` [1813] option can be used to specify the port used for RADIUS
  accounting. For each server a priority can be specified using the `*preference*` [0]
  option
+
 |sockets                    |`1`
 |Number of sockets (ports) to use. Increase for high load
+
+|source                     |
+|Optional specific source IP to use. Since version 6.0.1
 
 |station_id_with_port       |`yes`
 |Whether to include the UDP port in the `*Called-Station_ID*` and

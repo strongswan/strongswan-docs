@@ -15,6 +15,14 @@
  to any (`0.0.0.0`) and let the system decide which way to route the packets
  to the DHCP server
 
+|interface_receive    |[->]
+|Interface name the plugin uses to bind its receive socket. The default is
+ to use the same interface as the send socket. Set it to the empty string
+ to avoid binding the receive socket to any interface while the send socket
+ is bound to one. If the server runs on the same host and the send socket is
+ bound to an interface, it might be necessary to set this to `lo` or the
+ empty string. Since version 6.0.1
+
 |server               |[->]
 |`DHCP` server unicast or broadcast IP address.
  `*[255.255.255.255]*`

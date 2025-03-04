@@ -37,7 +37,7 @@ The `*dhcp*` plugin is configured using the following options in the
 xref:config/strongswanConf.adoc#_charon_plugins_dhcp[`*charon.plugins.dhcp*`]
 section of xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 
-[cols="2,1,9"]
+[cols="3,1,8"]
 |===
 |Key |Default |Description [Default]
 

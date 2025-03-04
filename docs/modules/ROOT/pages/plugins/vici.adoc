@@ -69,7 +69,7 @@ permissions. The high and low level protocol details can be found in the
 For the client side, any programming language may be used to communicate to the
 daemon using the {VICI}[VICI] protocol. Currently strongSwan comes with
 {VICI}[VICI] client libraries for C, Perl, Python and Ruby. The available
-operations and some simple examples using the libvici C interface, the Python Egg,
+operations and some simple examples using the libvici C interface, the Python wheel,
 Perl CPAN module and Ruby gem and can be found in the {VICI}[VICI README].
 
 === libvici C bindings
@@ -101,9 +101,9 @@ A Go implementation of the {VICI}[VICI] protocol is available on {GOVICI}[GitHub
 A Ruby gem allowing Ruby applications to control and monitor the IKE daemon.
 It may also be installed via {GEMS}[RubyGems].
 
-=== Python egg
+=== Python wheel
 
-A Python egg for the very same purpose. It may also be installed via {PYPY}[PyPI].
+A Python wheel for the very same purpose. It may also be installed via {PYPY}[PyPI].
 
 === Perl CPAN module
 

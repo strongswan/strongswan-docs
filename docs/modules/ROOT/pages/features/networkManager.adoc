@@ -194,6 +194,18 @@ them, but they may in case of conflicts.
  Defaults to an ephemeral port. May be set to e.g. `4500` if firewall rules
  require a static port.
 
+|retransmit_base                          |`1.4`
+|Base to use for calculating exponential back off, see
+ xref:config/retransmission.adoc[Retransmission]. Default retransmission
+ settings for `charon-nm` are deliberately lower to fail and possibly
+ reestablish SAs more quickly
+
+|retransmit_timeout                       |`2.0`
+|Timeout in seconds before sending first retransmit
+
+|retransmit_tries                         |`3`
+|Number of times to retransmit a packet before giving up.
+
 |routing_table                            |`210`
 |Table where routes via XFRM interface are installed. Should be different
  than the table used for the regular IKE daemon due to the mark (see below).
