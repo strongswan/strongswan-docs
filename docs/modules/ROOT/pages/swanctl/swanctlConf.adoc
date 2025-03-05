@@ -678,11 +678,16 @@ of the CHILD_SA configuration, which must be unique within the connection
  may be specified, separated by a slash. The port restriction may be numeric, a
  `*getservent(3)*` service name, or the special value `*opaque*` for
  {RFC4301}[RFC 4301] OPAQUE selectors. Port ranges may be specified as well,
- although none of the kernel backends currently supports them except the
- `*kernel-netlink*` plugin  that is able to handle port ranges if they are defined
- by a bit mask (similar to a IP subnet mask) rather than an arbitrary range, see
- the xref:config/quickstart.adoc#_for_specific_port_ranges[following example] for
- details.
+ although only the xref:plugins/kernel-libipsec.adoc[`*kernel-libipsec*`] backend
+ directly supports them. The `*kernel-netlink*` plugin is able to handle port
+ ranges if they can be mapped to a bit mask (similar to an IP subnet mask) rather
+ than an arbitrary range, see the xref:config/quickstart.adoc#_for_specific_port_ranges[following example]
+ for details.
+ +
+ If the protocol is `*icmp*` or `*ipv6-icmp*`, the port is interpreted
+ as ICMP message type if it is less than 256 or as type and code if it is greater
+ or equal to 256, with the type in the most significant 8 bits and the code in
+ the least significant 8 bits.
  +
  When IKEv1 is used, only the first selector is interpreted, except if the Cisco
  Unity extension plugin xref:plugins/unity.adoc[`*unity*`] is used. This is due
