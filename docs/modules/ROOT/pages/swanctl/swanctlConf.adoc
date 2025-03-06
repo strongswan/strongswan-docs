@@ -1,6 +1,6 @@
 = swanctl.conf
 :page-toclevels: 4
-:COLS:    cols="3,1,8"
+:COLS:    %has-settings,cols="3,1,8"
 :STAR:    *
 
 :IETF:    https://datatracker.ietf.org/doc/html
@@ -700,7 +700,8 @@ of the CHILD_SA configuration, which must be unique within the connection
  scenarios. [`dynamic`]
 
 |<child>.remote_ts         |[->]
-|Comma separated list of remote selectors to include in CHILD_SA. See `*local_ts*`
+|Comma separated list of remote selectors to include in CHILD_SA. See
+ xref:#_connections_conn_children_child_local_ts[`*local_ts*`]
  for a description of the selector syntax. [`dynamic`]
 
 include::partial$config/swanctl-rekey-child.adoc[]

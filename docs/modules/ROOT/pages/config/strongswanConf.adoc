@@ -1,6 +1,6 @@
 = strongswan.conf
 :page-toclevels: 4
-:COLS: cols="4,1,8"
+:COLS: %has-settings,cols="4,1,8"
 
 :GITHUB:   https://github.com/strongswan/strongswan/blob/master
 :SETTINGS: src/libstrongswan/settings/settings.h
