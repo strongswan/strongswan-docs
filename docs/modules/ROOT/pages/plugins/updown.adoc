@@ -10,6 +10,10 @@ xref:install/autoconf.adoc[`*./configure*`] option
 
  --disable-updown
 
+A default `*_updown*` script is installed in `IPSECDIR`, which defaults to
+`LIBEXECDIR/ipsec` (see xref:install/autoconf.adoc[`*./configure*`] for details).
+For instance, on Debian/Ubuntu, the script is located at `/usr/lib/ipsec/_updown`.
+
 == Configuration
 
 To invoke the default `*_updown*` script with
@@ -33,9 +37,9 @@ and `OUTPUT` chains, besides the rules in the `FORWARD` chain, that allow
 accessing the VPN server itself. Please refer to the `*_updown*` script for
 details.
 
-Alternatively, an arbitrary script can be configured via the `*updown*` attribute
-in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]  to install custom firewall
-rules or perform other actions.
+Alternatively, an arbitrary script with optional arguments can be configured
+via the `*updown*` attribute in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
+to install custom firewall rules or perform other actions.
 
 == Behavior
 
@@ -202,14 +206,14 @@ values:
 |`CHILD_SA down` event, counterpart of up-client-v6
 |===
 
-NOTE: While `CHILD SA` rekeying establishes a new `CHILD SA`, the hooks do
-      not get invoked.
+CAUTION: While Child SA rekeying establishes a new Child SA, the hooks do
+not get invoked.
 
-With IKEv2 a negotiated `CHILD SA` may contain multiple hosts or subnets in the
-negotiated traffic selectors. To keep compatibility with the scripts originally
-designed for IKEv1, the script gets invoked for each traffic selector
-combination once. This means with multiple traffic selectors,
-establishing/closing a `CHILD SA` invokes the script more than once.
+NOTE: With IKEv2, a Child SA's traffic selectors may contain multiple hosts
+or subnets. To keep compatibility with scripts originally designed for IKEv1,
+the script is invoked for each combination of local and remote traffic selectors.
+This means that if there is more than one traffic selector, the *script is
+called multiple times* when a Child SA is established/closed.
 
 == Logging
 
@@ -226,3 +230,11 @@ limitations for historical reasons and might not scale with a lot of tunnels.
 To accept traffic with default `DROP` policies, one may alternatively use global,
 non-tunnel specific rules matching IPsec traffic with the Netfilter `*policy*`
 match.
+
+The xref:plugins/vici.adoc[`*vici*` plugin] provides various asynchronous events
+that may be used to trigger external actions or run scripts. Unlike the `*updown*`
+script, its `*child-updown*` event is only triggered once per Child SA, not
+for each combination of local and remote traffic selectors. And additional events
+are triggered for IKE SAs or for rekeyings of SAs. Handling `*vici*` events also
+doesn't block the IKE daemon's message bus, which running the `*updown*` script
+currently does.
