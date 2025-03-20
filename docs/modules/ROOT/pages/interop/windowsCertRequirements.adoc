@@ -7,6 +7,10 @@
 The IKEv2 Agile VPN client for Windows 7 and later introduced some requirements
 on VPN gateway certificates.
 
+IMPORTANT: Windows clients currently support only certificates with RSA
+or ECDSA with either the NIST P-384 (secp384r1) or NIST P-256 (secp256r1) curve. +
+*Certificates using EdDSA or ECDSA with NIST P-521 (secp521r1) curve are not accepted.*
+
 == Required Fields
 
 A VPN gateway certificate must have:
