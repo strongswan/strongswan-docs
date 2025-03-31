@@ -538,6 +538,21 @@ The `*kdf*` plugin provides generic wrappers for any supported generic PRF.
 
 == Key Exchange Methods
 
+For IKE SA proposals, the key exchange method transform is mandatory. However,
+for Child SA proposals (ESP/AH) it's optional. If it's omitted, the Child
+SA's keys are derived from the IKE SA's key material. On the other hand, if one
+is negotiated, the keys are derived from a separate key exchange. This is often
+called *Perfect Forward Secrecy* (PFS). Please refer to the
+xref:config/rekeying.adoc#_ipsec_sas[rekeying documentation] for details,
+including the xref:config/rekeying.adoc#_ikev2[special IKEv2 behavior].
+
+To make separate key exchanges optional when creating/rekeying a Child SA, the
+special keywords `*none*` or `*modpnone*` may be added to a proposal. For instance,
+configuring `*...-ecp384-modp3072-none*` would prefer `*ecp384*` over `*modp3072*`
+before accepting not performing a separate key exchange for the Child SA. This
+can be useful on a host that connects with peers who propose key exchange methods
+as well as some who don't.
+
 [TIP]
 .Using Multiple Key Exchanges
 ====

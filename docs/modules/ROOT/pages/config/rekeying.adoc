@@ -130,37 +130,50 @@ include::partial$config/swanctl-rekey-ike.adoc[]
 
 `IPsec SAs` or `CHILD_SAs` are always rekeyed by creating new `SAs` and then
 deleting the old ones. The cryptographic keys may either be derived from the
-`IKE` key material or with a separate Diffie-Hellman (`DH`) exchange. The latter
-is also known as *Perfect Forward Secrecy* (`PFS`). To use `PFS`, `DH` groups
-may be added to the proposals for the `IPsec SAs` e.g.
+`IKE` key material or with a separate key exchange. The latter is also known as
+*Perfect Forward Secrecy* (PFS), as breaking the keys of one Child SA does not
+affect the keys of other Child SAs or the IKE SA. Note that some degree of PFS
+is also achieved by rekeying the IKE SA before rekeying the Child SA without a
+separate key exchange as the IKE SA is always rekeyed with an ephemeral key
+exchange.
 
- esp_proposals = aes128-sha256-modp3072
+To use PFS, key exchange methods may be added to the proposals for the
+`IPsec SAs` e.g.
 
-in `swanctl.conf`. To make `PFS` optional (i.e. let the peer choose whether `PFS`
-is used or not) add proposals with and without `DH` groups e.g.
+ esp_proposals = aes128-sha256-ecp384-modp3072
 
- esp_proposals = aes128-sha256-modp3072,aes128-sha256
+in `swanctl.conf`. To make PFS optional (i.e. let the peer choose whether PFS
+is used or not), either use the special keyword `none`
+
+ esp_proposals = aes128-sha256-ecp384-modp3072-none
+
+or add proposals with and without `DH` groups e.g.
+
+ esp_proposals = aes128-sha256-ecp384-modp3072,aes128-sha256
 
 === IKEv2
 
 There is one important aspect that affects `IKEv2`. The keys for the `CHILD_SA`
 that is implicitly created with the `IKE_AUTH` exchange will always be derived
-from the `IKE` key exchange even if `PFS` is configured. So if the peers disagree
-on whether to use `PFS` or not (or on the DH groups) it will not be known until
-the `CHILD_SA` is first rekeyed with a `CREATE_CHILD_SA` exchange (and fails).
-This is also the reason why you won't see a `DH` group in the status output of
-the daemon until the `SA` is first rekeyed.
+from the `IKE` key exchange even if PFS is configured.  Therefore, the key
+exchange methods are omitted in the proposals negotiated during the `IKE_AUTH`
+exchange.  So if the peers disagree on whether to use PFS or not (or on the key
+exchange method) it will not be known until the `CHILD_SA` is first rekeyed with
+a `CREATE_CHILD_SA` exchange (and fails).
+This is also the reason why you won't see a key exchange method in the status
+output of the daemon until the `SA` is first rekeyed.
 
 It's possible to force a `CHILD_SA` rekeying via the
 xref:swanctl/swanctlRekey.adoc[ `*swanctl*`] command and the
 xref:plugins/vici.adoc[`*vici*`] interface. This could be used to test if there
-is a `PFS` configuration mismatch.
+is a PFS configuration mismatch.
 
 Also, since version `5.8.0` strongSwan supports the initiation of childless
 `IKE_SAs`. If enabled, no `CHILD_SA` is created during `IKE_AUTH`. The first
-`CHILD_SA` will be created with a separate `CREATE_CHILD_SA` exchange. Thus the
-configuration issue as described above will be apparent right from the start,
-without having to trigger a rekeying or wait for one.
+`CHILD_SA` will be created with a separate `CREATE_CHILD_SA` exchange. Thus, the
+configuration issue described above will be apparent right from the start,
+without having to trigger a rekeying or wait for one. And the keys of the first
+`CHILD_SA` will be derived from a fresh key exchange as well.
 
 ==== CHILD_SA Rekeying Behavior since Version 5.5.3
 
