@@ -1,4 +1,6 @@
-= Required Kernel Modules
+= Linux Kernel Modules
+
+== Required Kernel Modules
 
 Include the following modules:
 ----
@@ -48,7 +50,7 @@ Cryptographic API
    Encrypted Chain IV Generator [CRYPTO_ECHAINIV]
 ----
 
-== Name List of Required Modules
+=== Name List of Required Modules
 
 Make sure you have the following modules loaded when you try to establish a tunnel:
 ----
@@ -66,7 +68,7 @@ xfrm4_mode_tunnel
 xfrm6_mode_tunnel
 ----
 
-== Optional Modules
+=== Optional Modules
 
 ----
 xfrm_ipcomp
@@ -75,7 +77,7 @@ deflate
 If you want to use compression (`*compress=yes*`), you need the `*xfrm_ipcomp*`
 module and the `*deflate*` module for the compression algorithm.
 
-== Shell Script Checking Required Kernel Modules
+=== Shell Script Checking Required Kernel Modules
 
 ----
 #!/bin/sh
@@ -102,3 +104,23 @@ grep '\<CONFIG_NETFILTER\>' /boot/config-`uname -r`
 grep '\<CONFIG_NETFILTER_XTABLES\>' /boot/config-`uname -r`
 grep '\<CONFIG_NETFILTER_XT_MATCH_POLICY\>' /boot/config-`uname -r`
 ----
+
+== Performance Improvements with ESP GRO/GSO Offload
+
+After loading the `*esp4_offload*` and/or `*esp6_offload*` modules (they are
+available since Linux v4.11, but not loaded automatically), an optimized
+code path is used that leverages the kernel's GRO infrastructure to process
+ESP packets immediately on layer 2 once the GRO layer detects one. The decrypted
+packets are then also reinjected on layer 2 into the stack.
+
+Handling of ESP-in-UDP packets via GRO offload is supported since Linux v6.7
+(requires setting a flag on the UDP socket, which strongSwan does since 6.0.2).
+
+Both modules similarly hook into the GSO layer to improve processing outbound
+packets.
+
+IMPORTANT: One side-effect of loading these modules is that *inbound ESP packets
+won't be seen on layer 3* by Netfilter or e.g. `tcpdump`.  Keep that in mind
+when debugging IPsec tunnels as firewall rules and traffic captures will only
+see decrypted packets.  The traffic counters on the inbound SAs will increase
+as normal, though.
