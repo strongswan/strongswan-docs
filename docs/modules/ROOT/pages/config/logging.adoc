@@ -124,6 +124,8 @@ The following options are supported for each logger:
 NOTE: Since version 5.7.0, section names can't contain dots or colons. To specify
       such paths use the *path* setting in an arbitrarily named section.
 
+NOTE: xref:config//logrotate.adoc[`*logrotate*`] contains two example configurations for logroate to manage a log file written by strongswan
+
 *charon.filelog*
 
 [cols="3,1,9"]
