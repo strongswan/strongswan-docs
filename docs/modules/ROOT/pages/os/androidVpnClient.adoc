@@ -211,6 +211,10 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.5.5 (2025-04-04)
+
+* Fix initiating managed profiles as Always-on VPN
+
 === 2.5.4 (2025-02-27)
 
 * Fix reauthentication and roaming between networks (when MOBIKE isn't available)
