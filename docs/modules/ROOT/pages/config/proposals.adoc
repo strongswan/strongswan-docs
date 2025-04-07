@@ -9,7 +9,10 @@
 :RFC6379: {IETF}/rfc6379
 :RFC9370: {IETF}/rfc9370
 
-The keywords listed below can be used with the `*proposals*` and `*ah|esp_proposals*`
+The keywords listed below can be used with the
+xref:swanctl/swanctlConf.adoc#_connections_conn_proposals[`*proposals*`]
+and
+xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_esp_proposals[`*ah|esp_proposals*`]
 settings in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to define IKE and ESP/AH
 proposals/cipher suites. IANA provides a complete list of algorithm identifiers
 registered for {IANA}[IKEv2].
@@ -725,6 +728,24 @@ generic hash with the prescribed output length.
 
 The `*openssl*` plugin currently only supports ML-KEM via AWS-LC, not via OpenSSL.
 
+== Extended Sequence Numbers (ESN)
+
+For ESP and AH, Extended Sequence Numbers (ESN) may be negotiated. This doubles
+the size of the sequence numbers from 32 to 64 bits, which can be necessary on
+highspeed links as the 4294967295 packets supported by 32-bit sequence numbers
+may be sent in a few minutes on a 10 Gb/s link, requiring very frequent
+rekeyings.
+
+Note that only the lower 32 bits are actually transmitted with each packet, the
+upper 32 bits are only stored on the endpoints, but are still considered for
+integrity protection. That's why this has to be negotiated.
+
+To enable ESN, the `*esn*` keyword can be included in a proposal. To disable
+ESN, the `*noesn*` keyword may be used. If neither is configured, the latter is
+assumed. Both keywords may be included in a proposal if it's unknown if the peer
+supports/enables ESN (e.g. `*esn-noesn*` to prefer ESN but still allow 32-bit
+sequence numbers).
+
 == Signature Algorithms
 
 Signature algorithms *are not negotiated* with proposals. But some of them are
@@ -802,6 +823,36 @@ implemented only by certain plugins.
 |
 |1.3.101.113|w o |
 |===
+
+== Default Proposals
+
+If no explicit proposals are configured with the
+xref:swanctl/swanctlConf.adoc#_connections_conn_proposals[`*proposals*`]
+or
+xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_esp_proposals[`*ah|esp_proposals*`]
+settings in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`], default proposals
+are used. These proposals can also be added after custom proposals via the
+`*default*` keyword.
+
+For IKEv2, the default proposals, one with classic encryption and integrity
+algorithms, one with AEAD algorithms, include all algorithms supported by the
+loaded plugins that are not marked with `*s*` in the tables above. The exceptions
+are `*3des*`, `*sha1*` and `*prfsha1*`, which are included for interoperability
+with legacy systems.
+
+For ESP, the default proposals are hard-coded as we can't query the Linux kernel
+for its supported algorithms. They are as follows:
+
+    aes128-aes192-aes256-sha256-sha284-sha512-sha1-aesxcbc-noesn
+    aes128gcm16-aes192gcm16-aes256gcm16-noesn
+
+Since 6.0.2, all supported key exchange methods, the same that are proposed for
+IKEv2, are included in the proposals, as well as `*none*` to make PFS optional.
+
+For AH, the same applies, but no AEAD proposal is currently sent. The default
+proposal is as follows:
+
+    aes256-sha256-sha284-sha512-sha1-aesxcbc-noesn
 
 == Commercial National Security Algorithm Suite
 
