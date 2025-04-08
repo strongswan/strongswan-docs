@@ -119,8 +119,14 @@ Handling of ESP-in-UDP packets via GRO offload is supported since Linux v6.7
 Both modules similarly hook into the GSO layer to improve processing outbound
 packets.
 
-IMPORTANT: One side-effect of loading these modules is that *inbound ESP packets
-won't be seen on layer 3* by Netfilter or e.g. `tcpdump`.  Keep that in mind
-when debugging IPsec tunnels as firewall rules and traffic captures will only
-see decrypted packets.  The traffic counters on the inbound SAs will increase
-as normal, though.
+[IMPORTANT]
+====
+One side-effect of loading these modules is that *inbound ESP or ESP-in-UDP
+packets won't be seen on layer 3* by Netfilter or e.g. `tcpdump`.  Keep that in
+mind when debugging IPsec tunnels as firewall rules and traffic captures will
+only see decrypted packets.  The traffic counters on the inbound SAs will
+increase as normal, though. To debug issues, the modules may be unloaded again.
+
+Note, however, that *fragmented ESP or ESP-in-UDP packets* will take the slow
+non-offload path and will show up in the firewall and traffic captures.
+====
