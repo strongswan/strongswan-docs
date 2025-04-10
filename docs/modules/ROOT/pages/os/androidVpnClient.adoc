@@ -84,8 +84,10 @@ To connect a profile use the following information in the Intent:
 * `*Action* : org.strongswan.android.action.START_PROFILE`
 
 * `*Extras*` :
-** `*org.strongswan.android.VPN_PROFILE_UUID*`: UUID of the profile to start +
+** `*org.strongswan.android.VPN_PROFILE_ID*`: UUID of the profile to start +
     (a string that looks like this: `7b21d354-52ed-4c14-803a-a3370f575405`)
+
+* `*Target*: Activity`
 
 To disconnect the profile use the following information in the Intent:
 
@@ -94,7 +96,9 @@ To disconnect the profile use the following information in the Intent:
 * `*Action*: org.strongswan.android.action.DISCONNECT`
 
 * `*Extras*`:
-** `*org.strongswan.android.VPN_PROFILE_UUID*`: UUID of the profile to disconnect
+** `*org.strongswan.android.VPN_PROFILE_ID*`: UUID of the profile to disconnect
+
+* `*Target*: Activity`
 
 NOTE: If no profile ID is passed or it doesn't match the ID of the currently
       connected profile, a dialog is shown that asks confirmation from the user
