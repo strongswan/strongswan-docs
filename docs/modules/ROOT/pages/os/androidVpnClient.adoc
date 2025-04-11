@@ -68,7 +68,7 @@ The app allows creating shortcuts on the Android Launcher to quickly initiate
 specific VPN profiles.
 
 Since xref:#_2_0_0_2018_07_03[2.0.0] it's possible to use *Intents* and a VPN
-profile's UUID to connect/terminate it with automation apps such as Llama or
+profile's UUID to connect/terminate it with automation apps such as Automate or
 Tasker e.g. based on location, WiFi hotspots or other events.
 
 How-to use *Intents* to connect or terminate VPN profiles:
@@ -77,17 +77,20 @@ How-to use *Intents* to connect or terminate VPN profiles:
 The UUID required for this can be found at the bottom of the advanced settings
 when editing a profile and may be copied from there.
 
-To connect a profile use the following information in the Intent:
+The Intents are meant to start an *Activity*, so be sure to select the
+appropriate block in Automate ("App start") or "Target" in Tasker.
+
+To connect a profile, use the following information in the Intent:
 
 * `*Package*: org.strongswan.android`
 
-* `*Action* : org.strongswan.android.action.START_PROFILE`
+* `*Action*: org.strongswan.android.action.START_PROFILE`
 
-* `*Extras*` :
+* `*Extras*`:
 ** `*org.strongswan.android.VPN_PROFILE_UUID*`: UUID of the profile to start +
     (a string that looks like this: `7b21d354-52ed-4c14-803a-a3370f575405`)
 
-To disconnect the profile use the following information in the Intent:
+To disconnect the profile, use the following information in the Intent:
 
 * `*Package*: org.strongswan.android`
 
