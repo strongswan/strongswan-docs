@@ -327,8 +327,12 @@ kernel.
  Internet Key Exchange Protocol Version 2 (IKEv2) Support for Per-Resource Child  Security Associations (SAs)
 
 |
-|{IETF}/draft-kampanakis-ml-kem-ikev2[draft-kampanakis-ml-kem-ikev2]:
+|{IETF}/draft-ietf-ipsecme-ikev2-mlkem[draft-ietf-ipsecme-ikev2-mlkem]:
 Post-quantum Hybrid Key Exchange with ML-KEM in IKEv2
+
+|
+|{IETF}/draft-ietf-ipsecme-ikev2-pqc-auth[draft-ietf-ipsecme-ikev2-pqc-auth]:
+Signature Authentication in IKEv2 using PQC
 
 |
 |{IETF}/draft-brunner-ikev2-mediation[draft-brunner-ikev2-mediation]:
