@@ -39,6 +39,7 @@
 ** xref:features/hashAndUrl.adoc[]
 ** xref:features/ipcomp.adoc[]
 ** xref:features/iptfs.adoc[]
+** xref:features/per-cpu-sas.adoc[]
 ** xref:features/integrityTests.adoc[]
 ** xref:features/ietf.adoc[]
 

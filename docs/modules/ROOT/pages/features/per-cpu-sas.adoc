@@ -1,0 +1,137 @@
+= Per-CPU SAs (RFC 9611)
+:navtitle: Per-CPU SAs
+:page-toclevels: 4
+
+:IETF:    https://datatracker.ietf.org/doc/html
+:RFC9611: {IETF}/rfc9611
+:TESTS:   https://www.strongswan.org/testing/testresults
+:EX:      {TESTS}/ikev2/per-cpu-sas
+:EXENC:   {TESTS}/ikev2/per-cpu-sas-encap
+
+The IKEv2 extension described in {RFC9611}[RFC 9611] allows explicitly *creating
+duplicate Child SAs* for use by specific resources, such as CPUs or hardware
+queues in NICs.
+
+The goal is to *increase performance because each resource can exclusively use
+a dedicated SA*, instead of having to share a single SA, for which cryptographic
+states, sequence numbers, anti-replay windows, usage stats etc. have to be
+synchronized.
+
+NOTE: The Linux kernel supports per-CPU SAs since 6.13, strongSwan since
+version 6.0.2.
+
+== Implementation
+
+When per-CPU SAs are enabled, the *trap policies* installed in the kernel will
+trigger *separate acquires for matching packets that come from different CPUs*.
+So for each CPU, strongSwan will negotiate a separate Child SA. The CPU ID
+from the acquire is then assigned to the SA when it's installed so that each SA
+can only be used by traffic from a particular CPU.
+
+To send packets while a CPU-specific SA is negotiated, a *fallback SA without
+assigned CPU ID* is used.  If the kernel doesn't find such an SA after matching
+a policy, it triggers an acquire without CPU ID so strongSwan can negotiate it.
+
+*As responder*, strongSwan first checks if a fallback SA without CPU ID is
+installed. If not, it does so. Otherwise, it gets the number of available CPUs
+and assigns a CPU ID for which no SA has yet been installed and assigns that ID.
+
+Note that the *CPU IDs are not negotiated* and the ID that's received from the
+peer is only for debugging purposes.  Each peer assigns its own CPU IDs to the
+negotiated SAs and the *number of CPUs don't have to match*. So it's possible
+that more SAs are negotiated than necessary on a particular host.  Multiple SAs
+can then be assigned to the same CPU (only one of them will be used).
+
+== Configuration
+
+Using per-CPU SAs in strongSwan requires configuring `*trap*` in
+xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_start_action[`*<child>.start_action*`],
+so the kernel can trigger CPU-specific acquires, and enabling
+xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_per_cpu_sas[`*<child>.per_cpu_sas*`].
+
+CAUTION: *Just enabling per-CPUs SAs is not enough!* It requires careful
+configuration of the system for best performance. *Receive Side Scaling (RSS)*
+is necessary to distribute inbound packets to the different (or even specific)
+network queues/CPU cores. And *pinning processes/threads to specific CPU cores*
+may also be necessary, depending on the use case (e.g. if not all CPUs can be
+efficiently used with a specific NIC).
+
+=== Receive Side Scaling (RSS)
+
+In order to distribute inbound packets among the available queues/CPUs and to
+keep specific SAs on the same CPU, Receive Side Scaling (RSS) is used. This
+mechanism instructs the receiving NIC to steer different flows/SAs to separate
+queues/CPUs.
+
+For NICs that *support ESP natively*, the flows can be identified via SPI in
+the ESP header:
+
+    ethtool -N <nic> rx-flow-hash esp4
+
+Some NICs may then even support steering a specific SA to a particular queue/CPU:
+
+    ethtool -N <nic> flow-type esp4 src-ip <ip> dst-ip <ip> spi 0x<spi> action <queue>
+
+For NICs that *don't support ESP*, UDP encapsulation with random source port
+per SA can be used as a workaround, as described in the next section.
+
+==== UDP Encapsulation for RSS
+
+In order to help RSS implementations that can't match SPIs in the ESP header,
+a special type of UDP encapsulation can be enabled for per-CPU SAs by setting
+xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_per_cpu_sas[`*<child>.per_cpu_sas*`]
+to `*encap*` (this requires enabling
+xref:swanctl/swanctlConf.adoc#_connections_conn_encap[`*encap*`]
+explicitly for the connection if there is no NAT).
+
+By doing so, a *random source port* is assigned to each outbound per-CPU SA, while
+the destination port for all of them remains 4500. This allows the peer to use
+the source port of inbound UDP-encapsulated ESP packets for RSS.
+
+NOTE: This behavior is neither standardized nor negotiated. Therefore, regardless
+of whether it is enabled locally, *inbound per-CPU SAs with UDP encapsulation
+always have the source port set to 0* because the peer's random port is unknown
+when it has this setting enabled. NAT mapping events from the kernel are
+suppressed for such SAs.
+
+With this kind of UDP encapsulation, the flows can be identified with the common
+UDP hasher (`sdf` selects the source and destination IPs as well as the first
+two bytes of the UDP header, i.e. the source port):
+
+    ethtool -N <nic> rx-flow-hash udp4 sdf
+
+Depending on the NIC, it may be possible to steer a specific SA to a
+particular queue/CPU as follows:
+
+    ethtool -N <nic> flow-type udp4 src-ip <ip> dst-ip <ip> src-port <port> dst-port <port> action <queue>
+
+The tricky part is that the random source port is not negotiated and won't be
+known until a packet is received first.
+
+=== Pinning Processes/Threads to CPUs
+
+To pin processes to specific CPUs explicitly, the commands
+`*taskset*(1)` or `*numactl*(8)` may be used.
+
+    taskset -pc 4-7 <pid>
+
+The above would, for instance, restrict a running process to CPUs 4 through 7.
+To launch a new process restricted to specific CPUs you could use something
+like either of the  following
+
+    taskset -c 4-7 <command>
+
+    numactl --physcpubind=4-7 <command>
+
+Please refer to the man pages of these commands for details.
+
+Multi-threaded applications may restrict their individual threads further,
+e.g. via `*pthread_setaffinity_np*(3)` or `*sched_setaffinity*(2)`.
+
+== Examples
+
+.strongSwan {EX}[example] testing the use of per-CPU SAs
+image::a-m-w-s-b.png[topology,501,190,link={EX}]
+
+.strongSwan {EXENC}[example] testing the use of per-CPU SAs with UDP encapsulation
+image::a-m-w-s-b.png[topology,501,190,link={EX}]
