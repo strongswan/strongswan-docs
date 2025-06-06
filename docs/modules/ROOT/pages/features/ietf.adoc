@@ -296,7 +296,7 @@ kernel.
 |{IETF}/rfc9329[RFC 9329]:
  TCP Encapsulation of IKE and IPsec Packets
 
-|*x*
+|*d*
 |{IETF}/rfc9347[RFC 9347]:
  Aggregation and Fragmentation Mode for ESP and Its Use for IP Traffic Flow
  Security (IP-TFS)

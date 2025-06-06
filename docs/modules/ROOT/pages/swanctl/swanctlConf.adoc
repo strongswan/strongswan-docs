@@ -719,12 +719,14 @@ include::partial$config/swanctl-rekey-child.adoc[]
 |IPsec Mode to establish CHILD_SA with. `*tunnel*` negotiates the CHILD_SA in
  IPsec Tunnel Mode whereas `*transport*` uses IPsec Transport Mode.
  `*transport_proxy*` signifying the special Mobile IPv6 Transport Proxy Mode.
+ `*iptfs*` is xref:features/iptfs.adoc[IP-TFS tunnel mode with aggregation and fragmentation]
+ (since 6.0.2).
  `*beet*` is the Bound End to End Tunnel mixture mode working with fixed inner
- addresses without the need to include them in each packet. Both `*transport*`
- and `*beet*` modes are subject to mode negotiation. `*tunnel*` mode is negotiated
- if the preferred mode is not available. `*pass*` and `*drop*` are used to install
- shunt policies which explicitly bypass the defined traffic from IPsec processing
- or drop it, respectively. [`tunnel`]
+ addresses without the need to include them in each packet. The `*transport*`,
+ `*iptfs*`, and `*beet*` modes are subject to mode negotiation. `*tunnel*` mode
+ is negotiated if the preferred mode is not available. `*pass*` and `*drop*` are
+ used to install shunt policies which explicitly bypass the defined traffic from
+ IPsec processing or drop it, respectively. [`tunnel`]
 
 |<child>.policies         |`yes`
 |Since version 5.3.3. Whether to install IPsec policies or not. Disabling this can

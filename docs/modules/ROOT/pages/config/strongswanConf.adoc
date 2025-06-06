@@ -472,6 +472,9 @@ connection attempts are blocked
 |A comma-separated list of network interfaces that should be used by the
  xref:daemons/charon.adoc[`*charon*`] daemon. All other interfaces are ignored
 
+|iptfs                                       |
+|Section with global settings for xref:features/iptfs.adoc[]
+
 |keep_alive                                  |`20s`
 |NAT keep alive interval in seconds
 
