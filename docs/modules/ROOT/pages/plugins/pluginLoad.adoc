@@ -1,8 +1,9 @@
 = Plugin Load Options
+:page-toclevels: 4
 
 :GITHUB: https://github.com/strongswan/strongswan/blob/master
-:SRC1:   src/libstrongswan/plugins/plugin.h#L41
-:SRC2:   src/libstrongswan/plugins/plugin_loader.h#L38
+:SRC1:   src/libstrongswan/plugins/plugin.h#L51
+:SRC2:   src/libstrongswan/plugins/plugin_loader.h#L61
 
 Many strongSwan components have a modular design. Features can be added or removed
 using a growing xref:plugins/plugins.adoc[list of plugins]. This allows us to keep
@@ -25,67 +26,71 @@ automatically load the plugins enabled with
 xref:install/autoconf.adoc[`*./configure*`]. There is no need to manually specify
 the plugins to use during runtime.
 
-Using this compile-time generated plugin has some advantages, including:
+Using this compile time generated plugin list has some advantages, including:
 
-* Proper load order of all plugin (since version 5.1.0 this it not so important
-  anymore as the order only indicates the preference if two plugins provide the
-  same feature)
+* Proper load order of all plugin (since version 5.1.0, this has not been as
+  important because the order only indicates the preference when two plugins
+  provide the same feature).
 
-* Gets updated automatically with new strongSwan releases: This is very important,
-  as we might move core functionality you rely on to plugins.
+* Gets updated automatically with new strongSwan releases: This is important
+  as we might move core functionality you rely on to new plugins.
 
 == Runtime Plugin Configuration
 
 The plugins to load can be specified in
-xref:config/strongswanConf.adoc[`*strongswan.conf*`]. There are two options to
-do so:
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]. There are two means to
+do so.
 
-=== Modular Configuration
+=== Plugin-Specific Configuration
 
-Since version 5.1.2 the `*charon.load_modular*` option enables the dynamic
-construction of the list of plugins to load.
+The plugin loader refers to plugin-specific `*load*` settings to decide whether
+a plugin is loaded at runtime:
 
-If the option is enabled, the plugin loader uses the individual `*load*` setting
-for each plugin
+ charon.plugins.<plugin>.load = yes | no | <priority>
 
- charon.plugins.<plugin>.load
+Besides simply enabling/disabling plugins, the setting accepts a *numeric priority
+value*, which the plugin loader uses to decide in which order plugins are loaded.
+Plugins with the *same priority* are loaded according to the compile time
+load order. Priorities can also be *negative* to simplify moving a plugin to the
+end of the list. The *default priority* is `*1*`.
 
-to decide whether to load it or not. Besides simply enabling/disabling plugins
-the `*load*` setting accepts,a numeric priority value, which the plugin loader
-uses to decide in which order,plugins are loaded.  Plugins with the same
-priority are loaded according to the default load order. Unknown plugins with
-the same priority are loaded first and in alphabetical order. The default
-priority is `*1*` and can also be negative to simplify move a plugin to the end
-of the list.
+By default, the setting *modifies the compile time plugin list*:
 
-The `*load_modular*` option can also be enabled for other components, but only
-for xref:daemons/charon.adoc[`*charon*`] the default configuration snippets are
+* Plugins *on that list* don't require an explicit `*load*` setting
+
+* Plugins *absent from that list* are *not loaded*, even if `*load = yes*`
+  is explicitly set
+
+==== Modular Configuration
+
+The above limitations may be avoided with the `*charon.load_modular*` setting.
+
+With `*load_modular*` *enabled*, the list of plugins is constructed dynamically,
+*solely based on the plugin-specific `load` settings*. That list then *completely
+replaces the compile time list*.
+
+This means that *only plugins with explicit* `*load*` setting are considered,
+and *plugins not on the default list* may be loaded.  Note that the compile time
+list is still consulted when ordering plugins with equal priority. Unknown
+plugins with the same priority are loaded in alphabetical order before known plugins.
+
+The `*load_modular*` setting can also be enabled for other components, but only
+for xref:daemons/charon.adoc[`*charon*`] are the default configuration snippets
 installed in xref:config/strongswanDir.adoc[`*strongswan.d/charon*`] and included
 in the default xref:config/strongswanConf.adoc[`*strongswan.conf*`] file.
-Additionally the default snippets are also installed in the
+Additionally, the default snippets are also installed in the
 `*$\{prefix}/share/strongswan/templates*` directory for reference.
 
-Since version 5.5.0 `*charon.plugins.<plugin>.load*` may also be used to modify
-the default plugin list when `*charon.load_modular*` is disabled:
-
-* Setting `*load = no*` will disable that plugin and configuring a numeric
-  priority allows reordering of the plugin loading sequence.
-
-* However plugins with no `*load*` statement are still loaded when they are on
-  the default compile-time plugin load list.
-
-* Plugins that are `*not*` on the  default compile-time plugin load list will
-  not be loaded even with a `*load = yes*` setting.
-
-Thus only with `*charon.load_modular = yes*`, the plugin list is constructed
-completely dynamically based on the explicitly enabled plugins.
+This feature is also *useful for distributions* if plugins are shipped in separate,
+optional packages, to avoid trying to load plugins that are not installed but
+still on the compile time list.
 
 === Static Load List
 
 Most components can read the plugin list from
-xref:config/strongswanConf.adoc[`*strongswan.conf*`]. For example the IKE
-xref:daemons/charon.adoc[`*charon*`] daemon reads the `*charon.load*` key to load
-plugins but only if the `*charon.load_modular*` option is disabled (see above).
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]. For example, the IKE daemon
+xref:daemons/charon.adoc[`*charon*`] reads the `*charon.load*` key to load
+plugins, but only if the `*charon.load_modular*` option is disabled (see above).
 
 WARNING: It is *not* recommended to specify the plugin list manually unless you
          exactly know the implications!
@@ -101,11 +106,11 @@ xref:devs/testingEnvironment.adoc[testing environment] because we enable all
 strongSwan plugins during compile time but use only a small subset of them
 while running an individual test scenario.
 
-==== Strict Plugins
+==== Critical Plugins
 
 In the static load directive, you can mark specific plugins as critical. If
 loading a critical plugin fails, the daemon does not start. To mark a plugin as
-critical, append a `*!* character (exclamation mark) to its name.
+critical, append a `*!*` character (exclamation mark) to its name.
 
 == Static Plugin Features
 
