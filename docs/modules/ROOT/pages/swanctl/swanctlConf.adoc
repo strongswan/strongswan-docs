@@ -490,17 +490,35 @@ To define a single authentication round, only, the `<suffix>` may be omitted.
 |IKE identity to expect for authentication round. Refer to the `*id*` keyword
  of the xref:#_connections_conn_local[`*local*`] section for details. When using
  certificate-based authentication, the IKE identity must be contained in the
- certificate, either as the subject DN or as a subjectAltName. It's possible to
- use wildcards to match remote identities (e.g. `*{STAR}@strongswan.org*`,
+ certificate, either as the subject DN or as a subjectAltName.
+ +
+ It's possible to use wildcards to match remote identities (e.g. `*{STAR}@strongswan.org*`,
  `*{STAR}.strongswan.org*` or `*"C=CH, O=strongSwan, CN={STAR}"*`). Connections
  with exact matches are preferred. When using DNs with wildcards, the
  `*charon.rdn_matching*` option in
  xref:config/strongswanConf.adoc[`*strongswan.conf*`] specifies how Relative
- Distinguished Names (RDNs) are matched
+ Distinguished Names (RDNs) are matched.
+ +
+ Since version 6.0.2, extended POSIX regular expressions are also supported for
+ remote identity matching. They must start with an explicit type prefix,
+ followed by a caret character (`*&Hat;*`) , and end with a dollar sign (`*$*`)
+ to indicate an anchored pattern. Make sure to escape backslash characters when
+ configuring identities in double quotes. Supported types are `*rfc822*`,
+ `*email*`, `*userfqdn*`, `*fqdn*`, `*dns*`, and `*asn1dn*`. While regular
+ expressions are always matched against the string representation of other
+ identities, the type must match as well. The matching is performed case
+ insensitive. Examples: `*email:&Hat;(moon\|sun)@strongswan\.org$*`,
+ `*fqdn:&Hat;vpn[0-9]+\.strongswan\.org$*`, `*"asn1dn:&Hat;.{STAR}CN=.+\\.strongswan\\.org$"*`
 
 |eap_id                    |`id`
-|Identity to use as peer identity during EAP authentication. If set to `*%any*`
- the EAP-Identity method will be used to ask the client for an EAP identity
+|Use EAP-Identity method to request an identity from the client to match against
+ and use during EAP authentication. There is currently no "best" match, configs
+ are matched in the order they are loaded.
+ Wildcards and regular expressions are supported, refer to the `*id*` setting
+ for details.
+ +
+ In versions prior to 6.0.2, there was no matching and an EAP identity was only
+ requested if `*%any*` was configured
 
 |groups                    |
 |Comma-separated authorization group memberships to require. The peer must prove
