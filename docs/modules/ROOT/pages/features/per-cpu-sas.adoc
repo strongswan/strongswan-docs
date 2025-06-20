@@ -49,12 +49,20 @@ xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_start_action[`*<c
 so the kernel can trigger CPU-specific acquires, and enabling
 xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_per_cpu_sas[`*<child>.per_cpu_sas*`].
 
-CAUTION: *Just enabling per-CPUs SAs is not enough!* It requires careful
-configuration of the system for best performance. *Receive Side Scaling (RSS)*
-is necessary to distribute inbound packets to the different (or even specific)
-network queues/CPU cores. And *pinning processes/threads to specific CPU cores*
-may also be necessary, depending on the use case (e.g. if not all CPUs can be
-efficiently used with a specific NIC).
+[CAUTION]
+====
+*Just enabling per-CPUs SAs is not enough!* It requires careful
+configuration of the system for best performance.
+
+For inbound traffic, *Receive Side Scaling (RSS)* is typically necessary on a
+physical NIC to distribute inbound packets to the different (or even specific)
+network queues/CPU cores. If the physical NIC doesn't support RSS, look into
+software-based alternatives such as _XDP cpumap redirect_.
+
+For outbound traffic, *pinning processes/threads to specific CPU cores* may be
+necessary, depending on the use case (e.g. if not all CPUs can be efficiently
+used with a specific NIC).
+====
 
 === Receive Side Scaling (RSS)
 
