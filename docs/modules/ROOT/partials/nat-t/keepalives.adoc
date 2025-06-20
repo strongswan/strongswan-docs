@@ -10,9 +10,9 @@ the IPsec peer behind a NAT router has to send periodic NAT-T keepalive UDP
 packets containing a single `*0xff*` byte in order to refresh the NAT mapping entry
 in the NAT router's lookup table.
 
-Of course the NAT-T keepalives also reach the IPsec peer on the other side of the
-connection but the packets are silently dropped by the kernel. By default the
-keep-alives are sent ever `*20s*` but the interval can configured via the
+Of course, the NAT-T keepalives also reach the IPsec peer on the other side of the
+connection but the packets are silently dropped by the kernel. By default, the
+keep-alives are sent every `*20s*` but the interval can be configured via the
 `*charon.keep_alive*` parameter in
 xref:config/strongswanConf.adoc[`*strongswan.conf*`] (set to `*0*` to disable
 sending keepalives, e.g. behind a static DNAT aka port forwarding).

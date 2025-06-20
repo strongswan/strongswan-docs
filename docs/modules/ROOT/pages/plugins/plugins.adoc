@@ -1,13 +1,14 @@
 = Plugin List
 
-The strongSwan distribution ships with an ever growing list of plugins. This
-allows us to add extended and specialized features, but keep the core as small
-as possible.
+The strongSwan IKE daemons and tools make use of an ever growing list of plugins.
+This allows us to add extended and specialized features, but keep the core as
+small as possible.
 
-Many strongSwan component libraries come with a set of plugins. The plugins for
-`*libstrongswan*` e.g. provide cryptographic backends, URI fetchers and database
-layers whereas `*libcharon*` comes with a large set of very specialized plugins
-for specific needs.
+Many strongSwan component libraries come with a particular set of plugins. The
+plugins for `*libstrongswan*` e.g. provide cryptographic backends, URI fetchers
+and database layers, whereas `*libcharon*` e.g. comes with plugins that handle
+different authentication methods as well as some very specialized ones for
+specific needs.
 
 :BOTAN:     https://botan.randombit.net/
 :GCRYPT:    https://gnupg.org/software/libgcrypt/

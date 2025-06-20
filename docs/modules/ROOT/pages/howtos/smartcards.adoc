@@ -14,14 +14,14 @@ to access smart cards, e.g. the one provided by the {OPENSC}[OpenSC] project.
 
 image::strongswan-smartcard.png[smart card]
 
-This tutorial gives information on how to use a smartcard reader, initialize cards
-and configure strongSwan with smartcards.
+This tutorial gives information on how to use a smart card reader, initialize cards
+and configure strongSwan with smart cards.
 
 == Compatible Hardware
 
 You need a USB smart card reader and a blank smart card, or a USB token that combines
-the two in a convenient form factor, preferably with support of 2048 bit RSA or
-256 bit ECDSA keys.
+the two in a convenient form factor, preferably with support of at least 2048 bit
+RSA or 256 bit ECDSA keys.
 
 === Compatible Card Readers
 
@@ -43,7 +43,7 @@ often using the {PCSC}[PCSC-Lite] library. Most recent USB card readers are comp
 
 === Smart Card Reader
 
-To install pcsc-tools with CCID support, under Debian based distributions use:
+To install pcsc-tools with CCID support, under Debian-based distributions use:
 
  sudo apt-get install pcsc-tools libccid
 
@@ -86,25 +86,24 @@ $ opensc-tool -n
 Using reader with a card: OmniKey CardMan 3121 00 00
 entersafe
 ----
-At this point we know both the card and reader are fully recognized and functional.
-We can now proceed to erase the card (you will be asked for the transport key you
+At this point, we know both the card and reader are fully recognized and functional.
+We can now proceed to erase the card (you will be asked for the *transport key* you
 got in your mail).
 
 === Certification Authority
 
-To set up your CA you may use OpenSSL or the strongSwan xref:pki/pki.adoc[`*pki*`]
+To set up your CA, you may use OpenSSL or the strongSwan xref:pki/pki.adoc[`*pki*`]
 tool. To simplify things you may also use a
 xref:pki/caManagement.adoc[graphical user interface] to set up your CA. One
 important thing to keep in mind is that you shouldn't create private keys with a
-key length not supported by your smart card (check the specs to be sure). RSA keys
-with a maximum length of 2048 bits are known to work.
+key length not supported by your smart card (check the specs to be sure).
 
-Make a backup of your keys/certificates and store it in a safe place.
+Make a backup of your keys and certificates and store them in a safe place.
 
 With most cards/tokens it is also possible to generate the private keys directly
-on the device. This way you can ensure nobody can get their hands on the keys but
-you also can't create a backup, so any information encrypted with the corresponding
-public key will be inaccessible if the card is lost or stolen.
+on the device. This way you can ensure nobody can get their hands on the keys.
+However, you also can't create a backup, so any information encrypted with the
+corresponding public key will be inaccessible if the card is lost or stolen.
 
 === Configuring a Smart Card with pkcsc15-init
 
@@ -115,7 +114,7 @@ cryptographic objects
 
  pkcs15-init --erase-card
 
-This may result in a error if the card is already blank. With the next command a
+This may result in a error if the card is already blank. With the next command, a
 fresh PKCS#15 file structure is created on a smart card or crypto token:
 ----
 pkcs15-init  --create-pkcs15 --profile pkcs15+onepin \
@@ -125,17 +124,17 @@ pkcs15-init  --create-pkcs15 --profile pkcs15+onepin \
 ----
 A secret PIN code is stored in an irretrievable location on the smart card. The PIN
 will protect the signing operation. If the PIN is entered incorrectly more than
-three times then the smart card will be locked and the PUK code can be used to
-unlock the card again.
+three times (the number is configured in the profile), then the smart card will
+be locked and the PUK code can be used to unlock the card again.
 
-Next the private key is transferred to the smart card
+Next, the private key is transferred to the smart card
 
  pkcs15-init --auth-id 1 [--id 45] --store-private-key myKey.pem
 
-By default the PKCS#15 smart card record will be assigned the ID `*0x45*`. Using
+By default, the PKCS#15 smart card record will be assigned the ID `*0x45*`. Using
 the `*--id*` option, multiple key records can be stored on a smart card.
 
-At last we load the matching X.509 certificate onto the smart card
+At last, we load the matching X.509 certificate onto the smart card
 
  pkcs15-init --auth-id 1 [--id 45] --store-certificate myCert.pem
 
@@ -147,11 +146,11 @@ The `*pkcs15-tool*` can now be used to verify the contents of the smart card.
 
 === pkcs11 Plugin
 
-To use smart cards with strongSwan the xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin
+To use smart cards with strongSwan, the xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin
 has to be enabled and configured.
 
-Next the PKCS#11 library provided by {OPENSC}["OpenSC] has to be configured in
-xref:config/strongswanConf.adoc[`*strongswan.conf*`].
+The PKCS#11 library provided by {OPENSC}["OpenSC] can then be configured in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`]:
 ----
   pkcs11 {
     modules {
@@ -176,7 +175,7 @@ subsection in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
 include::partial$config/swanctl-secrets-token.adoc[]
 |===
 
-For gateways that must be able to start IPsec tunnels automatically in unattended
+For *gateways* that must be able to start IPsec tunnels automatically in unattended
 mode after a reboot, the secret PIN can be stored statically, as in
 ----
 secrets {
@@ -186,26 +185,28 @@ secrets {
   }
 }
 ----
-On a personal notebook computer that could get stolen, you wouldn't want to store
- your PIN in in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. Thus just omit
- the `*pin*` attribute as in
+On a *client* device (e.g. a personal notebook) that could get stolen, you
+wouldn't want to store your PIN in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+Therefore, just omit the `*pin*` attribute as in
+----
 secrets {
   token1 {
     handle = 45
   }
 }
-Using the xref:swanctl/swanctlLoadCreds.adoc[`*swanctl --load-creds*`] on the
-command line before starting the IPsec connection will prompt you for the PIN.
+----
+Using the xref:swanctl/swanctlLoadCreds.adoc[`*swanctl --load-creds*`] command on
+the command line, before starting the IPsec connection, will prompt you for the PIN.
 
 === Configuring Certificates and Connections
 
-The xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin will automatically load all
-certificates from the smart card when the daemon initializes it. CA certificates
+The xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin will *automatically load all
+certificates* from the smart card when the daemon initializes it. CA certificates
 are also automatically available as trust anchors without the need to copy them
 into the xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509ca*`] directory first.
 
-Therefore it is usually not necessary to configure a `*local.cert*` subsection in
-xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`], instead `*local.id*` is configured
+Therefore, it is usually not necessary to configure a `*local.cert*` subsection in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. Instead, `*local.id*` is configured
 to either the `*subjectDistinguishedName*` or one of the `*subjectAltNames*`
 contained in the certificate.
 
@@ -214,7 +215,7 @@ For instance if `*\alice@strongswan.org*` is contained in the certificate as a
 
  connections.<conn>.left.id = alice@strongswan.org
 
-In situations where multiple certificates match the same identity configuring a
+In situations where multiple certificates match the same identity, configuring a
 `*local.cert<suffix>*` subsection might be necessary
 
 [{COLS}]
@@ -225,7 +226,7 @@ include::partial$config/swanctl-local-cert.adoc[]
 |===
 
 This can be the case with some eID cards that contain separate signature and
-encryption certificates with the same identities. Thus for instance
+encryption certificates with the same identities. For instance,
 ----
   local {
     ...
@@ -235,7 +236,7 @@ encryption certificates with the same identities. Thus for instance
   }
 ----
 will look in all available modules and slots for ID `*0x50*` starting with the
-first slot whereas
+first slot, whereas
 ----
   local {
     ...

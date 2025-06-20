@@ -657,7 +657,7 @@ connection attempts are blocked
 |signature_authentication                    |`yes`
 |Whether to enable Signature Authentication as per {RFC7427}[RFC 7427]
 
-|signature_authentication_ constraints       |`yes`
+|signature_authentication_constraints        |`yes`
 |If enabled, signature schemes configured in `*remote.auth*`, in addition to
  getting used as constraints against signature schemes employed in the
  certificate chain, are also used as constraints against the signature scheme

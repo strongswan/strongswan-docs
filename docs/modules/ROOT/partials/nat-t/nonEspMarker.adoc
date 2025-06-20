@@ -1,6 +1,6 @@
-If the first 32 bits right after the UDP header are set to zero then instead of
-an encapsulated ESP payload packet, an IKE management packet is carried. Thus this
-four octet all-zero *Non-ESP Marker* is used to differentiate between ESP and IKE
+If the first 32 bits right after the UDP header are set to zero, then an IKE
+management packet is carried instead of an encapsulated ESP payload packet. This
+four-byte all-zero *Non-ESP Marker* is used to differentiate between ESP and IKE
 traffic. ESP packets are processed in the kernel, whereas the IKE packets are
 forwarded to the xref:daemons/charon.adoc[`*charon*`] userland IKE daemon.
 

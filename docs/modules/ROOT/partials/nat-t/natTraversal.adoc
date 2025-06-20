@@ -9,14 +9,14 @@ figure below
 
 image::ipsecForwarding.png[IPsec Forwarding]
 
-Unfortunately this
+Unfortunately, this
 won't work with multiple IPsec clients behind the same NAT router that all want
 to communicate with the same VPN gateway as shown in the network topology below
 
 image::natTraversal.png[NAT Traversal]
 
 The solution proposed by {RFC3948}[RFC 3948] is to encapsulate ESP packets in
-UDP datagrams which then allows to apply *Port Address Translation* as shown in
+UDP datagrams, which then allows to apply *Port Address Translation* as shown in
 the figure above. The well-known *NAT Traversal* UDP port `*4500*` is shared with
 the IKE protocol when a {RFC7296}#section-2.23[NAT situation is detected] between
 the two IPsec endpoints. The detection is based on the `NAT_DETECTION_SOURCE_IP`
@@ -28,4 +28,4 @@ ESP-in-UDP encapsulation can be enforced even if no NAT situation exists by sett
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]. If enabled, the
 xref:daemons/charon.adoc[`*charon*`] daemon will send a manipulated
 `NAT_DETECTION_SOURCE_IP` notify payload so that it will look to the remote peer
-as if there were a NAT situation.
+as if there was a NAT situation.

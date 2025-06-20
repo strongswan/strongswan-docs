@@ -12,7 +12,7 @@ NOTE: The {RFC7296}[IKEv2] protocol includes *NAT Traversal* (NAT-T) in the core
       either.
 
 NOTE: If you don't like the automatic port floating to UDP port `*4500*` due to the
-      xref:features/mobike.adoc[MOBIKE] protocol which happens even if no NAT
+      xref:features/mobike.adoc[MOBIKE] protocol, which happens even if no NAT
       situation exists, then you can disable xref:features/mobike.adoc[MOBIKE] by
       setting `*mobike = no*` in the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
       connection definition.

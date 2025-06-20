@@ -49,7 +49,7 @@ installed (or at least disable one of the systemd units they install, which are
 == Compile strongSwan Yourself
 
 CAUTION: Make sure no strongSwan-related distribution packages are installed
-         before building and installing strongSwan from sources
+         before building and installing strongSwan from sources.
 
 === Linux Kernel Requirements
 
@@ -62,11 +62,11 @@ The GNU build system (Autotools) is used to build strongSwan. There is an ever
 growing list of xref:install/autoconf.adoc[`*./configure*` options] available.
 
 Refer to the xref:plugins/plugins.adoc[list of plugins] to learn more about the
-plugins enabled with these options.
+plugins enabled with some of these options.
 
 [NOTE]
 ====
-Many of the configuration options are enabled by default. Thus please
+Many of the configuration options are enabled by default. So please
 use *./configure --help* to check which options are actually available for
 your strongSwan release.
 
@@ -101,6 +101,9 @@ cd strongswan-x.x.x
 ----
 ./configure --prefix=/usr --sysconfdir=/etc --<your-options>
 ----
+TIP: The default prefix is `*/usr/local*`, so xref:config/config.adoc[configuration files]
+are read from `*/usr/local/etc*`. Therefore, it's recommended to at least use
+`*--sysconfdir=/etc*` so the files are in a more common location.
 
 . Build the sources and install the binaries as root:
 +
@@ -134,7 +137,7 @@ be controlled with the options described xref:plugins/pluginLoad.adoc[here].
 
 ==== Static Builds
 
-Since version 5.5.3 a static build that only relies on third-party libraries, i.e.
+Since version 5.5.3, a static build that only relies on third-party libraries, i.e.
 in which our own libraries and plugins are all statically linked into the
 executables can be achieved by configuring with
 

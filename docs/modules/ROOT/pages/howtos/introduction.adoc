@@ -21,8 +21,8 @@ It is assumed that the reader of this document...
 * understands the principles of networking, from setting IP addresses and DNS servers
   to basic firewalling
 
-* grasps the basic authentication concepts based on public-key cryptography and a
-  public-key infrastructure (PKI)
+* grasps the basic authentication concepts based on public key cryptography and a
+  public key infrastructure (PKI)
 
 * knows how to install binary software packages or how to compile source code
   following instructions
@@ -89,22 +89,21 @@ encrypted and authenticated.
 
 A Child SA consists of two components:
 
-. The actual IPsec SAs (two of them are established, one in each direction) describing
+. The actual *IPsec SAs* (two of them are established, one in each direction) describing
   the algorithms and keys used to encrypt and authenticate the traffic.
 
-. The IPsec policies (there are at least two) that define which network traffic
-  shall use that SA.
+. The *IPsec policies* (there are at least two) that define which network traffic
+  shall use that SA. They are derived from the *traffic selectors (TS)*
+  negotiated via IKE when establishing the Child SA.
 
 The policies work both ways, i.e. only traffic matching an inbound policy will be
-allowed after decryption. Policies are derived from the *traffic selectors* (TS)
-negotiated via IKE when establishing a Child SA. Unprotected traffic received by
-the kernel that matches an existing inbound IPsec policy is dropped. This is a
-security feature.
+allowed after decryption. Unprotected traffic received by the kernel that matches
+an existing inbound IPsec policy is dropped. This is a security feature.
 
 The actual {IPSEC}[IPsec traffic] is not handled by *strongSwan* but will be relegated
 to the network and IPsec stack of the operating system kernel. *strongSwan* installs
 the negotiated IPsec SAs and SPs into the kernel by using a platform-dependent
-*kernel interface*.
+*kernel interface* (e.g. Netlink/XFRM on Linux).
 
 The mentioned distinction between policies and SAs often leads to *misconceptions*.
 
@@ -112,14 +111,14 @@ For instance, referring to the image above, if host `*moon*` has a site-to-site
 tunnel to host `*sun*` (connecting the two networks `*10.1.0.0/16*` and
 `*10.2.0.0/16*`) and host `*carol*` has a roadwarrior connection to host `*sun*`
 (from which `*carol*` received a virtual IP address of `*10.3.0.10*`). Then `*carol*`
-won't be able to automatically communicate with `*alice*`, even if forwarding is
+won't be able to automatically communicate with `*alice*`, even if IP forwarding is
 enabled on `*sun*`.  This is because there is no IPsec policy allowing traffic
 between `*carol*` (`*10.3.0.10*`) and `*alice*` (`*10.1.0.10*`). An additional SA
 between `*moon*` and `*sun*` connecting the virtual subnet `*10.3.0.0/24*` with
 `*10.1.0.0/16*` would be a possible solution to this issue, adding the virtual
 subnet to the traffic selectors of the existing site-to-site SA another.
 
-Generally, IPsec processing and routing are not directly related. IPsec is often
+Generally, *IPsec processing and routing are not directly related*. IPsec is often
 just bumped into the network stack and matching traffic is processed
 transparently (*policy-based*). So any routes to the remote TS will technically
 work for packets to get forwarded and processed by IPsec. However, source address
@@ -127,10 +126,11 @@ selection can be a problem when traffic is sent from the VPN host itself. If the
 local TS don't include its "public" address, traffic would not get processed if
 the source address is e.g. selected based on the default route. This is
 particularly true if virtual IP addresses are used. So to ensure that an address
-from a local TS is selected as source, the strongSwan
-xref:daemons/charon.adoc[`*charon*`] IKE daemon, by default, installs specific
-routes to the remote TS for most Child SAs (excluded are e.g. those that use
-transport mode or TS with specific ports/protocol).
+from a local TS is selected as source, and policies are matched, the strongSwan
+IKE daemon xref:daemons/charon.adoc[`*charon*`], by default,
+xref:#_routing[installs specific routes] to the remote TS for most
+Child SAs (excluded are e.g. those that use transport mode or TS with specific
+ports/protocol).
 
 An alternative approach is xref:features/routeBasedVpn.adoc[*route-based* IPsec]
 that uses interfaces and explicit routes to control what packets are going to be
@@ -158,7 +158,7 @@ Public Key Authentication ::
   {OCSP}[Online Certificate Status Protocol] (OCSP) may be used to verify the
   validity of certificates.
 
-* To securely store private keys xref:howtos/smartcards.adoc[smartcards] may be
+* To securely store private keys, xref:howtos/smartcards.adoc[smartcards] may be
   used via the xref:plugins/pkcs11.adoc[`*pkcs11*`] plugin.
 
 * In order to prevent {MITM}[man-in-the-middle attacks], the identity claimed by
@@ -170,7 +170,7 @@ Pre-Shared-Key Authentication (PSK) ::
   to be secure.
 
 * If the PSK is known to many users (which is often the case with IKEv1 XAuth with
-  PSK) any user who knows the secret could impersonate the gateway. Therefore this
+  PSK) any user who knows the secret could impersonate the gateway. Therefore, this
   method is *not recommended* for large scale deployments.
 
 Extensible Authentication Protocol (EAP) ::
@@ -188,24 +188,25 @@ eXtended Authentication (XAuth) ::
   XAuth provides a flexible authentication framework within IKEv1. It is mainly
   used for username/password-based authentication. Also, it is generally used as
   a second authentication method after a mutual authentication based on either
-  X.509 certificates or PSK. With _IKEv1 hybrid authentication_ it is however
-  possible to authenticate the gateway with a certificate and use XAuth to
-  authenticate the client, only.
+  X.509 certificates or PSK. However, with _IKEv1 hybrid authentication_, it is
+  possible to authenticate the gateway with a certificate and use XAuth only to
+  authenticate the client.
 
-With IKEv2 it is possible to use multiple authentication rounds ({RFC4739}[RFC 4739]).
+IKEv2 also allows asymmetrical authentication, e.g. by authenticating the gateway
+with a certificate and the client with a username/password-based EAP method.
+
+With IKEv2, it is possible to use multiple authentication rounds ({RFC4739}[RFC 4739]).
 For instance, to first authenticate the *device* with an X.509 certificate and then
 the *user* with a username/password-based authentication scheme (e.g EAP-MSCHAPv2).
-It is also possible to use asymmetric authentication, e.g. by authenticating the
-gateway with a certificate and the client with a username/password-based EAP method
-in the first authentication round. Please be aware that not all IKEv2 implementations
-support the {RFC4739}[RFC 4739] extension.
+Please be aware that not all IKEv2 implementations support the {RFC4739}[RFC 4739]
+extension.
 
 Again, our website provides dozens of xref:config/IKEv2.adoc[configuration examples]
 covering these and other authentication options.
 
 == Configuration Files
 
-The recommended way of configuring strongSwan is via the powerful
+strongSwan is configured via the powerful
 xref:plugins/vici.adoc[`*vici*`] control interface and the
 xref:swanctl/swanctl.adoc[`*swanctl*`] command line tool. The
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] configuration file used by
@@ -215,15 +216,15 @@ corresponding private keys in the xref:swanctl/swanctlDir.adoc[`*swanctl*`] dire
 Global strongSwan settings as well as plugin-specific configurations are defined
 in xref:config/strongswanConf.adoc[`*strongswan.conf*`].
 
-Alternatively, the legacy `*stroke*` control interface and the `*ipsec*` command
-line tool can be used with the deprecated `*ipsec.conf*` and `*ipsec.secrets*`
-configuration files.
+The legacy `*stroke*` control interface and the `*ipsec*` command line tool may
+still be used with the deprecated `*ipsec.conf*` and `*ipsec.secrets*`
+configuration files. However, they are no longer built by default.
 
 === Other Configuration Sources
 
 The configuration may also be loaded from an
-xref:config/sqliteDbSchema.adoc[SQL database] or can be provided by custom plugins.
-Using the `*charon-nm*` daemon variant, the
+xref:config/sqliteDbSchema.adoc[SQL database], or can be provided by custom plugins.
+Using the xref:features/networkManager.adoc[`*charon-nm*`] daemon variant, the
 xref:features/networkManager.adoc[NetworkManager] can be used to manage VPN
 connections.
 
@@ -232,33 +233,33 @@ connections.
 The xref:install/install.adoc[strongSwan installation] is covered in a separate
 xref:install/install.adoc[document].
 
-Using binary packages provided by your distribution is generally recommended, as
-it makes maintenance easier. Unfortunately, this means that you are often not able
-to use the most recent version.
+Using *binary packages* provided by your distribution is generally *recommended*,
+as it makes maintenance easier. Unfortunately, this means that you are often not
+able to use the most recent version.
 
 == Invocation and Maintenance
 
-strongSwan is usually managed with the xref:swanctl/swanctl.adoc[`*swanctl*`] command
-while the IKE daemon xref:daemons/charon-systemd.adoc[`*charon-systemd*`] is controlled
-by `*systemd*` on modern distros. With legacy installations, strongSwan is controlled
-by the `*ipsec*` command where `*ipsec start*` will start the `*starter*` daemon
-which in turn starts and configures the keying daemon xref:daemons/charon.adoc[`*charon*`].
+strongSwan is usually managed and configured with the
+xref:swanctl/swanctl.adoc[`*swanctl*`] command. And the IKE daemon
+xref:daemons/charon-systemd.adoc[`*charon-systemd*`] is controlled by
+`*systemd*` on modern distros.
 
 IKE connections and Child SAs defined in xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
 can be started through three different ways:
 
 On traffic ::
   If `*start_action = trap*` is used, IPsec trap policies for the configured
-  traffic (defined via `*local_ts*`/`*remote_ts*`) will be installed and traffic
-  matching these policies will trigger *acquire events* that cause the daemon to
-  establish the required IKE/IPsec SAs. This is also used for passthrough/drop IPsec
-  policies, to let specific traffic bypass other policies/SAs or drop it completely.
+  traffic selectors (defined via `*local_ts*`/`*remote_ts*`) will be installed and
+  traffic matching these policies will trigger *acquire events* that cause the
+  daemon to establish the required IKE/IPsec SAs. This is also used for
+  passthrough/drop IPsec policies, to let specific traffic bypass other
+  policies/SAs or drop it completely.
 
 On startup ::
   Child SAs configured with `*start_action = start*` will automatically be
   established when the daemon is started. They are not automatically restarted when
   they go down for some reason. You need to specify other configuration settings
-  (`*dpd_action*` and/or `*close_action*` to restart them automatically but even
+  (`*dpd_action*` and/or `*close_action*`) to restart them automatically. But even
   then, the setup is not bullet-proof and will potentially leak packets. You are
   encouraged to use trap policies and read the
   xref:howtos/securityRecommendations.adoc[SecurityRecommendations] to take care
@@ -267,10 +268,13 @@ On startup ::
 Manually ::
   A connection that uses no `*start_action*` has to be established manually with
   xref:swanctl/swanctlInitiate.adoc[`*swanctl --initiate*`] or acts passively
-  as a responder waiting for a peer/roadwarrior to connect. Depending on the
+  as a *responder* waiting for a peer/roadwarrior to connect. Depending on the
   configuration, it is also possible to use
   xref:swanctl/swanctlInstall.adoc[`*swanctl --install*`] to install trap policies
-  manually like `*start_action = trap*` would do on loading the connection.
+  manually, like `*start_action = trap*` would do on loading the connection.
+
+NOTE: If `*start_action*` is configured, the actions are reverted/repeated if a
+config is removed or updated.
 
 After an SA has been established,
 xref:swanctl/swanctlTerminate.adoc[`*swanctl --terminate*`] may be used to tear
@@ -279,12 +283,12 @@ down the IKE or individual Child SAs.
 Whenever the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file or credentials
 in the xref:swanctl/swanctlDir.adoc[`*swanctl*`] directory are changed they may be
 reloaded with the different
-xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --load-..*`] commands. Already
-established connections are not affected by these commands (unless
-`*start_action = start*` is used). If a configuration update is required, the SAs
-or even the daemon must be restarted.
+xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --load-\...*`] commands. Already
+established connections are not affected by these commands unless
+`*start_action = start*` is used. If a configuration update is required, the
+established SAs, or even the daemon, must be restarted.
 
-Using the different xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --list-..*`]
+Using the different xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --list-\...*`]
 commands will provide information about loaded or cached certificates, supported
 algorithms and loaded plugins.
 
@@ -301,7 +305,7 @@ the placeholder `*...*` is e.g. `NO_PROPOSAL_CHOSEN` or `TS_UNACCEPTABLE`, you
 should consult the logs of the *remote peer* in order to find out why that
 error notify was generated in the first place.
 
-The xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --list-..*`] commands will
+The xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --list-\...*`] commands will
 provide information about the established and configured connections.
 
 On Linux, the `*iproute2*` package provides the `*ip xfrm state*` and
@@ -314,19 +318,21 @@ information.
 `*tcpdump*` and `*wireshark*` are also often useful to debug problems.
 
 When testing a connection with `*ping*`, make sure to select a source IP address
-(with the `*-I*` option) that is included in the local traffic selector (also see
-xref:#_site_to_site_configurations[Site-to-Site Configurations] below).
+(with the `*-I*` option) that is included in the local traffic selectors (also see
+xref:#_site_to_site_configurations[Site-to-Site Configurations] below). Although,
+the routes installed by strongSwan usually ensure that already.
 
 == PKI
 
-To use certificate-based authentication you'll need to create either self-signed
-certificates or set up a complete public-key infrastructure (PKI), consisting of a
-Certificate Authority (CA), optional intermediate CAs and end-entity certificates
-plus Certificate Revocation Lists (CRLs) or alternative methods like OCSP to verify
-the validity of certificates.
+To use certificate-based authentication, you'll need to either create self-signed
+certificates or set up a complete public key infrastructure (PKI). A PKI consists
+of a Certificate Authority (CA), optional intermediate CAs and end-entity
+certificates, as well as optional means to verify the validity of certificates,
+such as Certificate Revocation Lists (CRLs) or the Online Certificate Status
+Protocol (OCSP).
 
 One of the easiest ways to generate certificates is to use the
-xref:pki/pki.adoc[`*pki*`] tool. Since setting up a whole PKI can be quite complex
+xref:pki/pki.adoc[`*pki*`] tool. Since setting up a whole PKI can be quite complex,
 we provide some xref:pki/pkiQuickstart.adoc[simple instructions] to get you started.
 
 OpenSSL is also a widespread alternative to generate certificates, as are several
@@ -336,27 +342,32 @@ used for large scale PKIs.
 
 === Certificate Requirements
 
-. The generated end-entity certificates need to authenticate the corresponding
-  IKE ID for peer authentication to succeed.
+* The generated end-entity certificates need to authenticate the corresponding
+  IKE ID.
 +
-_If Alice tries to authenticate against Bob as Alice (herself) then Alice's certificate
-must contain at least one `*subjectAltName*` (SAN) field with the correct type (FQDN)
-and the value *Alice*, or the `*subjectDistinguishedName*` (DN), not the `*commonName*`
-(CN) has to be *Alice*!_
+If Alice tries to authenticate against Bob as *alice.example.org* (herself),
+then Alice's certificate must contain at least one *subjectAltName* (SAN) field
+with the correct type (FQDN) and the value *alice.example.org*. Alternatively,
+if the *subjectDistinguishedName* (DN) was *CN=alice.example.org*, she could
+change her IKE identity to that value (*alice.example.org* won't work because
+that identity of type FQDN is not matched against the *commonName* (CN) RDN).
 +
-In other words you can use the complete subject `*DN*` or any of the `*SAN*` fields
+In other words, you can use the *complete* subject `*DN*` or any of the `*SAN*` fields
 (assuming the type is correct) of a certificate as the IKE ID.
-See xref:#_notes_regarding_certificates[Notes regarding certificates] for details.
 
-. Additionally, the certificate has to be trusted by Bob. It either has to be known
-  by Bob beforehand, or it has to be issued by a certificate authority (CA) Bob
-  trusts.
+* The certificate has to be trusted by the peer. It either has to have it
+  installed locally (in which case it's optional to send it), or it has to be
+  issued by a trusted certificate authority (CA).
++
+If the latter, the peer has to possess the complete X.509 certificate trust chain,
+from the locally installed root certificate (the root CA) down to the end-entity
+certificate (the host or user certificate) including all intermediate
+certificates (intermediate CAs). This is done either by sending any intermediate
+certificates to the remote host or having them already installed locally.
 
-. For authentication to succeed, the other peer has to possess the complete X.509
-  certificate trust chain from root certificate (the root CA) down to the end-entity
-  certificate (the host or user certificate) including all intermediate certificates
-  (intermediate CAs). This is done either by sending any intermediate certificates to
-  the remote host or the remote host already having them installed locally.
+ * If the end-entity certificate is not self-signed and installed locally, it has
+   to be valid at the current time and must not be revoked based on CRLs/OCSP (if
+   they are available and checked).
 
 The requirements for certificate-based authentication with third party IKE
 implementations are stated in separate documents for
@@ -365,31 +376,34 @@ xref:interop/ios.adoc#_certificate_requirements[Apple iOS/macOS].
 
 === Notes regarding Certificates
 
-A root CA certificate, which sits at the top of the X.509 trust chain, is always
-self-signed and can therefore be forged by anyone, so it is `*never*` sent to
-another host. Any peer must install the root CA certificate locally in a trustful
-way and never accept any root CA certificates received over the network.
+A root CA certificate, which serves as anchor at the top of the X.509 trust
+chain, is always self-signed and can therefore be forged by anyone, so it is
+*never sent* to another host. All peers must install the root CA certificate
+locally in a trusted way and never accept any root CA certificates received over
+the network.
 
-A local certificate is only sent to another host if at least one of the following
+A local certificate is only sent to another host if *at least one* of the following
 is true:
 
-. The local host has set `*connections.<conn>.send_cert = always*` in the
+* The local host has set `*connections.<conn>.send_cert = always*` in the
   connection definition it is using.
 
-. The remote peer requests a certificate issued by a trusted CA by sending a
+* The remote peer requests a certificate issued by a trusted CA by sending a
   CERTREQ payload to the local peer that indicates one of the CAs in the path
   from the local host's certificate up to its root CA certificate.
 
 == Routing
 
 On Linux, strongSwan installs routes into routing table `*220*` by default and
-hence requires the kernel to support policy-based routing.
+therefore xref:install/kernelModules.adoc[requires kernel support] for
+policy-based routing.
 
 You can make the xref:daemons/charon.adoc[`*charon*`] daemon install the routes
-into any table you like or you can disable them completely. For that purpose the
+into any table you like, or you can disable them completely. For that purpose, the
 `*charon.install_routes*`, `*charon.routing_table*` and `*charon.routing_table_prio*`
-settings in xref:config/strongswanConf.adoc[`*strongswan.conf*`] may be used. When
-a tunnel is established between two subnets, xref:daemons/charon.adoc[`*charon*`]
+settings in xref:config/strongswanConf.adoc[`*strongswan.conf*`] may be used.
+
+When a tunnel is established between two subnets, xref:daemons/charon.adoc[`*charon*`]
 tries to find local IPs in the tunneled local subnets. Such an IP must be configured
 with *scope global* to be viable for the lookup. If a valid IP is found,
 xref:daemons/charon.adoc[`*charon*`] will install a route pointing to the remote
@@ -400,14 +414,15 @@ like the following:
 
 In that example, the local IP would be `*10.2.0.2*`. The remote subnet would be
 `*10.1.0.0/24*`. This is done, so packets to the remote subnet are sent with the
-correct source IP. Thus the IPsec policies will match and traffic from the local
+correct source IP. Thus, the IPsec policies will match and traffic from the local
 machine to the remote subnet will be secured by IPsec.
 
 To avoid conflicts with these routes (especially if
 xref:features/vip.adoc[virtual IP] addresses are used), the `*kernel-netlink*`
 plugin manually parses the host's routing tables to determine a suitable source
-address when sending IKE packets. On hosts with a (very) high number of routes this
-is quite inefficient. In that case, setting `*charon.plugins.kernel-netlink.fwmark*`
+address when sending IKE packets. This is quite inefficient on hosts with a (very)
+high number of routes. In that case, setting
+xref:config/strongswanConf.adoc#_charon_plugins_kernel_netlink_fwmark[`*charon.plugins.kernel-netlink.fwmark*`]
 in xref:config/strongswanConf.adoc[`*strongswan.conf*`] is recommended, as it will
 allow using a more efficient source address lookup.
 
@@ -417,8 +432,8 @@ e.g. running on a system that receives a lot of routes via dynamic routing.
 Connectivity change detection can be disabled by setting `*charon.process_route = no*`
 in xref:config/strongswanConf.adoc[`*strongswan.conf*`].
 
-If IPv6 is used, then make sure to xref:config/IPv6Ndp.adoc[bypass] Neighbor Discovery
-Protocol (NDP) traffic if necessary.
+If IPv6 is used, then make sure to
+xref:config/IPv6Ndp.adoc[bypass Neighbor Discovery Protocol (NDP) traffic] if necessary.
 
 It is possible that you encounter MSS/MTU problems when tunneling traffic. Please
 refer to xref:howtos/forwarding.adoc#_mtumss_issues[Forwarding and Split-Tunneling] for
@@ -426,7 +441,7 @@ details.
 
 == Remote Access Configurations
 
-In this section we present some notes on remote access configurations. Please
+This section presents some notes on remote access configurations. Please
 refer to the xref:config/quickstart.adoc[Quickstart Examples] and the
 xref:config/IKEv2.adoc#_remote_access[examples from our regression tests].
 
@@ -437,13 +452,13 @@ accept connections from anywhere.
 
 To simplify xref:howtos/forwarding.adoc[routing traffic back] to the clients and
 because roadwarriors are often located behind one or more NAT devices, the use of
-xref:features/vip.adoc[virtual IP] addresses is necessary. These addresses can
+xref:features/vip.adoc[*virtual IP addresses*] is necessary. These addresses can
 either be from a distinct subnet or actually from the subnet behind the gateway
 by use of the xref:plugins/farp.adoc[`*farp*`] plugin and optionally the
 xref:plugins/dhcp.adoc[`*dhcp*`] plugin.
 
 Whether roadwarriors will send all traffic to the gateway or use
-xref:howtos/forwarding.adoc[split-tunneling], i.e. only send traffic for specific
+xref:howtos/forwarding.adoc[*split-tunneling*], i.e. only send traffic for specific
 destinations through the tunnel, is also something to consider. This is explained
 in more details in xref:howtos/forwarding.adoc[Forwarding and Split-Tunneling].
 That document also explains how traffic is xref:howtos/forwarding.adoc[forwarded]
@@ -469,7 +484,7 @@ With the xref:plugins/eap-radius.adoc[`*eap-radius*`] plugin, user authenticatio
 may be delegated to a RADIUS server (e.g. an existing Active Directory DC).
 
 Both the xref:os/androidVpnClient.adoc[strongSwan VPN Client for Android] and
-xref:features/networkManager.adoc[NetworkManager] may be used with any of the
+xref:features/networkManager.adoc[NetworkManager plugin] may be used with any of the
 strongSwan VPN gateway configurations. Alternatively, the
 xref:daemons/charon-cmd.adoc[`*charon-cmd*`] command line IKEv2 client provides a
 simple means to establish roadwarrior connections.
@@ -483,9 +498,9 @@ You can find example site-to-site configurations in the
 xref:config/quickstart.adoc[Quickstart Examples] and the
 xref:config/IKEv2.adoc#_site_to_site[regression test scenarios].
 
-The most important difference compared to the remote access case is that the
-initiator will not request a xref:features/vip.adoc[virtual IP] address but instead
-use `*local_ts*` to tunnel traffic from one or more local subnets. With IKEv2,
+The most significant difference from to the remote access case is that, rather
+than requesting a xref:features/vip.adoc[virtual IP address], the initiator
+will use `*local_ts*` to tunnel traffic from one or more local subnets. With IKEv2,
 multiple subnets (in CIDR notation) can be added to `*local_ts*`/`*remote_ts*`
 separated by commas. If IKEv1 is used, a separate
 xref:swanctl/swanctlConf.adoc#_connections_conn_children[`*children.<child>*`]
@@ -494,12 +509,13 @@ the first subnet in `*local_ts*`/`*remote_ts*` will be used. Note that some IKEv
 implementations (e.g. from Cisco) don't support multiple subnets and require the
 same approach.
 
-One thing that often confuses users new to IPsec is that testing a net-to-net
-scenario from either of the gateways often requires one to select the source address
-used specifically (e.g. with `*ping -I*`) because the external IP of either gateway
-might not be included in the tunneled subnets. If that is something you require,
-either add the external IPs to the list of subnets in `*local_ts*`/`*remote_ts*`
-or add a specific host-to-host config.
+One thing that often confuses new users when testing a net-to-net scenario
+from either gateway is that they often need to select the source and destination
+addresses specifically (e.g. with `*ping -I*` or the xref:#_routing[routes installed by strongSwan]
+for the source, or by avoiding DNS and using an internal IP for the destination)
+because the external IP of either gateway might not be included in the tunneled
+subnets. If that is something you require, either add the external IPs to the
+list of subnets in `*local_ts*`/`*remote_ts*` or add a separate host-to-host config.
 
 == Host-to-Host Configurations
 

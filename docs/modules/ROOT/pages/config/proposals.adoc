@@ -3,7 +3,7 @@
 
 :NISTPQC: https://csrc.nist.gov/projects/post-quantum-cryptography
 :PQ:      https://github.com/strongX509/docker/tree/master/pq-strongswan#readme
-:CNSA:    https://apps.nsa.gov/iaarchive/programs/iad-initiatives/cnsa-suite.cfm
+:CNSA:    https://en.wikipedia.org/wiki/Commercial_National_Security_Algorithm_Suite
 :IANA:    https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml
 :IETF:    https://datatracker.ietf.org/doc/html
 :RFC6379: {IETF}/rfc6379
@@ -854,12 +854,31 @@ proposal is as follows:
 
     aes256-sha256-sha284-sha512-sha1-aesxcbc-noesn
 
-== Commercial National Security Algorithm Suite
+== Commercial National Security Algorithm Suites
 
-The *Suite B* cryptographic suites for IPsec ({RFC6379}[RFC 6379]) have been
-superseded by the {CNSA}[Commercial National Security Algorithm Suite] (CNSA) suite
-which basically deprecates the 128-bit suite defined by Suite B. Its recommendations
-regarding algorithm parameters are as follows:
+The *Suite B* cryptographic suites for IPsec ({RFC6379}[RFC 6379]) was
+superseded by the {CNSA}[Commercial National Security Algorithm Suite] (CNSA) 1.0
+suite, which basically deprecated the 128-bit suite defined by Suite B. Version
+2.0, published in 2022, is the first to recommend quantum-resistant algorithms.
+The recommendations regarding algorithm parameters are as follows.
+
+=== CNSA 2.0
+
+Encryption ::
+  AES with 256-bit key length (*aes256gcm16* or *aes256*)
+
+Key Exchange ::
+  ML-KEM (FIPS 203) with 1024-bit parameter set (*mlkem1024*) +
+  To use this with IKEv2, an initial classic key exchange is necessary e.g.
+  ECDH with NIST P-384 curve (*ecp384*)
+
+Pseudo-Random Function/Integrity Protection ::
+  SHA-384 or SHA-512 (e.g. *prfsha384* or *sha384* if not using AES in GCM mode)
+
+Digital Signatures ::
+  ML-DSA-87 (FIPS 204)
+
+=== CNSA 1.0
 
 Encryption ::
   AES with 256-bit key length (*aes256gcm16* or *aes256*)

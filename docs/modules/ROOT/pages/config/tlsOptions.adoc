@@ -19,7 +19,7 @@ and xref:tnc/pt-tls-client.adoc[`*pt-tls-client*`] command line tools.
 
 The options of the TLS stack can be configured in the
 xref:config/strongswanConf.adoc#_libtls[`*libtls*`] section of
-xref:config/strongswanConf.adoc[`*strongswan.conf*`]
+xref:config/strongswanConf.adoc[`*strongswan.conf*`].
 
 [cols="4,1,8"]
 |===

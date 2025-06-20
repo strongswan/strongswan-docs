@@ -12,8 +12,11 @@ The xref:./pkiGen.adoc[`*pki --gen*`] command
 
  pki --gen --type ed25519 --outform pem > strongswanKey.pem
 
-generates an elliptic *Edwards-Curve* key with a cryptographic strength of 128
-bits. Alternative key types are `*ecdsa*`, classic `*rsa*` and `*ed448*`.
+generates an elliptic *Edwards-Curve* key (EdDSA) with a cryptographic strength
+of 128 bits. Alternative key types are `*ecdsa*`, classic `*rsa*` and `*ed448*`.
+Not all implementations support EdDSA, so for best compatibility use RSA or ECDSA
+keys (Windows even has restriction on the latter, see
+xref:interop/windowsCertRequirements.adoc[]).
 
 WARNING: Never store the private key of the Certification Authority (CA) on a
          host with constant direct access to the Internet (e.g. a VPN gateway)
@@ -28,7 +31,7 @@ pki --self --ca --lifetime 3652 --in strongswanKey.pem \
            --dn "C=CH, O=strongSwan, CN=strongSwan Root CA" \
            --outform pem > strongswanCert.pem
 ----
-which can be listed with the xref:./pkiPrint.adoc[`*pki --print*`] command
+which can be inspected with the xref:./pkiPrint.adoc[`*pki --print*`] command
 ----
 pki --print --in strongswanCert.pem
 
@@ -48,12 +51,12 @@ format then just omit the `*--outform pem*` option.
 
 The xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509ca*`] directory stores all
 required `CA` certificates either in binary `DER` or in Base64 `PEM` format.
-Irrespective of the file suffix the correct format will be determined by
-strongSwan automagically.
+Irrespective of the file suffix, the correct format will be determined by
+strongSwan automatically..
 
 == Generating an End Entity Certificate
 
-Again we are using the command
+Again, we are using the command
 
  pki --gen --type ed25519 --outform pem > moonKey.pem
 
@@ -72,14 +75,14 @@ available on every recent Intel platform could be used as a virtual smartcard to
 securely store an `RSA` or `ECDSA` private key. For details, refer to
 the xref:tpm/tpm2.adoc[`*TPM 2.0*`] tutorial.
 
-In a next step the xref:./pkiReq.adoc[`*pki --req*`] command
+In a next step, the xref:./pkiReq.adoc[`*pki --req*`] command
 ----
 pki --req --type priv --in moonKey.pem \
           --dn "C=CH, O=strongswan, CN=moon.strongswan.org" \
           --san moon.strongswan.org --outform pem > moonReq.pem
 ----
 creates a PKCS#10 certificate request that has to be signed by the `CA`.
-Through the [multiple] use of the `*--san*` parameter any number of desired
+Through the (multiple) use of the `*--san*` parameter any number of desired
 `*subjectAlternativeNames*` can be added to the request. These can be of the
 form
 ----
@@ -89,19 +92,19 @@ form
 --san fec0::1                # IPv6 address
 ----
 It is strongly recommended to include the hostname of a VPN gateway as a
-`*subjectAltName*` in its certificate. Depending on your clients there may be
+`*subjectAltName*` in its certificate. Depending on your clients, there may be
 additional requirements imposed on gateway certificates, for instance, the
 xref:interop/windowsCertRequirements.adoc[Windows certificate requirements] or those
 for xref:interop/ios.adoc[iOS and macOS] clients.
 
-Based on the certificate request the `CA` issues a signed end entity certificate
+Based on the certificate request, the `CA` issues a signed end entity certificate
 with the xref:./pkiIssue.adoc[`*pki --issue*`] command
 ----
 pki --issue --cacert strongswanCert.pem --cakey strongswanKey.pem \
             --type pkcs10 --in moonReq.pem --serial 01 --lifetime 1826 \
             --outform pem > moonCert.pem
 ----
-If the `*--serial*` parameter with a hexadecimal argument is omitted then a random
+If the `*--serial*` parameter with a hexadecimal argument is omitted, then a random
 serial number is generated. Some third party VPN clients require that a VPN
 gateway certificate contains the `TLS Server Authentication` Extended Key Usage
 (EKU) flag which can be included with the following option
@@ -109,13 +112,13 @@ gateway certificate contains the `TLS Server Authentication` Extended Key Usage
  --flag serverAuth
 
 If you want to use the dynamic `CRL` fetching feature described in one of the
-following sections then you may include one or several `crlDistributionPoints`
+following sections, then you may include one or several `crlDistributionPoints`
 in your end entity certificates using the `*--crl*` parameter
 ----
 --crl  http://crl.strongswan.org/strongswan.crl
 --crl "ldap://ldap.strongswan.org/cn=strongSwan Root CA, o=strongSwan,c=CH?certificateRevocationList"
 ----
-The issued host certificate can be listed with
+The issued host certificate can be inspected with
 ----
 pki --print --in moonCert.pem
 
@@ -138,13 +141,13 @@ xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509*`] directory.
 
 Create a distinct private key and a matching X.509 end entity certificate
 signed by your CA for each peer, i.e. for all VPN clients and VPN gateways in
-your network and store the peer's private key and X.509 certificate in the
+your network, and store the peer's private key and X.509 certificate in the
 xref:swanctl/swanctlDir.adoc[`*/etc/swanctl*`] directory of the corresponding
 host.
 
 == PKCS#12 Container
 
-Usually a Windows, Android, macOS or iOS based VPN client needs its private key,
+Usually, a Windows, Android, macOS or iOS VPN client needs its private key,
 its host or user certificate and the `CA` certificate. The most convenient way
 to load this information is to put everything into a `PKCS#12` container:
 ----
@@ -156,10 +159,9 @@ openssl pkcs12 -export -inkey carolKey.pem \
 The strongSwan xref:./pki.adoc[`*pki*`] tool currently is not able to create
 `PKCS#12` containers so that `*openssl*` must be used.
 
-IMPORTANT: *Apple* and *Android* clients can only process PKCS#12 containers that
-           are protected with 3DES and the legacy KDF. So when using
-           `*openssl pkcs12*` with OpenSSL 3.0 and newer, the `*-legacy*` option
-           is required.
+IMPORTANT: *Apple* and *Android* clients can only process PKCS#12 containers
+that are protected with 3DES and the legacy KDF. When using `*openssl pkcs12*`
+with OpenSSL 3.0 and newer, the `*-legacy*` option is required.
 
 Omitting the `*-certfile*` argument from the command above is indicated in the
 following situation:
@@ -169,7 +171,7 @@ following situation:
    that, create the PKCS#12 container without a CA certificate. Then import the
    PKCS#12 file into the Android trust store as usual and the CA certificate file
    directly into the  xref:os/androidVpnClient.adoc[strongSwan app]. Or install
-   both files via the xref:os/androidVpnClientProfiles.adoc[configuration profile].
+   both files via a xref:os/androidVpnClientProfiles.adoc[configuration profile].
 
 It's also possible to add additional CA certificates with multiple `*-certfile*`
 arguments (e.g. for multi-level X.509 trust chains).
@@ -177,7 +179,7 @@ arguments (e.g. for multi-level X.509 trust chains).
 The `*openssl pkcs12*` command requires the certificates and the private key to be
 in PEM format. DER format is not accepted. Either use `*--outform pem*` with the
 xref:pki/pki.adoc[`*pki*`] commands above to generate all files in PEM format
-or convert them later on with the command
+or convert them later with the command
 
  openssl x509 -inform der -outform pem -in cert.der -out cert.pem
 
@@ -199,7 +201,7 @@ xref:./pkiSignCrl.adoc[`*pki --signcrl*`] command
 pki --signcrl --cacert strongswanCert.pem --cakey strongswanKey.pem \
               --lifetime 30 > strongswan.crl
 ----
-If you omit the `*--lifetime*` option then the default value of 15 days is used.
+If you omit the `*--lifetime*` option, then the default value of 15 days is used.
 CRLs can either be uploaded to a `HTTP` or `LDAP` server or put in binary `DER`
 or Base64 `PEM` format into the
 xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509crl*`] directory from where they
@@ -218,7 +220,7 @@ Instead of the certificate file (in our example `moonCert.pem`), the serial numb
 of the certificate to be revoked can be indicated using the `*--serial*`
 parameter. The xref:./pkiSignCrl.adoc[`*pki --signcrl --help*`] command
 documents all possible revocation reasons but the `*--reason*` parameter can also
-be omitted. The content of the new CRL file can be listed with the command
+be omitted. The new CRL file can be inspected with the command
 ----
 pki --print --type crl --in new.crl
 
@@ -244,6 +246,6 @@ activates the local caching of `CRLs` that were dynamically fetched from an
 xref:swanctl/swanctlDir.adoc[`*/etc/swanctl/x509crl*`] using a unique filename
 formed from the issuer's `*subjectKeyIdentifier*` and the `*.crl*` suffix.
 
-With the cached copy the `CRL` is immediately available after startup.  When the
+With the cached copy, the `CRL` is immediately available after startup.  When the
 local copy has become stale, an updated `CRL` is automatically fetched from one
 of the defined `CRL` distribution points during the next IKEv2 authentication.

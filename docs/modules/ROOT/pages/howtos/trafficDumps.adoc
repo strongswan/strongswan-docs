@@ -36,23 +36,23 @@ works with kernel processing of IPsec traffic.
 WARNING: If you do not exactly know what you are doing then stop here and read
          material about the topic first.
 
-Traffic dumps are generally not useful for debugging of IKE, because charon
-optionally logs the complete structure of the IKE packets. However the graphical
+Traffic dumps are generally not useful for debugging of IKE, because the IKE daemon
+optionally logs the complete structure of the IKE packets. However, the graphical
 interface provided by Wireshark could be helpful. If you're debugging problems with
 ESP or AH encoding or other fancy things, it is useful, though.
 
 This method can only capture traffic before `*nat POSTROUTING*` which is the last
 chain before IPsec processing of outgoing packets happen. To check if packets match
-the SPs, check the traffic counters of the `CHILD_SA`. You can see them in the
+the policies, check the traffic counters of the `CHILD_SA`. You can see them in the
 output of xref:swanctl/swanctlListSas.adoc[`*swanctl --list-sas*`].
 
 == Problem Statement
 
 Capturing traffic with `*tcpdump*` or `*wireshark*` by listening on a normal
 network interface shows encapsulated and decapsulated IPsec traffic only for
-inbound traffic. For outbound traffic only the encrypted packets are seen.
+inbound traffic. For outbound traffic, only the encrypted packets are seen.
 This is because of how the capturing socket of the `*libpcap*` library used by
-the aforementioned tools work.
+the aforementioned tools works.
 
 IPsec processing is usually done in the kernel. strongSwan only handles IKE. If
 you're using userland-encryption based on `*libipsec*` then the
@@ -72,11 +72,11 @@ gives a list of possible places to dump traffic at.
 
 `*nflog*` rules log to a kernel internal multicast group which is identified by
 an integer in the `*0 .. 2&#94;16-1*` range. Only the part of the datagram that the
-framework sees will be captured. For `*iptables*` this is an IPv4 packet whereas
-for `*ip6tables*` it is an IPv6 packet. If you use it in `*ebtables*` this is an
+framework sees will be captured. This is an IPv4 packet for `*iptables*`, whereas
+it is an IPv6 packet for `*ip6tables*`. If you use it in `*ebtables*`, this is an
 Ethernet frame.
 
-Using `*nflog*` to dump packets, forces you to use a special interface syntax
+Using `*nflog*` to dump packets forces you to use a special interface syntax
 of the form `*nflog:*<groupnumber>` with `*tcpdump*` and `*wireshark*`.
 
  tcpdump -s 0 -n -i nflog:5
@@ -86,10 +86,12 @@ of the form `*nflog:*<groupnumber>` with `*tcpdump*` and `*wireshark*`.
 Because `*nflog*` rules are normal `*iptables*` rules, the rules need a proper
 match and target part so you get exactly the traffic you want. You also must put
 the rule into the correct place for it to get the packets you're interested in.
-The `*policy*` match module of @iptables@ enables you to match packets with a
+The `*policy*` match module of `*iptables*` enables you to match packets with a
 matching IPsec policy.
 
-Following are the parameters for the `*nflog*` target in `*iptables*`
+.Parameters for the `*nflog*` target in `*iptables*`
+[%collapsible]
+====
 ----
 NFLOG
     This target provides logging of matching packets. When this  target  is
@@ -121,8 +123,11 @@ NFLOG
            packets reach userspace. The default value is 1.
 ----
 _Source: man page of *iptables-extensions* for *iptables* version 1.4.21._
+====
 
-And the man page of the `*policy*` match module for `*iptables*`.
+.Parameters for the `*policy*` match module for `*iptables*`
+[%collapsible]
+====
 ----
 policy
     This modules matches the policy used by IPsec for handling a packet.
@@ -170,6 +175,7 @@ policy
            with --strict.
 ----
 _Source: manpage of *iptables-extensions* for *iptables* version 1.4.21._
+====
 
 == Examples
 
@@ -223,33 +229,30 @@ iptables -t filter -I OUTPUT -m policy --pol ipsec --dir out -j NFLOG --nflog-gr
 tcpdump -s 0 -n -i nflog:5
 ----
 
-Alternatively use Wireshark. The `*nflog*` group appears in the interface list.
+Alternatively, use Wireshark. The `*nflog*` group appears in the interface list.
 
 == Special Case: libipsec
 
-If you're using xref:plugins/kernel-libipsec.adoc[`*libipsec*`] then simply make
+If you're using xref:plugins/kernel-libipsec.adoc[`*libipsec*`], then simply make
 `*tcpdump*` listen on the `*tun*` interface to get decapsulated traffic.
 If you want IKE and the IPsec traffic, just listen on the interface that is used
 to communicate with the peers.
 
 == Decrypting IKE/ESP Traffic in Wireshark
 
-It is possible to configure encryption and authenticaton keys in Wireshark in
-order to decrypt and verify IKE and ESP traffic. However, it depends on the
-Wireshark version how well this works. For instance, to decrypt ISAKMP (IKEv1)
-traffic only 3DES was supported until 1.12.0, which added support for AES.
-Similarly, versions before 1.10.9 only supported ISAKMP with PSK authentication.
+It is possible to configure encryption and authentication keys in Wireshark in
+order to decrypt and verify IKE and ESP traffic.
 
 The IKE encryption and authentication keys can be extracted from the log if the
 xref:config/logging.adoc[log level] is increased to `*4*` for the `*ike*` subsystem.
-When using IKEv1 look for `*SKEYID*` or `*Ka*` to get the final encryption key
-whereas with IKEv2 look for `*Sk*`. The ESP keys are logged on level `*4*` in the
-`*chd*` subsystem but can also be extracted via `*ip xfrm state*`.
+When using IKEv1, look for `*SKEYID*` or `*Ka*` to get the final encryption key,
+whereas with IKEv2, look for `*Sk*`. The ESP keys are logged on level `*4*` in the
+`*chd*` subsystem, but can also be extracted via `*ip xfrm state*`.
 
 Starting with strongSwan version 5.6.2, the xref:plugins/save-keys.adoc[`*save-keys*`]
 plugin for `*libcharon*` can be used to automatically store IKE and ESP keys under
 corresponding default file names in Wireshark format. This key files can then be
 loaded by Wireshark to decrypt the captured IKE and ESP packets.
 
-To debug IKEv2 it is also possible to use `*NULL*` encryption via the `*openssl*`
+To debug IKEv2, it is also possible to use `*NULL*` encryption via the `*openssl*`
 plugin.

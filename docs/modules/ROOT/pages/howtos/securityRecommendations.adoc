@@ -1,9 +1,10 @@
 = Security Recommendations
 
+:TESTS:   https://www.strongswan.org/testing/testresults
 :GITHUB:  https://github.com/strongswan/strongswan/blob/master/src
 :POLPRIO: {GITHUB}/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c#L658
 :KEYLEN:  https://www.keylength.com/
-:CNSA:    https://apps.nsa.gov/iaarchive/programs/iad-initiatives/cnsa-suite.cfm
+:CNSA:    https://en.wikipedia.org/wiki/Commercial_National_Security_Algorithm_Suite
 :IETF:    https://datatracker.ietf.org/doc/html
 :RFC1918: {IETF}/rfc1918
 :RFC3927: {IETF}/rfc3927
@@ -36,137 +37,56 @@ Diffie-Hellman Groups ::
 modp512,modp768,modp1024,modp1024s160,modp1536,modp2048s224,modp2048s256,ecp192
 ----
 
-These algorithms do not directly relate to plugins. To *disable* them you must
-specify a set of crypto proposals that exclude these algorithms in the connection
-definitions of xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`]
-----
-connections.<conn>.proposals
-connections.<conn>.children.<child>.esp_proposals
-connections.<conn>.children.<child>.ah_proposals
-----
-Do not set `*ah_proposals*` unless you want the CHILD_SA to use the `AH`
-(Authentication Header) IPsec protocol instead of the `ESP` (Encapsulating Security
-Payload) IPsec protocol or `UDPENCAP` (ESP in UDP Encapsulation) used when a NAT
-situation is detected or when `UDPENCAP` is explicitly enforced.
+TIP: If no explicit *proposals* are defined in
+xref:swanctl/swanctlConf.adoc[*swanctl.conf*], then strongSwan uses its
+xref:config/proposals.adoc#_default_proposals[*default proposals*] that neither
+propose nor accept any of the *weak algorithms* listed above, with the exception
+of *3des* and *sha1* which are still heavily used e.g. by Microsoft Windows.
 
-NOTE: If no explicit *proposals* are defined in
-      xref:swanctl/swanctlConf.adoc[*swanctl.conf*] then strongSwan uses its
-      *default* proposals that neither propose nor accept any of the *weak*
-      algorithms listed above, with the exception of *3des* and *sha1* which
-      are still heavily used e.g. by Microsoft Windows.
+When xref:config/proposals.adoc[configuring algorithm proposals] (`*proposals*` or `*esp|ah_proposals*`)
+in the connection definitions of xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`],
+make sure to *exclude these algorithms*.
 
-== Certificate Trust Chain Verification
+== Algorithm Selection
 
-If you want to enforce specific (strong) algorithms in the certificate chain of the
-peer, you can do this using the
-xref:swanctl/swanctlConf.adoc#_connections_conn_remote[`*remote.auth*`] settings in
-xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+The available algorithms for IKE depend on the crypto plugins loaded in the IKE
+daemon xref:daemons/charon.adoc[`*charon*`]. Refer to the
+xref:config/proposals.adoc[algorithm proposal keywords] to see which plugins
+implement them.
 
-Here is an example for enforcing the use of `*sha256*`, `*sha384*` or `*sha512*`
-in the certificate trust chain and to reject any other hashing algorithms. The same
-can be done for the algorithm of the actual pubkey (RSA or ECDSA).
+For processing of ESP and AH packets, the available algorithms depend on
+the operating system kernel's support for them and if they are supported by
+the `XFRM` (Linux) or `PF_KEY` (FreeBSD, macOS) kernel interface. If you're
+using userland ESP encryption based on the
+xref:plugins/kernel-libipsec[`*kernel-libipsec*`] plugin, then all IKE
+algorithms are also available for ESP.
 
-Examples:
-----
-connection.<conn>.remote.auth = pubkey-sha256-sha384-sha512
-connection.<conn>.remote.auth = rsa-sha256-sha384-sha512
-connection.<conn>.remote.auth = ecdsa-sha384
-----
-
-== Cipher Selection
-
-The available ciphers for IKE depend on the crypto modules loaded in the IKE
-xref:daemons/charon.adoc[`*charon*`] daemon. For kernel processing of ESP and AH
-packets the available ciphers depend on the kernel support for them and if
-they are supported by the `XFRM` or `PF_KEY` kernel interface.
-
-It is advised to adhere to the recommendation of the appropriate security authority
-when choosing ciphers to secure the tunnel cryptographically. {KEYLEN}[keylength.com]
-lists some of the standards for western Europe and the US. It is strongly advised
-to use at least a `*2048*` bit key length for MODP Diffie-Hellman groups.
+It is advised to adhere to the recommendation of the appropriate security
+authority when choosing algorithms to secure the tunnel cryptographically.
+{KEYLEN}[keylength.com] lists some of the standards for western Europe and
+the US. It is strongly advised to use at least a `*2048*` bit key length for
+MODP Diffie-Hellman groups.
 
 The National Institute of Standards and Technology (NIST) has mandated that a
 minimum cryptographic strength of 128 bit is sufficient for security beyond
-the year 2030. This results in the following cipher set:
+the year 2030. This results in the following cipher suite:
 
  aes128-sha256-modp3072
 
 For systems without support for SHA-256, SHA-1 might be used instead. SHA-1 must
-not be used for anything else than an HMAC for IKE or ESP.
+not be used for anything else than HMACs in IKE or ESP.
 
-Alternatively the {CNSA}[Commercial National Security Algorithm] (CNSA) Suite
+Alternatively, the {CNSA}[Commercial National Security Algorithm] (CNSA) Suite
 may also be used where supported
 
  aes256-sha384-ecp384,aes256gcm16-prfsha384-ecp384
 
-The supported xref:config/proposals.adoc[algorithm proposal keywords] are limited
-to what the various `*libstrongswan*` plugins implement.
+CNSA 2.0 includes quantum-resistant key exchange algorithms:
 
-The supported ESP/AH cipher suites are limited to what the Linux kernel supports.
-If you're using userland ESP encryption based on the
-xref:plugins/kernel-libipsec[`*kernel-libipsec*`] plugin then all IKE algorithms
-are also available for ESP.
 
-== Preshared Keys
+ aes256-sha384-sha512-ecp384-ke1_mlkem1024,aes256gcm16-prfsha384-prfsha512-ecp384-ke1_mlkem1024
 
-There is nothing to be said against Pre-Shared Keys (PSKs) as long as they are
-chosen randomly with sufficient entropy. The `*openssl rand*` command can be used
-to generate a PSK with `*>256*` bit entropy converted to base64 format:
-----
-$ openssl rand -base64 33
-bjsqbPZB3Isk/RHMCH6Pe9G+TDc4tJVmbvRlWLXMSjS+
-----
-Alternatively the `*dd*` command can be used to directly retrieve the entropy
-either from `*/dev/random*` or the non-blocking `*/dev/urandom*` device
-----
-$ dd if=/dev/random count=1 bs=33 2>/dev/random | base64
-s1Jy/Li0Bkqmd3C7eYG71EoPxmcataF/LL4ATA3gE+au
-----
-The PSK can then be used in the
-xref:swanctl/swanctlConf.adoc#_secrets_ikesuffix[`*secrets*`] section of
-xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to configure the IKE user
-credentials
-----
-secrets {
-  ike-alice {
-    id = alice@strongswan.org
-    secret = 0sbjsqbPZB3Isk/RHMCH6Pe9G+TDc4tJVmbvRlWLXMSjS+
-  }
-  ike-bob {
-    id = bob@strongswan.org
-    secret = 0ss1Jy/Li0Bkqmd3C7eYG71EoPxmcataF/LL4ATA3gE+au
-  }
-}
-----
-For base64-encoded secrets the `*0s*` prefix is used whereas `*0x*` designates a
-hex-encoded value.
-
-=== IKEv1 Aggressive Mode with PSK Authentication
-
-IKEv1 Aggressive Mode is inherently flawed, as a hash of the PSK is transmitted
-in the clear, which a passive attacker can directly use to try to crack the
-password using an offline dictionary or brute force attack. Thus it is strongly
-advised to avoid IKEv1 Aggressive Mode.
-
-=== MITM Attacks on IKEv2 PSK Authentication
-
-If user credentials don't have enough entropy what is usually the case if you
-let the users freely choose their passwords, then PSK-based IKEv2 authentication
-is vulnerable to active Man-In-The-Middle (MITM) attacks.
-
-Since a VPN client is usually the IKEv2 initiator, it sends its AUTH payload
-containing the password hash in the IKE_AUTH request to an unauthenticated and
-thus untrusted VPN server. If an attacker inserts herself into the IKE connection
-between client and server she can intercept the AUTH payload and start an offline
-dictionary or brute force attack on the PSK.
-
-Thus it is of utmost importance that cryptographically strong PSKs are used with
-PSK-based authentication. Since in most cases this cannot be enforced, we highly
-recommend to use
-xref:config/quickstart.adoc#_roadwarrior_case_with_eap[EAP-based authentication]
-instead where the VPN server is authenticated first based on a X.509 server
-certificate, so that the VPN client can then send its [potentially weak] password
-hash later on to a trusted peer.
+xref:config/proposals.adoc[] provides more information.
 
 == Certificate-based Authentication
 
@@ -174,7 +94,7 @@ Certificate-based authentication is inherently stronger than PSK-based authentic
 A properly built PKI architecture has usually one root CA and one or several
 intermediate CAs, where the private key of the intermediate CA is used to sign
 the end entity certificates and the private key of the root CA can be kept on a
-smartcard stored in a safe or at lease on a system disconnected from the Internet.
+smartcard stored in a safe or at least on a system disconnected from the Internet.
 The private root CA key is never stored on an insecure or online system.
 Securing the root CA enables the PKI administrator to revoke any certificates
 and recreate the PKI from scratch, if any intermediate CAs are compromised.
@@ -190,32 +110,153 @@ be added manually using an
 xref:swanctl/swanctlConf.adoc#_authorities[`*authorities*`] section in
 xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
 
-X.509 certificates should be based on RSA public keys with a modulus of at least
-`*2048*` bits (preferably `*3072*` bits for end entity certificates and `*4096*`
-bits for CA certificates). Alternatively ECDSA public keys with at least `*256*`
-bits (preferably `*384*` bits) can be used. For certificate signatures at least
-SHA-256 must be used since both SHA-1 and MD5 are hopelessly broken.
+.Recommended key types and strengths for X.509 certificates
+****
+[horizontal]
+EdDSA::
+  Ed25519 and Ed488 are both acceptable. EdDSA is recommended if supported by
+  all peers.
+
+RSA::
+  A modulus of at least `*2048*` bits should be used (preferably `*3072*` bits
+  for end entity certificates and `*4096*` bits for CA certificates).
+
+ECDSA::
+  Curves should provide a strength of at least `*256*` bits (preferably `*384*`
+  bits).
+
+For either RSA or ECDSA, only signatures with at least SHA-256 must be used
+since both SHA-1 and MD5 are hopelessly broken.
+****
+
 All X.509 certificates must conform to the PKIX Internet standard
 ({RFC5280}[RFC 5280]).
 
+=== Signature Scheme Constraints
+
+If you want to enforce specific (strong) signature algorithms in the *certificate
+trust chain* of the peer, you can do this using the
+xref:swanctl/swanctlConf.adoc#_connections_conn_remote[`*remote.auth*`] settings in
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`].
+
+----
+connection.<conn>.remote.auth = pubkey-sha256-sha384-sha512 <1>
+connection.<conn>.remote.auth = ecdsa-sha384 <2>
+connection.<conn>.remote.auth = rsa-3072-sha256-sha384-sha512 <3>
+----
+<1> This enforces the use of `*sha256*`, `*sha384*` or `*sha512*` in the
+certificate trust chain, using any key type
+<2> The key type can optionally be restricted (only ECDSA)
+<3> The minimum key strength can be limited as well (only RSA with at least 3072 bits)
+
+By default, such restrictions automatically apply to *signatures for IKEv2
+authentication* as well, which can be disabled via
+`*charon.signature_authentication_constraints*` in
+xref:config/strongswanConf.adoc[`*strongswan.conf*`], or by defining separate
+restrictions for IKEv2 with the `*ike:*` prefix.
+
+----
+connection.<conn>.remote.auth = ike:pubkey-sha384-sha256 <1>
+connection.<conn>.remote.auth = rsa-sha256-sha384-sha512-ike:rsa/pss-sha384 <2>
+----
+<1> This enforces the use of `*sha384*` or `*sha256*` for IKEv2 but does not
+restrict signatures in the trust chain
+<2> This enforces signatures in the trust chain to RSA with either `*sha256*`,
+`*sha384*` or `*sha512*`, while only IKEv2 signatures with RSASSA-PSS and
+`*sha384*` are accepted
+
+== Pre-shared Keys
+
+There is nothing to be said against Pre-Shared Keys (PSKs) as long as they are
+chosen randomly with sufficient entropy. The `*openssl rand*` command can be used
+to generate a PSK with `*>256*` bit entropy converted to Base64 format:
+----
+$ openssl rand -base64 33
+bjsqbPZB3Isk/RHMCH6Pe9G+TDc4tJVmbvRlWLXMSjS+
+----
+Alternatively, the `*dd*` command can be used to directly retrieve the entropy
+either from `*/dev/random*` or the non-blocking `*/dev/urandom*` device
+----
+$ dd if=/dev/random count=1 bs=33 2>/dev/random | base64
+s1Jy/Li0Bkqmd3C7eYG71EoPxmcataF/LL4ATA3gE+au
+----
+The PSK can then be used in the
+xref:swanctl/swanctlConf.adoc#_secrets_ikesuffix[`*secrets*`] section of
+xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] to configure the IKE user
+credentials:
+----
+secrets {
+  ike-alice {
+    id = alice@strongswan.org
+    secret = 0sbjsqbPZB3Isk/RHMCH6Pe9G+TDc4tJVmbvRlWLXMSjS+
+  }
+  ike-bob {
+    id = bob@strongswan.org
+    secret = 0ss1Jy/Li0Bkqmd3C7eYG71EoPxmcataF/LL4ATA3gE+au
+  }
+}
+----
+For Base64-encoded secrets, the `*0s*` prefix is used whereas `*0x*` designates
+a hex-encoded value (without prefix, the value is used as is).
+
+=== IKEv1 Aggressive Mode with PSK Authentication
+
+IKEv1 Aggressive Mode with PSK is inherently flawed, as a hash of the PSK is
+transmitted in the clear, which a passive attacker can directly use to try to
+crack the password using an offline dictionary or brute force attack. Thus, it
+is strongly advised to avoid IKEv1 Aggressive Mode. Also see
+xref:support/faq.adoc#_aggressive_mode[this FAQ entry].
+
+=== MITM Attacks on IKEv2 PSK Authentication
+
+If user credentials don't have enough entropy, which is usually the case if you
+let the users freely choose their passwords, then PSK-based IKEv2 authentication
+is vulnerable to active Man-In-The-Middle (MITM) attacks.
+
+Since a VPN client is usually the IKEv2 initiator, it sends its IKE_AUTH request
+containing the password hash in the AUTH payload to an unauthenticated, and
+therefore untrusted, VPN server. If an attacker inserts themselves into the IKE
+connection between client and server, they can intercept the AUTH payload and
+start an offline dictionary or brute force attack on the PSK.
+
+Therefore, it is of utmost importance that cryptographically strong PSKs are
+used with PSK-based authentication. Since this often cannot be enforced,
+we highly recommend to use
+xref:config/quickstart.adoc#_roadwarrior_case_with_eap[EAP-based authentication]
+instead, where the VPN server is first authenticated based on an X.509 server
+certificate, so that the VPN client can then send its (potentially weak) password
+hash to a trusted peer.
+
 == Perfect Forward Secrecy
 
-Perfect Forward Secrecy (PFS) is strongly recommended to make IPsec peers negotiate
-an independent session key for each IPsec or CHILD SA. This protects the long-term
-confidentiality of the IPsec traffic if the IKE shared secret is leaked. Note that
-the session keys of the first CHILD_SA of a new IKEv2 connection are derived from
-the IKE shared secret. However, subsequent CHILD_SAs will use independent keys if
-PFS is used.
+Perfect Forward Secrecy (PFS) is recommended to make IPsec peers negotiate
+independent session keys for each Child/IPsec SA. This protects the
+confidentiality of the IPsec traffic should the key material of the IKE SA get
+leaked.
 
-PFS is enabled by appending a DH group to the ESP or AH cipher proposal. Using
-PFS introduces no significant performance overhead, unless you rekey more than
-about 80 CHILD_SAs per second.
+Note that the session keys of the first Child SA of a new IKEv2 connection are
+derived from the IKE key material. However, subsequent Child SAs will use
+independent keys if PFS is used. This can also be enforced for the first Child SA
+by using childless IKE SAs (xref:swanctl/swanctlConf.adoc#_connections_conn_childless[`*childless*`]
+setting in swanctl.conf).
+
+A form of PFS is also achieved by rekeying Child SAs after rekeying the IKE SA.
+Because rekeying an IKE SA always creates fresh key material, any Child SA
+created/rekeyed afterwards will be based on the new key material and a leak of
+the previous IKE SA key material doesn't affect them.
+
+PFS is enabled by adding one or more key exchange methods to the
+xref:config/proposals.adoc[ESP or AH proposal(s)]. It can be made optional by
+adding `*none*` to a proposal. Since version 6.0.2, the
+xref:config/proposals.adoc#_default_proposals[*default ESP/AH proposal*]
+include the latter and all supported key exchange methods, so whether PFS is
+used depends on the proposal of the peer.
 
 == Tunnel Shunting
 
 As IPsec connections on Linux are usually policy-based, there is no tunnel interface
-over which packets are routed. Instead XFRM policies and states transform the packet
-transparently.
+over which packets are routed. Instead, XFRM policies and states transform the
+packet transparently.
 
 Note that any traffic for which there is no matching IPsec policy will not be
 subject to IPsec processing. This can cause traffic leakage into your LAN and into
@@ -223,36 +264,49 @@ the attached WAN. Such a scenario can occur when your site-to-site tunnel is
 configured with `*start_action = none*` and your firewall rules do not drop packets
 that should be protected with IPsec but actually aren't.
 
-Usually it is highly undesired to let such traffic just pass. Take care to shunt
-the connections correctly using the `*policy*` match module in `*iptables*`.
+Usually, it is highly undesirable to let such traffic just pass. Take care to shunt
+the connections correctly using the `*policy*` match module in `*iptables*` or
+by defining IPsec drop policies.
 
 It is strongly advised to use `*start_action = trap*` in site-to-site setups to
 make sure that the kernel tells the xref:daemons/charon.adoc[`*charon*`] daemon
-to establish a `CHILD_SA` when there is no SA for a security policy. It is advisable
-to take a look at the xref:config/strongswanConf.adoc[`*strongswan.conf*`] setting
-`*charon.ignore_acquire_ts*` when doing this.
+to establish a Child SA when there is no SA for a security policy. Traffic is
+held until an SA has been established and won't leak out.
 
 {RFC1918}[RFC1918] private networks and others that are not allowed to be used on
 the public Internet must not occur in the source or destination fields of an IP
 packet. A suitable method to prevent that is to use an `*iptables*` rule that
 rejects or drops packets with such a destination without a matching IPsec policy
-using the `*policy*` match module. An alternative is to use a `DROP` policy in the
-configuration with a higher priority than the *normal* IPsec policies.
-If you do not know the priorities of your normal rules, check them with
-`*ip xfrm policy*`. If the priorities automatically computed by the
-xref:daemons/charon.adoc[`*charon*`] daemon based on the traffic selectors do not
-fit (see {POLPRIO}[`kernel_netlink_ipsec.c`]) then the priority of the XFRM policies
-can be set manually in
-xref:swanctl/swanctlConf.adoc#_connections_conn_children[`*swanctl.conf*`] via
-the `*<child>.priority*` attribute.
+using the `*policy*` match module.
 
-If you NAT traffic into the tunnel by using DNAT, SNAT or MASQUERADE, the traffic
-selector of the DROP policy must be adjusted accordingly. The IPsec SPD in the
-kernel or the xref:daemons/charon.adoc[`*charon*`] daemon are not aware of your
-firewall's NAT rules. Again the priority of the DROP policy must be higher than
-the one of your normal policies.
+An alternative is to use a *IPsec `drop` policy* in the configuration with a
+lower priority than the *normal* IPsec policies (which is the default). If you
+NAT traffic into the tunnel by using DNAT, SNAT or MASQUERADE, the traffic
+selector of the `*drop*` policy must be adjusted accordingly. The IPsec SPD in
+the kernel or the xref:daemons/charon.adoc[`*charon*`] daemon are not aware of
+your firewall's NAT rules.
 
-=== DROP Policy Example
+Installing a drop policy with `*local|remote_ts = 0.0.0.0/0,::/0*` will block
+all traffic to and from the host if it isn't protected by IPsec (except IKE as
+the daemon installs socket-specific bypass policies). However, this requires
+installing *bypass/passthrough policies* for traffic that should explicitly be
+allowed without IPsec (e.g. SSH or ICMP, in particular, ICMPv6 for
+xref:config/IPv6Ndp.adoc[NDP]).
+The {TESTS}/ikev2/shunt-manual-prio/[ikev2/shunt-manual-prio] scenario
+provides an example for this (note that setting priorities manually is not
+necessary, that's just something the test scenario does).
+
+With newer versions of the Linux kernel and iproute2, it's also possible to
+configure a *default drop policy* per direction without having to install
+such policies manually or via strongSwan (`*ip xfrm policy setdefault in|out|fwd block*`).
+But similar to the above, bypass policies will be necessary to allow e.g. SSH or
+ICMP traffic without IPsec.
+
+.IPsec Drop Policies
+====
+This config snippet installs drop policies for traffic destined to addresses
+from the IP address pool from which virtual IP addresses are assigned to
+roadwarriors.
 
 ----
 connections {
@@ -276,17 +330,23 @@ connections {
   }
 }
 ----
-In the following example, the REJECT target is used to give the user a clear error message.
+====
+
+.iptables REJECT
+====
+This alternative example uses the `REJECT` target in `*iptables*` to give the
+users on the gateway's side a clear error message when they send traffic
+to an address in `*10.0.0.0/8*` and there is no IPsec policy that allows it:
 
  iptables -A FORWARD -d 10.0.0.0/8 -m policy --pol none --dir out -j REJECT --reject-with icmp-admin-prohibited
 
-Generally it is important to understand how `*iptables*`/Netfilter work together
+Generally, it is important to understand how `*iptables*`/Netfilter works together
 with XFRM to design suitable firewall rules that protect your network in case tunnels
-go down or can not be brought up. When NAT is brought into the discussion, it can
-be impossible to design a general rule in `*iptables*` that just drops the
-unprotected packets and specific rules need to be inserted for your specific NATed
-addresses.
+go down or can not be brought up. In some cases (e.g. certain NAT setups), it
+might be impossible to design a generic rule in `*iptables*` that just drops the
+unprotected packets and specific rules may need to be inserted.
 
 Of course, there are more networks than `*10.0.0.0/8*` that fulfill the aforementioned
 criteria, including IPv6 subnets. More information on these address ranges can be found
 {RFC1918}[RFC 1918], {RFC3927}[RFC 3927] and {RFC6890}[RFC 6890].
+====

@@ -6,7 +6,9 @@
 
 * xref:config/strongswanDir.adoc[`*strongswan.d*`] directory
 
-== Used by the Modern vici-based Control Interface
+== Connections and Credentials
+
+=== Used by the Modern vici-based Control Interface
 
 The following configuration files and directories are used by the
 xref:swanctl/swanctl.adoc[`*swanctl*`] command line tool via the
@@ -16,7 +18,7 @@ xref:plugins/vici.adoc[`*vici*`] control interface.
 
 * xref:swanctl/swanctlDir.adoc[`*swanctl*`] directory
 
-== Used by the Deprecated stroke-based Control Interface
+=== Used by the Deprecated stroke-based Control Interface
 
 The following configuration files and directories are used by the
 `*ipsec*` command line tool and the `*starter*` process via the

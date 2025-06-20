@@ -5,33 +5,33 @@
 
 == Overview
 
-When using IPv6 a potential pitfall is that traffic selectors of established tunnels
-might also cover packets used by the Neighbor Discovery Protocol (NDP), in particular
-if all traffic is tunneled (traffic selector is `*::/0*`). Thus looking up link layer
-addresses of peers and routers might fail or locally assigned IP addresses might
+When using IPv6, a potential pitfall is that traffic selectors of established tunnels
+might also cover packets used by the Neighbor Discovery Protocol (NDP). In particular,
+if all traffic is tunneled (traffic selector is `*::/0*`). So looking up link layer
+addresses of peers and routers might fail, or locally assigned IP addresses might
 disappear.
 
-To allow NDP traffic when tunnels are established bypass policies have to be
+To allow NDP traffic when tunnels are established, bypass policies have to be
 installed.
 
 Either for all ICMPv6 traffic or only for certain types (depending on the setup and
-traffic selectors not all will have to be bypassed, refer to {RFC4861}[RFC 4861]
+traffic selectors, not all will have to be bypassed, refer to {RFC4861}[RFC 4861]
 for details on the message types):
 
 Router Solicitation (RS): 133 ::
   Used to locate routers. Source address is a local address or `*::*` (if none is
-  known yet), the destination address is typically the all-routers multicast address.
+  known yet), the destination address is typically the all-routers multicast address (`*ff02::2*`).
 
 Router Advertisement (RA): 134 ::
   Sent by routers periodically or in response to RS messages (from a link-local
   address to either the address from which RS messages were received or the
-  all-nodes multicast address). If these (or RS messages, if used) are blocked,
+  all-nodes multicast address, `*ff02::1*`). If these (or RS messages, if used) are blocked,
   locally assigned addresses might disappear after establishing the tunnel.
 
  Neighbor Solicitation (NS): 135 ::
-  Similar to ARP for IPv4 these are used to determine the link layer address of
+  Similar to ARP for IPv4, these are used to determine the link layer address of
   a host. Typically sent from a locally assigned address to the solicited-node
-  multicast address corresponding to the target address.
+  multicast address corresponding to the target address (`*ff02::1:ff00:0/104*` prefix).
 
  Neighbor Advertisement (NA): 136 ::
   Sent as response to NS messages (from a local address to the address from which
@@ -86,5 +86,5 @@ connections {
 }
 ----
 
-NOTE: Instead of *ipv6-icmp* the numeric protocol identifier *58* might have to
+NOTE: Instead of *ipv6-icmp*, the numeric protocol identifier *58* might have to
       be used if the protocol name can't be resolved.
