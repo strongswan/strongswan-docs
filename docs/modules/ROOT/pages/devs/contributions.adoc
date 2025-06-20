@@ -1,4 +1,5 @@
 = Contributions
+:page-toclevels: 4
 
 :GITHUB:   https://github.com/strongswan/strongswan
 :DEV:      https://lists.strongswan.org/mailman/listinfo/dev
@@ -140,7 +141,6 @@ If you submit non-trivial patches:
  */
 ----
 
-[#gpl-only]
 === Legacy and Other GPL-only Components
 
 If your contributions are targeting any of the following components we will
@@ -170,9 +170,16 @@ By making a contribution to this project, I certify that:
 This sign-off is part of the commit message and can be added automatically with
 the `*-s*` option in Git's CLI. It has the following format:
 
-    Signed-off-by: Full Name <email>
+    Signed-off-by: Random J Developer <random@developer.example.org>
+
+*You must use a known identity. Anonymous patches are not accepted!*  This can
+be anything sufficient to identify and contact the source of a contribution,
+such as your name or an established alias/nickname.
 
 The files in these components use regular GPLv2-headers, if any.
+
+[#gpl-only]
+==== List of GPL-only Components
 
 * legacy components:
 
