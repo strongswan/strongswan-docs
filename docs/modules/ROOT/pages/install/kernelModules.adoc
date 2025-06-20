@@ -110,8 +110,8 @@ grep '\<CONFIG_NETFILTER_XT_MATCH_POLICY\>' /boot/config-`uname -r`
 After loading the `*esp4_offload*` and/or `*esp6_offload*` modules (they are
 available since Linux v4.11, but not loaded automatically), an optimized
 code path is used that leverages the kernel's GRO infrastructure to process
-ESP packets immediately on layer 2 once the GRO layer detects one. The decrypted
-packets are then also reinjected on layer 2 into the stack.
+ESP packets immediately on layer 2 once they are picked up by the GRO layer
+The decrypted packets are then also reinjected on layer 2 into the stack.
 
 Handling of ESP-in-UDP packets via GRO offload is supported since Linux v6.7
 (requires setting a flag on the UDP socket, which strongSwan does since 6.0.2).
@@ -121,12 +121,13 @@ packets.
 
 [IMPORTANT]
 ====
-One side-effect of loading these modules is that *inbound ESP or ESP-in-UDP
+One side effect of loading these modules is that *inbound ESP or ESP-in-UDP
 packets won't be seen on layer 3* by Netfilter or e.g. `tcpdump`.  Keep that in
-mind when debugging IPsec tunnels as firewall rules and traffic captures will
-only see decrypted packets.  The traffic counters on the inbound SAs will
-increase as normal, though. To debug issues, the modules may be unloaded again.
+mind when debugging IPsec tunnels because firewall rules and traffic captures
+will only see the decrypted packets.  The traffic counters on the inbound SAs
+will increase as normal, though. To debug issues, the modules may be unloaded
+again.
 
-Note, however, that *fragmented ESP or ESP-in-UDP packets* will take the slow
-non-offload path and will show up in the firewall and traffic captures.
+Note that *fragmented ESP or ESP-in-UDP packets* will take the slow,
+non-offload path. They will therefore show up in the firewall and traffic captures.
 ====
