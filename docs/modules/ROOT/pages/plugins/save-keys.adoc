@@ -13,10 +13,14 @@ xref:install/autoconf.adoc[`*./configure*`] option
 
  --enable-save-keys
 
+Unlike other plugins, this plugin has to be
+xref:plugins/pluginLoad.adoc#_runtime_plugin_configuration[*loaded explicitly*]
+(doing so via `*charon.plugins.save-keys.load*` only works if
+`*charon.load_modular*` is enabled).
 
 WARNING: *Never* load the `*save-keys*` plugin and enable IKE and/or ESP secret
          session key storage on *production systems*, since this severely
-         compromises the security of your IPSec-based communication channels.
+         compromises the security of your IPsec-based communication channels.
 
 == Configuration
 
