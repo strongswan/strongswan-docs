@@ -9,13 +9,23 @@ Since version 5.5.3 parts of the strongSwan code base are fuzzed on Google's
 The following fuzz targets are currently in use:
 
  *fuzz-certs*::
-  Fuzzes the X.509 certificate parsing framework as provided by the default
-  plugins (`*x509*`, `*pem*`, `*pkcs1*`, `*gmp*`, etc.) and the ASN.1 parser
-  of the `*libstrongswan*` library.
+  Fuzzes the X.509 certificate parsing framework as provided by the loaded
+  plugins and the ASN.1 parser of the `*libstrongswan*` library.
 
  *fuzz-crls*::
-  Fuzzes the CRL parsing framework provided by the default plugins (`*x509*`,
-  `*pem*`, etc.) and the ASN.1 parser of the `*libstrongswan*` library.
+  Fuzzes the CRL parsing framework provided by the loaded plugins and the ASN.1
+  parser of the `*libstrongswan*` library.
+
+ *fuzz-ids*::
+  Fuzzes the identity parser of the `*libstrongswan*` library.
+
+ *fuzz-ocsp-req*::
+  Fuzzes the OCSP request parsing framework provided by the loaded plugins
+  and the ASN.1 parser of the `*libstrongswan*` library.
+
+ *fuzz-ocsp-rsp*::
+  Fuzzes the OCSP response parsing framework provided by the loaded plugins
+  and the ASN.1 parser of the `*libstrongswan*` library.
 
  *fuzz-pa-tnc*::
   Fuzzes the PA-TNC message parser (`*libimcv*`).
