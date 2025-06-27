@@ -214,6 +214,10 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.5.6 (2025-06-27)
+
+* Add support for custom HTTP proxy server (Android 10+)
+
 === 2.5.5 (2025-04-04)
 
 * Fix initiating managed profiles as Always-on VPN

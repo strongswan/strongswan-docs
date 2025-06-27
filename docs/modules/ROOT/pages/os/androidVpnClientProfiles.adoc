@@ -250,6 +250,34 @@ then just dropped). Thus this is basically equivalent to including `*::/0*` in
 `*subnets*`
 |===
 
+=== proxy
+
+Optional object containing HTTP proxy settings. This is only a recommendation
+and may be ignored by apps. Note that apps using the proxy will access all HTTP
+resources through it regardless of the destination, so split-tunneling settings
+might not have any effect. To avoid using the proxy server for specific hosts,
+use the exclusion list.
+
+The following attributes are defined:
+
+[{COLS}]
+|===
+|Required |Key |Description
+
+|      |`host`
+|IP address or hostname of the HTTP proxy server to use when connected to the
+ VPN. Since xref:./androidVpnClient.adoc#_2_5_6_2025_06_27[2.5.6]
+
+|      |`port`
+|Port to access the HTTP proxy server, defaults to 8080. Since
+ xref:./androidVpnClient.adoc#_2_5_6_2025_06_27[2.5.6]
+
+|      |`exclusions`
+|Optional array of hosts for which the HTTP proxy server is not used (wildcards
+ are possible, e.g. `*&ast;.example.com*`). Since
+ xref:./androidVpnClient.adoc#_2_5_6_2025_06_27[2.5.6]
+|===
+
 == Example
 
 === X.509 Certificate-based Authentication
