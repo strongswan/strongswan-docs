@@ -1,9 +1,7 @@
 = strongSwan on Windows
 
-:MINGW:      http://mingw-w64.sourceforge.net/
-:MINGW_SF:   https://sourceforge.net/projects/mingw-w64/files
-:MINGW_INST: {MINGW_SF}/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download
-:MINGW_MSYS: {MINGW_SF}/External%20binary%20packages%20(Win64%20hosted)/MSYS%20(32-bit)/
+:MINGW:      https://www.mingw-w64.org/
+:MSYS2:      https://www.msys2.org/
 :APPVEYOR1:  https://ci.appveyor.com/api/projects/status/186bfuup38t9pu4k?svg=true
 :APPVEYOR2:  https://ci.appveyor.com/project/tobiasbrunner/strongswan-52lo9
 :GITHUB:     https://github.com/strongswan/strongswan
@@ -173,35 +171,21 @@ files freely along with your binaries.
 
 === Windows Native Build
 
-image::{APPVEYOR1}[build, link={APPVEYOR2}, float="left", align="left"]
+image::{APPVEYOR1}[build, link={APPVEYOR2}, align="left"]
 
-First install {MINGW}[MinGW-W64], preferably using the {MINGW_INST}[installer].
-The 4.8.1 version is known to work fine using the `*x64*` Architecture and native
-`*win32*` threading.
-
-To run xref:install/autoconf.adoc[`*./configure*`] you'll need `*MSYS*`, e.g. by
-using the {MINGW_MSYS}[MinGW-W64 MSYS builds]. After extracting the `*.zip*` file
-invoke `*msys.bat*` and run:
-
- sh /postinstall/pi.sh
-
-to complete the installation. Use this shell to
-xref:install/autoconf.adoc[`*./configure*`] and build strongSwan.
+Install {MINGW}[MinGW-W64], preferably via {MSYS2}[MSYS2] as that builds native
+binaries and provides you with a complete environment including a terminal,
+which allows you to run xref:install/autoconf.adoc[`*./configure*`] and build
+strongSwan.
 
 === Unix Cross-Compile Build
 
-image::{GITHUB1}[build, link={GITHUB2}, float="left", align="left"]
+image::{GITHUB1}[build, link={GITHUB2}, align="left"]
 
-After installing the {MINGW}[MinGW-W64] toolchain and the Windows system headers
-for your distribution, add
-
- --host=x86_64-w64-mingw32
-
-or for 32-bit builds
-
- --host=i686-w64-mingw32
-
-to xref:install/autoconf.adoc[`*./configure*`] to enable cross-compilation.
+After installing the {MINGW}[MinGW-W64] toolchain and Windows headers for your
+distribution, add `*--host=x86_64-w64-mingw32*` (or `*--host=i686-w64-mingw32*`
+for 32-bit builds) when running xref:install/autoconf.adoc[`*./configure*`] to
+enable cross-compilation.
 
 == Installation
 
