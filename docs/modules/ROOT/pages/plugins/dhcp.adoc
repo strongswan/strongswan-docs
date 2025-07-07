@@ -13,18 +13,22 @@ xref:install/autoconf.adoc[`*./configure*`] option
 == Behavior
 
 When an IKEv2 client requests a xref:features/vip.adoc[`*virtual IP*`] address
-via a `CP` configuration payload, the plugin allows the daemon to forward this
-request to a `DHCP` server. By default the plugin uses broadcasts, but a
-designated `DHCP` server can be configured in
+via a configuration payload, the plugin allows the daemon to forward this
+request to a DHCP server. By default, the plugin uses broadcasts, but a
+designated DHCP server can be configured in
 xref:config/strongswanConf.adoc[`*strongswan.conf*`].
 
-The `MAC` address used in the `DHCP` request is either randomly generated or can
-optionally be based on the IKEv2 identity of the client. `DNS`/`WINS` server
-information is additionally served to clients if the `DHCP` server provides
-such information.
+The MAC address used in the DHCP request is either randomly generated or can
+optionally be based on the IKEv2 identity of the client. If the latter is
+enabled, the client's identity is also sent in the `client identifier` DHCP
+option (`61`). If the client's identity is a FQDN, it is also sent in the
+`host name` DHCP option (`12`) even if random MAC addresses are used.
 
-In combination with the xref:./farp.adoc[`*farp*`] plugin this plugin lets a
-road-warrior fully act as a client on the local `LAN` of the responder.
+DNS/WINS server information is additionally served to clients if the
+DHCP server provides such information.
+
+In combination with the xref:./farp.adoc[`*farp*`] plugin, this plugin lets a
+roadwarrior fully act as a client on the local LAN of the responder.
 
 == Configuration
 
