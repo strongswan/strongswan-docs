@@ -413,9 +413,6 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./systime-fix.adoc[systime-fix]     | |s
 |Handle invalid system time when checking certificates
 
-|uci                                      | |d
-|OpenWRT UCI configuration backend
-
 |xref:./unity.adoc[unity]                 | |s
 |Cisco Unity extensions for IKEv1
 

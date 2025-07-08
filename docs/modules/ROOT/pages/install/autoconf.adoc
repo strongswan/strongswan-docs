@@ -540,9 +540,6 @@ plugins.
 |--enable-tss-tss2                                            |5.5.0
 |enable TPM 2.0 TSS2 library. Requires `libtss2` library
 
-|--enable-uci                                                 |
-|enable OpenWRT UCI configuration plugin
-
 |--enable-unbound                                             |
 |DNSSEC-enabled resolver plugin based on {UNBOUND}[libunbound]
 
