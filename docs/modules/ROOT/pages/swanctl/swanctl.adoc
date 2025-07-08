@@ -22,7 +22,7 @@ swanctl --initiate         (-i)  initiate a connection
         --load-conns       (-c)  (re-)load connection configuration
         --load-creds       (-s)  (re-)load credentials
         --load-pools       (-a)  (re-)load pool configuration
-        --log              (-T)  trace logging output
+        --log              (-T)  trace logging output (levels 0 and 1 only)
         --flush-certs      (-f)  flush cached certificates
         --reload-settings  (-r)  reload strongswan.conf(5) configuration
         --stats            (-S)  show daemon infos and statistics
