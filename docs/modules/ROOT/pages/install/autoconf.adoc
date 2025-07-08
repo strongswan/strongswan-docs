@@ -696,7 +696,7 @@ specific plugins.
 
 |--with-capabilities=LIBCAP
 |set capability dropping library. Currently supported values are `libcap` and
- `native` [no]
+ `native`. [`no`]
 
 |--with-charon-udp-port=PORT
 |UDP port used by `charon` daemon locally. Set to `0` to allocate randomly.
@@ -744,9 +744,9 @@ specific plugins.
 |--with-linux-headers=DIR
 |linux header files to be used. [`../include`]
 
-|--with-mpz_powm_sec= YES\|NO
+|--with-mpz_powm_sec=YES\|NO
 |use the more side-channel resistant `mpz_powm_sec` in `libgmp` if available.
- [yes]
+ [`yes`]
 
 |--with-nm-ca-dir=NMCADIR
 |directory the NetworkManager backend uses to look up trusted root certificates.
@@ -789,6 +789,10 @@ specific plugins.
 |xref:swanctl/swanctlDir.adoc[`swanctl` directory] for
  xref:swanctl/swanctlConf.adoc[`swanctl.conf`] configuration files and
  credentials. [`SYSCONFDIR/swanctl`]
+
+|--with-testable-ke=YES\|NO
+|make key exchange implementations testable by providing a `set_seed()` method.
+ [`yes`]
 
 |--with-urandom-device=DEV
 |set the device for pseudo random data. [`/dev/urandom`]
