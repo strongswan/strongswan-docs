@@ -4,14 +4,14 @@
 == Synopsis
 
 ----
-pki --verify [--in file] [--cacert file] [--crl file] [--online]
+pki --verify [--in file] [--cacert file]+ [--crl file] [--online]
 
 pki --verify --help
 ----
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand verifies and status the signature of an
+This xref:./pki.adoc[`*pki*`] subcommand verifies the signature and status of an
 X.509 certificate.
 
 
@@ -19,7 +19,7 @@ X.509 certificate.
 
 ----
 --in       (-i)  X.509 certificate to verify, default: stdin
---cacert   (-c)  CA certificate for trustchain verification
+--cacert   (-c)  CA certificate(s) for trustchain verification
 --crl      (-l)  CRL for trustchain verification
 --online   (-o)  enable online CRL/OCSP revocation checking
 --debug    (-v)  set debug level, default: 1

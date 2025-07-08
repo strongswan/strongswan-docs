@@ -9,8 +9,8 @@
 ----
 
 pki --scep --url url [--in file] [--dn distinguished-name] [--san subjectAltName]+
-          [--profile profile] [--password password]
            --cacert-enc file --cacert-sig file [--cacert file]+
+          [--profile profile] [--password password]
           [--cert file --key file] [--cipher aes|des3]
           [--digest sha256|sha384|sha512|sha224|sha1] [--rsa-padding pkcs1|pss]
           [--interval time] [--maxpolltime time] [--outform der|pem]

@@ -10,24 +10,24 @@
 
 ----
 pki --gen     (-g)  generate a new private key
-pki --self    (-s)  create a self signed certificate
-pki --issue   (-i)  issue a certificate using a CA certificate and key
-pki --signcrl (-c)  issue a CRL using a CA certificate and key
-pki --acert   (-z)  issue an attribute certificate
-pki --req     (-r)  create a PKCS#10 certificate request
-pki --pkcs7   (-7)  PKCS#7 wrap/unwrap functions
-pki --pkcs12  (-u)  PKCS#12 functions
-pki --keyid   (-k)  calculate key identifiers of a key/certificate
-pki --print   (-a)  print a credential in a human readable form
-pki --dn      (-d)  extract the subject DN of an X.509 certificate
-pki --pub     (-p)  extract the public key from a private key/certificate
-pki --verify  (-v)  verify a certificate using the CA certificate
-pki --scep    (-S)  Enroll an X.509 certificate with a SCEP server
-pki --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server
-pki --est     (-E)  Enroll an X.509 certificate with an EST server
-pki --estca   (-e)  Get CA certificate[s] from an EST server
-pki --ocsp    (-o)  OCSP request parser and OCSP responder
-pki --help    (-h)  show usage information
+    --self    (-s)  create a self signed certificate
+    --issue   (-i)  issue a certificate using a CA certificate and key
+    --signcrl (-c)  issue a CRL using a CA certificate and key
+    --acert   (-z)  issue an attribute certificate
+    --req     (-r)  create a PKCS#10 certificate request
+    --pkcs7   (-7)  PKCS#7 wrap/unwrap functions
+    --pkcs12  (-u)  PKCS#12 functions
+    --keyid   (-k)  calculate key identifiers of a key/certificate
+    --print   (-a)  print a credential in a human readable form
+    --dn      (-d)  extract the subject DN of an X.509 certificate
+    --pub     (-p)  extract the public key from a private key/certificate
+    --verify  (-v)  verify a certificate using the CA certificate
+    --scep    (-S)  Enroll an X.509 certificate with a SCEP server
+    --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server
+    --est     (-E)  Enroll an X.509 certificate with an EST server
+    --estca   (-e)  Get CA certificate[s] from an EST server
+    --ocsp    (-o)  OCSP request parser and OCSP responder
+    --help    (-h)  show usage information
 ----
 
 == Description
