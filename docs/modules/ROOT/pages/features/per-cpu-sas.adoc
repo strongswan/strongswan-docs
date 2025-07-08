@@ -51,7 +51,7 @@ xref:swanctl/swanctlConf.adoc#_connections_conn_children_child_per_cpu_sas[`*<ch
 
 [CAUTION]
 ====
-*Just enabling per-CPUs SAs is not enough!* It requires careful
+*Just enabling per-CPU SAs is not enough!* It requires careful
 configuration of the system for best performance.
 
 For inbound traffic, *Receive Side Scaling (RSS)* is typically necessary on a
