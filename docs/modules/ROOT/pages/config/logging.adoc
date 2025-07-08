@@ -72,6 +72,8 @@ log came from:
 
 |`job` |Jobs queuing/processing and thread pool management
 
+|`wch` |File descriptor watcher (logged in `job` prior to version 6.0.2)
+
 |`knl` |IPsec/Networking kernel interface
 
 |`lib` |libstrongswan library messages
