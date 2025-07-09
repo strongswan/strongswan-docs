@@ -286,8 +286,8 @@ to include logging messages of level `*0*` and `*1*` only.
   xref:daemons/charon-systemd.adoc#_logging[systemd journal] by default.
 
 * The xref:plugins/vici.adoc[`*VICI*`] plugin provides a `*log*` event that
-  delivers log messages (xref:swanctl/swanctlLog.adoc[`*swanctl --log*`]
-  subscribes to it.
+  delivers log messages on level 0 and 1 (xref:swanctl/swanctlLog.adoc[`*swanctl --log*`]
+  subscribes to it).
 
 * The xref:plugins/sql.adoc[`*sql*`] plugin supports logging to a database if
   enabled via `*charon.plugins.sql.loglevel*`.

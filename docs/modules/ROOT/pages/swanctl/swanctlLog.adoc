@@ -16,7 +16,7 @@ xref:daemons/charon.adoc[`*charon*`] daemon via the `*vici*` interface.
 
 NOTE: This command only receives log messages on *levels 0 and 1* from the
 daemon. The `*--debug/-v*` option only affects the logging done by `*swanctl*`
-itself.
+itself. Consider using other xref:config/logging.adoc[`*logging backends*`].
 
 == Options
 

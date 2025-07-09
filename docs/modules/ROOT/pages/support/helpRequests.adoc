@@ -173,10 +173,13 @@ IMPORTANT: On Windows, use a different path from */var/log/...* or */tmp/*.
            directory of the process (if it is allowed to do so).
 
 Use the following snippet in xref:config/strongswanConf.adoc[`*strongswan.conf*`]
-for version < 5.7.0
+for version >= 5.7.0
 ----
   filelog {
-    /var/log/charon_debug.log {
+    # any arbitrary name without dots for the section instead of the one given here
+    charon-debug-log {
+      # this setting is required with 5.7.0 and newer if the path contains dots
+      path = /var/log/charon_debug.log
       time_format = %a, %Y-%m-%d, %H:%M:%S
       default = 2
       net = 1
@@ -192,13 +195,10 @@ for version < 5.7.0
 ----
 
 Use the following snippet in xref:config/strongswanConf.adoc[`*strongswan.conf*`]
-for version >= 5.7.0
+for version < 5.7.0
 ----
   filelog {
-    # any arbitrary name without dots for the section instead of the one given here
-    charon-debug-log {
-      # this setting is required with 5.7.0 and newer if the path contains dots
-      path = /var/log/charon_debug.log
+    /var/log/charon_debug.log {
       time_format = %a, %Y-%m-%d, %H:%M:%S
       default = 2
       net = 1
