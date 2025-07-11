@@ -60,10 +60,13 @@ be specified as a comma-separated list.
 |dhcp         |INTERNAL_IP4_DHCP   |6
 |DHCP server
 
-|subnet   |INTERNAL_IP4_SUBNET |13
+|subnet       |INTERNAL_IP4_SUBNET |13
 |The protected sub-networks that this edge-device protects (in `CIDR` notation).
  Usually ignored in deference to `*local_ts*`, though macOS clients will use
  this for routes
+
+|p-cscf       |P_CSCF_IP4_ADDRESS |20
+|P-CSCF server (IKEv2 only)
 |===
 
 ==== IPv6 Attributes
@@ -89,6 +92,9 @@ be specified as a comma-separated list.
 
 |subnet       |INTERNAL_IP6_SUBNET |15
 |The protected sub-networks that this edge-device protects (in `CIDR` notation)
+
+|p-cscf       |P_CSCF_IP6_ADDRESS |21
+|P-CSCF server (IKEv2 only)
 |===
 
 ==== Miscellaneous IANA Attributes
