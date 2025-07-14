@@ -171,16 +171,28 @@ the gateways `*ike*` proposal of the VPN gateway.
 
 === CHILD SA Rekeying
 
-Rekeying CHILD_SAs is also supported by the Windows client. For some reason, a
-client behind NAT does not accept a rekeying attempt and rejects it with a
+Rekeying Child SAs is also supported by the Windows client. It actually
+automatically rekeys Child SAs after a certain amount of data has been
+transferred (about 200 MiB).
+
+Initiating rekeyings from the server can be a bit tricky. For some reason, a
+client behind NAT does not accept such an attempt and rejects it with a
 Microsoft specific notify `*12345*` containing an error code
-`ERROR_IPSEC_IKE_INVALID_SITUATION`.
+`ERROR_IPSEC_IKE_INVALID_SITUATION` (13863).
 
 To work around the issue, let the client initiate the rekeying by setting
 
   connections.<conn>.children.<child>.rekey_time = 0
 
 on the strongSwan VPN gateway.
+
+Another problem occurs if the server proposes a KE method and the client is
+not expecting one (i.e. it wasn't configured via xref:#strong_ke[PowerShell]
+and `-PfsGroup` option).
+In that case, it returns error code `ERROR_IPSEC_IKE_ERROR` (13816).  This even
+happens if `none` is included in the proposals (the default since 6.0.2). If the
+client config can't be changed, either change the ESP proposals, so they
+don't include any KE methods, or disable server-initiated rekeying as shown above.
 
 == Bugs and Features
 
