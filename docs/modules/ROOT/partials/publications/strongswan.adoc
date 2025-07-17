@@ -1,3 +1,6 @@
+* IPsec Workshop Madrid, Juli 2025:
+  xref:attachment$IPsecWorkshop_Madrid_2025.pdf[IKEv2 Signature Authentication using ML-DSA].
+
 * IPsec Workshop Dresden, September 2023:
   xref:attachment$IPsecWorkshop_Dresden_2023.pdf[X.509 Certificate Enrollment].
 
