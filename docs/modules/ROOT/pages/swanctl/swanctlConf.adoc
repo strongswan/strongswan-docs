@@ -984,6 +984,24 @@ authentication as well.
  users
 |===
 
+.Example EAP secrets
+[%collapsible]
+====
+[source]
+----
+secrets {
+    eap-carol {
+        id = carol@strongswan.org
+        secret = Ar3etTnp
+    }
+    eap-dave {
+        id = dave@strongswan.org
+        secret = W7R0g3do
+    }
+}
+----
+====
+
 ==== secrets.xauth<suffix>
 
 XAuth secret subection for a specific secret. `*xauth*` is just an alias for `*eap*`.
@@ -1010,6 +1028,24 @@ be used for EAP-MSCHAPv2 authentication.
  each having an `*id*` prefix if a secret is shared between multiple users
 |===
 
+.Example NTLM secrets
+[%collapsible]
+====
+[source]
+----
+secrets {
+    ntlm-carol {
+        id = carol
+        secret = 0xF7A28E343924D9A06C8183971A7C8373
+    }
+    ntlm-dave {
+        id = dave@strongswan.org
+        secret = 0x6E9A3A46012EF27D9DB6F2FF682B1B80
+    }
+}
+----
+====
+
 ==== secrets.ike<suffix>
 
 IKE preshared secret section for a specific secret. Each IKE PSK is defined in a
@@ -1029,6 +1065,37 @@ unique section having the `*ike*` prefix.
  be specified, each having an `*id*` prefix if a secret is shared between multiple
  peers
 |===
+
+.Example PSK secrets
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # multiple identities can be assigned, as long as one of them matches the
+    # local or remote identity the secret may be used
+    ike-sun-moon {
+        id-sun = sun.strongswan.org
+        id-moon = moon.strongswan.org
+        secret = 0sv+NkxY9LLZvwj4qCC2o/gGrWDF2d21jL
+    }
+    # this will only be used if sun.strongswan.org is not one of the two
+    # identities, otherwise, the PSK above is used
+    ike-moon {
+        id = moon.strongswan.org
+        secret = "This shoud be a strong password"
+    }
+    ike-carol {
+        id = carol@strongswan.org
+        secret = 0sFpZAZqEN6Ti9sqt4ZP5EWcqx
+    }
+    # this PSK will be used for any identity if there is no better match
+    ike {
+        secret = 0sv+NkxY9LLZvwj4qCC2o/gGrWDF2d21jL
+    }
+}
+----
+====
 
 ==== secrets.ppk<suffix>
 
@@ -1050,6 +1117,24 @@ prefix.
  each having an `*id*` prefix if a secret is shared between multiple peers
 |===
 
+.Example PPK secrets
+[%collapsible]
+====
+[source]
+----
+secrets {
+    ppk-carol {
+        id = ppk-carol@strongswan.org
+        secret = 0x98c61dd0f8c7daf07759617546f7b3ae156f19a7bc935c61523c7ca998e5eedb
+    }
+    ppk-dave {
+        id = ppk-dave@strongswan.org
+        secret = 0x06918e49398db61094438a5be8b743894f155f4e8521e6bcd1d47690557e4b13
+   }
+}
+----
+====
+
 ==== secrets.private<suffix>
 
 Private key decryption passphrase for a key in the
@@ -1066,6 +1151,21 @@ xref:swanctl/swanctlDir.adoc[`*private*`] folder.
 |secret                  |
 |Value of decryption passphrase for private key
 |===
+
+.Example private key passphrase
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # only necessary if the key is encrypted and the passphrase is not passed interactively
+    private-carol {
+        file = carolKey.pem
+        secret = "nH5ZQEWtku0RJEZ6"
+    }
+}
+----
+====
 
 ==== secrets.rsa<suffix>
 
@@ -1084,6 +1184,21 @@ xref:swanctl/swanctlDir.adoc[`*rsa*`] folder.
 |Value of decryption passphrase for RSA key
 |===
 
+.Example RSA private key passphrase
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # only necessary if the key is encrypted and the passphrase is not passed interactively
+    rsa-dave {
+        file = daveKey.pem
+        secret = "MeFnDN7VUbj+qU/bkgRIFvbCketIk2wrrs5Ii8297N2v"
+    }
+}
+----
+====
+
 ==== secrets.ecdsa<suffix>
 
 Private key decryption passphrase for a key in the
@@ -1100,6 +1215,21 @@ xref:swanctl/swanctlDir.adoc[`*ecdsa*`] folder.
 |secret                  |
 |Value of decryption passphrase for ECDSA key
 |===
+
+.Example ECDSA private key passphrase
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # only necessary if the key is encrypted and the passphrase is not passed interactively
+    ecdsa-carol {
+        file = carolKey.pem
+        secret = "nH5ZQEWtku0RJEZ6"
+    }
+}
+----
+====
 
 ==== secrets.pkcs8<suffix>
 
@@ -1118,6 +1248,21 @@ xref:swanctl/swanctlDir.adoc[`*pkcs8*`] folder.
 |Value of decryption passphrase for PKCS#8 key
 |===
 
+.Example PKCS#8 private key passphrase
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # only necessary if the key is encrypted and the passphrase is not passed interactively
+    pkcs8-dave {
+        file = daveKey.pem
+        secret = "OJlNZBx+80dLh4wC6fw5LmBd"
+    }
+}
+----
+====
+
 ==== secrets.pkcs12<suffix>
 
 PKCS#12 decryption passphrase for a container in the
@@ -1135,6 +1280,21 @@ xref:swanctl/swanctlDir.adoc[`*pkcs12*`] folder.
 |Value of decryption passphrase for PKCS#12 container
 |===
 
+.Example PKCS#12 container passphrase
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # only necessary if passphrase is not passed interactively
+    pkcs12-moon {
+        file = moonCert.p12
+        secret = "kUqd8O7mzbjXNJKQ"
+    }
+}
+----
+====
+
 ==== secrets.token<suffix>
 
 Since version 5.5.2. Definition for a private key that's stored on a token, a
@@ -1146,6 +1306,31 @@ smartcard or a xref:tpm/tpm2.adoc[TPM 2.0].
 
 include::partial$config/swanctl-secrets-token.adoc[]
 |===
+
+
+.Example token entries
+[%collapsible]
+====
+[source]
+----
+secrets {
+    # PINs may be stored (e.g. for a gateway to access it without interaction)
+    token-gw {
+        handle = 45
+        pin = "12345678"
+    }
+    # on a client you might want to load the key but enter the pin interactively
+    token1 {
+        slot = 2
+        handle = 45
+    }
+    # TPM keys may also be loaded
+    token_ak_rsa {
+        handle = 0x81010003
+    }
+}
+----
+====
 
 === pools
 
