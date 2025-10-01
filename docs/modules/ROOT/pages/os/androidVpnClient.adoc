@@ -32,7 +32,11 @@ options to configure global app settings and disable certain features of the app
 (e.g. the ability for users to add or import their own VPN profiles). Note that
 distributing certificates with managed profiles requires the MDM to assign the
 `CERT_INSTALL` delegated scope to the strongSwan app so it can install the
-certificate and private key.
+certificate and private key. For user certificates, if an alias is configured
+instead of distributing a PKCS#12 file, the MDM has to grant permission to the
+app to access the certificate/key with that alias. If neither alias nor user
+certificate is distributed with the managed profile, the user may select a
+certificate manually.
 
 Client certificates and keys, and CA certificates may be added by bundling them
 into a xref:pki/pkiQuickstart.adoc#_pkcs12_container[PKCS#12 file] and then
@@ -213,6 +217,18 @@ new features and provide us with valuable feedback, please {PLAYTEST}[opt-in her
 or directly from the app's page in the Play store.
 
 == Changelog
+
+=== 2.6.0 (2025-10-01)
+
+* Allow pre-selecting a user certificate via alias in managed profiles. This
+  requires that the MDM grants permission for the alias to the app. If not
+  configured, users may select a local certificate manually
+* Allow selecting a user certificate for managed profiles that don't install
+  their own certificate
+* Fix reading split-tunneling settings in managed profiles (`split_tunnelling`
+  instead of `split_tunneling` was incorrectly used in the description file)
+* Adapt to edge-to-edge display, which becomes mandatory when targeting Android 16
+* Increase target SDK to Android 16
 
 === 2.5.6 (2025-06-27)
 
