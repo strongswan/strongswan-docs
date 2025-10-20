@@ -128,6 +128,13 @@ test runner:
  see xref:config/logging.adoc[Logging]
 |5.9.7
 
+|`TESTS_ACTIVE_TRANSFORMS`
+|Path to a file to which all algorithm transforms are written (in the form
+ `<transform identifier>[<plugin_name>]`) if they were successfully tested by
+ the `transforms` test case of the `vectors` test suite. Mainly intended for
+ our CI to compare runs
+|6.0.3
+
 |`LEAK_DETECTIVE_DISABLE`
 |If our custom memory allocator is enabled with `*--enable-leak-detective*`, it
  can be disabled temporarily by setting this variable in order to speed up
