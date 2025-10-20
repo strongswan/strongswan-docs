@@ -1350,7 +1350,7 @@ Each pool must have a unique name (denoted `<name>` below).
 |<name>.<attr>           |
 |Comma-separated list of additional attributes of type `*<attr>*`. The attribute
  type may be one of `*dns*`, `*nbns*`, `*dhcp*`, `*netmask*`, `*server*`, `*subnet*`,
- `*split_include*` and `*split_exclude*` to define addresses or CIDR subnets for
- the corresponding attribute types. Alternatively, `*<attr>*` can be a numerical
- identifier, for which string attribute values are accepted as well
+ `*p_cscf*`, `*split_include*` and `*split_exclude*` to define addresses or CIDR
+ subnets for the corresponding attribute types. Alternatively, `*<attr>*` can be
+ a numerical identifier, for which string attribute values are accepted as well
 |===
