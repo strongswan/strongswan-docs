@@ -123,11 +123,14 @@ sending packet: from 10.10.0.150[4500] to 212.51.148.80[63720] (1200 bytes)
 
 === IKE_AUTH Request 2
 
-In the second `IKE_AUTH` request the Windows client sends its EAP Identity
+In the second `IKE_AUTH` request, the Windows client sends its EAP-Identity.
+xref:interop/windowsCertRequirements.adoc#_client_certificates[As documented],
+it does not send the full subject DN as identity; only the CN is sent, which
+must be contained in the certificate as a subjectAltName extension.
 ----
 received packet: from 212.51.148.80[63720] to 10.10.0.150[4500] (96 bytes)
 parsed IKE_AUTH request 2 [ EAP/RES/ID ]
-received EAP identity 'Andreas Steffen'
+received EAP identity 'andreas.steffen@strongsec.net'
 ----
 
 === IKE_AUTH Response 2
@@ -218,10 +221,10 @@ received packet: from 212.51.148.80[63720] to 10.10.0.150[4500] (132 bytes)
 parsed IKE_AUTH request 6 [ EF(2/2) ]
 received fragment #2 of 2, reassembled fragmented IKE message (624 bytes)
 parsed IKE_AUTH request 6 [ EAP/RES/TLS ]
-received TLS peer certificate 'C=CH, O=strongSec GmbH, CN=Andreas Steffen'
-  using certificate "C=CH, O=strongSec GmbH, CN=Andreas Steffen"
+received TLS peer certificate 'C=CH, O=strongSec GmbH, CN=andreas.steffen@strongsec.net'
+  using certificate "C=CH, O=strongSec GmbH, CN=andreas.steffen@strongsec.net"
   using trusted ca certificate "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
-checking certificate status of "C=CH, O=strongSec GmbH, CN=Andreas Steffen"
+checking certificate status of "C=CH, O=strongSec GmbH, CN=andreas.steffen@strongsec.net"
   using trusted certificate "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   crl correctly signed by "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   crl is valid: until Mar 13 10:00:01 2022
@@ -274,11 +277,11 @@ The Windows client requested both an IPv4 and IPv6 xref:features/vip.adoc[virtua
 address so that one IP address from each pool is assigned.
 ----
 peer requested virtual IP %any
-assigning new lease to 'Andreas Steffen'
-assigning virtual IP 10.10.1.66 to peer 'Andreas Steffen'
+assigning new lease to 'andreas.steffen@strongsec.net'
+assigning virtual IP 10.10.1.66 to peer 'andreas.steffen@strongsec.net'
 peer requested virtual IP %any6
-assigning new lease to 'Andreas Steffen'
-assigning virtual IP 2a02:168:4407:1::2 to peer 'Andreas Steffen'
+assigning new lease to 'andreas.steffen@strongsec.net'
+assigning virtual IP 2a02:168:4407:1::2 to peer 'andreas.steffen@strongsec.net'
 ----
 
 === IKE_AUTH Response 8
@@ -309,7 +312,7 @@ of the established IPsec tunnel
 ----
 eap-tls: #2, ESTABLISHED, IKEv2, 8ab17b513b1c1514_i 80fd1986e5c0e179_r*
   local  'vpn.strongswan.org' @ 10.10.0.150[4500]
-  remote '10.10.1.52' @ 212.51.148.80[63720] EAP: 'Andreas Steffen' [10.10.1.66 2a02:168:4407:1::2]
+  remote '10.10.1.52' @ 212.51.148.80[63720] EAP: 'andreas.steffen@strongsec.net' [10.10.1.66 2a02:168:4407:1::2]
   AES_CBC-256/HMAC_SHA2_256_128/PRF_HMAC_SHA2_256/MODP_2048
   established 57s ago, reauth in 10319s
   eap-tls: #2, reqid 1, INSTALLED, TUNNEL-in-UDP, ESP:AES_CBC-256/HMAC_SHA1_96
@@ -327,7 +330,7 @@ all the X.509 certificates involved in the establishment of the IPsec tunnel.
 ----
 List of X.509 End Entity Certificates
 
-  subject:  "C=CH, O=strongSec GmbH, CN=Andreas Steffen"
+  subject:  "C=CH, O=strongSec GmbH, CN=andreas.steffen@strongsec.net"
   issuer:   "C=CH, O=strongSec GmbH, CN=strongSec 2016 Root CA"
   validity:  not before Mar 19 16:55:13 2020, ok
              not after  Mar 19 16:55:13 2024, ok (expires in 740 days)
@@ -392,10 +395,10 @@ and the addresses that have already been assigned.
 ----
 ipv4                 10.10.1.64                           1 / 1 / 62
   10.10.1.65            offline 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
-  10.10.1.66            online  'Andreas Steffen'
+  10.10.1.66            online  'andreas.steffen@strongsec.net'
 ipv6                 2a02:168:4407:1::                    1 / 1 / 62
   2a02:168:4407:1::1    offline 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
-  2a02:168:4407:1::2    online  'Andreas Steffen'
+  2a02:168:4407:1::2    online  'andreas.steffen@strongsec.net'
 ----
 
 == Dead Peer Detection
@@ -453,8 +456,8 @@ sending packet: from 10.10.0.150[4500] to 212.51.148.80[63720] (80 bytes)
 
 The IPv4 and IPv6 xref:features/vip.adoc[virtual IP] addresses are released.
 ----
-lease 2a02:168:4407:1::2 by 'Andreas Steffen' went offline
-lease 10.10.1.66 by 'Andreas Steffen' went offline
+lease 2a02:168:4407:1::2 by 'andreas.steffen@strongsec.net' went offline
+lease 10.10.1.66 by 'andreas.steffen@strongsec.net' went offline
 ----
 The xref:swanctl/swanctlListPools.adoc[`*swanctl --list-pools --leases*`]
 command shows that the assigned xref:features/vip.adoc[virtual IP] address leases
@@ -462,10 +465,10 @@ are now offline.
 ----
 ipv4                 10.10.1.64                           0 / 1 / 62
   10.10.1.65            offline 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
-  10.10.1.66            offline 'Andreas Steffen'
+  10.10.1.66            offline 'andreas.steffen@strongsec.net'
 ipv6                 2a02:168:4407:1::                    0 / 1 / 62
   2a02:168:4407:1::1    offline 'C=CH, O=strongSec GmbH, CN=mijas.strongsec.com'
-  2a02:168:4407:1::2    offline 'Andreas Steffen'
+  2a02:168:4407:1::2    offline 'andreas.steffen@strongsec.net'
 ----
 The offline addresses will be re-assigned to the same Windows client as long as
 the strongSwan daemon is not restarted.
