@@ -218,9 +218,17 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.6.1 (2025-10-27)
+
+* Update OpenSSL to support the post-quantum key exchange method ML-KEM. This
+  currently requires explicit configuration in proposals (e.g. for IKE something
+  like `aes256-sha256-curve25519-ke1_mlkem768`)
+* Fix a vulnerability in the eap-mschapv2 plugin
+* Fix the filename when exporting the log
+
 === 2.6.0 (2025-10-01)
 
-* Allow pre-selecting a user certificate via alias in managed profiles. This
+* Allow preselecting a user certificate via alias in managed profiles. This
   requires that the MDM grants permission for the alias to the app. If not
   configured, users may select a local certificate manually
 * Allow selecting a user certificate for managed profiles that don't install
