@@ -47,10 +47,12 @@ Router Advertisement (RA): 134 ::
 == Examples
 
 To bypass all ICMPv6 messages
+[source]
 ----
 connections {
   ...
   ndp {
+    remote_addrs = ::1 # so this connection is not considered when peers connect
     children {
       icmpv6 {
         local_ts = ::/0[ipv6-icmp/%any]
@@ -64,10 +66,12 @@ connections {
 ----
 
 To bypass only NS and NA messages
+[source]
 ----
 connections {
   ...
   ndp {
+    remote_addrs = ::1 # so this connection is not considered when peers connect
     children {
       ns {
         local_ts = ::/0[ipv6-icmp/135]
