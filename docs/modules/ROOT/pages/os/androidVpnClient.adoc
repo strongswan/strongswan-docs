@@ -218,6 +218,10 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.6.2 (2025-10-30)
+
+* Fix edge-to-edge layout issues with settings and app selection
+
 === 2.6.1 (2025-10-27)
 
 * Update OpenSSL to support the post-quantum key exchange method ML-KEM. This
