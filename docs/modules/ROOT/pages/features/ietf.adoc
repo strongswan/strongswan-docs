@@ -110,6 +110,10 @@ kernel.
  Algorithm Implementation Requirements and Usage Guidance for IKEv2
 
 |
+|{IETF}/rfc9827[RFC 9827]:
+ Renaming the Extended Sequence Numbers (ESN) Transform Type in the Internet Key Exchange Protocol Version 2 (IKEv2)
+
+|
 |{IANA}/ikev2-parameters[IANA-IKEv2]:
  IKEv2 Parameters
 |===
@@ -322,9 +326,17 @@ kernel.
 |{IETF}/rfc9593[RFC 9593]:
  Announcing Supported Authentication Methods in the Internet Key Exchange Protocol Version 2 (IKEv2)
 
-|*d*
+|
 |{IETF}/rfc9611[RFC 9611]:
  Internet Key Exchange Protocol Version 2 (IKEv2) Support for Per-Resource Child  Security Associations (SAs)
+
+|*x*
+|{IETF}/rfc9867[RFC 9867]:
+ Mixing Preshared Keys in the IKE_INTERMEDIATE and CREATE_CHILD_SA Exchanges of the Internet Key Exchange Protocol Version 2 (IKEv2) for Post-Quantum Security
+
+|*x*
+|{IETF}/rfc9838[RFC 9838]:
+ Group Key Management Using the Internet Key Exchange Protocol Version 2 (IKEv2)
 
 |
 |{IETF}/draft-ietf-ipsecme-ikev2-mlkem[draft-ietf-ipsecme-ikev2-mlkem]:
