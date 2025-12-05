@@ -119,7 +119,7 @@ cryptographically *weak* and thus prone to attacks.
 
 |*w* |wolfSSL crypto library           |`*wolfssl*` | strongSwan 5.8.0
 
-|*o* |OpenSSL crypto library           |`*openssl*` |
+|*o* |OpenSSL or AWS-LC crypto library |`*openssl*` |
 
 |*g* |Gcrypt crypto library            |`*gcrypt*`  |
 
@@ -725,8 +725,6 @@ generic hash with the prescribed output length.
 |5 (256 bits)
 |37 |x b w o       |ml
 |===
-
-The `*openssl*` plugin currently only supports ML-KEM via AWS-LC, not via OpenSSL.
 
 == Extended Sequence Numbers (ESN)
 

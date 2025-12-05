@@ -27,7 +27,8 @@ The following new `*libstrongswan*` plugin has been *added*:
 |===
 
 NOTE: ML-KEM is also supported via {BOTAN}[Botan] (`*botan*` plugin),
-{WOLFSSL}[wolfSSL] (`*wolfssl*` plugin), and {AWSLC}[AWS-LC] (`*openssl*` plugin).
+{WOLFSSL}[wolfSSL] (`*wolfssl*` plugin), {OPENSSL}[OpenSSL] (since 6.0.2) and
+{AWSLC}[AWS-LC] (both via `*openssl*` plugin).
 
 The following IKEv2 configuration examples show the use of the ML-KEM algorithm:
 
@@ -35,7 +36,7 @@ The following IKEv2 configuration examples show the use of the ML-KEM algorithm:
 |===
 |with the {TESTS}/botan/rw-mlkem[`*botan*`] plugin
 |with the {TESTS}/wolfssl/rw-mlkem[`*wolfssl*`] plugin
-|with the {TESTS}/ikev2/rw-mlkem[`*ml*`] plugin
+|with the {TESTS}/ikev2/rw-mlkem[`*ml*` and `*openssl*`] plugins
 |===
 
 === Removed Plugins
