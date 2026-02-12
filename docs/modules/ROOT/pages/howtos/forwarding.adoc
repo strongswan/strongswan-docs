@@ -25,8 +25,8 @@ gateways:
 sysctl net.ipv4.ip_forward=1
 sysctl net.ipv6.conf.all.forwarding=1
 ----
-This can be added to `*/etc/sysctl.conf*` (or a file in `*/etc/sysctl.d/*`) to
-enable it permanently.
+To enable it permanently, these can be added to `*/etc/sysctl.conf*` or a file
+in `*/etc/sysctl.d/*` (especially if using `systemd`, which only looks there).
 
 If the firewall on the gateway is rather restrictive, then
 
