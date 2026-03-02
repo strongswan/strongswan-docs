@@ -794,6 +794,10 @@ specific plugins.
 |make key exchange implementations testable by providing a `set_seed()` method.
  [`yes`]
 
+|--with-plugins-packaged-separately=YES\|NO
+|changes e.g. log messages for distributions that package plugins separately.
+ [`no`]
+
 |--with-urandom-device=DEV
 |set the device for pseudo random data. [`/dev/urandom`]
 
