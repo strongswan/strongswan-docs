@@ -4,11 +4,14 @@
 == Synopsis
 
 ----
-swanctl --initiate         (-i)  initiate a connection
+swanctl command [options]
+
+commands:
+        --initiate         (-i)  initiate a connection
         --terminate        (-t)  terminate a connection
         --rekey            (-R)  rekey an IKE or CHILD_SA
         --install          (-p)  install a trap or shunt policy
-        --uninstall        (-u)  uninstall a trap or shunt policy
+        --uninstall        (-U)  uninstall a trap or shunt policy
         --redirect         (-d)  redirect an IKE_SA
         --list-sas         (-l)  list currently active IKE_SAs
         --list-pols        (-P)  list currently installed policies
@@ -27,8 +30,13 @@ swanctl --initiate         (-i)  initiate a connection
         --reload-settings  (-r)  reload strongswan.conf(5) configuration
         --stats            (-S)  show daemon infos and statistics
         --counters         (-C)  list or reset IKE event counters
-        --version          (-v)  show version information
-        --help             (-h)  show usage information
+        --version          (-V)  show version information
+        --help             (-h)  show usage, version and plugin information
+
+global options:
+        --debug            (-v)  set debug level, default: 1
+        --options          (-+)  read command line options from file
+        --uri              (-u)  service URI to connect to
 ----
 
 == Description
@@ -36,6 +44,11 @@ swanctl --initiate         (-i)  initiate a connection
 `*swanctl*` is a command line utility to configure, control and monitor the IKE
 xref:daemons/charon.adoc[`*charon*`] daemon via the
 xref:plugins/vici.adoc[`*vici*`] interface plugin.
+
+With version:6.0.5[], the short option for `*--version*` was changed to `*-V*`
+and the one for `*--uninstall*` to `*-U*` to avoid conflicts with the short
+options for `*--debug*` (`*-v*`) and `*--uri*` (`*-u*`), which can be used
+globally since then.
 
 == Commands
 
