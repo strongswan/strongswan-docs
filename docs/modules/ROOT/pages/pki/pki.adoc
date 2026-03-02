@@ -9,7 +9,10 @@
 == Synopsis
 
 ----
-pki --gen     (-g)  generate a new private key
+pki command [options]
+
+commands:
+    --gen     (-g)  generate a new private key
     --self    (-s)  create a self signed certificate
     --issue   (-i)  issue a certificate using a CA certificate and key
     --signcrl (-c)  issue a CRL using a CA certificate and key
@@ -21,13 +24,17 @@ pki --gen     (-g)  generate a new private key
     --print   (-a)  print a credential in a human readable form
     --dn      (-d)  extract the subject DN of an X.509 certificate
     --pub     (-p)  extract the public key from a private key/certificate
-    --verify  (-v)  verify a certificate using the CA certificate
+    --verify  (-V)  verify a certificate using the CA certificate
     --scep    (-S)  Enroll an X.509 certificate with a SCEP server
     --scepca  (-C)  Get CA [and RA] certificate[s] from a SCEP server
     --est     (-E)  Enroll an X.509 certificate with an EST server
     --estca   (-e)  Get CA certificate[s] from an EST server
     --ocsp    (-o)  OCSP request parser and OCSP responder
-    --help    (-h)  show usage information
+    --help    (-h)  show usage, version and plugin information
+
+global options:
+    --debug   (-v)  set debug level, default: 1
+    --options (-+)  read command line options from file
 ----
 
 == Description
@@ -40,17 +47,21 @@ private key of a CA and containing `subjectAltNames`, CRL distribution points an
 URIs of OCSP servers. You can also extract raw public keys from private keys,
 certificate requests and certificates and compute two kinds of SHA1-based key IDs.
 
-Starting with version 5.9.8, the `*pki*` command supports certificate enrollment
+Starting with version:5.9.8[], the `*pki*` command supports certificate enrollment
 via the *Simple Certificate Enrollment Protocol* (SCEP) as defined by
 {RFC8894}[RFC 8894], replacing the obsoleted
 xref:tools/scepclient.adoc[`*ipsec scepclient*`] tool.
 
-Additionally, since version 5.9.8, the newer `*HTTPS/TLS*` based *Enrollment over
+Additionally, since version:5.9.8[], the newer `*HTTPS/TLS*` based *Enrollment over
 Secure Transport* (EST) protocol ({RFC7030}[RFC 7030]) is being offered, too.
 
-Version 5.9.12 introduced an *Online Certificate Status Protocol* (OCSP) responder
+Version:5.9.12[] introduced an *Online Certificate Status Protocol* (OCSP) responder
 as defined by {RFC6960}[RFC 6960], interoperating with an {OPENXPKI}[OpenXPKI]
 server by directly accessing its internal `*certificate*` database.
+
+With version:6.0.5[], the short option for `*--verify*` was changed to `*-V*`
+to avoid a conflict with the short option for `*--debug*` (`*-v*`), which can be
+used globally since then.
 
 == Commands
 
