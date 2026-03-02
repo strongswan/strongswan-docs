@@ -1,5 +1,6 @@
 |load                                           |
-|Plugins to load in xref:/pki/pki.adoc[`*pki*`] tool
+|Plugins to load in xref:/pki/pki.adoc[`*pki*`] tool. May also be passed via
+ `*PKI_PLUGINS*` environment variable
 
 |scep.http_bind                                 |
 |Source IP address to bind for HTTP operations
