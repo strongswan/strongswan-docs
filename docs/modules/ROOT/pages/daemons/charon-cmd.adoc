@@ -37,7 +37,7 @@ charon-cmd {
 
 == Options
 
-[cols="2,5"]
+[cols="3,6"]
 |===
 |Option |Description
 
@@ -49,7 +49,7 @@ charon-cmd {
 
 |`*--debug* <level>`
 |Sets the default log level (defaults to `*1*`). `<level>` is a number between
- `*-1*"` and `*4*`. Refer to xref:config/logging.adoc[logger configuration] for
+ `*-1*` and `*4*`. Refer to xref:config/logging.adoc[logger configuration] for
   options that allow more fine-grained configuration of the logging output.
 
 |`*--host* <hostname>`
@@ -58,16 +58,22 @@ charon-cmd {
 |`*--identity* <id>`
 |Identity the client uses for the IKE exchange
 
+|`*--eap-identity* <id>`
+|Identity the client uses for EAP authentication
+
+|`*--xauth-username* <id>`
+|Username the client uses for XAuth authentication
+
 |`*--remote-identity* <id>`
-|Server identity to expect, defaults to hostname
+|Server identity to expect, defaults to `*--host*`
 
 |`*--cert* <path>`
 |Trusted  certificate, either for authentication or trust chain validation. To
- provide more than one certificate  multiple `*--cert*` options can be used
+ provide more than one certificate, multiple `*--cert*` options can be used
 
 |`*--rsa* <path>`
 |RSA private key to use for authentication (if a password is required, it will
- be requested on demand). For other key types use `*--priv*`
+ be requested on demand). For other key types, use `*--priv*`
 
 |`*--priv* <path>`
 |Private key to use for authentication (if a password is required, it will
@@ -75,11 +81,11 @@ charon-cmd {
 
 |`*--p12* <path>`
 |PKCS#12 file with private key and certificates to use for authentication and
- trust chain validation (if a password is required it will be requested on demand)
+ trust chain validation (if a password is required, it will be requested on demand)
 
 |`*--agent*[=<socket>]`
-|Use SSH agent for authentication. If socket is not specified it is read from the
- `*@SSH_AUTH_SOCK*` environment variable
+|Use SSH agent for authentication. If socket is not specified, it is read from
+ the `*@SSH_AUTH_SOCK*` environment variable
 
 |`*--local-ts* <subnet>`
 |Additional traffic selector to propose for our side, the requested virtual IP
@@ -88,10 +94,23 @@ charon-cmd {
 |`*--remote-ts* <subnet>`
 |Traffic selector to propose for the remote side, defaults to `*0.0.0.0/0*`
 
+|`*--ike-proposal* <proposal>`
+|A single IKE proposal to offer instead of the default
+
+|`*--esp-proposal* <proposal>`
+|A single ESP proposal to offer instead of the default
+
+|`*--ah-proposal* <proposal>`
+|A single AH proposal to offer instead of the default
+
+|`*--childless[=force]*`
+|Use childless IKE SA initiation with IKEv2 if supported by the responder,
+ passing `*force*` aborts if  that's not the case
+
 |`*--profile* <name>`
 |Authentication profile to use. The list of supported profiles can be found in
  the xref:#_authentication_profiles[Authentication  Profiles] sections juat below.
- Defaults  to  `*ikev2-pub*` if a private key was supplied and to `*ikev2-eap*
+ Defaults  to `*ikev2-pub*` if a private key was supplied and to `*ikev2-eap*`
  otherwise
 |===
 
@@ -99,7 +118,7 @@ charon-cmd {
 
 === IKEv2 Profiles
 
-[cols="2,5"]
+[cols="1,3"]
 |===
 |Name |Description
 
@@ -112,6 +131,9 @@ charon-cmd {
 |`*ikev2-pub-eap*`
 |IKEv2 with public key and EAP client authentication ({RFC4739}[RFC 4739]) and
  public key server authentication
+
+|`*ikev2-psk*`
+|IKEv2 with pre-shared key (PSK) authentication
 |===
 
 === IKEv1 Main Mode Profiles
@@ -151,7 +173,7 @@ charon-cmd {
 
 |`*ikev1-xauth-psk-am*`
 |IKEv1 with pre-shared key (PSK) client and server authentication, followed by
- client XAuth authentication. INSECURE!!!
+ client XAuth authentication. *INSECURE!!!*
 
 |`*ikev1-hybrid-am*`
 |IKEv1  with  public  key server authentication only, followed by client XAuth
