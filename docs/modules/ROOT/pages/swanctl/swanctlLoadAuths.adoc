@@ -11,7 +11,7 @@ swanctl --load-authorities --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads certification
+This xref:./swanctl.adoc[`*swanctl*`] command loads or reloads certification
 authorities information
 
 == Options

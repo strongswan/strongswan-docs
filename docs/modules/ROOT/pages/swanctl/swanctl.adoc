@@ -37,7 +37,7 @@ swanctl --initiate         (-i)  initiate a connection
 xref:daemons/charon.adoc[`*charon*`] daemon via the
 xref:plugins/vici.adoc[`*vici*`] interface plugin.
 
-== Subcommands
+== Commands
 
 [frame=none,cols="1,1,1"]
 |===
@@ -74,7 +74,7 @@ xref:plugins/vici.adoc[`*vici*`] interface plugin.
 |xref:./swanctlCounters.adoc[`swanctl --counters`]
 |===
 
-Each subcommand has additional options. Pass `*--help*` to a subcommand to get
+Each command has additional options. Pass `*--help*` to a command to get
 additional information.
 
 == swanctl.conf

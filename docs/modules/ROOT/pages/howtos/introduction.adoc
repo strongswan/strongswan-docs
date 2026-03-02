@@ -283,12 +283,12 @@ down the IKE or individual Child SAs.
 Whenever the xref:swanctl/swanctlConf.adoc[`*swanctl.conf*`] file or credentials
 in the xref:swanctl/swanctlDir.adoc[`*swanctl*`] directory are changed they may be
 reloaded with the different
-xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --load-\...*`] commands. Already
+xref:swanctl/swanctl.adoc#_commands[`*swanctl --load-\...*`] commands. Already
 established connections are not affected by these commands unless
 `*start_action = start*` is used. If a configuration update is required, the
 established SAs, or even the daemon, must be restarted.
 
-Using the different xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --list-\...*`]
+Using the different xref:swanctl/swanctl.adoc#_commands[`*swanctl --list-\...*`]
 commands will provide information about loaded or cached certificates, supported
 algorithms and loaded plugins.
 
@@ -305,7 +305,7 @@ the placeholder `*...*` is e.g. `NO_PROPOSAL_CHOSEN` or `TS_UNACCEPTABLE`, you
 should consult the logs of the *remote peer* in order to find out why that
 error notify was generated in the first place.
 
-The xref:swanctl/swanctl.adoc#_subcommands[`*swanctl --list-\...*`] commands will
+The xref:swanctl/swanctl.adoc#_commands[`*swanctl --list-\...*`] commands will
 provide information about the established and configured connections.
 
 On Linux, the `*iproute2*` package provides the `*ip xfrm state*` and

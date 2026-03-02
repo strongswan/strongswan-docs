@@ -11,7 +11,7 @@ swanctl --load-pools --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads IPv4
+This xref:./swanctl.adoc[`*swanctl*`] command loads or reloads IPv4
 and/or IPv6 address pools.
 
 == Options

@@ -11,7 +11,7 @@ swanctl --stats --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand flushes either all certificates
+This xref:./swanctl.adoc[`*swanctl*`] command flushes either all certificates
 or only those of a given type.
 
 == Options

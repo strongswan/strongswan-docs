@@ -5,7 +5,7 @@
 The `*counters*` plugin for `*libcharon*` collects and provides several IKE
 statistics counters. The counter values can be queried or reset (globally or per
 connection name) via the xref:swanctl/swanctlCounters.adoc[`*swanctl --counters*`]
-subcommand.
+command.
 
 The plugin is disabled by default and can be enabled with the
 xref:install/autoconf.adoc[`*./configure*`] option

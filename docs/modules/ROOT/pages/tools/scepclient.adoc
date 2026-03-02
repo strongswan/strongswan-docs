@@ -25,7 +25,7 @@ implemented an old version of the SCEP Internet Draft (version 10/11 of
 encryption algorithms as defaults.
 
 With strongSwan version 5.9.8, `*ipsec scepclient*` was replaced by the
-xref:pki/pki.adoc[`*pki*`] subcommands xref:pki/pkiScep.adoc[`*pki --scep*`] and
+xref:pki/pki.adoc[`*pki*`] commands xref:pki/pkiScep.adoc[`*pki --scep*`] and
 xref:pki/pkiScepCa.adoc[`*pki --scepca*`], which implement the new SCEP
 {RFC8894}[RFC 8894] standard that was released in September 2020 and supports
 trusted *certificate renewal* based on the existing client certificate.

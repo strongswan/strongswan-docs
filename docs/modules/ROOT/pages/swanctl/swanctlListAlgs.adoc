@@ -11,7 +11,7 @@ swanctl --list-algs --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists loaded algorithms and
+This xref:./swanctl.adoc[`*swanctl*`] command lists loaded algorithms and
 their implementation.
 
 == Options

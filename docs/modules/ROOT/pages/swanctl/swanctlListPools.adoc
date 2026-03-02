@@ -11,7 +11,7 @@ swanctl --list-pools --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists all configured IPv4
+This xref:./swanctl.adoc[`*swanctl*`] command lists all configured IPv4
 and/or IPv6 address pools and the actual state of the leases
 
 == Options

@@ -11,7 +11,7 @@ swanctl --list-conns --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists loaded connection
+This xref:./swanctl.adoc[`*swanctl*`] command lists loaded connection
 configurations.
 
 == Options

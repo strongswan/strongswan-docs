@@ -13,7 +13,7 @@ swanctl --list-certs --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists different kinds of loaded
+This xref:./swanctl.adoc[`*swanctl*`] command lists different kinds of loaded
 and received certificates.
 
 == Options

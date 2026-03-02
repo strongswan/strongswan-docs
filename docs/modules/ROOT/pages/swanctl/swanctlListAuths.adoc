@@ -11,7 +11,7 @@ swanctl --list-authorities --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists loaded certification
+This xref:./swanctl.adoc[`*swanctl*`] command lists loaded certification
 authorities information
 
 == Options

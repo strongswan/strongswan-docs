@@ -11,7 +11,7 @@ swanctl --install --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand installs a trap, drop or bypass
+This xref:./swanctl.adoc[`*swanctl*`] command installs a trap, drop or bypass
 policy defined by a `CHILD SA`. Optionally an `IKE SA` can be indicated under
 which the `CHILD SA` can be found.
 

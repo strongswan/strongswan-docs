@@ -11,7 +11,7 @@ swanctl --uninstall --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand uninstalls a trap, drop or
+This xref:./swanctl.adoc[`*swanctl*`] command uninstalls a trap, drop or
 bypass policy defined by a `CHILD SA`. Optionally an `IKE SA` can be indicated
 under which the `CHILD SA` can be found.
 

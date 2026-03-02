@@ -11,7 +11,7 @@ swanctl --list-pols --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists the currently installed
+This xref:./swanctl.adoc[`*swanctl*`] command lists the currently installed
 `*trap*`, `*drop*` and `*pass*` policies.
 
 == Options

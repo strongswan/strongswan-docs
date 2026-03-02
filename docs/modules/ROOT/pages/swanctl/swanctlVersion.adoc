@@ -10,7 +10,7 @@ swanctl --version --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists the either the version
+This xref:./swanctl.adoc[`*swanctl*`] command lists the either the version
 of the installed strongSwan software or the currently running
 xref:daemons/charon.adoc[`*charon*`] daemon.
 

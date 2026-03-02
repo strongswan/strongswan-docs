@@ -11,7 +11,7 @@ swanctl --reload-settings --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand forces the
+This xref:./swanctl.adoc[`*swanctl*`] command forces the
 xref:daemons/charon.adoc[`*charon*`] daemon to reload the
 xref:config/strongswanConf.adoc[`*strongswan.conf*`] configuration file during
 runtime.

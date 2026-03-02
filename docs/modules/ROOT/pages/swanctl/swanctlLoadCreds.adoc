@@ -11,9 +11,9 @@ swanctl --load-creds --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads credentials,
+This xref:./swanctl.adoc[`*swanctl*`] command loads or reloads credentials,
 i.e. private keys, public keys, X.509 certificates or alternatively several
-kinds of preshared secrets.
+kinds of pre-shared secrets.
 
 == Options
 

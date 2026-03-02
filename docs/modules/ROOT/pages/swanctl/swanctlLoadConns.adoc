@@ -11,7 +11,7 @@ swanctl --load-conns --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand loads or reloads connection
+This xref:./swanctl.adoc[`*swanctl*`] command loads or reloads connection
 configurations.
 
 == Options

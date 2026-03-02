@@ -12,7 +12,7 @@ swanctl --list-sas --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand lists established `IKE SAs` and
+This xref:./swanctl.adoc[`*swanctl*`] command lists established `IKE SAs` and
 their dependent `CHILD SAs`.
 
 == Options

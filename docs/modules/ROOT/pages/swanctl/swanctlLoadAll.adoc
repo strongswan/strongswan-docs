@@ -11,7 +11,7 @@ swanctl --load-all --help
 
 == Description
 
-This xref:./swanctl.adoc[`*swanctl*`] subcommand executes
+This xref:./swanctl.adoc[`*swanctl*`] command executes
 
 * xref:./swanctlLoadConns.adoc[`*swanctl --load-conns*`]
 
