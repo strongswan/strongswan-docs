@@ -8,13 +8,13 @@
 ----
 
 pki --scepca --url url [--caout file] [--raout file] [--outform der|pem] [--force]
-            
+
 pki --scepca --help
 ----
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand gets CA and RA certificates via http
+This xref:./pki.adoc[`*pki*`] command gets CA and RA certificates via HTTP
 from a SCEP server using the `*GetCACert*` command of the *Simple Certificate
 Enrollment Protocol* ({RFC8894}[RFC 8894]).
 

@@ -6,17 +6,17 @@
 ----
 pki --keyid [--in file|--keyid hex] [--type priv|rsa|ecdsa|pub|pkcs10|x509]
             [--id all|spk|spki] [--format pretty|hex|base64|bin]
-            
+
 pki --keyid --help
 ----
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand computes and displays public key identifiers.
+This xref:./pki.adoc[`*pki*`] command computes and displays public key identifiers.
 Currently these are
 
 * `spk`  for `subjkey` i.e. the SHA-1 hash of `subjectPublicKey` and
-   
+
 * `spki` for `keyid`   i.e. the SHA-1 hash of `subjectPublicKeyInfo`.
 
 == Options
@@ -35,7 +35,7 @@ Currently these are
 == Example
 
 ----
-pki --keyid --type priv --in myKey.der 
+pki --keyid --type priv --in myKey.der
 subjkey (SHA-1 of subjectPublicKey):
              5f:36:bd:33:57:51:f4:1d:8e:66:be:b4:04:92:e1:60:93:4a:32:f1
 keyid (SHA-1 of subjectPublicKeyInfo):

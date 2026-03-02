@@ -19,7 +19,7 @@ pki --est --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand sends a PKCS#10 certificate request via
+This xref:./pki.adoc[`*pki*`] command sends a PKCS#10 certificate request via
 HTTPS to a server using the *Enrollment over Secure Transport* (EST) Protocol
 ({RFC7030}[RFC 7030]). After successful authorization which with manual authentication
 requires periodic polling by the enrollment client, the EST server returns an

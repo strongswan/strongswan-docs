@@ -21,7 +21,7 @@ pki --issue --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand generates an X.509 certificate signed with a CA's
+This xref:./pki.adoc[`*pki*`] command generates an X.509 certificate signed with a CA's
 private key.
 
 == Options

@@ -22,7 +22,7 @@ pki --req --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand generates a PKCS#10 certificate request.
+This xref:./pki.adoc[`*pki*`] command generates a PKCS#10 certificate request.
 
 == Options
 

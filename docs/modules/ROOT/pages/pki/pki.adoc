@@ -52,7 +52,7 @@ Version 5.9.12 introduced an *Online Certificate Status Protocol* (OCSP) respond
 as defined by {RFC6960}[RFC 6960], interoperating with an {OPENXPKI}[OpenXPKI]
 server by directly accessing its internal `*certificate*` database.
 
-== Subcommands
+== Commands
 
 [cols="1,1,1,1"]
 |===
@@ -82,7 +82,7 @@ server by directly accessing its internal `*certificate*` database.
 |
 |===
 
-Each subcommand has additional options. Pass `*--help*` to a subcommand to get
+Each command has additional options. Pass `*--help*` to a command to get
 additional information.
 
 == Configuration

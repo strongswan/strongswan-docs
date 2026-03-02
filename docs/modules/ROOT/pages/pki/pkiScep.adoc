@@ -20,7 +20,7 @@ pki --scepca --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand sends a PKCS#10 certificate request in
+This xref:./pki.adoc[`*pki*`] command sends a PKCS#10 certificate request in
 an encrypted and signed PKCS#7 container via HTTP to a SCEP server using the
 *Simple Certificate Enrollment Protocol* ({RFC8894}[RFC 8894]). After successful
 authorization which with manual authentication requires periodic polling by the

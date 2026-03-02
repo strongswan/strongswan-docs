@@ -15,7 +15,7 @@ pki --estca --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand gets CA certificates via https
+This xref:./pki.adoc[`*pki*`] command gets CA certificates via https
 from an EST server using the `/cacerts` operation of the *Enrollment  over Secure
 Transport* protocol ({RFC7030}[RFC 7030]).
 

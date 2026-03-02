@@ -19,7 +19,7 @@ pki --ocsp --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand parses an _Online Certificate Status Protocol_
+This xref:./pki.adoc[`*pki*`] command parses an _Online Certificate Status Protocol_
 (OCSP) request as defined by {RFC6960}[RFC 6960] and with the `*--respond*` option
 generates an OCSP response based on the OCSP request. The certificate status for
 this may be provided by plugins, so if not using the `*--index*` option, this requires

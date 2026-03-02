@@ -5,13 +5,13 @@
 
 ----
 pki --dn [--in file] [--format config|hex|base64|bin]
-            
+
 pki --dn --help
 ----
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand extracts the ASN.1-encoded subject
+This xref:./pki.adoc[`*pki*`] command extracts the ASN.1-encoded subject
 `DistinguishedName` (`DN`) of an X.509 certificate and export it in different
 formats. This may be useful when the strongSwan identity parser is unable to
 produce the correct binary encoding from a string.
@@ -36,7 +36,7 @@ subject:  "C=CH, O=strongSwan, CN=Server"
 * Extract this subject `DN` in different formats:
 ----
 $ pki --dn --in myCert.der
-"asn1dn:#3033310b300906035504061302434831133011060355040a130a7374726f6e675377616e310f300d06035504031306536572766572" 
+"asn1dn:#3033310b300906035504061302434831133011060355040a130a7374726f6e675377616e310f300d06035504031306536572766572"
 ----
 ----
 $ pki --dn --in myCert.der --format hex

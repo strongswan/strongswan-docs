@@ -21,7 +21,7 @@ pki --self --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand generates a self-signed X.509 certificate.
+This xref:./pki.adoc[`*pki*`] command generates a self-signed X.509 certificate.
 
 == Options
 

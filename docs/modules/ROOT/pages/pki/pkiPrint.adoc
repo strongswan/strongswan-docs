@@ -11,7 +11,7 @@ pki --print --help
 
 == Description
 
-This xref:./pki.adoc[`*pki*`] subcommand prints credentials in a human readable form.
+This xref:./pki.adoc[`*pki*`] command prints credentials in a human readable form.
 
 == Options
 
@@ -36,7 +36,7 @@ $ pki --print --in strongswanCert.pem
   validity:  not before Jan 06 10:45:25 2021, ok
              not after  Jan 07 10:45:25 2031, ok (expires in 3629 days)
   serial:    3e:9e:42:fe:27:8e:5b:bd
-  flags:     CA CRLSign self-signed 
+  flags:     CA CRLSign self-signed
   pathlen:   1
   subjkeyId: 20:d0:f6:72:42:0b:37:4c:b0:12:23:8e:51:f1:f6:0f:7a:a5:b7:e0
   pubkey:    RSA 3072 bits
@@ -48,12 +48,12 @@ $ pki --print --in strongswanCert.pem
 
 ----
 $ pki --print --type rsa --in strongswanKey.pem
- 
+
   privkey:   RSA 3072 bits
   keyid:     96:84:66:a2:a0:91:99:96:c2:10:1d:ca:dc:b8:33:c2:c3:72:34:86
   subjkey:   20:d0:f6:72:42:0b:37:4c:b0:12:23:8e:51:f1:f6:0f:7a:a5:b7:e0
 ----
-  
+
 * Print a CRL:
 
 ----
@@ -82,7 +82,7 @@ loaded certificate from TPM NV index 0x01800003
              not after  Dec 23 21:12:33 2025, ok (expires in 1789 days)
   serial:    2f:7e:da:aa:98:4e:5a:93
   altNames:  mijas.strongsec.com
-  flags:     
+  flags:
   CRL URIs:  http://www.strongsec.com/ca/strongsec.crl
   authkeyId: 6d:c2:af:37:49:41:b9:fd:f4:45:8b:aa:e0:03:3b:b9:e5:7b:9c:b5
   subjkeyId: b4:05:b9:62:32:f6:87:7e:a7:1c:38:b3:20:57:37:b4:37:83:ca:ff
