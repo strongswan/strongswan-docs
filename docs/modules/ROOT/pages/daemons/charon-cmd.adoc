@@ -103,7 +103,7 @@ charon-cmd {
 |`*--ah-proposal* <proposal>`
 |A single AH proposal to offer instead of the default
 
-|`*--childless[=force]*`
+|`*--childless*[=force]`
 |Use childless IKE SA initiation with IKEv2 if supported by the responder,
  passing `*force*` aborts if  that's not the case
 
