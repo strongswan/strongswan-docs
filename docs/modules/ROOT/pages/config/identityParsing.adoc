@@ -191,6 +191,10 @@ Defined by {X520}[X.520] and also described in {RFC4519}[RFC 4519]:
 |pseudonym        |2.5.4.65
 |Pseudonym
 |
+
+|organizationIdentifier|2.5.4.97
+|Organization Identifier (since version:6.0.5[])
+|
 |===
 
 Originally defined by {RFC1274}[RFC 1274] and now described in {RFC4519}[RFC 4519]:
