@@ -3,27 +3,32 @@
 :OSSFUZZ: https://github.com/google/oss-fuzz
 :CORPORA: https://github.com/strongswan/fuzzing-corpora
 
+:fn-plugins: footnote:plugins[This fuzzer is built twice, once with default crypto plugins, once with the old custom crypto plugins.]
+
 Since version 5.5.3 parts of the strongSwan code base are fuzzed on Google's
 {OSSFUZZ}[OSS-Fuzz] infrastructure.
 
 The following fuzz targets are currently in use:
 
- *fuzz-certs*::
+ *fuzz-certs*{fn-plugins}::
   Fuzzes the X.509 certificate parsing framework as provided by the loaded
   plugins and the ASN.1 parser of the `*libstrongswan*` library.
 
- *fuzz-crls*::
+ *fuzz-crls*{fn-plugins}::
   Fuzzes the CRL parsing framework provided by the loaded plugins and the ASN.1
   parser of the `*libstrongswan*` library.
 
  *fuzz-ids*::
   Fuzzes the identity parser of the `*libstrongswan*` library.
 
- *fuzz-ocsp-req*::
+ *fuzz-ike*::
+  Fuzzes the IKE message parser of the `*libcharon*` library (plaintext only).
+
+ *fuzz-ocsp-req*{fn-plugins}::
   Fuzzes the OCSP request parsing framework provided by the loaded plugins
   and the ASN.1 parser of the `*libstrongswan*` library.
 
- *fuzz-ocsp-rsp*::
+ *fuzz-ocsp-rsp*{fn-plugins}::
   Fuzzes the OCSP response parsing framework provided by the loaded plugins
   and the ASN.1 parser of the `*libstrongswan*` library.
 
