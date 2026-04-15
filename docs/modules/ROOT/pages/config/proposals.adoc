@@ -564,14 +564,14 @@ With peers that support multiple IKEv2 key exchanges ({RFC9370}[RFC 9370]), up t
 the algorithm keyword with `*keX_*` (where `*X*` is a number between 1 and 7).
 So a total of eight key exchanges may be used for each SA.
 
-For example, `*x25519-ke1_mlkem786*` adds ML-KEM-786 as additional key
+For example, `*x25519-ke1_mlkem768*` adds ML-KEM-768 as additional key
 exchange method after the initial key exchange with X25519. This works with any
 key exchange method, whether post-quantum or classic Diffie-Hellman.
 
 As with any algorithm in proposals, peers have to agree on a KE method for each
 round unless no algorithms are defined by both or `*keX_none*` is configured to
 make a particular round explicitly *optional* (there can be gaps, so it's
-technically fine to negotiate e.g. `*x25519-ke7_mlkem786*`).
+technically fine to negotiate e.g. `*x25519-ke7_mlkem768*`).
 ====
 
 === Classic Diffie-Hellman Groups
