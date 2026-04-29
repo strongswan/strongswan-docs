@@ -43,18 +43,13 @@ If you need NAT Traversal, add the following option to your kernel config:
 
 == Install FreeBSD Port / Package
 
-The easiest way to install strongSwan on FreeBSD is to use the
-{BSD_PORT}[security/strongswan] port
-
- cd /usr/ports/security/strongswan/ && make install clean
-
-or to install the binary package with
+The easiest way to install strongSwan on FreeBSD is to use the binary package:
 
  pkg install strongswan
 
-or in earlier FreeBSD releases with
+or to build the {BSD_PORT}[security/strongswan] port:
 
- pkg_add -r strongswan
+ cd /usr/ports/security/strongswan/ && make install clean
 
 == Manual Installation
 
