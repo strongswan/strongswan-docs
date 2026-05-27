@@ -37,5 +37,9 @@ The following fuzz targets are currently in use:
 
  *fuzz-pb-tnc*:: Fuzzes the PB-TNC batch parser (`*libtnccs*`).
 
+ *fuzz-radius*:: Fuzzes the RADIUS message parser (`*libradius*`).
+
+ *fuzz-vici*:: Fuzzes the VICI message parser (`*vici*` plugin).
+
 The seed corpora used by the fuzz targets is provided in a
 {CORPORA}[separate repository].
