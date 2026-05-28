@@ -4,7 +4,7 @@
 == Synopsis
 
 ----
-swanctl --list-conns
+swanctl --list-conns [--ike <name>]
 
 swanctl --list-conns --help
 ----
@@ -17,6 +17,8 @@ configurations.
 == Options
 
 ----
+--ike      (-i)  filter connections by name
+
 --raw      (-r)  dump raw response message
 --pretty   (-P)  dump raw response message in pretty print
 --debug    (-v)  set debug level, default: 1
