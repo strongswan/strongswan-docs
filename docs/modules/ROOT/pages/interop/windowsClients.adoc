@@ -135,7 +135,7 @@ exchange is needed for this to work, make sure to have the `*eap-identity*` plug
 loaded.
 
 `EAP-MSCHAPv2` requires MD4 to generate the NT-Hashes, so either the `*md4*` plugin
-or one of the crypto library plugins (`*openssl*` or `*gcrypt*`) is required. This
+or one of the crypto library plugins (`*openssl*`) is required. This
 is not needed if the authentication is delegated to an AAA server via
 the xref:plugins/eap-radius.adoc[`*eap-radius*`] plugin.
 

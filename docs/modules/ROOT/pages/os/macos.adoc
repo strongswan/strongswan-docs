@@ -113,7 +113,7 @@ It featured:
 
 * Requires a 64-bit Intel processor and OS X 10.7 or higher
 
-Archived builds of strongSwan for OS X can be found on http://download.strongswan.org/osx.
+Archived builds of strongSwan for OS X can be found on https://download.strongswan.org/osx.
 
 
 == Limitations

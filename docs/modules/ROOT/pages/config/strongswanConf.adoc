@@ -804,13 +804,6 @@ include::partial$config/plugins/curl.adoc[]
 include::partial$config/plugins/dhcp.adoc[]
 |===
 
-==== xref:plugins/duplicheck.adoc[charon.plugins.duplicheck]
-[{COLS}]
-|===
-
-include::partial$config/plugins/duplicheck.adoc[]
-|===
-
 ==== charon.plugins.eap-aka
 [{COLS}]
 |===
@@ -916,13 +909,6 @@ include::partial$config/plugins/ext-auth.adoc[]
 include::partial$config/plugins/forecast.adoc[]
 |===
 
-==== charon.plugins.gcrypt
-[{COLS}]
-|===
-
-include::partial$config/plugins/gcrypt.adoc[]
-|===
-
 ==== xref:plugins/ha.adoc[charon.plugins.ha]
 [{COLS}]
 |===
@@ -963,13 +949,6 @@ include::partial$config/plugins/kernel-pfkey.adoc[]
 |===
 
 include::partial$config/plugins/kernel-pfroute.adoc[]
-|===
-
-==== charon.plugins.led
-[{COLS}]
-|===
-
-include::partial$config/plugins/led.adoc[]
 |===
 
 ==== xref:plugins/load-tester.adoc[charon.plugins.load-tester]
@@ -1077,13 +1056,6 @@ include::partial$config/plugins/stroke.adoc[]
 include::partial$config/plugins/systime-fix.adoc[]
 |===
 
-==== xref:plugins/tnc-ifmap.adoc[charon.plugins.tnc-ifmap]
-[{COLS}]
-|===
-
-include::partial$config/plugins/tnc-ifmap.adoc[]
-|===
-
 ==== charon.plugins.tnc-imc
 [{COLS}]
 |===
@@ -1103,13 +1075,6 @@ include::partial$config/plugins/tnc-imv.adoc[]
 |===
 
 include::partial$config/plugins/tnc-pdp.adoc[]
-|===
-
-==== charon.plugins.tnccs-11
-[{COLS}]
-|===
-
-include::partial$config/plugins/tnccs-11.adoc[]
 |===
 
 ==== charon.plugins.tnccs-20
@@ -1322,28 +1287,6 @@ subsection.
 |*Key*|*Default*|*Description [Default]*
 
 include::partial$config/libtnccs.adoc[]
-|===
-
-=== manager
-[{COLS}]
-|===
-|*Key*|*Default*|*Description [Default]*
-
-include::partial$config/manager.adoc[]
-|===
-
-=== medcli
-[{COLS}]
-|===
-
-include::partial$config/medcli.adoc[]
-|===
-
-=== medsrv
-[{COLS}]
-|===
-
-include::partial$config/medsrv.adoc[]
 |===
 
 === xref:pki/pki.adoc[pki]

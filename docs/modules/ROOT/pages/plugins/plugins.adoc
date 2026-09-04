@@ -11,7 +11,6 @@ different authentication methods as well as some very specialized ones for
 specific needs.
 
 :BOTAN:     https://botan.randombit.net/
-:GCRYPT:    https://gnupg.org/software/libgcrypt/
 :GMP:       https://gmplib.org/
 :OPENSSL:   https://openssl.org/
 :OPENXPKI:  https://github.com/openxpki/openxpki
@@ -43,14 +42,8 @@ specific needs.
 |aesni                                    | |s
 |Intel AES-NI crypto plugin
 
-|af-alg                                   | |s
-|AF_ALG Linux kernel crypto API
-
 |agent                                    | |s
 |RSA/ECDSA private key backend connecting to ssh-agent
-
-|blowfish                                 | |s
-|Blowfish cipher software implementation
 
 |botan                                    | |s
 |Crypto backend based on the {BOTAN}[Botan] library
@@ -94,9 +87,6 @@ specific needs.
 |gcm                                      | |s
 |GCM cipher mode wrapper
 
-|gcrypt                                   | |s
-|Crypto backend based on {GCRYPT}[libgcrypt]
-
 |gmp                                      | |s
 |RSA/DH crypto backend based on {GMP}[libgmp]
 
@@ -105,9 +95,6 @@ specific needs.
 
 |kdf                                      |x|s
 |IKEv2 key derivation wrapper using various PRFs
-
-|keychain                                 | |e
-|macOS Keychain Services credential set
 
 |ldap                                     | |s
 |LDAP fetching plugin based on libldap
@@ -135,9 +122,6 @@ specific needs.
 
 |xref:./openxpki.adoc[openxpki]           | |s
 |OCSP responder accessing {OPENXPKI}[OpenXPKI] MySQL/MariaDB certificate database
-
-|padlock                                  | |e
-|VIA padlock crypto backend, provides AES128/SHA1
 
 |pem                                      |x|s
 |PEM encoding/decoding routines
@@ -184,9 +168,6 @@ specific needs.
 |sha3                                     | |s
 |SHA-3 hasher and SHAKE128/SHAKE256 XOF software implementation
 
-|soup                                     | |s
-|libsoup based HTTP fetcher
-
 |sqlite                                   | |s
 |SQLite database backend based on libsqlite3
 
@@ -221,9 +202,6 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./addrblock.adoc[addrblock]         | |s
 |Narrow traffic selectors to {RFC3779}[RFC 3779] address blocks in X.509 certificates
 
-|android-dns                              | |s
-|xref:os/android.adoc[Android]-specific DNS handler plugin
-
 |android-log                              | |s
 |xref:os/android.adoc[Android]-specific logger plugin
 
@@ -255,9 +233,6 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 
 |dnscert                                  | |s
 |Provides authentication via CERT RRs protected by DNSSEC
-
-|xref:./duplicheck.adoc[duplicheck]       | |s
-|Advanced duplicate checking with liveness test and notifications
 
 |eap-aka                                  | |s
 |Generic EAP-AKA protocol handler using different backends
@@ -353,20 +328,11 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./kernel-wfp.adoc[kernel-wfp]       | |e
 |IPsec backend for the Windows platform, using the Windows Filtering Platform
 
-|led                                      | |s
-|Let Linux LED subsystem LEDs blink on IKE activity
-
 |xref:./load-tester.adoc[load-tester]     | |s
 |Perform IKE load tests against self or a gateway
 
 |xref:./lookip.adoc[lookip]               | |s
 |Virtual IP lookup facility using a UNIX socket
-
-|medcli                                   | |d
-|Web interface based mediation client interface
-
-|medsrv                                   | |d
-|Web interface based mediation server interface
 
 |osx-attr                                 | |e
 |macOS SystemConfiguration attribute handler
@@ -386,9 +352,6 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |xref:./selinux.adoc[selinux]             | |s
 |SELinux support plugin for labeled IPsec
 
-|smp                                      | |d
-|XML based strongSwan Management Protocol
-
 |socket-default                           |x|s
 |Default socket implementation for IKE messages
 
@@ -403,9 +366,6 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 
 |stroke                                   | |s
 |Deprecated stroke configuration/control backend, to use with ipsec script and starter
-
-|xref:./tnc-ifmap.adoc[tnc-ifmap]         | |s
-|xref:tnc/tnc.adoc[TNC] IF-MAP 2.0 client
 
 |tnc-pdp                                  | |s
 |xref:tnc/tnc.adoc[TNC] Policy Decision Point with RADIUS server interface
@@ -455,14 +415,8 @@ WinHTTP based HTTP/HTTPS fetcher for Windows platform
 |===
 |Plugin Name                              |E{E_ref}|S{S_ref}|Description
 
-|tnccs-11                                 | |s
-|xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) protocol version 1.1
-
 |tnccs-20                                 | |s
 |xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) protocol version 2.0
-
-|tnccs-dynamic                            | |s
-|xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) dynamic protocol discovery
 
 |tnc-tnccs                                | |s
 |Manages the xref:tnc/tnc.adoc[TNC] Client-Server (TNCCS) connection layer

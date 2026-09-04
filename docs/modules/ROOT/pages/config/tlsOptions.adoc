@@ -12,8 +12,8 @@ The legacy {RFC4346}[TLS version 1.1] and {RFC2246}[TLS version 1.0] are support
 too, but due to security reasons shouldn't be used anymore.
 
 `*libtls*` is used internally by the strongSwan
-xref:plugins/eap-tls.adoc[`*eap-tls*`], `*eap-ttls*`, `*eap-peap*` and
-xref:plugins/tnc-ifmap.adoc[`*tnc-ifmap*`] plugins, as well as by the
+xref:plugins/eap-tls.adoc[`*eap-tls*`], `*eap-ttls*`, and `*eap-peap*` plugins,
+as well as by the
 xref:pki/pkiEst.adoc[`*pki --est*`], xref:pki/pkiEstCa.adoc[`*pki --estca*`],
 and xref:tnc/pt-tls-client.adoc[`*pt-tls-client*`] command line tools.
 
@@ -133,8 +133,8 @@ ECDHE and ECDSA require a third-party crypto backend. Since version 5.9.2, EdDSA
 may also be used with ECDSA cipher suites. ECDHE support is limited to the
 named curves `*SECP256R1*`, `*SECP384R1*`, `*SECP521R1*`, `*SECP224R1*` and
 `*SECP192R1*` with uncompressed points. Since version 5.9.2, `*Curve25519*` and
-`*Curve448*` are also supported. `CAMELLIA` encryption requires either the
-`*openssl*` or `*gcrypt*` plugin. `NULL` encryption is automatically disabled if
+`*Curve448*` are also supported. `CAMELLIA` encryption requires the
+`*openssl*` plugin. `NULL` encryption is automatically disabled if
 the stack is used for purposes other than EAP-TLS where only the handshake of
 TLS is used.
 

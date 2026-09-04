@@ -242,19 +242,12 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 |xref:features/networkManager.adoc[`*frontends/gnome*`]
 |xref:features/networkManager.adoc[NetworkManager] plugin
 
-|xref:os/macos.adoc[`*frontends/osx*`]
-|`*charon-xpc*` helper daemon for the native xref:os/macos.adoc[macOS application]
-
 |`*ipsec*`
 |The legacy ipsec command line tool wrapping commands and other tools
 
 |`*libcharon*`
 |Contains most of the code and the plugins of the
  xref:daemons/charon.adoc[`*charon*`] daemon
-
-|`*libfast*`
-|A lightweight framework to build native web applications using ClearSilver and
- FastCGI
 
 |xref:tnc/tnc.adoc[`*libimcv*`]
 |Various Integrity Measurement Collectors (IMCs), Integrity Measuremeent
@@ -294,13 +287,6 @@ The {SRC}[`src`] directory in the strongSwan distribution contains the following
 
 |`*libtpmtss*`
 |Provides access to TPM 1.2 and xref:tpm/tpm2.adoc[TPM 2.0]
-
-|`*manager*`
-|A deprecated graphical management application for
- xref:daemons/charon.adoc[`*charon*`] based on `*libfast*`
-
-|`*medsrv*`
-|An experimental management front end for mediation servers based on `*libfast*`
 
 |xref:pki/pki.adoc[`*pki*`]
 |Public Key Infrastructure utility

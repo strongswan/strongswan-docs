@@ -1,4 +1,0 @@
-|activity_led                    |
-|
-|blink_time                      |`50`
-|

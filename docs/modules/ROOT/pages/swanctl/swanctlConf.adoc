@@ -115,10 +115,11 @@ an arbitrary yet unique name (denoted `<conn>` below).
 |===
 |Key |Default| Description [default]
 
-|<conn>.version            |`0`
-|IKE major version to use for connection. `*1*` uses IKEv1 aka ISAKMP, `*2*` uses
- IKEv2. A connection using the default of `*0*` accepts both IKEv1 and IKEv2 as
- a responder and initiates the connection actively with IKEv2
+|<conn>.version            |`2`
+|IKE major version to use for connection. `*1*` uses the deprecated IKEv1
+ protocol aka ISAKMP, `*2*` uses IKEv2 (the default). A connection using `*0*`
+ accepts both IKEv1 and IKEv2 as a responder and initiates the connection
+ actively with IKEv2
 
 |<conn>.local_addrs        |`%any`
 |Local [comma-separated] address[es] to use for IKE communication. Accepts single

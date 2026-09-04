@@ -103,7 +103,7 @@ Using the default `*revocation*` plugin, Certificate Revocation Lists (CRLs) and
 the Online Certificate Status Protocol (OCSP) can be used to check if a given
 certificate has been revoked for some reason. strongSwan supports locally-stored
 CRLs, as well as fetching fresh CRLs and OCSP information via the fetcher plugins
-xref:plugins/curl.adoc[`*curl*`], `*soup*` or xref:plugins/winhttp.adoc[`*winhttp*`].
+xref:plugins/curl.adoc[`*curl*`] or xref:plugins/winhttp.adoc[`*winhttp*`].
 
 CRL Distribution Points (CDPs) are either retrieved from the certificate or can
 be added manually using an

@@ -7,7 +7,7 @@ Include the following modules:
 Networking  --->
   Networking options  --->
     Transformation user configuration interface [CONFIG_XFRM_USER]
-    TCP/IP networking [CONFIG_INET]
+    Transformation migrate database [CONFIG_XFRM_MIGRATE]
       IP: advanced router [CONFIG_IP_ADVANCED_ROUTER]
       IP: policy routing [CONFIG_IP_MULTIPLE_TABLES]
       IP: AH transformation [CONFIG_INET_AH]

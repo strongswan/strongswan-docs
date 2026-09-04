@@ -67,9 +67,6 @@ plugins.
 |--enable-aesni                                              |5.3.1
 |enable Intel AES-NI crypto plugin
 
-|--enable-af-alg                                             |
-|enable AF_ALG crypto interface to Linux Crypto API
-
 |--enable-agent                                              |
 |enable ssh-agent signing plugin
 
@@ -80,9 +77,6 @@ plugins.
 |enable all optional plugins and features
  (they can be disabled with their respective --disable options).
  Mainly intended for testing
-
-|--enable-android                                            |
-|enable Android specific plugin
 
 |--enable-android-log                                        |
 |enable Android specific logger plugin
@@ -96,9 +90,6 @@ plugins.
 
 |--enable-bfd-backtraces                                     |5.0.1
 |use binutil's libbfd to resolve backtraces for memory leaks and segfaults
-
-|--enable-blowfish                                           |
-|enable Blowfish software implementation plugin
 
 |--enable-botan                                              |5.7.0
 |enable Botan crypto plugin. Requires {BOTAN}[Botan] 2.8.0 or newer
@@ -164,9 +155,6 @@ plugins.
 |--enable-dnscert                                            |5.1.1
 |enable plugin authenticating peers based on DNS CERT resource records protected
  by DNSSEC
-
-|xref:plugins/duplicheck.adoc[--enable-duplicheck]           |
-|enable advanced duplicate checking plugin using liveness checks
 
 |--enable-eap-aka                                            |
 |enable EAP AKA authentication plugin
@@ -237,9 +225,6 @@ plugins.
 |enable ARP faking plugin that responds to ARP requests for virtual IPs
  assigned to peers
 
-|--enable-fast                                               |
-|build `libfast` (FastCGI Application Server w/ templates)
-
 |--enable-files                                              |5.3.0
 |enable simple `file://` URI fetcher
 
@@ -257,9 +242,6 @@ plugins.
 |--enable-gcm                                                |
 |enable GCM AEAD wrapper crypto plugin
 
-|--enable-gcrypt                                             |
-|enable gcrypt plugin. Requires the GNU *libgcrypt* library
-
 |--enable-git-version                                        |
 |use output of `git describe` as version information in executables
 
@@ -272,6 +254,9 @@ plugins.
 
 |xref:plugins/ha.adoc[--enable-ha]                           |
 |enable xref:features/highAvailability.adoc[high availability] cluster plugin
+
+|--enable-ikev1                                               |
+|enable *deprecated* IKEv1 protocol support in `charon` daemon
 
 |--enable-imc-attestation                                    |
 |enable xref:tnc/tnc.adoc[TNC] Attestation IMC
@@ -333,9 +318,6 @@ plugins.
 |--xref:plugins/kernel-wfp.adoc[--kernel-wfp]                |5.2.0
 |enable Windows Filtering Platform IPsec backend
 
-|--enable-keychain                                           |5.1.0
-|enable macOS Keychain Services credential set
-
 |--enable-libipsec                                           |
 |enable user space IPsec implementation
 
@@ -345,10 +327,6 @@ plugins.
 
 |--enable-leak-detective                                     |
 |enable malloc hooks to find memory leaks
-
-|--enable-led                                                |
-|enable plugin to control LEDs on IKEv2 activity using the Linux kernel LED
- subsystem
 
 |xref:plugins/load-tester.adoc[--enable-load-tester]         |
 |enable load testing plugin for IKEv2 daemon
@@ -363,23 +341,14 @@ plugins.
 |xref:plugins/lookip.adoc[--enable-lookip]                   |
 |enable fast xref:features/vip.adoc[virtual IP] lookup and notification plugin
 
-|--enable-manager                                            |
-|build the deprecated strongSwan manager web application
-
 |--enable-md4                                                |
 |enable MD4 software implementation plugin. Required for `*eap-mschapv2*` plugin
 
 |--enable-md5                                                |
 |enable MD5 software implementation plugin
 
-|--enable-medcli                                             |
-|enable deprecated mediation client web front end and daemon plugin
-
 |--enable-mediation                                          |
 |enable IKEv2 Mediation Extension
-
-|--enable-medsrv                                             |
-|enable deprecated mediation server web front end and daemon plugin
 
 |--enable-mgf1                                               |5.5.1
 |enable MGF1 software implementation plugin
@@ -407,9 +376,6 @@ plugins.
 |--enable-p-cscf                                             |5.4.0
 |enable plugin to request P-CSCF server addresses from an ePDG
  ({RFC7651}[RFC 7651])
-
-|--enable-padlock                                            |
-|enable padlock crypto plugin. Requires a VIA Padlock crypto engine
 
 |--enable-perl-cpan                                          |5.4.0
 |enable build of provided perl CPAN modules e.g. for the
@@ -464,19 +430,12 @@ plugins.
 |--enable-sha3                                               |5.3.4
 |enable SHA3 and SHAKE software implementation plugin
 
-|--enable-smp                                                |
-|enable deprecated XML configuration and control interface. Requires
- `libxml` library.
-
 |--enable-socket-dynamic                                     |
 |enable dynamic socket implementation for charon
 
 |xref:plugins/socket-win.adoc[--enable-socket-win]           |5.2.0
 |enable Winsock2 based socket implementation for
  xref:daemons/charon.adoc[`*charon*`]
-
-|--enable-soup                                               |
-|enable fetcher plugin to fetch from HTTP URIs. Requires `libsoup` library
 
 |xref:plugins/sql.adoc[--enable-sql]                         |
 |enable SQL database configuration backend
@@ -504,19 +463,8 @@ plugins.
 |enable `charon-tkm` an IKEv2 daemon that is backed by a
  {TKM}[Trusted Key Manager] (TKM).
 
-|--enable-tnccs-11                                           |
-|enable xref:tnc/tnc.adoc[TNC] Client Server (TNCCS) 1.1 protocol plugin.
- Requires `libxml2` library
-
 |--enable-tnccs-20                                            |
 |enable xref:tnc/tnc.adoc[TNC] Client Server (TNCCS) 2.0 protocol plugin
-
-|--enable-tnccs-dynamic                                       |
-|enable xref:tnc/tnc.adoc[TNC] Client Server (TNCCS) dynamic protocol discovery
- plugin
-
-|--enable-tnc-ifmap                                           |
-|enable xref:tnc/tnc.adoc[TNC] IF-MAP 2.0 client plugin
 
 |--enable-tnc-imc                                             |
 |enable xref:tnc/tnc.adoc[TNC] Integrity Measurement Collector (IMC) manager
@@ -606,9 +554,6 @@ specific plugins.
 
 |--disable-drgb                                               |5.8.2
 |disable the NIST Deterministic Random Bit Generator plugin
-
-|--disable-ikev1                                              |
-|disable IKEv1 protocol support in `charon` daemon
 
 |--disable-ikev2                                              |
 |disable IKEv2 protocol support in `charon` daemon

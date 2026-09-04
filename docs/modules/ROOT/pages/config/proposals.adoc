@@ -113,7 +113,7 @@ cryptographically *weak* and thus prone to attacks.
 
 |*s* 3+|Deprecated due to security issues
 
-|*x* |Default crypto plugin[s]         2+|see `*Plugins*` columns below
+|*x* |Custom crypto plugin[s]         2+|see `*Plugins*` columns below
 
 |*b* |Botan crypto library             |`*botan*`   | strongSwan 5.7.0
 
@@ -121,9 +121,6 @@ cryptographically *weak* and thus prone to attacks.
 
 |*o* |OpenSSL or AWS-LC crypto library |`*openssl*` |
 
-|*g* |Gcrypt crypto library            |`*gcrypt*`  |
-
-|*a* |AF_ALG userland Linux crypto API |`*af-alg*`  | Linux kernel 2.6.38
 |===
 
 [#esp-support]
@@ -162,75 +159,75 @@ cryptographically *weak* and thus prone to attacks.
 
 |*3des*
 |168 bit 3DES-EDE-CBC
-| 3 |*s* x w o g a |*s* k |des
+| 3 |*s* x w o |*s* k |des
 
 |*cast128*
 |128 bit CAST-CBC
-| 6 |*s* o g a     |*s* k |
+| 6 |*s* o     |*s* k |
 
 |*blowfish128* or *blowfish*
 |128 bit Blowfish-CBC
-| 7 |*s* x o g a   |*s* k |blowfish
+| 7 |*s* o     |*s* k |
 
 |*blowfish192*
 |192 bit Blowfish-CBC
-| 7 |*s* x o a     |*s* k |blowfish
+| 7 |*s* o     |*s* k |
 
 |*blowfish256*
 |256 bit Blowfish-CBC
-| 7 |*s* x o a     |*s* k |blowfish
+| 7 |*s* o     |*s* k |
 
 |*null*
 |Null encryption
-|11 | w o          |k     |
+|11 | w o      |k     |
 
 |*aes128* or *aes*
 |128 bit AES-CBC
-|12 |x b w o g a   |k     |aes
+|12 |x b w o   |k     |aes
 
 |*aes192*
 |192 bit AES-CBC
-|12 |x b w o g a   |k     |aes
+|12 |x b w o   |k     |aes
 
 |*aes256*
 |256 bit AES-CBC
-|12 |x b w o g a   |k     |aes
+|12 |x b w o   |k     |aes
 
 |*aes128ctr*
 |128 bit AES-COUNTER
-|13 |x w o g a     |k     |aes, ctr
+|13 |x w o     |k     |aes, ctr
 
 |*aes192ctr*
 |192 bit AES-COUNTER
-|13 |x w o g a     |k     |aes, ctr
+|13 |x w o     |k     |aes, ctr
 
 |*aes256ctr*
 |256 bit AES-COUNTER
-|13 |x w o g a     |k     |aes, ctr
+|13 |x w o     |k     |aes, ctr
 
 |*camellia128* or *camellia*
 |128 bit Camellia-CBC
-|23 |o g a         |k     |
+|23 |o         |k     |
 
 |*camellia192*
 |192 bit Camellia-CBC
-|23 |o g a         |k     |
+|23 |o         |k     |
 
 |*camellia256*
 |256 bit Camellia-CBC
-|23 |o g a         |k     |
+|23 |o         |k     |
 
 |*camellia128ctr*
 |128 bit Camellia-COUNTER
-|24 |o g a         |k     |
+|24 |o         |k     |
 
 |*camellia192ctr*
 |192 bit Camellia-COUNTER
-|24 |o g a         |k     |
+|24 |o         |k     |
 
 |*camellia256ctr*
 |256 bit Camellia-COUNTER
-|24 |o g a         |k     |
+|24 |o         |k     |
 |===
 
 == Authenticated Encryption (AEAD) Algorithms
@@ -247,153 +244,153 @@ explicitly in such proposals.
 |*aes128ccm8*  or +
  *aes128ccm64*
 |128 bit AES-CCM with  64 bit ICV
-|14 |x b w o g a   |k     |aes, ccm
+|14 |x b w o    |k     |aes, ccm
 
 |*aes192ccm8*  or +
  *aes192ccm64*
 |192 bit AES-CCM with  64 bit ICV
-|14 |x b w o g a   |k     |aes, ccm
+|14 |x b w o    |k     |aes, ccm
 
 |*aes256ccm8*  or +
  *aes256ccm64*
 |256 bit AES-CCM with  64 bit ICV
-|14 |x b w o g a   |k     |aes, ccm
+|14 |x b w o    |k     |aes, ccm
 
 |*aes128ccm12* or +
  *aes128ccm96*
 |128 bit AES-CCM with  96 bit ICV
-|15 |x b w o g a   |k     |aes, ccm
+|15 |x b w o    |k     |aes, ccm
 
 |*aes192ccm12* or +
  *aes192ccm96*
 |192 bit AES-CCM with  96 bit ICV
-|15 |x b w o g a   |k     |aes, ccm
+|15 |x b w o    |k     |aes, ccm
 
 |*aes256ccm12* or +
  *aes256ccm96*
 |256 bit AES-CCM with  96 bit ICV
-|15 |x b w o g a   |k     |aes, ccm
+|15 |x b w o    |k     |aes, ccm
 
 |*aes128ccm16* or +
  *aes128ccm128*
 |128 bit AES-CCM with 128 bit ICV
-|16 |x b w o g a   |k     |aes, ccm
+|16 |x b w o    |k     |aes, ccm
 
 |*aes192ccm16* or +
  *aes192ccm128*
 |192 bit AES-CCM with 128 bit ICV
-|16 |x b w o g a   |k     |aes, ccm
+|16 |x b w o    |k     |aes, ccm
 
 |*aes256ccm16* or +
  *aes256ccm128*
 |256 bit AES-CCM with 128 bit ICV
-|16 |x b w o g a   |k     |aes, ccm
+|16 |x b w o    |k     |aes, ccm
 
 |*aes128gcm8*  or +
  *aes128gcm64*
 |128 bit AES-GCM with  64 bit ICV
-|18 |x b w o g a   |k     |aes, gcm
+|18 |x b w o    |k     |aes, gcm
 
 |*aes192gcm8*  or +
  *aes192gcm64*
 |192 bit AES-GCM with  64 bit ICV
-|18 |x b w o g a   |k     |aes, gcm
+|18 |x b w o    |k     |aes, gcm
 
 |*aes256gcm8*  or +
  *aes256gcm64*
 |256 bit AES-GCM with  64 bit ICV
-|18 |x b w o g a   |k     |aes, gcm
+|18 |x b w o    |k     |aes, gcm
 
 |*aes128gcm12* or +
  *aes128gcm96*
 |128 bit AES-GCM with  96 bit ICV
-|19 |x b w o g a   |k     |aes, gcm
+|19 |x b w o    |k     |aes, gcm
 
 |*aes192gcm12* or +
  *aes192gcm96*
 |192 bit AES-GCM with  96 bit ICV
-|19 |x b w o g a   |k     |aes, gcm
+|19 |x b w o    |k     |aes, gcm
 
 |*aes256gcm12* or +
  *aes256gcm96*
 |256 bit AES-GCM with  96 bit ICV
-|19 |x b w o g a   |k     |aes, gcm
+|19 |x b w o    |k     |aes, gcm
 
 |*aes128gcm16* or +
  *aes128gcm128*
 |128 bit AES-GCM with 128 bit ICV
-|20 |x b w o g a   |k     |aes, gcm
+|20 |x b w o    |k     |aes, gcm
 
 |*aes192gcm16* or +
  *aes192gcm128*
 |192 bit AES-GCM with 128 bit ICV
-|20 |x b w o g a   |k     |aes, gcm
+|20 |x b w o    |k     |aes, gcm
 
 |*aes256gcm16* or +
  *aes256gcm128*
 |256 bit AES-GCM with 128 bit ICV
-|20 |x b w o g a   |k     |aes, gcm
+|20 |x b w o    |k     |aes, gcm
 
 |*aes128gmac*
 |Null encryption with 128 bit AES-GMAC
-|21 |              |k     |
+|21 |           |k     |
 
 |*aes192gmac*
 |Null encryption with 192 bit AES-GMAC
-|21 |              |k     |
+|21 |           |k     |
 
 |*aes256gmac*
 |Null encryption with 256 bit AES-GMAC
-|21 |              |k     |
+|21 |           |k     |
 
 |*camellia128ccm8*  or +
  *camellia128ccm64*
 |128 bit Camellia-CCM with  64 bit ICV
-|25 |o g a         |      |
+|25 |o          |      |
 
 |*camellia192ccm8*  or +
  *camellia192ccm64*
 |192 bit Camellia-CCM with  64 bit ICV
-|25 |o g a         |      |
+|25 |o          |      |
 
 |*camellia256ccm8*  or +
  *camellia256ccm64*
 |256 bit Camellia-CCM with  64 bit ICV
-|25 |o g a         |      |
+|25 |o          |      |
 
 |*camellia128ccm12* or +
  *camellia128ccm96*
 |128 bit Camellia-CCM with  96 bit ICV
-|26 |o g a         |      |
+|26 |o          |      |
 
 |*camellia192ccm12* or +
  *camellia192ccm96*
 |192 bit Camellia-CCM with  96 bit ICV
-|26 |o g a         |      |
+|26 |o          |      |
 
 |*camellia256ccm12* or +
  *camellia256ccm96*
 |256 bit Camellia-CCM with  96 bit ICV
-|26 |o g a         |      |
+|26 |o          |      |
 
 |*camellia128ccm16* or +
  *camellia128ccm128*
 |128 bit Camellia-CCM with 128 bit ICV
-|27 |o g a         |      |
+|27 |o          |      |
 
 |*camellia192ccm16* or +
  *camellia192ccm128*
 |192 bit Camellia-CCM with 128 bit ICV
-|27 |o g a         |      |
+|27 |o          |      |
 
 |*camellia256ccm16* or +
  *camellia256ccm128*
 |256 bit Camellia-CCM with 128 bit ICV
-|27 |o g a         |      |
+|27 |o          |      |
 
 |*chacha20poly1305*
 |256 bit ChaCha20/Poly1305 with 128 bit ICV
-|28 |x b w o       |n     |chapoly
+|28 |x b w o    |n     |chapoly
 |===
 
 == Integrity Algorithms
@@ -404,58 +401,58 @@ explicitly in such proposals.
 
 |*md5*
 |MD5 HMAC (96 bit)
-| 1 |*s* x w o a   |*s* k |md5, hmac
+| 1 |*s* x w o   |*s* k |md5, hmac
 
 |*md5_128*
 |MD5_128 HMAC (128 bit)
-| 6 |*s* w         |*s* m |
+| 6 |*s* w       |*s* m |
 
 |*sha1* or *sha*
 |SHA1 HMAC (96 bit)
-| 2 |*s* x b w o a |*s* k |sha1, hmac
+| 2 |*s* x b w o |*s* k |sha1, hmac
 
 |*sha1_160*
 |SHA1_160 HMAC  (160 bit)
-| 7 |*s* w         |*s* m |
+| 7 |*s* w       |*s* m |
 
 |*aesxcbc*
 |AES XCBC (96 bit)
-| 5 | x  a         |k     |aes, xcbc
+| 5 | x          |k     |aes, xcbc
 
 |*aescmac*
 |AES CMAC (96 bit)
-| 8 |x             |      |aes, cmac
+| 8 |x           |      |aes, cmac
 
 |*aes128gmac*
 |128-bit AES-GMAC (128 bit)
-| 9 |              |q     |
+| 9 |            |q     |
 
 |*aes192gmac*
 |192-bit AES-GMAC (128 bit)
-|10 |              |q     |
+|10 |            |q     |
 
 |*aes256gmac*
 |256-bit AES-GMAC (128 bit)
-|11 |              |q     |
+|11 |            |q     |
 
 |*sha256* or *sha2_256*
 |SHA2_256_128 HMAC (128 bit)
-|12 |x b w o a     |m     |sha2, hmac
+|12 |x b w o     |m     |sha2, hmac
 
 |*sha384* or *sha2_384*
 |SHA2_384_192 HMAC (192 bit)
-|13 |x b w o a     |m     |sha2, hmac
+|13 |x b w o     |m     |sha2, hmac
 
 |*sha512* or *sha2_512*
 |SHA2_512_256 HMAC (256 bit)
-|14 |x b w o a     |m     |sha2, hmac
+|14 |x b w o     |m     |sha2, hmac
 
 |*sha256_96* or *sha2_256_96*
 |SHA2_256_96 HMAC (96 bit)
-|1024|             |p     |
+|1024|           |p     |
 |===
 
-It's also possible to use the hash implementations provided by the `*gcrypt*` plugin
+It's also possible to use the hash implementations provided by plugins
 together with the `*hmac*` plugin.
 
 == Pseudo-Random Functions
@@ -473,34 +470,34 @@ to derive PRFs. Thus PRF algorithms have to be configured explicitly.
 
 |*prfmd5*
 |MD5 PRF
-| 1 |*s* x w o a   |md5, hmac
+| 1 |*s* x w o   |md5, hmac
 
 |*prfsha1*
 |SHA1 PRF
-| 2 |*s* x b w o a |sha1, hmac
+| 2 |*s* x b w o |sha1, hmac
 
 |*prfaesxcbc*
 |AES XCBC PRF
-| 4 |x a           |aes, xcbc
+| 4 |x           |aes, xcbc
 
 |*prfaescmac*
 |AES CMAC PRF
-| 8 |x             |aes, cmac
+| 8 |x           |aes, cmac
 
 |*prfsha256*
 |SHA2_256 PRF
-| 5 |x b w o a     |sha2, hmac
+| 5 |x b w o     |sha2, hmac
 
 |*prfsha384*
 |SHA2_384 PRF
-| 6 |x b w o a     |sha2, hmac
+| 6 |x b w o     |sha2, hmac
 
 |*prfsha512*
 |SHA2_512 PRF
-| 7 |x b w o a     |sha2, hmac
+| 7 |x b w o     |sha2, hmac
 |===
 
-It's also possible to use the hashers provided by the `*gcrypt*` plugin together
+It's also possible to use the hash implementations provided by plugins together
 with the `*hmac*` plugin.
 
 === Key Derivation Functions
@@ -584,35 +581,35 @@ technically fine to negotiate e.g. `*x25519-ke7_mlkem768*`).
 
 |*modp768*
 |768 bits
-| 1 |*s* x b w o g |gmp
+| 1 |*s* x b w o |gmp
 
 |*modp1024*
 |1024 bits
-| 2 |*s* x b w o g |gmp
+| 2 |*s* x b w o |gmp
 
 |*modp1536*
 |1536 bits
-| 5 |*s* x b w o g |gmp
+| 5 |*s* x b w o |gmp
 
 |*modp2048*
 |2048 bits
-|14 |x b w o g     |gmp
+|14 |x b w o     |gmp
 
 |*modp3072*
 |3072 bits
-|15 |x b w o g     |gmp
+|15 |x b w o     |gmp
 
 |*modp4096*
 |4096 bits
-|16 |x b w o g     |gmp
+|16 |x b w o     |gmp
 
 |*modp6144*
 |6144 bits
-|17 |x b o g       |gmp
+|17 |x b o       |gmp
 
 |*modp8192*
 |8192 bits
-|18 |x b o g       |gmp
+|18 |x b o       |gmp
 |===
 
 ==== Modular Prime Groups with Prime Order Subgroup
@@ -623,15 +620,15 @@ technically fine to negotiate e.g. `*x25519-ke7_mlkem768*`).
 
 |*modp1024s160*
 |1024 bits |160 bits
-|22 |*s* x b w o g |gmp
+|22 |*s* x b w o |gmp
 
 |*modp2048s224*
 |2048 bits |224 bits
-|23 |*s* x b w o g |gmp
+|23 |*s* x b w o |gmp
 
 |*modp2048s256*
 |2048 bits |256 bits
-|24 |*s* x b w o g |gmp
+|24 |*s* x b w o |gmp
 |===
 
 === Elliptic Curve Diffie-Hellman Groups
@@ -755,27 +752,27 @@ implemented only by certain plugins.
 
 |*RSA PKCS#1 v1.5*
 |MD5
-|1.2.840.113549.1.1.4|*s* x w o g |gmp, md5
+|1.2.840.113549.1.1.4|*s* x w o   |gmp, md5
 
 |*RSA PKCS#1 v1.5*
 |SHA-1
-|1.2.840.113549.1.1.5|*s* x b w o g |gmp, sha1
+|1.2.840.113549.1.1.5|*s* x b w o |gmp, sha1
 
 |*RSA PKCS#1 v1.5*
 |SHA-2 224
-|1.2.840.113549.1.1.14|x b w o g |gmp, sha2
+|1.2.840.113549.1.1.14|x b w o    |gmp, sha2
 
 |*RSA PKCS#1 v1.5*
 |SHA-2 256
-|1.2.840.113549.1.1.11|x b w o g |gmp, sha2
+|1.2.840.113549.1.1.11|x b w o    |gmp, sha2
 
 |*RSA PKCS#1 v1.5*
 |SHA-2 384
-|1.2.840.113549.1.1.12|x b w o g |gmp, sha2
+|1.2.840.113549.1.1.12|x b w o   |gmp, sha2
 
 |*RSA PKCS#1 v1.5*
 |SHA-2 512
-|1.2.840.113549.1.1.13|x b w o g |gmp, sha2
+|1.2.840.113549.1.1.13|x b w o   |gmp, sha2
 
 |*RSA PKCS#1 v1.5*
 |SHA-3 224
