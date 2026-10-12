@@ -25,7 +25,7 @@ here.
 
 == Levels and Subsystems/Groups
 
-The IKE daemon knows different numerical levels of logging ranging from `*-1*`to
+The IKE daemon knows different numerical levels of logging ranging from `*-1*` to
 `*4*`:
 
 [cols="1,8"]
