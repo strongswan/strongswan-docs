@@ -219,6 +219,13 @@ or directly from the app's page in the Play store.
 
 == Changelog
 
+=== 2.6.3 (2026-10-22)
+
+* Improves the behavior when roaming between different networks
+* Enables app optimization (shrinking/optimization/obfuscation) as required by
+  Google (cutting the size of the app distributed via Play in half)
+* Increases the minimum SDK to 23 (Android 6)
+
 === 2.6.2 (2025-10-30)
 
 * Fix edge-to-edge layout issues with settings and app selection
