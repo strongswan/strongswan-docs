@@ -1,0 +1,62 @@
+= Logrotate configuration 
+
+When configuring loggint to a file by using the xref:config//logging.adoc#file-loggers[filelogger] it is desirable to have
+a logroate configuration in place for the file in order to limit the size of the log file.
+
+Following is an example logrotate configuration for keeping a single file.
+```
+/var/log/charon.log {
+    missingok
+    sharedscripts
+    postrotate
+        /usr/bin/swanctl --reload-settings
+    endscript
+    maxsize 10M
+    create 0600 root root
+    shred
+    shredcycles 16
+}
+```
+
+The following configuration is for a daily file.
+
+```
+/var/log/charon.log {
+    missingok
+    sharedscripts
+    compress
+    postrotate
+        /usr/bin/swanctl --reload-settings
+    endscript
+    dateext
+    dateyesterday
+    delaycompress
+    maxsize 10M
+    compresscmd xz
+    create 0600 root root
+    shred
+    shredcycles 16
+
+```
+
+These files are compatible with the following filelogger configuration:
+```
+charon {
+       filelog {
+                charon-log {
+                        time_format = %a, %Y-%m-%d %R
+                        path = /var/log/charon.log
+                        default = 2
+                        mgr = 0
+                        net = 1
+                        enc = 1
+                        asn = 1
+                        job = 1
+                        knl = 2
+                        ike_name = yes
+                        append = yes
+                        flush_line = yes
+                }
+        }
+}
+```
