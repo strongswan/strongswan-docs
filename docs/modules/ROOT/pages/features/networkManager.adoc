@@ -76,9 +76,9 @@ xref:plugins/eap-tls.adoc[`*EAP-TLS*`] or the
 xref:plugins/bypass-lan.adoc[`*bypass-lan*` plugin]).
 ----
 # get the strongSwan tarball
-wget https://download.strongswan.org/strongswan-5.x.x.tar.bz2
-tar xf strongswan-5.x.x.tar.bz2
-cd strongswan-5.x.x
+wget https://download.strongswan.org/strongswan-x.x.x.tar.bz2
+tar xf strongswan-x.x.x.tar.bz2
+cd strongswan-x.x.x
 
 # build strongSwan with OpenSSL/NM backend
 ./configure --sysconfdir=/etc --prefix=/usr --libexecdir=/usr/lib \
@@ -104,9 +104,9 @@ additionally install `libnma-gtk4-dev` and `libgtk-4-dev` and pass
 
 ----
 # get the NetworkManager strongSwan plugin as a tarball
-wget https://download.strongswan.org/NetworkManager/NetworkManager-strongswan-1.x.x.tar.bz2
-tar xf NetworkManager-strongswan-1.x.x.tar.bz2
-cd NetworkManager-strongswan-1.x.x
+wget https://download.strongswan.org/NetworkManager/NetworkManager-strongswan-x.x.x.tar.bz2
+tar xf NetworkManager-strongswan-x.x.x.tar.bz2
+cd NetworkManager-strongswan-x.x.x
 
 # build the NetworkManager strongSwan plugin
 # (if you changed prefix/libexecdir above, set --with-charon=/path/to/charon-nm)
@@ -130,13 +130,21 @@ make install
 
 * Enter password if necessary
 
-As you can see there is no subnet configuration for the tunnel. We let the server
-administration choose the subnet(s); the client always proposes `0.0.0.0/0,::/0`
-as remote traffic selector and the server narrows that down to the
-configured subnet(s).
+As you can see, there is no subnet configuration for the tunnel necessary. We
+let the server administration choose the subnet(s); the client always
+proposes `0.0.0.0/0,::/0` as remote traffic selector and the server narrows that
+down to the configured subnet(s). However, traffic selectors can optionally be
+configured since version:6.0.1[] and NetworkManager-strongswan 1.6.2 (the remote
+traffic selectors could be configured via `nmcli` since version:5.9.0[]).
 
 If you use public key-based authentication, please store your certificate and
 private key in separate files.
+
+To prevent NetworkManager from terminating the VPN connection when network
+connectivity changes or is interrupted/suspended, the following command may be
+used since version version:6.0.2[]:
+
+    nmcli connection modify <connection name> vpn.persistent yes
 
 Many of the global xref:daemons/charon.adoc[`*charon*`]-specific configuration
 options in xref:config/strongswanConf.adoc[`*strongswan.conf*`] also apply to
