@@ -1,7 +1,7 @@
 = Storing a Windows CA Certificate
 
 Windows clients using EAP-based authentication methods (e.g. EAP-TLS or EAP-MSCHAPv2)
-require a Root CA certificate in the *Local Machine* store in order to be able to
+require a Root CA certificate as format .p12 with key in the *Local Machine* store in order to be able to
 put trust into the received server certificate and thus be able to verify the digital
 signature sent by the VPN gateway in the `AUTH` payload of the `IKE_AUTH` response.
 
