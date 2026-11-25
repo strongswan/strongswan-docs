@@ -47,15 +47,16 @@ and with the xref:pki/pkiIssue.adoc[`*pki --issue*`] command
 --flag serverAuth --flag ikeIntermediate
 ----
 
-. The hostname of the VPN gateway entered in the clients connection properties
-  *MUST* be contained either in the `*subjectDistinguishedName*` of the server
-  certificate
+. The hostname of the VPN gateway entered in the client's connection properties
+  *MUST* match an identity in the server certificate. The identity can be
+  specified in the `*subjectDistinguishedName*` of the server certificate
 +
 ----
 C=CH, O=strongSwan Project, CN=vpn.strongswan.org
 ----
 +
-and/or in a `*subjectAltName*` extension that can be added with the OpenSSL option
+and/or, preferably, as a `*dNSName*` in the `*subjectAltName*` extension. An
+exact hostname can be added with the OpenSSL option
 +
 ----
 subjectAltName = DNS:vpn.strongswan.org
@@ -67,10 +68,43 @@ or the xref:pki/pkiIssue.adoc[`*pki --issue*`] argument
 --san vpn.strongswan.org
 ----
 +
-*For optimal interoperability* with other client implementations it is recommended
-to include the hostname as `*subjectAltName*` because matching only parts of the
-distinguished name is actually not compliant with {RFC4945}[RFC 4945]. Having the
-hostname encoded as `*subjectAltName*` is essential when using the
+Windows clients also accept a gateway certificate if the hostname configured
+in the VPN connection matches a wildcard `*dNSName*` in the
+`*subjectAltName*` extension. For example, the configured VPN gateway hostname
++
+----
+server1.vpn.example.org
+----
++
+is matched by the following `*subjectAltName*`:
++
+----
+DNS:*.vpn.example.org
+----
++
+The wildcard matches exactly one complete leftmost DNS label. Consequently,
+`DNS:*.vpn.example.org` matches `*server1.vpn.example.org*`, but does not
+match either `*vpn.example.org*` or `*host.server1.vpn.example.org*`.
++
+If both the base hostname and its immediate subdomains have to be accepted,
+both identities must be included in the certificate, for example:
++
+----
+subjectAltName = DNS:vpn.example.org, DNS:*.vpn.example.org
+----
++
+With the xref:pki/pkiIssue.adoc[`*pki --issue*`] command, the equivalent
+identities can be added using separate arguments:
++
+----
+--san vpn.example.org --san "*.vpn.example.org"
+----
++
+*For optimal interoperability* with other client implementations, it is
+recommended to include the gateway identity as a `*dNSName*` in the
+`*subjectAltName*` extension. Matching only parts of the distinguished name is
+not compliant with {RFC4945}[RFC 4945]. Having the hostname encoded as a
+`*subjectAltName*` is essential when using the
 xref:os/androidVpnClient.adoc[strongSwan Android app] or working with
 xref:interop/ios.adoc[macOS clients].
 +
